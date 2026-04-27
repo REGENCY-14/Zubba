@@ -9,7 +9,7 @@ const tricycleBackground = require('../../assets/tricycle image.png');
 export function SplashScreen({ navigation }: RootStackScreenProps<'Splash'>) {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      navigation.replace('Home');
+      navigation.replace('Landing');
     }, 1800);
 
     return () => clearTimeout(timeoutId);
