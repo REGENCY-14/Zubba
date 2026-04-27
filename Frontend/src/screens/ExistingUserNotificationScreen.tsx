@@ -1,7 +1,9 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+
+const notificationArtwork = require('../../assets/ExistingUserNotificationScreen.png');
 
 export function ExistingUserNotificationScreen({ navigation }: RootStackScreenProps<'ExistingUserNotification'>) {
   return (
@@ -9,19 +11,7 @@ export function ExistingUserNotificationScreen({ navigation }: RootStackScreenPr
       <View style={styles.container}>
         <View style={styles.hero}>
           <View style={styles.illustrationWrap}>
-            <View style={styles.phoneCard}>
-              <Text style={styles.phoneBell}>🔔</Text>
-              <Text style={styles.phoneText}>STAY{`\n`}UPDATED</Text>
-              <View style={styles.miniButton}>
-                <Text style={styles.miniButtonText}>Allow</Text>
-              </View>
-            </View>
-
-            <View style={styles.bubbleRow}>
-              <View style={[styles.bubble, styles.bubbleLarge]} />
-              <View style={[styles.bubble, styles.bubbleSmall]} />
-              <View style={[styles.bubble, styles.bubbleTiny]} />
-            </View>
+            <Image source={notificationArtwork} style={styles.notificationArtwork} resizeMode="contain" />
           </View>
 
           <Text style={styles.title}>Stay updated on requests and promos.</Text>
@@ -55,71 +45,15 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   illustrationWrap: {
-    width: 170,
-    height: 170,
+    width: 190,
+    height: 190,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 22
   },
-  phoneCard: {
-    width: 62,
-    height: 96,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#E6862D',
-    backgroundColor: '#F7F1EB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 3
-  },
-  phoneBell: {
-    fontSize: 19
-  },
-  phoneText: {
-    color: '#1F2937',
-    fontSize: 9,
-    fontWeight: '700',
-    textAlign: 'center',
-    lineHeight: 11
-  },
-  miniButton: {
-    marginTop: 3,
-    minWidth: 38,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#F28A1A',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  miniButtonText: {
-    color: '#FFFFFF',
-    fontSize: 7,
-    fontWeight: '700'
-  },
-  bubbleRow: {
-    position: 'absolute',
-    right: 28,
-    top: 48,
-    gap: 7,
-    alignItems: 'center'
-  },
-  bubble: {
-    borderRadius: 20,
-    backgroundColor: '#EFA245'
-  },
-  bubbleLarge: {
-    width: 30,
-    height: 10
-  },
-  bubbleSmall: {
-    width: 12,
-    height: 6,
-    opacity: 0.8
-  },
-  bubbleTiny: {
-    width: 6,
-    height: 6,
-    opacity: 0.65
+  notificationArtwork: {
+    width: '100%',
+    height: '100%'
   },
   title: {
     maxWidth: 320,
