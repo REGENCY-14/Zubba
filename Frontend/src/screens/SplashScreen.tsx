@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import type { RootStackScreenProps } from '../navigation/types';
+
+const zubbaLogo = require('../../assets/zubba icon.png');
 
 export function SplashScreen({ navigation }: RootStackScreenProps<'Splash'>) {
   useEffect(() => {
@@ -23,7 +25,7 @@ export function SplashScreen({ navigation }: RootStackScreenProps<'Splash'>) {
         <View style={styles.cornerCircle} />
       </View>
 
-      <Text style={styles.logo}>ZUBBA</Text>
+      <Image source={zubbaLogo} style={styles.logo} resizeMode="contain" />
     </View>
   );
 }
@@ -96,10 +98,8 @@ const styles = StyleSheet.create({
     opacity: 0.45
   },
   logo: {
-    color: '#FFFFFF',
-    fontSize: 66,
-    fontWeight: '900',
-    letterSpacing: 2,
+    width: 220,
+    height: 72,
     marginTop: -120,
     transform: [{ scaleY: 0.92 }]
   }
