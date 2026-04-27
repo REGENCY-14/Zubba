@@ -3,23 +3,31 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
 
-const zubbaLogo = require('../../assets/zubba icon.png');
+const zubbaAvatar = require('../../assets/zubba icon.png');
 
 export function LandingScreen({ navigation }: RootStackScreenProps<'Landing'>) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.banner}>
-        <Text style={styles.bannerIcon}>⌖</Text>
-        <Text style={styles.bannerText}>Location sharing is disabled. Tap here to enable</Text>
-        <Pressable onPress={() => navigation.navigate('Details', { itemId: 'location', title: 'Enable location sharing' })} hitSlop={10}>
-          <Text style={styles.bannerChevron}>›</Text>
-        </Pressable>
-      </View>
-
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
       <View style={styles.container}>
-        <View style={styles.logoWrap}>
-          <Pressable onPress={() => navigation.navigate('Details', { itemId: 'logo', title: 'Zubba' })}>
-            <Image source={zubbaLogo} style={styles.logo} resizeMode="contain" />
+        <View style={styles.hero}>
+          <View style={styles.avatarOuter}>
+            <View style={styles.avatarInner}>
+              <Image source={zubbaAvatar} style={styles.avatarIcon} resizeMode="contain" />
+            </View>
+          </View>
+
+          <Text style={styles.title}>Welcome, Zakaria!</Text>
+          <Text style={styles.subtitle}>You previously signed in to one of our apps using</Text>
+          <Text style={styles.phone}>+233241122310</Text>
+        </View>
+
+        <View style={styles.actions}>
+          <Pressable style={styles.primaryButton} onPress={() => navigation.replace('Home')}>
+            <Text style={styles.primaryButtonText}>continue</Text>
+          </Pressable>
+
+          <Pressable style={styles.secondaryButton} onPress={() => navigation.navigate('Details', { itemId: 'account-switch', title: 'Use another account' })}>
+            <Text style={styles.secondaryButtonText}>Use another account</Text>
           </Pressable>
         </View>
       </View>
@@ -32,49 +40,92 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF'
   },
-  banner: {
-    minHeight: 56,
-    paddingHorizontal: 14,
-    backgroundColor: '#3AA548',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-  bannerIcon: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    width: 24,
-    textAlign: 'center',
-    marginRight: 10
-  },
-  bannerText: {
-    flex: 1,
-    color: '#FFFFFF',
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  bannerChevron: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: '400',
-    marginLeft: 10,
-    marginTop: -2
-  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 120,
+    paddingBottom: 24
   },
-  logoWrap: {
+  hero: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+    maxWidth: 320
+  },
+  avatarOuter: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    backgroundColor: '#F1F1F1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14
+  },
+  avatarInner: {
+    width: 34,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center'
   },
-  logo: {
-    width: 320,
-    height: 320,
-    tintColor: '#F97316',
-    transform: [{ scaleY: 0.92 }]
+  avatarIcon: {
+    width: 34,
+    height: 34,
+    tintColor: '#111111'
+  },
+  title: {
+    color: '#262D3A',
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '700',
+    textAlign: 'center'
+  },
+  subtitle: {
+    color: '#B8B8B8',
+    fontSize: 11,
+    lineHeight: 15,
+    textAlign: 'center',
+    marginTop: 10
+  },
+  phone: {
+    color: '#B8B8B8',
+    fontSize: 11,
+    lineHeight: 15,
+    textAlign: 'center',
+    marginTop: 2
+  },
+  actions: {
+    width: '100%',
+    gap: 10,
+    paddingBottom: 18
+  },
+  primaryButton: {
+    height: 38,
+    borderRadius: 8,
+    backgroundColor: '#3DA440',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '400',
+    textTransform: 'lowercase'
+  },
+  secondaryButton: {
+    height: 38,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E4E8EF',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  secondaryButtonText: {
+    color: '#364153',
+    fontSize: 13,
+    fontWeight: '400'
   }
 });
