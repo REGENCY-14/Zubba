@@ -1,55 +1,80 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '../components/Button';
-import { Card } from '../components/Card';
-import { Header } from '../components/Header';
-import { useAppDispatch } from '../hooks/useAppDispatch';
-import { useAppSelector } from '../hooks/useAppSelector';
-import { setAppReady } from '../slices/appSlice';
 import type { RootStackScreenProps } from '../navigation/types';
 
+const zubbaLogo = require('../../assets/zubba icon.png');
+
 export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
-  const dispatch = useAppDispatch();
-  const appName = useAppSelector((state) => state.app.appName);
-  const isReady = useAppSelector((state) => state.app.isReady);
-
   return (
-    <View style={styles.container}>
-      <Header title={appName} subtitle="Starter project foundation for upcoming screenshot-driven UI work." />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <View style={styles.banner}>
+        <Text style={styles.bannerIcon}>⌖</Text>
+        <Text style={styles.bannerText}>Location sharing is disabled. Tap here to enable</Text>
+        <Pressable onPress={() => navigation.navigate('Details', { itemId: 'location', title: 'Enable location sharing' })} hitSlop={10}>
+          <Text style={styles.bannerChevron}>›</Text>
+        </Pressable>
+      </View>
 
-      <Card>
-        <View style={styles.cardContent}>
-          <Text style={styles.label}>Redux Toolkit</Text>
-          <Text style={styles.value}>Ready: {isReady ? 'Yes' : 'No'}</Text>
+      <View style={styles.container}>
+        <View style={styles.logoWrap}>
+          <Pressable onPress={() => navigation.navigate('Details', { itemId: 'logo', title: 'Zubba' })}>
+            <Image source={zubbaLogo} style={styles.logo} resizeMode="contain" />
+          </Pressable>
         </View>
-      </Card>
-
-      <Button label="Mark app ready" onPress={() => dispatch(setAppReady(true))} />
-      <Button label="Open details" variant="secondary" onPress={() => navigation.navigate('Details', { itemId: '42', title: 'Starter details' })} />
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF'
+  },
+  banner: {
+    minHeight: 56,
+    paddingHorizontal: 14,
+    backgroundColor: '#3AA548',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  bannerIcon: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    width: 24,
+    textAlign: 'center',
+    marginRight: 10
+  },
+  bannerText: {
+    flex: 1,
+    color: '#FFFFFF',
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '500'
+  },
+  bannerChevron: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: '400',
+    marginLeft: 10,
+    marginTop: -2
+  },
   container: {
     flex: 1,
-    padding: 20,
-    gap: 16,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  cardContent: {
-    gap: 4
+  logoWrap: {
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  label: {
-    color: '#64748B',
-    fontSize: 13,
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    fontWeight: '700'
-  },
-  value: {
-    color: '#0F172A',
-    fontSize: 18,
-    fontWeight: '700'
+  logo: {
+    width: 320,
+    height: 132,
+    tintColor: '#F97316',
+    transform: [{ scaleY: 0.92 }]
   }
 });
