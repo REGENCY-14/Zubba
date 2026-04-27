@@ -22,7 +22,7 @@ export function SignInScreen({ navigation }: RootStackScreenProps<'SignIn'>) {
         </View>
 
         <View style={styles.actions}>
-          <Pressable style={styles.primaryButton} onPress={() => navigation.replace('Home')}>
+          <Pressable style={styles.primaryButton} onPress={() => navigation.replace('ExistingUserNotification')}>
             <Text style={styles.primaryButtonText}>Continue</Text>
           </Pressable>
 

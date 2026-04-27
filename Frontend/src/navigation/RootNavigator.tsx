@@ -7,6 +7,7 @@ import { DetailsScreen } from '../screens/DetailsScreen';
 import type { RootStackParamList } from './types';
 
 const { SignInScreen } = require('../screens/SignInScreen');
+const { ExistingUserNotificationScreen } = require('../screens/ExistingUserNotificationScreen');
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,6 +28,7 @@ export function RootNavigator() {
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ExistingUserNotification" component={ExistingUserNotificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="Details" component={DetailsScreen} options={{ title: 'Details' }} />
     </Stack.Navigator>

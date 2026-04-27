@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Splash: undefined;
   Landing: undefined;
   SignIn: undefined;
+  ExistingUserNotification: undefined;
   Home: undefined;
   Details: { itemId: string; title: string } | undefined;
 };
