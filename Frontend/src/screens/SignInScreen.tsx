@@ -23,7 +23,7 @@ export function SignInScreen({ navigation }: RootStackScreenProps<'SignIn'>) {
 
         <View style={styles.actions}>
           <Pressable style={styles.primaryButton} onPress={() => navigation.replace('Home')}>
-            <Text style={styles.primaryButtonText}>continue</Text>
+            <Text style={styles.primaryButtonText}>Continue</Text>
           </Pressable>
 
           <Pressable style={styles.secondaryButton} onPress={() => navigation.navigate('Details', { itemId: 'account-switch', title: 'Use another account' })}>
@@ -77,21 +77,21 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#262D3A',
-    fontSize: 20,
+    fontSize: 24,
     lineHeight: 26,
     fontWeight: '700',
     textAlign: 'center'
   },
   subtitle: {
     color: '#B8B8B8',
-    fontSize: 11,
+    fontSize: 13,
     lineHeight: 15,
     textAlign: 'center',
     marginTop: 10
   },
   phone: {
     color: '#B8B8B8',
-    fontSize: 11,
+    fontSize: 15,
     lineHeight: 15,
     textAlign: 'center',
     marginTop: 2
@@ -111,8 +111,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '400',
-    textTransform: 'lowercase'
+    fontWeight: '400'
   },
   secondaryButton: {
     height: 38,
