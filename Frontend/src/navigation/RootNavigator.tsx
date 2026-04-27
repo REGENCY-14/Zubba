@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { SplashScreen } from '../screens/SplashScreen';
 import { LandingScreen } from '../screens/LandingScreen';
+import { SignInScreen } from '../screens/SignInScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
 import type { RootStackParamList } from './types';
@@ -24,6 +25,7 @@ export function RootNavigator() {
     >
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="Details" component={DetailsScreen} options={{ title: 'Details' }} />
     </Stack.Navigator>
