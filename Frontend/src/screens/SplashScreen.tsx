@@ -98,9 +98,10 @@ const styles = StyleSheet.create({
     opacity: 0.45
   },
   logo: {
-    width: 220,
-    height: 72,
+    width: 300,
+    height: 100,
     marginTop: -120,
+    tintColor: '#FFFFFF',
     transform: [{ scaleY: 0.92 }]
   }
 });
