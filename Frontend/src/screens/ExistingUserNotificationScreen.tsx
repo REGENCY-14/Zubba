@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   illustrationWrap: {
-    width: 190,
-    height: 190,
+    width: 240,
+    height: 240,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 22
@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   title: {
     maxWidth: 320,
     color: '#222B37',
-    fontSize: 38,
-    lineHeight: 46,
+    fontSize: 24,
+    lineHeight: 24,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 14
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   subtitle: {
     maxWidth: 330,
     color: '#A7AEB8',
-    fontSize: 22,
+    fontSize: 16,
     lineHeight: 30,
     fontWeight: '400',
     textAlign: 'center'
