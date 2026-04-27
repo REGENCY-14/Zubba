@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   illustrationWrap: {
-    width: 240,
-    height: 240,
+    width: 400,
+    height: 400,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 22
+    marginBottom: 6
   },
   notificationArtwork: {
     width: '100%',
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 14
+    marginBottom: 8
   },
   subtitle: {
     maxWidth: 330,
