@@ -8,7 +8,7 @@ const zubbaLogo = require('../../assets/zubba icon.png');
 export function LandingScreen({ navigation }: RootStackScreenProps<'Landing'>) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <Pressable style={styles.banner} onPress={() => navigation.navigate('SignIn')}>
+      <Pressable style={styles.banner} onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.bannerIcon}>⌖</Text>
         <Text style={styles.bannerText}>Location sharing is disabled. Tap here to enable</Text>
         <Text style={styles.bannerChevron}>›</Text>
@@ -16,7 +16,7 @@ export function LandingScreen({ navigation }: RootStackScreenProps<'Landing'>) {
 
       <View style={styles.container}>
         <View style={styles.logoWrap}>
-          <Pressable onPress={() => navigation.navigate('SignIn')}>
+          <Pressable onPress={() => navigation.navigate('SignUp')}>
             <Image source={zubbaLogo} style={styles.logo} resizeMode="contain" />
           </Pressable>
         </View>
@@ -70,9 +70,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   logo: {
-    width: 320,
-    height: 132,
-    tintColor: '#F97316',
+    width: 300,
+    height: 300,
+    tintColor: '#2EA043',
     transform: [{ scaleY: 0.92 }]
   }
 });

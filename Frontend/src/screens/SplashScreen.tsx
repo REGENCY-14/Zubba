@@ -4,7 +4,7 @@ import { Image, StyleSheet, View } from 'react-native';
 import type { RootStackScreenProps } from '../navigation/types';
 
 const zubbaLogo = require('../../assets/zubba icon.png');
-const tricycleBackground = require('../../assets/tricycle image.png');
+const splashScreenLayer = require('../../assets/splash screen layer.png');
 
 export function SplashScreen({ navigation }: RootStackScreenProps<'Splash'>) {
   useEffect(() => {
@@ -18,7 +18,7 @@ export function SplashScreen({ navigation }: RootStackScreenProps<'Splash'>) {
   return (
     <View style={styles.container}>
       <View style={styles.topOverlay}>
-        <Image source={tricycleBackground} style={styles.backgroundImage} resizeMode="cover" />
+        <Image source={splashScreenLayer} style={styles.backgroundImage} resizeMode="cover" />
       </View>
 
       <Image source={zubbaLogo} style={styles.logo} resizeMode="contain" />
@@ -41,18 +41,13 @@ const styles = StyleSheet.create({
     height: 320
   },
   backgroundImage: {
-    position: 'absolute',
-    top: -50,
-    left: -20,
-    width: '120%',
-    height: 360,
-    tintColor: '#49B056',
-    opacity: 0.45
+    width: '100%',
+    height: '100%',
+    opacity: 0.75
   },
   logo: {
-    width: 360,
-    height: 350,
-    marginTop: -120,
+    width: 300,
+    height: 300,
     tintColor: '#FFFFFF',
     transform: [{ scaleY: 0.92 }]
   }

@@ -5,7 +5,7 @@ import type { RootStackScreenProps } from '../navigation/types';
 
 const zubbaLogo = require('../../assets/zubba icon.png');
 
-export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
+export function LocationSharingScreen({ navigation }: RootStackScreenProps<'LocationSharing'>) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.banner}>
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   logo: {
-    width: 320,
-    height: 132,
+    width: 360,
+    height: 350,
     tintColor: '#F97316',
     transform: [{ scaleY: 0.92 }]
   }
