@@ -9,6 +9,7 @@ export * from './FindAccountEmailScreen';
 export * from './FindAccountEmailOtpScreen';
 export * from './FindAccountOtpScreen';
 export * from './LocationSharingScreen';
+export * from './ScanningScreen';
 export * from './SplashScreen';
 export * from './VerifyOtpScreen';
 export * from './KycCollectionScreen';

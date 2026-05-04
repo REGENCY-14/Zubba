@@ -11,6 +11,7 @@ export type RootStackParamList = {
   KycCollection: { phone?: string; email?: string } | undefined;
   TermsAcceptance: { phone?: string; email?: string; firstName?: string; lastName?: string } | undefined;
   LocationSharing: undefined;
+  Scanning: undefined;
   Details: { itemId: string; title: string } | undefined;
   Verify: { phone?: string; email?: string; userExists?: boolean } | undefined;
   FindAccount: { itemId: string; title: string } | undefined;
