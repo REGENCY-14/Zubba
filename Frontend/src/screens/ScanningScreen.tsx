@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Animated,
+  Image,
   ImageBackground,
+  Modal,
   Pressable,
   StyleSheet,
   Text,
   View,
   Dimensions,
-  Animated,
-  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
 
 const mapImage = require('../../assets/RawMap.png');
+const logo = require('../../assets/zubba icon.png');
 
 export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>) {
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
+  const [modalStep, setModalStep] = useState<'request' | 'assigned'>('request');
+  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     Animated.loop(
@@ -28,13 +32,38 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
       })
     ).start();
 
-    // Show modal after 5 seconds
     const timer = setTimeout(() => {
+      setModalStep('request');
       setShowModal(true);
     }, 5000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (assignedTimerRef.current) {
+        clearTimeout(assignedTimerRef.current);
+        assignedTimerRef.current = null;
+      }
+    };
   }, [spinValue]);
+
+  useEffect(() => {
+    if (modalStep !== 'assigned') {
+      return;
+    }
+
+    assignedTimerRef.current = setTimeout(() => {
+      assignedTimerRef.current = null;
+      setShowModal(false);
+      navigation.navigate('DriverArrives');
+    }, 5000);
+
+    return () => {
+      if (assignedTimerRef.current) {
+        clearTimeout(assignedTimerRef.current);
+        assignedTimerRef.current = null;
+      }
+    };
+  }, [modalStep, navigation]);
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
@@ -87,62 +116,59 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
           </View>
         </View>
 
-        {/* Driver Assignment Modal */}
         <Modal visible={showModal} transparent animationType="fade">
           <View style={styles.modalOverlay}>
             <View style={styles.modalCard}>
-              {/* Driver Details Section */}
-              <View style={styles.driverDetailsSection}>
-                <View style={styles.driverPhotoWrapper}>
-                  <View style={styles.driverPhotoPlaceholder} />
-                </View>
-                <View style={styles.driverInfoContainer}>
-                  <Text style={styles.driverName}>Marcus Chen</Text>
-                  <View style={styles.ratingContainer}>
-                    <View style={styles.ratingDot} />
-                    <Text style={styles.ratingText}>4.9 • ZB-Expert</Text>
+              {modalStep === 'request' ? (
+                <View style={styles.requestCard}>
+                  <View style={styles.requestAvatarWrap}>
+                    <Image source={logo} style={styles.requestAvatar} />
                   </View>
+                  <Text style={styles.requestName}>MARCUS CHEN</Text>
+                  <Text style={styles.requestPrice}>GHS 10.00 / distance</Text>
+                  <Text style={styles.requestMeta}>★ 4.9 • ZB-0248</Text>
+
+                  <Pressable style={styles.proceedButtonModal} onPress={() => setModalStep('assigned')}>
+                    <Text style={styles.proceedButtonModalText}>Proceed to request</Text>
+                  </Pressable>
+
+                  <Pressable style={styles.cancelButtonModal} onPress={() => setShowModal(false)}>
+                    <Text style={styles.cancelButtonModalText}>✖  Cancel pickup</Text>
+                  </Pressable>
                 </View>
-              </View>
+              ) : (
+                <View style={styles.assignedCard}>
+                  <View style={styles.assignedAvatarWrap}>
+                    <Image source={logo} style={styles.assignedAvatar} />
+                  </View>
+                  <Text style={styles.assignedTitle}>DRIVER ASSIGNED</Text>
+                  <Text style={styles.assignedSubtitle}>Your driver is on the way</Text>
+                  <Text style={styles.assignedMeta}>4.9 • ZB-0248</Text>
 
-              {/* Action Buttons */}
-              <View style={styles.buttonRow}>
-                <Pressable style={styles.callButton}>
-                  <Text style={styles.buttonIconCall}>☎</Text>
-                  <Text style={styles.buttonLabel}>Call</Text>
-                </Pressable>
-                <Pressable style={styles.messageButton}>
-                  <Text style={styles.buttonIconMsg}>✉</Text>
-                  <Text style={styles.buttonLabel}>Message</Text>
-                </Pressable>
-              </View>
+                  <View style={styles.assignedActionsRow}>
+                    <Pressable style={styles.assignedActionChip}>
+                      <Text style={styles.assignedActionText}>☎ Call</Text>
+                    </Pressable>
+                    <Pressable style={styles.assignedActionChip}>
+                      <Text style={styles.assignedActionText}>▭ Message</Text>
+                    </Pressable>
+                  </View>
 
-              {/* Divider */}
-              <View style={styles.divider} />
-
-              {/* Assignment Details */}
-              <View style={styles.assignmentSection}>
-                <View style={styles.avatarContainer}>
-                  <View style={styles.avatarPlaceholder} />
+                  <Pressable
+                    style={styles.cancelButtonModal}
+                    onPress={() => {
+                      if (assignedTimerRef.current) {
+                        clearTimeout(assignedTimerRef.current);
+                        assignedTimerRef.current = null;
+                      }
+                      setShowModal(false);
+                      navigation.navigate('LocationSharing');
+                    }}
+                  >
+                    <Text style={styles.cancelButtonModalText}>✖  Cancel pickup</Text>
+                  </Pressable>
                 </View>
-                <Text style={styles.assignmentTitle}>DRIVER ASSIGNED</Text>
-                <Text style={styles.assignmentSubtitle}>Your driver is on the way</Text>
-                <View style={styles.driverIdRow}>
-                  <View style={styles.checkmarkDot} />
-                  <Text style={styles.driverId}>4.9 • ZB-0248</Text>
-                </View>
-              </View>
-
-              {/* Action Buttons */}
-              <View style={styles.modalButtonContainer}>
-                <Pressable style={styles.acceptButton}>
-                  <Text style={styles.acceptButtonText}>Accept</Text>
-                </Pressable>
-                <Pressable style={styles.cancelButton}>
-                  <Text style={styles.cancelIcon}>✕</Text>
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </Pressable>
-              </View>
+              )}
             </View>
           </View>
         </Modal>
@@ -170,12 +196,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
   },
-  backButton: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   chevronLeft: { fontSize: 24, color: '#1F2A33' },
   title: { fontSize: 16, fontWeight: '400', color: '#1F2A33' },
   placeholder: { width: 24, height: 24 },
@@ -207,32 +228,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  centerDot: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: 'rgba(217, 217, 217, 0.3)',
-  },
-  scannerLines: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  horizontalLine: {
-    position: 'absolute',
-    width: 200,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-  },
-  verticalLine: {
-    position: 'absolute',
-    width: 1,
-    height: 200,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-  },
+  centerDot: { width: 100, height: 100, borderRadius: 50, borderWidth: 2, borderColor: 'rgba(217, 217, 217, 0.3)' },
+  scannerLines: { position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
+  horizontalLine: { position: 'absolute', width: 200, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.5)' },
+  verticalLine: { position: 'absolute', width: 1, height: 200, backgroundColor: 'rgba(255, 255, 255, 0.5)' },
   bottomNavWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', paddingBottom: 8 },
   handle: { width: 108, height: 4, backgroundColor: '#000000', opacity: 0.9, borderRadius: 12, marginBottom: 12 },
   bottomNav: { width: 402, maxWidth: '96%', height: 78, backgroundColor: '#FFFFFF', borderRadius: 75, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' },
@@ -242,207 +241,27 @@ const styles = StyleSheet.create({
   navLabel: { fontSize: 12, color: '#64748A' },
   navIconActive: { fontSize: 20, color: '#FFFFFF', marginRight: 4 },
   navLabelActive: { fontSize: 12, color: '#FFFFFF', fontWeight: '400' },
-  
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCard: {
-    width: 342,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    paddingHorizontal: 12,
-    paddingVertical: 16,
-    gap: 20,
-    alignItems: 'center',
-  },
-  driverDetailsSection: {
-    width: '100%',
-    backgroundColor: '#EFF6E7',
-    borderRadius: 32,
-    padding: 24,
-    flexDirection: 'row',
-    gap: 16,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  driverPhotoWrapper: {
-    width: 56,
-    height: 56,
-    backgroundColor: 'rgba(255, 255, 255, 0.002)',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  driverPhotoPlaceholder: {
-    width: 56,
-    height: 56,
-    backgroundColor: '#D3D3D3',
-    borderRadius: 8,
-  },
-  driverInfoContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  driverName: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#171D14',
-    marginBottom: 8,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  ratingDot: {
-    width: 11.67,
-    height: 11.08,
-    backgroundColor: '#0D631B',
-    borderRadius: 6,
-  },
-  ratingText: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: '#0D631B',
-  },
-  buttonRow: {
-    width: '100%',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'flex-start',
-    marginTop: 24,
-  },
-  callButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 9999,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  messageButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 9999,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  buttonIconCall: {
-    fontSize: 14,
-    color: '#171D14',
-  },
-  buttonIconMsg: {
-    fontSize: 14,
-    color: '#171D14',
-  },
-  buttonLabel: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: '#171D14',
-  },
-  divider: {
-    width: '100%',
-    height: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  assignmentSection: {
-    width: '100%',
-    alignItems: 'center',
-    gap: 16,
-  },
-  avatarContainer: {
-    width: 59,
-    height: 59,
-    backgroundColor: 'rgba(65, 158, 106, 0.1)',
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarPlaceholder: {
-    width: 29,
-    height: 29,
-    backgroundColor: '#D3D3D3',
-    borderRadius: 15,
-  },
-  assignmentTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1F2A33',
-    textTransform: 'uppercase',
-    letterSpacing: 1.6,
-  },
-  assignmentSubtitle: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#31973D',
-  },
-  driverIdRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  checkmarkDot: {
-    width: 11.67,
-    height: 11.08,
-    backgroundColor: '#0D631B',
-    borderRadius: 6,
-  },
-  driverId: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: '#0D631B',
-  },
-  modalButtonContainer: {
-    width: '100%',
-    gap: 12,
-  },
-  acceptButton: {
-    width: '100%',
-    height: 48,
-    backgroundColor: '#31973D',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  acceptButtonText: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: '#FFFFFF',
-  },
-  cancelButton: {
-    width: '100%',
-    height: 48,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  cancelIcon: {
-    fontSize: 16,
-    color: '#EF4444',
-    fontWeight: 'bold',
-  },
-  cancelButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#EF4444',
-  },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 130 },
+  modalCard: { width: 375, maxWidth: '96%', backgroundColor: '#FFFFFF', borderRadius: 22, paddingHorizontal: 12, paddingVertical: 16, gap: 20, alignItems: 'center' },
+  requestCard: { width: '100%', alignItems: 'center' },
+  requestAvatarWrap: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EAF9EE', alignItems: 'center', justifyContent: 'center', marginTop: -48, marginBottom: 6 },
+  requestAvatar: { width: 64, height: 64, borderRadius: 32, resizeMode: 'cover' },
+  requestName: { marginTop: 6, fontSize: 16, fontWeight: '700', color: '#1F2A33', letterSpacing: 2, textAlign: 'center' },
+  requestPrice: { marginTop: 10, color: '#2F9C3A', fontWeight: '700', fontSize: 15 },
+  requestMeta: { marginTop: 6, color: '#0D631B', fontSize: 13 },
+  assignedCard: { width: '100%', alignItems: 'center' },
+  assignedAvatarWrap: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EAF9EE', alignItems: 'center', justifyContent: 'center', marginTop: -48, marginBottom: 6 },
+  assignedAvatar: { width: 64, height: 64, borderRadius: 32, resizeMode: 'cover' },
+  assignedTitle: { marginTop: 6, fontSize: 16, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textTransform: 'uppercase', textAlign: 'center' },
+  assignedSubtitle: { marginTop: 8, color: '#31973D', fontSize: 16, textAlign: 'center' },
+  assignedMeta: { marginTop: 6, color: '#0D631B', fontSize: 13, textAlign: 'center' },
+  assignedActionsRow: { flexDirection: 'row', gap: 24, alignItems: 'center', justifyContent: 'center', marginTop: 18, marginBottom: 16 },
+  assignedActionChip: { flexDirection: 'row', alignItems: 'center' },
+  assignedActionText: { fontSize: 14, color: '#171D14' },
+  proceedButtonModal: { marginTop: 18, backgroundColor: '#31973D', paddingVertical: 14, borderRadius: 12, width: '100%', alignItems: 'center' },
+  proceedButtonModalText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  cancelButtonModal: { marginTop: 10, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F44336', paddingVertical: 12, borderRadius: 12, width: '100%', alignItems: 'center' },
+  cancelButtonModalText: { color: '#F44336', fontSize: 15, fontWeight: '600' },
 });
 
 export default ScanningScreen;

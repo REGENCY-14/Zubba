@@ -12,6 +12,7 @@ export type RootStackParamList = {
   TermsAcceptance: { phone?: string; email?: string; firstName?: string; lastName?: string } | undefined;
   LocationSharing: undefined;
   Scanning: undefined;
+  DriverArrives: undefined;
   Details: { itemId: string; title: string } | undefined;
   Verify: { phone?: string; email?: string; userExists?: boolean } | undefined;
   FindAccount: { itemId: string; title: string } | undefined;

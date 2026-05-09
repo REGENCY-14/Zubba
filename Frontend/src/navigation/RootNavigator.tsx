@@ -6,6 +6,7 @@ import { SignUpScreen } from '../screens/SignUpScreen';
 import { EmailSignUpScreen } from '../screens/EmailSignUpScreen';
 import { LocationSharingScreen } from '../screens/LocationSharingScreen';
 import { ScanningScreen } from '../screens/ScanningScreen';
+import { DriverArrivesScreen } from '../screens/DriverArrivesScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
 import { FindAccountScreen } from '../screens/FindAccountScreen';
 import { FindAccountEmailScreen } from '../screens/FindAccountEmailScreen';
@@ -44,6 +45,7 @@ export function RootNavigator() {
       <Stack.Screen name="ExistingUserNotification" component={ExistingUserNotificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="LocationSharing" component={LocationSharingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Scanning" component={ScanningScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="DriverArrives" component={DriverArrivesScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Verify" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="NewUserOnboarding" component={NewUserOnboardingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="KycCollection" component={KycCollectionScreen} options={{ headerShown: false }} />
