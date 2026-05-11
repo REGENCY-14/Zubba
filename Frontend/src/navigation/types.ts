@@ -13,6 +13,11 @@ export type RootStackParamList = {
   LocationSharing: undefined;
   Scanning: undefined;
   DriverArrives: undefined;
+  Payment: undefined;
+  PaymentMethod: undefined;
+  PaymentVerification: undefined;
+  AuthorizePayment: undefined;
+  PaymentSuccess: undefined;
   Details: { itemId: string; title: string } | undefined;
   Verify: { phone?: string; email?: string; userExists?: boolean } | undefined;
   FindAccount: { itemId: string; title: string } | undefined;

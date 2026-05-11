@@ -30,7 +30,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
             onChangeText={setSearchQuery}
           />
           <Pressable onPress={() => navigation.navigate('Details', { itemId: 'search', title: 'Search' })}>
-            <Text style={styles.searchIcon}>🔍</Text>
+            <Image source={require('../../assets/Search.png')} style={styles.searchIcon} />
           </Pressable>
         </View>
 
@@ -38,7 +38,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
           <View style={styles.statsRow}>
             <View style={styles.statCard}>
               <View style={styles.statHead}>
-                <Text style={styles.statIcon}>♻️</Text>
+                <Image source={require('../../assets/recycle.png')} style={styles.statIcon} />
                 <Text style={styles.statLabel}>ACTIVE</Text>
               </View>
               <Text style={styles.statValue}>42kg</Text>
@@ -47,7 +47,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
 
             <View style={styles.statCard}>
               <View style={styles.statHeadRight}>
-                <Text style={styles.statIconAlt}>⭐</Text>
+                <Image source={require('../../assets/points.png')} style={styles.statIconAlt} />
                 <Text style={styles.statLabelAlt}>POINTS</Text>
               </View>
               <Text style={styles.statValue}>1,250</Text>
@@ -57,7 +57,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
 
           <View style={styles.actionsList}>
             <View style={styles.actionRow}>
-              <Image source={require('../../assets/tricycle image.png')} style={styles.actionLeftIcon} />
+              <Image source={require('../../assets/picktricycle.png')} style={styles.actionLeftIcon} />
               <View style={styles.actionTextWrap}>
                 <Text style={styles.actionTitle}>Find nearby tricycles</Text>
                 <Text style={styles.actionSub}>Instant pickup</Text>
@@ -68,7 +68,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
             </View>
 
             <View style={[styles.actionRow, styles.premiumRow]}>
-              <View style={styles.premiumLeftIcon}><Text style={styles.premiumIcon}>👑</Text></View>
+              <Image source={require('../../assets/premium.png')} style={styles.premiumLeftIcon} />
               <View style={styles.actionTextWrap}>
                 <Text style={styles.actionTitle}>Plan future pickup</Text>
                 <Text style={styles.actionSub}>Future service</Text>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   searchText: { fontSize: 14, color: '#333333' },
   searchInput: { flex: 1, fontSize: 14, color: '#333333', padding: 0 },
-  searchIcon: { fontSize: 20 },
+  searchIcon: { width: 20, height: 20, resizeMode: 'contain' },
   floatingCard: {
     position: 'absolute',
     left: (width - 402) / 2 < 8 ? 8 : (width - 402) / 2,
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
   statCard: { width: '48%', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E2E8F0' },
   statHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   statHeadRight: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  statIcon: { fontSize: 18 },
-  statIconAlt: { fontSize: 18 },
+  statIcon: { width: 18, height: 18, resizeMode: 'contain' },
+  statIconAlt: { width: 18, height: 18, resizeMode: 'contain' },
   statLabel: { color: '#31973D', fontSize: 12, fontWeight: '600', textTransform: 'uppercase' },
   statLabelAlt: { color: '#735C00', fontSize: 12, fontWeight: '600', textTransform: 'uppercase' },
   statValue: { fontSize: 20, fontWeight: '700', color: '#1F2A33', marginTop: 8 },

@@ -61,7 +61,7 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
             </View>
           </View>
 
-          <Pressable style={styles.primaryButton} onPress={() => navigation.navigate('Details', { itemId: 'payment', title: 'Payment' })}>
+          <Pressable style={styles.primaryButton} onPress={() => navigation.navigate('Payment')}>
             <Text style={styles.primaryButtonText}>Proceed to payment</Text>
           </Pressable>
 

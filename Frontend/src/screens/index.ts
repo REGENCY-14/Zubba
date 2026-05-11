@@ -14,3 +14,7 @@ export * from './SplashScreen';
 export * from './VerifyOtpScreen';
 export * from './KycCollectionScreen';
 export * from './TermsAcceptanceScreen';
+export * from './PaymentVerificationScreen';
+export * from './PaymentMethodScreen';
+export * from './AuthorizePaymentScreen';
+export * from './PaymentSuccessScreen';

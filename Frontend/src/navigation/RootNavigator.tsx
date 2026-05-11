@@ -7,6 +7,11 @@ import { EmailSignUpScreen } from '../screens/EmailSignUpScreen';
 import { LocationSharingScreen } from '../screens/LocationSharingScreen';
 import { ScanningScreen } from '../screens/ScanningScreen';
 import { DriverArrivesScreen } from '../screens/DriverArrivesScreen';
+import { PaymentScreen } from '../screens/PaymentScreen';
+import { PaymentMethodScreen } from '../screens/PaymentMethodScreen';
+import { PaymentVerificationScreen } from '../screens/PaymentVerificationScreen';
+import { AuthorizePaymentScreen } from '../screens/AuthorizePaymentScreen';
+import { PaymentSuccessScreen } from '../screens/PaymentSuccessScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
 import { FindAccountScreen } from '../screens/FindAccountScreen';
 import { FindAccountEmailScreen } from '../screens/FindAccountEmailScreen';
@@ -46,6 +51,11 @@ export function RootNavigator() {
       <Stack.Screen name="LocationSharing" component={LocationSharingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Scanning" component={ScanningScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriverArrives" component={DriverArrivesScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PaymentVerification" component={PaymentVerificationScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AuthorizePayment" component={AuthorizePaymentScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Verify" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="NewUserOnboarding" component={NewUserOnboardingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="KycCollection" component={KycCollectionScreen} options={{ headerShown: false }} />
