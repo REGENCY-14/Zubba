@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+import { PaymentProviderHeader } from '../components';
 
 export function PaymentMethodScreen({ navigation }: RootStackScreenProps<'PaymentMethod'>) {
   const [phoneNumber, setPhoneNumber] = React.useState<string>('');
@@ -18,6 +19,14 @@ export function PaymentMethodScreen({ navigation }: RootStackScreenProps<'Paymen
           <Text style={styles.title}>Payment</Text>
           <View style={styles.headerSpacer} />
         </View>
+
+        <PaymentProviderHeader
+          provider="MTN MoMo"
+          providerColor="#FFCC00"
+          isActive={true}
+          onMenuPress={() => {}}
+          onClosePress={() => navigation.goBack()}
+        />
 
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
           <View style={styles.main}>

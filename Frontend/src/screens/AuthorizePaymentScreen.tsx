@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+import { PaymentProviderHeader } from '../components';
 
 export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'AuthorizePayment'>) {
   const [pin, setPin] = React.useState('');
@@ -24,17 +25,20 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
           <View style={styles.headerSpacer} />
         </View>
 
+        <PaymentProviderHeader
+          provider="MTN MoMo"
+          providerColor="#31973D"
+          isActive={true}
+          onMenuPress={() => {}}
+          onClosePress={() => navigation.goBack()}
+        />
+
         <View style={styles.headerRow}>
           <View style={styles.enterPinRow}>
             <View style={styles.iconBadge}>
               <Text style={styles.iconBadgeText}>🛡️</Text>
             </View>
             <Text style={styles.headerTitle}>Enter PIN</Text>
-          </View>
-
-          <View style={styles.providerPill}>
-            <View style={styles.providerDot} />
-            <Text style={styles.providerText}>MTN MoMo</Text>
           </View>
         </View>
 
@@ -83,16 +87,13 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   container: { flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center' },
   handle: { width: 108, height: 4, backgroundColor: '#000000', opacity: 0.9, borderRadius: 12, marginTop: 12 },
-  headerRow: { width: '100%', maxWidth: 390, paddingHorizontal: 24, marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  headerRow: { width: '100%', maxWidth: 390, paddingHorizontal: 24, marginTop: 16, flexDirection: 'row', alignItems: 'center' },
   appHeader: { width: '100%', height: 48, paddingHorizontal: 16, marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   backWrap: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   backArrow: { fontSize: 24, color: '#1F2A33' },
   appTitle: { fontSize: 16, color: '#1F2A33', textAlign: 'center' },
   headerSpacer: { width: 24, height: 24 },
   headerTitle: { fontSize: 16, fontWeight: '400', color: '#1A1C1E', lineHeight: 24 },
-  providerPill: { backgroundColor: '#F3F3F6', borderRadius: 9999, paddingHorizontal: 12, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  providerDot: { width: 8, height: 8, borderRadius: 9999, backgroundColor: '#006B23' },
-  providerText: { color: '#1A1C1E', fontWeight: '600', fontSize: 12, letterSpacing: 0.48, lineHeight: 14 },
   enterPinRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBadge: { width: 32, height: 32, borderRadius: 8, backgroundColor: '#31973D', marginRight: 6, alignItems: 'center', justifyContent: 'center' },
   iconBadgeText: { fontSize: 16, color: '#FFFFFF' },

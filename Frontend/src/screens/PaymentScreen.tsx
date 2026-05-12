@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+import { PaymentProviderHeader } from '../components';
 
 export function PaymentScreen({ navigation }: RootStackScreenProps<'Payment'>) {
   const [selectedMethod, setSelectedMethod] = React.useState<'wallet' | 'momo' | 'telecel'>('momo');
@@ -17,6 +18,14 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<'Payment'>) {
           <Text style={styles.title}>Payment</Text>
           <View style={styles.headerSpacer} />
         </View>
+
+        <PaymentProviderHeader
+          provider="MTN MoMo"
+          providerColor="#FFCC00"
+          isActive={true}
+          onMenuPress={() => {}}
+          onClosePress={() => navigation.goBack()}
+        />
 
         <ScrollView style={styles.main} contentContainerStyle={styles.mainContent}>
           <View style={styles.summaryCard}>

@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+import { PaymentProviderHeader } from '../components';
 
 export function PaymentVerificationScreen({ navigation }: RootStackScreenProps<'PaymentVerification'>) {
   const [code, setCode] = React.useState('');
@@ -36,6 +37,14 @@ export function PaymentVerificationScreen({ navigation }: RootStackScreenProps<'
           <Text style={styles.title}>Payment Verification</Text>
           <View style={styles.headerSpacer} />
         </View>
+
+        <PaymentProviderHeader
+          provider="MTN MoMo"
+          providerColor="#31973D"
+          isActive={true}
+          onMenuPress={() => {}}
+          onClosePress={() => navigation.goBack()}
+        />
 
         <ScrollView style={styles.main} contentContainerStyle={styles.mainContent}>
           {/* Verification Header */}

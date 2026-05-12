@@ -3,6 +3,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+import { PaymentProviderHeader } from '../components';
 
 export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'PaymentSuccess'>) {
   const [feedbackVisible, setFeedbackVisible] = React.useState(false);
@@ -21,9 +22,17 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
           <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
             <Text style={styles.backText}>‹</Text>
           </Pressable>
-          <Text style={styles.headerTitle}>Successs</Text>
+          <Text style={styles.headerTitle}>Success</Text>
           <View style={styles.headerSpacer} />
         </View>
+
+        <PaymentProviderHeader
+          provider="MTN MoMo"
+          providerColor="#31973D"
+          isActive={true}
+          onMenuPress={() => {}}
+          onClosePress={() => navigation.navigate('LocationSharing')}
+        />
 
         <ScrollView style={styles.main} contentContainerStyle={styles.mainContent} showsVerticalScrollIndicator={false}>
           <View style={styles.successBadge}>
