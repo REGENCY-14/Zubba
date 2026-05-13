@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
-import { PaymentProviderHeader } from '../components';
+import { AppBottomNav } from '../components';
 
 export function PaymentVerificationScreen({ navigation }: RootStackScreenProps<'PaymentVerification'>) {
   const [code, setCode] = React.useState('');
@@ -38,14 +38,6 @@ export function PaymentVerificationScreen({ navigation }: RootStackScreenProps<'
           <View style={styles.headerSpacer} />
         </View>
 
-        <PaymentProviderHeader
-          provider="MTN MoMo"
-          providerColor="#31973D"
-          isActive={true}
-          onMenuPress={() => {}}
-          onClosePress={() => navigation.goBack()}
-        />
-
         <ScrollView style={styles.main} contentContainerStyle={styles.mainContent}>
           {/* Verification Header */}
           <Text style={styles.heading}>Verification Code</Text>
@@ -55,20 +47,23 @@ export function PaymentVerificationScreen({ navigation }: RootStackScreenProps<'
           </Text>
 
           {/* Code Input Boxes */}
-          <View style={styles.codeContainer}>
-            {codeDigits.map((digit, index) => (
-              <Pressable key={index} onPress={() => inputRef.current?.focus()}>
-                <View
-                  style={[
-                    styles.codeBox,
-                    index < code.length ? styles.codeBoxFilled : styles.codeBoxEmpty,
-                    index === code.length ? styles.codeBoxActive : null,
-                  ]}
-                >
-                  {index < code.length && <Text style={styles.codeText}>●</Text>}
-                </View>
-              </Pressable>
-            ))}
+          <View style={styles.codeContainerWrapper}>
+            <View style={styles.codeContainer}>
+              {codeDigits.map((digit, index) => (
+                <Pressable key={index} onPress={() => inputRef.current?.focus()}>
+                  <View
+                    style={[
+                      styles.codeBox,
+                      index < code.length ? styles.codeBoxFilled : styles.codeBoxEmpty,
+                      index === code.length ? styles.codeBoxActive : null,
+                      index === 1 && code.length === 1 ? styles.codeBoxActive : null,
+                    ]}
+                  >
+                    {index < code.length && <Text style={styles.codeText}>●</Text>}
+                  </View>
+                </Pressable>
+              ))}
+            </View>
           </View>
 
           {/* Hidden input for code entry */}
@@ -105,35 +100,20 @@ export function PaymentVerificationScreen({ navigation }: RootStackScreenProps<'
 
           {/* Verify Button */}
           <Pressable
-            style={[styles.verifyButton, code.length === 4 && styles.verifyButtonActive]}
+            style={[styles.verifyButtonFull, code.length === 4 && styles.verifyButtonActive]}
             onPress={() => code.length === 4 && navigation.navigate('AuthorizePayment')}
             disabled={code.length !== 4}
           >
-            <Text style={[styles.verifyButtonText, code.length === 4 && styles.verifyButtonTextActive]}>Verify</Text>
+            <Text style={[styles.verifyButtonTextFull, code.length === 4 && styles.verifyButtonTextActive]}>Verify</Text>
           </Pressable>
         </ScrollView>
 
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNavWrap}>
-          <View style={styles.handle} />
-          <View style={styles.bottomNav}>
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('LocationSharing')}>
-              <Text style={styles.navIcon}>🏠</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => {}}>
-              <Text style={styles.navIcon}>📅</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}>
-              <Text style={styles.navIcon}>💾</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}>
-              <Text style={styles.navIcon}>👥</Text>
-            </Pressable>
-          </View>
-        </View>
+        <AppBottomNav
+          activeTab="home"
+          onHomePress={() => navigation.navigate('LocationSharing')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+        />
       </View>
     </SafeAreaView>
   );
@@ -171,6 +151,7 @@ const styles = StyleSheet.create({
 
   /* Code Input */
   codeContainer: { flexDirection: 'row', gap: 15, marginBottom: 32 },
+  codeContainerWrapper: { width: 253, alignItems: 'center', marginBottom: 24 },
   codeBox: {
     width: 52,
     height: 64,
@@ -221,13 +202,18 @@ const styles = StyleSheet.create({
   verifyButtonActive: { backgroundColor: '#31973D' },
   verifyButtonText: { color: '#94A3B8', fontSize: 14, fontWeight: '400', lineHeight: 20 },
   verifyButtonTextActive: { color: '#FFFFFF' },
+  /* Full width variant */
+  verifyButtonFull: {
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: '#E0E7DD',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 8,
+  },
+  verifyButtonTextFull: { color: '#94A3B8', fontSize: 16, fontWeight: '400', lineHeight: 22 },
 
-  /* Bottom Navigation */
-  bottomNavWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', paddingBottom: 8 },
-  handle: { width: 108, height: 4, backgroundColor: '#000000', opacity: 0.9, borderRadius: 12, marginBottom: 12 },
-  bottomNav: { width: 402, maxWidth: '96%', height: 78, backgroundColor: '#FFFFFF', borderRadius: 75, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' },
-  navItem: { width: 64, height: 44, borderRadius: 44, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 10, gap: 8 },
-  navIcon: { fontSize: 20, color: '#64748A' },
 });
 
 export default PaymentVerificationScreen;

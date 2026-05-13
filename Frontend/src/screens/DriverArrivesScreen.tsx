@@ -1,7 +1,8 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../navigation/types';
+import { AppBottomNav } from '../components';
 
 const logo = require('../../assets/zubba icon.png');
 
@@ -17,7 +18,7 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
           <View style={styles.headerSpacer} />
         </View>
 
-        <View style={styles.content}>
+        <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.driverCard}>
             <View style={styles.avatarWrap}>
               <Image source={logo} style={styles.avatar} />
@@ -28,12 +29,10 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
 
             <View style={styles.actionsRow}>
               <Pressable style={styles.actionChip}>
-                <Text style={styles.actionIcon}>☎</Text>
-                <Text style={styles.actionLabel}>Call</Text>
+                <Text style={styles.actionLabel}>☎  Call</Text>
               </Pressable>
               <Pressable style={styles.actionChip}>
-                <Text style={styles.actionIcon}>▭</Text>
-                <Text style={styles.actionLabel}>Message</Text>
+                <Text style={styles.actionLabel}>▭  Message</Text>
               </Pressable>
             </View>
           </View>
@@ -68,27 +67,36 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
           <Pressable style={styles.issueButton} onPress={() => navigation.navigate('Details', { itemId: 'issue', title: 'Issue' })}>
             <Text style={styles.issueButtonText}>Report an Issue</Text>
           </Pressable>
-        </View>
+        </ScrollView>
+
+        <AppBottomNav
+          activeTab="home"
+          onHomePress={() => navigation.navigate('Home' as any)}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+        />
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#F9F9F9' },
+  screen: { flex: 1, backgroundColor: '#F9F9F9' },
   statusHeader: {
     height: 56,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
   },
   backButton: { width: 32, height: 32, alignItems: 'flex-start', justifyContent: 'center' },
   backText: { fontSize: 28, color: '#1F2A33', lineHeight: 28, marginTop: -2 },
-  screenTitle: { fontSize: 16, fontWeight: '400', color: '#1F2A33' },
+  screenTitle: { fontSize: 16, fontWeight: '600', color: '#1F2A33' },
   headerSpacer: { width: 32, height: 32 },
-  content: { flex: 1, paddingHorizontal: 12, paddingTop: 4, paddingBottom: 16 },
+  contentScroll: { flex: 1 },
+  content: { paddingHorizontal: 18, paddingTop: 24, paddingBottom: 120, gap: 24 },
   driverCard: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
@@ -96,31 +104,30 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    marginBottom: 24,
+    gap: 12,
   },
-  avatarWrap: { width: 59, height: 59, borderRadius: 999, backgroundColor: 'rgba(65, 158, 106, 0.1)', alignItems: 'center', justifyContent: 'center', marginBottom: 18 },
-  avatar: { width: 29, height: 29, borderRadius: 61, resizeMode: 'cover' },
+  avatarWrap: { width: 64, height: 64, borderRadius: 12, backgroundColor: '#F4F4F5', alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', resizeMode: 'cover' },
   name: { fontSize: 16, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textAlign: 'center' },
-  meta: { marginTop: 4, color: '#0D631B', fontSize: 14, textAlign: 'center' },
-  actionsRow: { marginTop: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 28 },
-  actionChip: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  actionIcon: { fontSize: 14, color: '#171D14' },
+  meta: { color: '#0D631B', fontSize: 14, textAlign: 'center' },
+  actionsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24 },
+  actionChip: { flexDirection: 'row', alignItems: 'center' },
   actionLabel: { fontSize: 14, color: '#171D14', fontWeight: '400' },
-  codeCard: { backgroundColor: '#0D631B', borderRadius: 16, paddingVertical: 24, paddingHorizontal: 24, alignItems: 'center', marginBottom: 24 },
-  codeLabel: { color: 'rgba(255,255,255,0.75)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 },
-  codeRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  codeCard: { backgroundColor: '#31973D', borderRadius: 16, paddingVertical: 24, paddingHorizontal: 24, alignItems: 'center' },
+  codeLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 10, lineHeight: 15, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
+  codeRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
   codeBox: { width: 47, height: 56, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
   codeDigit: { fontSize: 36, lineHeight: 40, fontWeight: '900', color: '#FFFFFF' },
-  codeHint: { color: '#FFFFFF', opacity: 0.9, fontSize: 12, textAlign: 'center' },
-  confirmCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  codeHint: { color: '#FFFFFF', opacity: 0.9, fontSize: 12, lineHeight: 16, fontWeight: '500', textAlign: 'center' },
+  confirmCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   confirmTitle: { fontSize: 14, fontWeight: '600', color: '#1F2A33' },
   confirmSubtitle: { marginTop: 4, fontSize: 12, color: '#64748A', lineHeight: 16, maxWidth: 185 },
-  readyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(65, 158, 106, 0.1)', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, gap: 6 },
+  readyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', paddingHorizontal: 12, paddingVertical: 6, gap: 8 },
   readyDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2E7D32' },
-  readyText: { fontSize: 12, color: '#31973D', fontWeight: '500' },
-  primaryButton: { backgroundColor: '#31973D', borderRadius: 12, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
+  readyText: { fontSize: 13, lineHeight: 20, color: '#31973D', fontWeight: '400' },
+  primaryButton: { backgroundColor: '#31973D', borderRadius: 12, height: 48, alignItems: 'center', justifyContent: 'center' },
   primaryButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '400' },
-  issueButton: { alignItems: 'center', justifyContent: 'center', height: 24 },
+  issueButton: { alignItems: 'center', justifyContent: 'center', height: 48 },
   issueButtonText: { color: '#171D14', fontSize: 14, fontWeight: '400' },
 });
 

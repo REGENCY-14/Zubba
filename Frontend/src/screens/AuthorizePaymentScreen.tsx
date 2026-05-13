@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
-import { PaymentProviderHeader } from '../components';
+import { AppBottomNav } from '../components';
 
 export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'AuthorizePayment'>) {
   const [pin, setPin] = React.useState('');
@@ -25,14 +25,6 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
           <View style={styles.headerSpacer} />
         </View>
 
-        <PaymentProviderHeader
-          provider="MTN MoMo"
-          providerColor="#31973D"
-          isActive={true}
-          onMenuPress={() => {}}
-          onClosePress={() => navigation.goBack()}
-        />
-
         <View style={styles.headerRow}>
           <View style={styles.enterPinRow}>
             <View style={styles.iconBadge}>
@@ -40,19 +32,26 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
             </View>
             <Text style={styles.headerTitle}>Enter PIN</Text>
           </View>
+
+          <View style={styles.providerPill}>
+            <View style={styles.providerDot} />
+            <Text style={styles.providerText}>MTN MoMo</Text>
+          </View>
         </View>
 
         <View style={styles.content}>
           <Text style={styles.subtitle}>Enter your 4-digit PIN to authorize the payment of GHS 45.00 to Zubba.</Text>
 
-          <View style={styles.codeContainer}>
-            {digits.map((d, i) => (
-              <Pressable key={i} onPress={() => inputRef.current?.focus()}>
-                <View style={[styles.codeBox, i === pin.length && styles.codeBoxActive]}>
-                  {i < pin.length && <View style={styles.dot} />}
-                </View>
-              </Pressable>
-            ))}
+          <View style={styles.codeContainerWrapper}>
+            <View style={styles.codeContainer}>
+              {digits.map((d, i) => (
+                <Pressable key={i} onPress={() => inputRef.current?.focus()}>
+                  <View style={[styles.codeBox, i < pin.length ? styles.codeBoxFilled : styles.codeBoxEmpty, i === pin.length && styles.codeBoxActive]}>
+                    {i < pin.length && <View style={styles.dot} />}
+                  </View>
+                </Pressable>
+              ))}
+            </View>
           </View>
 
           <TextInput
@@ -66,7 +65,7 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
           />
 
           <Pressable
-            style={[styles.primaryButton, pin.length === 4 ? styles.primaryButtonActive : styles.primaryButtonDisabled]}
+            style={[styles.primaryButtonFull, pin.length === 4 ? styles.primaryButtonActive : styles.primaryButtonDisabled]}
             onPress={() => pin.length === 4 && navigation.navigate('PaymentSuccess')}
             disabled={pin.length !== 4}
           >
@@ -77,7 +76,7 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
           </Pressable>
         </View>
 
-        <View style={styles.bottomNavPlaceholder} />
+        <AppBottomNav activeTab="home" onHomePress={() => navigation.navigate('Home' as any)} onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })} onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })} />
       </View>
     </SafeAreaView>
   );
@@ -99,7 +98,8 @@ const styles = StyleSheet.create({
   iconBadgeText: { fontSize: 16, color: '#FFFFFF' },
   content: { width: '100%', maxWidth: 390, paddingHorizontal: 24, alignItems: 'center', marginTop: 16, gap: 24 },
   subtitle: { width: '100%', fontSize: 16, lineHeight: 24, color: '#64748A', textAlign: 'left', marginBottom: 0 },
-  codeContainer: { width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 0 },
+  codeContainerWrapper: { width: '100%', alignItems: 'center' },
+  codeContainer: { width: 253, flexDirection: 'row', gap: 15, justifyContent: 'space-between', marginBottom: 0 },
   codeBox: {
     width: 52,
     height: 64,
@@ -116,8 +116,6 @@ const styles = StyleSheet.create({
     elevation: 1
   },
   codeBoxActive: {
-    width: 56,
-    height: 68,
     borderColor: '#31973D',
     shadowColor: '#006B23',
     shadowOpacity: 0.1,
@@ -125,16 +123,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     elevation: 2
   },
+  codeBoxFilled: { borderColor: '#BECAB9' },
+  codeBoxEmpty: { borderColor: '#BECAB9' },
   dot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#31973D' },
   hiddenInput: { position: 'absolute', opacity: 0, height: 48, width: 1, left: 16 },
   primaryButton: { width: '100%', height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  primaryButtonFull: { width: '100%', height: 56, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   primaryButtonContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   buttonLock: { color: '#FFFFFF', fontSize: 14 },
   primaryButtonActive: { backgroundColor: '#31973D' },
   primaryButtonDisabled: { backgroundColor: '#E0E7DD' },
   primaryButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '400', lineHeight: 20 },
   primaryButtonTextDisabled: { color: '#94A3B8' },
-  bottomNavPlaceholder: { height: 88 }
+  bottomNavPlaceholder: { height: 88 },
+  providerPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#F3F3F6', borderRadius: 999, gap: 8 },
+  providerDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#006B23' },
+  providerText: { fontSize: 12, fontWeight: '600', color: '#1A1C1E' }
 });
 
 export default AuthorizePaymentScreen;

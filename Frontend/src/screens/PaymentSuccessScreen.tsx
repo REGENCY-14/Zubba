@@ -3,7 +3,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
-import { PaymentProviderHeader } from '../components';
+import { AppBottomNav, PaymentProviderHeader } from '../components';
 
 export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'PaymentSuccess'>) {
   const [feedbackVisible, setFeedbackVisible] = React.useState(false);
@@ -173,27 +173,12 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
           </View>
         </Modal>
 
-        <View style={styles.bottomNavWrap}>
-          <View style={styles.handle} />
-          <View style={styles.bottomNav}>
-            <Pressable style={[styles.navItem, styles.activeNav]} onPress={() => navigation.navigate('LocationSharing')}>
-              <Text style={styles.navIconActive}>🏠</Text>
-              <Text style={styles.navLabelActive}>Home</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => {}}>
-              <Text style={styles.navIcon}>📅</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}>
-              <Text style={styles.navIcon}>💾</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}>
-              <Text style={styles.navIcon}>👥</Text>
-            </Pressable>
-          </View>
-        </View>
+        <AppBottomNav
+          activeTab="home"
+          onHomePress={() => navigation.navigate('LocationSharing')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+        />
       </View>
     </SafeAreaView>
   );
@@ -313,48 +298,6 @@ const styles = StyleSheet.create({
   homeButtonText: { fontSize: 14, lineHeight: 20, color: '#FFFFFF' },
   supportText: { fontSize: 16, lineHeight: 24, color: '#1F2A33', textAlign: 'center' },
   thanksText: { fontSize: 10, lineHeight: 16, color: '#A1A1AA', textAlign: 'center', letterSpacing: -0.2 },
-
-  bottomNavWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', paddingBottom: 8 },
-  handle: { width: 108, height: 4, backgroundColor: '#000000', opacity: 0.9, borderRadius: 12, marginBottom: 12 },
-  bottomNav: {
-    width: 402,
-    maxWidth: '96%',
-    height: 78,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 75,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)'
-  },
-  navItem: {
-    width: 64,
-    height: 44,
-    borderRadius: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 8
-  },
-  activeNav: {
-    backgroundColor: '#31973D',
-    width: 105,
-    height: 44,
-    borderRadius: 44,
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 6,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  navIcon: { fontSize: 20, color: '#64748A' },
-  navIconActive: { fontSize: 20, color: '#FFFFFF', marginRight: 4 },
-  navLabelActive: { fontSize: 12, color: '#FFFFFF', fontWeight: '400' },
 
   modalOverlay: {
     flex: 1,

@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
+import { AppBottomNav } from '../components';
 
 const mapImage = require('../../assets/RawMap.png');
 const logo = require('../../assets/zubba icon.png');
@@ -94,68 +95,68 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
           </View>
         </View>
 
-        <View style={styles.bottomNavWrap}>
-          <View style={styles.handle} />
-          <View style={styles.bottomNav}>
-            <Pressable style={[styles.navItem, styles.activeNav]} onPress={() => navigation.navigate('Home' as any)}>
-              <Text style={styles.navIconActive}>🏠</Text>
-              <Text style={styles.navLabelActive}>Home</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => {}}>
-              <Text style={styles.navIcon}>📅</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}>
-              <Text style={styles.navIcon}>💾</Text>
-            </Pressable>
-
-            <Pressable style={styles.navItem} onPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}>
-              <Text style={styles.navIcon}>👥</Text>
-            </Pressable>
-          </View>
-        </View>
+        <AppBottomNav
+          activeTab="home"
+          onHomePress={() => navigation.navigate('Home' as any)}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+        />
 
         <Modal visible={showModal} transparent animationType="fade">
           <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
+            <View style={[styles.modalCard, modalStep === 'request' ? styles.modalCardRequest : styles.modalCardAssigned]}>
               {modalStep === 'request' ? (
-                <View style={styles.requestCard}>
-                  <View style={styles.requestAvatarWrap}>
-                    <Image source={logo} style={styles.requestAvatar} />
+                <View style={styles.requestContent}>
+                  <View style={styles.requestProfileCard}>
+                    <View style={styles.requestAvatarShell}>
+                      <Image source={logo} style={styles.requestAvatar} />
+                    </View>
+
+                    <View style={styles.requestTextGroup}>
+                      <Text style={styles.requestName}>MARCUS CHEN</Text>
+                      <View style={styles.requestPriceRow}>
+                        <Text style={styles.requestPriceAmount}>GHS 10.00</Text>
+                        <Text style={styles.requestPriceUnit}>/ distance</Text>
+                      </View>
+                      <Text style={styles.requestMeta}>★ 4.9 • ZB-0248</Text>
+                    </View>
                   </View>
-                  <Text style={styles.requestName}>MARCUS CHEN</Text>
-                  <Text style={styles.requestPrice}>GHS 10.00 / distance</Text>
-                  <Text style={styles.requestMeta}>★ 4.9 • ZB-0248</Text>
 
-                  <Pressable style={styles.proceedButtonModal} onPress={() => setModalStep('assigned')}>
-                    <Text style={styles.proceedButtonModalText}>Proceed to request</Text>
-                  </Pressable>
+                  <View style={styles.requestActions}>
+                    <Pressable style={styles.requestPrimaryButton} onPress={() => setModalStep('assigned')}>
+                      <Text style={styles.requestPrimaryButtonText}>Proceed to request</Text>
+                    </Pressable>
 
-                  <Pressable style={styles.cancelButtonModal} onPress={() => setShowModal(false)}>
-                    <Text style={styles.cancelButtonModalText}>✖  Cancel pickup</Text>
-                  </Pressable>
+                    <Pressable style={styles.requestSecondaryButton} onPress={() => setShowModal(false)}>
+                      <View style={styles.requestSecondaryIconWrap}>
+                        <Text style={styles.requestSecondaryIcon}>✕</Text>
+                      </View>
+                      <Text style={styles.requestSecondaryButtonText}>Cancel pickup</Text>
+                    </Pressable>
+                  </View>
                 </View>
               ) : (
-                <View style={styles.assignedCard}>
-                  <View style={styles.assignedAvatarWrap}>
-                    <Image source={logo} style={styles.assignedAvatar} />
-                  </View>
-                  <Text style={styles.assignedTitle}>DRIVER ASSIGNED</Text>
-                  <Text style={styles.assignedSubtitle}>Your driver is on the way</Text>
-                  <Text style={styles.assignedMeta}>4.9 • ZB-0248</Text>
+                <View style={styles.assignedContent}>
+                  <View style={styles.assignedProfileCard}>
+                    <View style={styles.assignedAvatarShell}>
+                      <Image source={logo} style={styles.assignedAvatar} />
+                    </View>
 
-                  <View style={styles.assignedActionsRow}>
-                    <Pressable style={styles.assignedActionChip}>
-                      <Text style={styles.assignedActionText}>☎ Call</Text>
-                    </Pressable>
-                    <Pressable style={styles.assignedActionChip}>
-                      <Text style={styles.assignedActionText}>▭ Message</Text>
-                    </Pressable>
+                    <Text style={styles.assignedName}>MARCUS CHEN</Text>
+                    <Text style={styles.assignedMeta}>★ 4.9 • ZB-0248</Text>
+
+                    <View style={styles.assignedActionsRow}>
+                      <Pressable style={styles.assignedActionChip}>
+                        <Text style={styles.assignedActionText}>☎  Call</Text>
+                      </Pressable>
+                      <Pressable style={styles.assignedActionChip}>
+                        <Text style={styles.assignedActionText}>▭  Message</Text>
+                      </Pressable>
+                    </View>
                   </View>
 
                   <Pressable
-                    style={styles.cancelButtonModal}
+                    style={styles.requestSecondaryButton}
                     onPress={() => {
                       if (assignedTimerRef.current) {
                         clearTimeout(assignedTimerRef.current);
@@ -165,7 +166,10 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
                       navigation.navigate('LocationSharing');
                     }}
                   >
-                    <Text style={styles.cancelButtonModalText}>✖  Cancel pickup</Text>
+                    <View style={styles.requestSecondaryIconWrap}>
+                      <Text style={styles.requestSecondaryIcon}>✕</Text>
+                    </View>
+                    <Text style={styles.requestSecondaryButtonText}>Cancel pickup</Text>
                   </Pressable>
                 </View>
               )}
@@ -232,32 +236,85 @@ const styles = StyleSheet.create({
   scannerLines: { position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   horizontalLine: { position: 'absolute', width: 200, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.5)' },
   verticalLine: { position: 'absolute', width: 1, height: 200, backgroundColor: 'rgba(255, 255, 255, 0.5)' },
-  bottomNavWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', paddingBottom: 8 },
-  handle: { width: 108, height: 4, backgroundColor: '#000000', opacity: 0.9, borderRadius: 12, marginBottom: 12 },
-  bottomNav: { width: 402, maxWidth: '96%', height: 78, backgroundColor: '#FFFFFF', borderRadius: 75, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' },
-  navItem: { width: 64, height: 44, borderRadius: 44, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 10, gap: 8 },
-  activeNav: { backgroundColor: '#31973D', width: 105, height: 44, borderRadius: 44, flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 10, gap: 6, alignItems: 'center', justifyContent: 'center' },
-  navIcon: { fontSize: 20, color: '#64748A' },
-  navLabel: { fontSize: 12, color: '#64748A' },
-  navIconActive: { fontSize: 20, color: '#FFFFFF', marginRight: 4 },
-  navLabelActive: { fontSize: 12, color: '#FFFFFF', fontWeight: '400' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 130 },
-  modalCard: { width: 375, maxWidth: '96%', backgroundColor: '#FFFFFF', borderRadius: 22, paddingHorizontal: 12, paddingVertical: 16, gap: 20, alignItems: 'center' },
-  requestCard: { width: '100%', alignItems: 'center' },
-  requestAvatarWrap: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EAF9EE', alignItems: 'center', justifyContent: 'center', marginTop: -48, marginBottom: 6 },
-  requestAvatar: { width: 64, height: 64, borderRadius: 32, resizeMode: 'cover' },
-  requestName: { marginTop: 6, fontSize: 16, fontWeight: '700', color: '#1F2A33', letterSpacing: 2, textAlign: 'center' },
-  requestPrice: { marginTop: 10, color: '#2F9C3A', fontWeight: '700', fontSize: 15 },
-  requestMeta: { marginTop: 6, color: '#0D631B', fontSize: 13 },
-  assignedCard: { width: '100%', alignItems: 'center' },
-  assignedAvatarWrap: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EAF9EE', alignItems: 'center', justifyContent: 'center', marginTop: -48, marginBottom: 6 },
-  assignedAvatar: { width: 64, height: 64, borderRadius: 32, resizeMode: 'cover' },
-  assignedTitle: { marginTop: 6, fontSize: 16, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textTransform: 'uppercase', textAlign: 'center' },
-  assignedSubtitle: { marginTop: 8, color: '#31973D', fontSize: 16, textAlign: 'center' },
-  assignedMeta: { marginTop: 6, color: '#0D631B', fontSize: 13, textAlign: 'center' },
-  assignedActionsRow: { flexDirection: 'row', gap: 24, alignItems: 'center', justifyContent: 'center', marginTop: 18, marginBottom: 16 },
-  assignedActionChip: { flexDirection: 'row', alignItems: 'center' },
-  assignedActionText: { fontSize: 14, color: '#171D14' },
+  modalCard: { backgroundColor: '#FFFFFF', borderRadius: 22, alignItems: 'center' },
+  modalCardRequest: { width: 375, maxWidth: '96%', height: 372, paddingHorizontal: 12, paddingVertical: 16, gap: 20 },
+  modalCardAssigned: { width: 375, maxWidth: '96%', height: 324, paddingHorizontal: 12, paddingVertical: 16, gap: 20 },
+  requestContent: { width: 366, maxWidth: '100%', gap: 20, alignItems: 'center' },
+  requestProfileCard: {
+    width: 358,
+    maxWidth: '100%',
+    height: 212,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24,
+  },
+  requestAvatarShell: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    backgroundColor: '#F4F4F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  requestAvatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', resizeMode: 'cover' },
+  requestTextGroup: { width: '100%', alignItems: 'center', gap: 4 },
+  requestName: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textAlign: 'center', textTransform: 'uppercase' },
+  requestPriceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
+  requestPriceAmount: { color: '#31973D', fontWeight: '400', fontSize: 16, lineHeight: 24 },
+  requestPriceUnit: { color: '#1F2A33', fontWeight: '700', fontSize: 16, lineHeight: 24 },
+  requestMeta: { color: '#0D631B', fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  requestActions: { width: '100%', gap: 12 },
+  requestPrimaryButton: { height: 48, backgroundColor: '#31973D', borderRadius: 12, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
+  requestPrimaryButtonText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontWeight: '400' },
+  requestSecondaryButton: {
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  requestSecondaryIconWrap: { width: 16, height: 16, borderRadius: 8, backgroundColor: '#EF4444', alignItems: 'center', justifyContent: 'center' },
+  requestSecondaryIcon: { color: '#FFFFFF', fontSize: 10, lineHeight: 10, fontWeight: '700' },
+  requestSecondaryButtonText: { color: '#EF4444', fontSize: 14, lineHeight: 20, fontWeight: '500' },
+  assignedContent: { width: 366, maxWidth: '100%', gap: 20, alignItems: 'center' },
+  assignedProfileCard: {
+    width: 358,
+    maxWidth: '100%',
+    height: 224,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24,
+  },
+  assignedAvatarShell: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    backgroundColor: '#F4F4F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  assignedAvatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', resizeMode: 'cover' },
+  assignedName: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textAlign: 'center', textTransform: 'uppercase' },
+  assignedMeta: { color: '#0D631B', fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  assignedActionsRow: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' },
+  assignedActionChip: { height: 36, borderRadius: 9999, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16, flexDirection: 'row' },
+  assignedActionText: { fontSize: 14, lineHeight: 20, color: '#1F2A33' },
   proceedButtonModal: { marginTop: 18, backgroundColor: '#31973D', paddingVertical: 14, borderRadius: 12, width: '100%', alignItems: 'center' },
   proceedButtonModalText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
   cancelButtonModal: { marginTop: 10, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F44336', paddingVertical: 12, borderRadius: 12, width: '100%', alignItems: 'center' },
