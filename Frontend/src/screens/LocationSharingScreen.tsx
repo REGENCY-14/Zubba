@@ -93,9 +93,9 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
         <AppBottomNav
           activeTab="home"
           paddingBottom={0}
-          onHomePress={() => navigation.navigate('Home' as any)}
+          onHomePress={() => navigation.navigate('LocationSharing')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
         />
       </ImageBackground>
     </SafeAreaView>

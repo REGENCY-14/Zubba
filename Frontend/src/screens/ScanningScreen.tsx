@@ -97,9 +97,9 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
 
         <AppBottomNav
           activeTab="home"
-          onHomePress={() => navigation.navigate('Home' as any)}
+          onHomePress={() => navigation.navigate('LocationSharing')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
         />
 
         <Modal visible={showModal} transparent animationType="fade">

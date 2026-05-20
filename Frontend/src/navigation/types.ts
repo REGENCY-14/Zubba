@@ -18,6 +18,15 @@ export type RootStackParamList = {
   PaymentVerification: undefined;
   AuthorizePayment: undefined;
   PaymentSuccess: undefined;
+  Settings: undefined;
+  TermsAndConditions: undefined;
+  AboutUs: undefined;
+  Notifications: undefined;
+  HelpCenter: undefined;
+  ActiveSession: undefined;
+  UpdateDetails: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
+  UpdateDetailsOtp: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
+  UpdateDetailsSuccess: undefined;
   Details: { itemId: string; title: string } | undefined;
   Verify: { phone?: string; email?: string; userExists?: boolean } | undefined;
   FindAccount: { itemId: string; title: string } | undefined;

@@ -112,7 +112,7 @@ export function PaymentMethodScreen({ navigation }: RootStackScreenProps<'Paymen
           activeTab="home"
           onHomePress={() => navigation.navigate('LocationSharing')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
         />
       </View>
     </SafeAreaView>

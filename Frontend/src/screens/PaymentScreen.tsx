@@ -90,7 +90,7 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<'Payment'>) {
           activeTab="home"
           onHomePress={() => navigation.navigate('LocationSharing')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
         />
       </View>
     </SafeAreaView>

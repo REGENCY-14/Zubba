@@ -40,8 +40,8 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
           </View>
 
           <View style={styles.successTextWrap}>
-            <Text style={styles.successTitle}>Successful</Text>
-            <Text style={styles.successSubtitle}>Payment completed</Text>
+            <Text style={styles.successTitle}>Payment Successful</Text>
+            <Text style={styles.successSubtitle}>Your pickup has been confirmed.</Text>
           </View>
 
           {!feedbackVisible && (
@@ -86,10 +86,15 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
               </View>
 
               <Pressable style={styles.homeButton} onPress={() => navigation.navigate('LocationSharing')}>
-                <Text style={styles.homeButtonText}>Go Home</Text>
+                <Text style={styles.homeButtonText}>Back to Home</Text>
               </Pressable>
 
-              <Text style={styles.supportText}>Need help? Contact Zubba Support</Text>
+              <View style={styles.supportWrap}>
+                <Text style={styles.supportText}>Need help? </Text>
+                <Pressable onPress={() => { /* handle contact */ }}>
+                  <Text style={styles.supportLink}>Contact Zubba Support</Text>
+                </Pressable>
+              </View>
               <Text style={styles.thanksText}>THANK YOU FOR CHOOSING ZUBBA</Text>
             </>
           )}
@@ -110,11 +115,26 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
                   <Text style={styles.reactionTitle}>Service experience</Text>
                 </View>
                 <View style={styles.starRow}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Pressable key={star} onPress={() => setRating(star)} style={styles.starPressable}>
-                      <Text style={[styles.starIcon, star <= rating ? styles.starIconActive : styles.starIconInactive]}>★</Text>
-                    </Pressable>
-                  ))}
+                  {[1, 2, 3, 4, 5, 6].map((star) => {
+                    const isFilled = star <= rating;
+                    const isOutline = star === rating + 1;
+                    return (
+                      <Pressable key={star} onPress={() => setRating(Math.min(star, 5))} style={styles.starPressable}>
+                        <Text
+                          style={[
+                            styles.starIcon,
+                            isFilled
+                              ? styles.starIconActive
+                              : isOutline
+                                ? styles.starIconOutline
+                                : styles.starIconInactive
+                          ]}
+                        >
+                          {isFilled ? '★' : '☆'}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
                 </View>
               </View>
 
@@ -177,7 +197,7 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
           activeTab="home"
           onHomePress={() => navigation.navigate('LocationSharing')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
         />
       </View>
     </SafeAreaView>
@@ -296,7 +316,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   homeButtonText: { fontSize: 14, lineHeight: 20, color: '#FFFFFF' },
-  supportText: { fontSize: 16, lineHeight: 24, color: '#1F2A33', textAlign: 'center' },
+  supportText: { fontSize: 16, lineHeight: 24, color: '#1F2A33' },
+  supportWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  supportLink: { fontSize: 16, lineHeight: 24, color: '#31973D', fontWeight: '700' },
   thanksText: { fontSize: 10, lineHeight: 16, color: '#A1A1AA', textAlign: 'center', letterSpacing: -0.2 },
 
   modalOverlay: {
@@ -355,12 +377,13 @@ const styles = StyleSheet.create({
   starRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'flex-start'
   },
-  starPressable: { padding: 2 },
-  starIcon: { fontSize: 30, lineHeight: 30 },
+  starPressable: { padding: 2, marginRight: 8 },
+  starIcon: { fontSize: 34, lineHeight: 34 },
   starIconActive: { color: '#31973D' },
-  starIconInactive: { color: '#BECAB9' },
+  starIconOutline: { color: '#BECAB9' },
+  starIconInactive: { color: '#F4F4F7' },
   subCard: {
     width: '100%',
     borderWidth: 1,
@@ -381,7 +404,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderWidth: 1
   },
-  choiceButtonActive: { backgroundColor: 'rgba(184,184,184,0.2)', borderColor: '#31973D' },
+  choiceButtonActive: { backgroundColor: '#F8FAFC', borderColor: '#31973D' },
   choiceButtonGhost: { backgroundColor: '#F8FAFC', borderColor: '#E2E8F0' },
   choiceButtonMore: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12 },
   choiceButtonWide: { flex: 1 },

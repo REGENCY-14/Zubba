@@ -40,7 +40,9 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.subtitle}>Enter your 4-digit PIN to authorize the payment of GHS 45.00 to Zubba.</Text>
+          <Text style={styles.subtitle}>
+            Enter your 4-digit PIN to authorize the payment of <Text style={styles.amount}>GHS 45.00</Text> to <Text style={styles.merchant}>Zubba</Text>.
+          </Text>
 
           <View style={styles.codeContainerWrapper}>
             <View style={styles.codeContainer}>
@@ -76,7 +78,7 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
           </Pressable>
         </View>
 
-        <AppBottomNav activeTab="home" onHomePress={() => navigation.navigate('Home' as any)} onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })} onAccountPress={() => navigation.navigate('Details', { itemId: 'account', title: 'Account' })} />
+        <AppBottomNav activeTab="home" onHomePress={() => navigation.navigate('LocationSharing')} onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })} onSettingsPress={() => navigation.navigate('Settings')} />
       </View>
     </SafeAreaView>
   );
@@ -85,12 +87,12 @@ export function AuthorizePaymentScreen({ navigation }: RootStackScreenProps<'Aut
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   container: { flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center' },
-  handle: { width: 108, height: 4, backgroundColor: '#000000', opacity: 0.9, borderRadius: 12, marginTop: 12 },
+  handle: { width: 108, height: 6, backgroundColor: '#E6E6E9', borderRadius: 12, marginTop: 16 },
   headerRow: { width: '100%', maxWidth: 390, paddingHorizontal: 24, marginTop: 16, flexDirection: 'row', alignItems: 'center' },
-  appHeader: { width: '100%', height: 48, paddingHorizontal: 16, marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  appHeader: { width: '100%', height: 56, paddingHorizontal: 16, marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   backWrap: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   backArrow: { fontSize: 24, color: '#1F2A33' },
-  appTitle: { fontSize: 16, color: '#1F2A33', textAlign: 'center' },
+  appTitle: { fontSize: 18, color: '#1F2A33', textAlign: 'center', fontWeight: '600' },
   headerSpacer: { width: 24, height: 24 },
   headerTitle: { fontSize: 16, fontWeight: '400', color: '#1A1C1E', lineHeight: 24 },
   enterPinRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -98,10 +100,12 @@ const styles = StyleSheet.create({
   iconBadgeText: { fontSize: 16, color: '#FFFFFF' },
   content: { width: '100%', maxWidth: 390, paddingHorizontal: 24, alignItems: 'center', marginTop: 16, gap: 24 },
   subtitle: { width: '100%', fontSize: 16, lineHeight: 24, color: '#64748A', textAlign: 'left', marginBottom: 0 },
+  amount: { fontWeight: '700', color: '#1A1C1E' },
+  merchant: { fontWeight: '700', color: '#1A1C1E' },
   codeContainerWrapper: { width: '100%', alignItems: 'center' },
-  codeContainer: { width: 253, flexDirection: 'row', gap: 15, justifyContent: 'space-between', marginBottom: 0 },
+  codeContainer: { width: 280, flexDirection: 'row', gap: 18, justifyContent: 'space-between', marginBottom: 0 },
   codeBox: {
-    width: 52,
+    width: 64,
     height: 64,
     borderRadius: 12,
     borderWidth: 2,
@@ -117,16 +121,17 @@ const styles = StyleSheet.create({
   },
   codeBoxActive: {
     borderColor: '#31973D',
+    borderWidth: 3,
     shadowColor: '#006B23',
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 2
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 3
   },
   codeBoxFilled: { borderColor: '#BECAB9' },
   codeBoxEmpty: { borderColor: '#BECAB9' },
-  dot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#31973D' },
-  hiddenInput: { position: 'absolute', opacity: 0, height: 48, width: 1, left: 16 },
+  dot: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#31973D' },
+  hiddenInput: { position: 'absolute', opacity: 0, height: 48, width: 1, left: 24 },
   primaryButton: { width: '100%', height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   primaryButtonFull: { width: '100%', height: 56, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   primaryButtonContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },

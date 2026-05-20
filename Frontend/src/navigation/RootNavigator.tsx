@@ -12,6 +12,15 @@ import { PaymentMethodScreen } from '../screens/PaymentMethodScreen';
 import { PaymentVerificationScreen } from '../screens/PaymentVerificationScreen';
 import { AuthorizePaymentScreen } from '../screens/AuthorizePaymentScreen';
 import { PaymentSuccessScreen } from '../screens/PaymentSuccessScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { TermsAndConditionsScreen } from '../screens/TermsAndConditionsScreen';
+import { AboutUsScreen } from '../screens/AboutUsScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { HelpCenterScreen } from '../screens/HelpCenterScreen';
+import { ActiveSessionScreen } from '../screens/ActiveSessionScreen';
+import { UpdateDetailsScreen } from '../screens/UpdateDetailsScreen';
+import { UpdateDetailsOtpScreen } from '../screens/UpdateDetailsOtpScreen';
+import { UpdateDetailsSuccessScreen } from '../screens/UpdateDetailsSuccessScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
 import { FindAccountScreen } from '../screens/FindAccountScreen';
 import { FindAccountEmailScreen } from '../screens/FindAccountEmailScreen';
@@ -56,6 +65,15 @@ export function RootNavigator() {
       <Stack.Screen name="PaymentVerification" component={PaymentVerificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AuthorizePayment" component={AuthorizePaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ActiveSession" component={ActiveSessionScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UpdateDetailsOtp" component={UpdateDetailsOtpScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UpdateDetailsSuccess" component={UpdateDetailsSuccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Verify" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="NewUserOnboarding" component={NewUserOnboardingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="KycCollection" component={KycCollectionScreen} options={{ headerShown: false }} />
