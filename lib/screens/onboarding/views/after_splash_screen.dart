@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:zubba/utils/request_permissions.dart';
 
-class AfterSplashScreen extends StatelessWidget {
+class AfterSplashScreen extends StatefulWidget {
   const AfterSplashScreen({super.key});
 
-  Future<void> _requestPermission ()async {
+  @override
+  State<AfterSplashScreen> createState() => _AfterSplashScreenState();
+}
+
+class _AfterSplashScreenState extends State<AfterSplashScreen> {
+  Future<void> _requestPermission () async {
     await requestLocation();
+    // ignore: use_build_context_synchronously
+    Navigator.pushNamed(context, "/onboard2");
   }
 
   @override

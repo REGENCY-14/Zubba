@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.green.shade800),
       ),
-      initialRoute: "/",
+      initialRoute: "/onboard1",
       routes: appRoutes,
     );
   }
