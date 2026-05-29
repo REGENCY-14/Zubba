@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:zubba/utils/request_permissions.dart';
 
 class AfterSplashScreen extends StatelessWidget {
   const AfterSplashScreen({super.key});
+
+  Future<void> _requestPermission ()async {
+    await requestLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +27,9 @@ class AfterSplashScreen extends StatelessWidget {
           left: 0,
           right: 0,
           child: InkWell(
-            onTap: (){},
+            onTap: _requestPermission,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               width: double.maxFinite,
               decoration: BoxDecoration(
                 color: Colors.green.shade700
@@ -32,10 +37,17 @@ class AfterSplashScreen extends StatelessWidget {
               child: Row(
                 spacing: 8,
                 children: [
-                  Icon(Icons.location_on_outlined, color: Colors.white),
-                  Text("Locatoin sharing is not enabled. Tap here to enable"),
+                  Icon(Icons.location_on_outlined, color: Colors.white, size: 20),
+                  Text(
+                    "Location sharing is disabled. Tap here to enable",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                      color: Colors.white
+                    )
+                  ),
                   Spacer(),
-                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.white)
+                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20)
                 ]
               )
             ),
