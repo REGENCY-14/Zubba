@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const zubbaLogo = require('../../assets/zubba icon.png');
+const zubbaLogo = require('../../../assets/zubba icon.png');
 
 export function LocationSharingScreen({ navigation }: RootStackScreenProps<'LocationSharing'>) {
   return (

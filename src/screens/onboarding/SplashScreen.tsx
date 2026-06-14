@@ -3,13 +3,13 @@ import { Image, StyleSheet, View } from 'react-native';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const zubbaLogo = require('../../assets/zubba icon.png');
-const splashScreenLayer = require('../../assets/splash screen layer.png');
+const zubbaLogo = require('../../../assets/zubba icon.png');
+const splashScreenLayer = require('../../../assets/splash screen layer.png');
 
 export function SplashScreen({ navigation }: RootStackScreenProps<'Splash'>) {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      navigation.replace('Landing');
+      navigation.replace('OnboardLocationAccess');
     }, 1800);
 
     return () => clearTimeout(timeoutId);

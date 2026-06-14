@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const googleIcon = require('../../assets/Google icon.png');
+const googleIcon = require('../../../assets/Google icon.png');
 
 export function EmailSignUpScreen({ navigation }: RootStackScreenProps<'EmailSignUp'>) {
   const [email, setEmail] = useState('');

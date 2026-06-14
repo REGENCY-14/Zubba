@@ -14,8 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav } from '../../components';
 
-const mapImage = require('../../assets/RawMap.png');
-const logo = require('../../assets/zubba icon.png');
+const mapImage = require('../../../assets/RawMap.png');
+const logo = require('../../../assets/zubba icon.png');
 
 export function LocationSharingScreen({ navigation }: RootStackScreenProps<'LocationSharing'>) {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -40,7 +40,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
             onChangeText={setSearchQuery}
           />
           <Pressable onPress={() => navigation.navigate('Details', { itemId: 'search', title: 'Search' })}>
-            <Image source={require('../../assets/Search.png')} style={styles.searchIcon} />
+            <Image source={require('../../../assets/Search.png')} style={styles.searchIcon} />
           </Pressable>
         </View>
 
@@ -48,7 +48,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
           <View style={styles.statsRow}>
             <View style={styles.statCard}>
               <View style={styles.statHead}>
-                <Image source={require('../../assets/recycle.png')} style={styles.statIcon} />
+                <Image source={require('../../../assets/recycle.png')} style={styles.statIcon} />
                 <Text style={styles.statLabel}>ACTIVE</Text>
               </View>
               <Text style={styles.statValue}>42kg</Text>
@@ -57,7 +57,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
 
             <View style={styles.statCard}>
               <View style={styles.statHeadRight}>
-                <Image source={require('../../assets/points.png')} style={styles.statIconAlt} />
+                <Image source={require('../../../assets/points.png')} style={styles.statIconAlt} />
                 <Text style={styles.statLabelAlt}>POINTS</Text>
               </View>
               <Text style={styles.statValue}>1,250</Text>
@@ -67,7 +67,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
 
           <View style={styles.actionsList}>
             <View style={styles.actionRow}>
-              <Image source={require('../../assets/picktricycle.png')} style={styles.actionLeftIcon} />
+              <Image source={require('../../../assets/picktricycle.png')} style={styles.actionLeftIcon} />
               <View style={styles.actionTextWrap}>
                 <Text style={styles.actionTitle}>Find nearby tricycles</Text>
                 <Text style={styles.actionSub}>Instant pickup</Text>
@@ -78,7 +78,7 @@ export function LocationSharingScreen({ navigation }: RootStackScreenProps<'Loca
             </View>
 
             <View style={[styles.actionRow, styles.premiumRow]}>
-              <Image source={require('../../assets/premium.png')} style={styles.premiumLeftIcon} />
+              <Image source={require('../../../assets/premium.png')} style={styles.premiumLeftIcon} />
               <View style={styles.actionTextWrap}>
                 <Text style={styles.actionTitle}>Plan future pickup</Text>
                 <Text style={styles.actionSub}>Future service</Text>

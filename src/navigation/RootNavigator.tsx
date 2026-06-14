@@ -28,12 +28,14 @@ import { FindAccountOtpScreen } from '../screens/account-recovery/FindAccountOtp
 import { FindAccountEmailOtpScreen } from '../screens/account-recovery/FindAccountEmailOtpScreen';
 import { VerifyOtpScreen } from '../screens/auth/VerifyOtpScreen';
 import { NewUserOnboardingScreen } from '../screens/onboarding/NewUserOnboardingScreen';
+import { OnboardLocationAccessScreen } from '../screens/onboarding/OnboardLocationAccessScreen';
+import { OnboardNotificationsAccessScreen } from '../screens/onboarding/OnboardNotificationsAccessScreen';
 import { KycCollectionScreen } from '../screens/onboarding/KycCollectionScreen';
 import { TermsAcceptanceScreen } from '../screens/support/TermsAcceptanceScreen';
 import type { RootStackParamList } from './types';
 
-const { SignInScreen } = require('../screens/SignInScreen');
-const { ExistingUserNotificationScreen } = require('../screens/ExistingUserNotificationScreen');
+import { SignInScreen } from '../screens/auth/SignInScreen';
+import { ExistingUserNotificationScreen } from '../screens/auth/ExistingUserNotificationScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -52,6 +54,8 @@ export function RootNavigator() {
       }}
     >
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardLocationAccess" component={OnboardLocationAccessScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardNotificationsAccess" component={OnboardNotificationsAccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="EmailSignUp" component={EmailSignUpScreen} options={{ headerShown: false }} />

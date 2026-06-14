@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav } from '../../components';
 
-const logo = require('../../assets/zubba icon.png');
+const logo = require('../../../assets/zubba icon.png');
 
 export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'DriverArrives'>) {
   return (

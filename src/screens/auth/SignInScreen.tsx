@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const zubbaAvatar = require('../../assets/zubba icon.png');
+const zubbaAvatar = require('../../../assets/zubba icon.png');
 
 export function SignInScreen({ navigation }: RootStackScreenProps<'SignIn'>) {
   return (

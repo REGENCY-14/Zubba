@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppBottomNav } from '../../components';
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const ghanaFlag = require('../../assets/ghana-flag.png');
+const ghanaFlag = require('../../../assets/ghana-flag.png');
 
 export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<'UpdateDetails'>) {
   const selectedKind = route.params?.kind ?? 'phone';

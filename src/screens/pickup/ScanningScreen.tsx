@@ -15,8 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav } from '../../components';
 
-const mapImage = require('../../assets/RawMap.png');
-const logo = require('../../assets/zubba icon.png');
+const mapImage = require('../../../assets/RawMap.png');
+const logo = require('../../../assets/zubba icon.png');
 
 export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>) {
   const spinValue = React.useRef(new Animated.Value(0)).current;

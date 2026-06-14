@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const googleIcon = require('../../assets/Google icon.png');
-const ghanaFlag = require('../../assets/ghana-flag.png');
+const googleIcon = require('../../../assets/Google icon.png');
+const ghanaFlag = require('../../../assets/ghana-flag.png');
 
 export function SignUpScreen({ navigation }: RootStackScreenProps<'SignUp'>) {
   const [phoneNumber, setPhoneNumber] = useState('');

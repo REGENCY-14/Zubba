@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../../components/Card';
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const ghanaFlag = require('../../assets/ghana-flag.png');
+const ghanaFlag = require('../../../assets/ghana-flag.png');
 
 export function FindAccountScreen({ route, navigation }: RootStackScreenProps<'FindAccount'>) {
   const item = route.params;

@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const supportImage = require('../../assets/tricycle image.png');
+const supportImage = require('../../../assets/tricycle image.png');
 
 type SectionProps = {
   title: string;
