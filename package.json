@@ -20,6 +20,8 @@
     "@tanstack/react-query-devtools": "^5.101.0",
     "axios": "^1.17.0",
     "expo": "~51.0.39",
+    "expo-location": "~17.0.1",
+    "expo-notifications": "~0.28.19",
     "expo-status-bar": "~1.12.1",
     "metro-react-native-babel-preset": "^0.77.0",
     "nativewind": "^4.2.5",

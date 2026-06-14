@@ -1,72 +1,34 @@
-import React from 'react';
-import {
-  Pressable,
-  Text,
-  StyleSheet,
-  PressableProps,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import React from "react";
+import { Pressable, Text, PressableProps } from "react-native";
 
-interface RoundedButtonProps extends Omit<PressableProps, 'style'> {
+interface RoundedButtonProps extends PressableProps {
   title: string;
-  variant?: 'primary' | 'secondary';
-  style?: StyleProp<ViewStyle>;
+  variant?: "primary" | "secondary";
 }
 
 export default function RoundedButton({
   title,
-  variant = 'primary',
-  style,
+  variant = "primary",
   ...props
 }: RoundedButtonProps) {
+  const isPrimary = variant === "primary";
+
   return (
     <Pressable
-      style={[
-        styles.button,
-        variant === 'primary' ? styles.primary : styles.secondary,
-        style,
-      ]}
+      className={[
+        "h-12 rounded-full justify-center items-center px-4",
+        isPrimary ? "bg-[#31973D]" : "bg-white border border-[#E2E8F0]",
+      ].join(" ")}
       {...props}
     >
       <Text
-        style={[
-          styles.text,
-          variant === 'primary'
-            ? styles.primaryText
-            : styles.secondaryText,
-        ]}
+        className={[
+          "text-[14px]",
+          isPrimary ? "text-white" : "text-black",
+        ].join(" ")}
       >
         {title}
       </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    height: 48,
-    borderRadius: 999,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  primary: {
-    backgroundColor: '#31973D',
-  },
-  secondary: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  primaryText: {
-    color: '#fff',
-  },
-  secondaryText: {
-    color: '#000',
-  },
-});

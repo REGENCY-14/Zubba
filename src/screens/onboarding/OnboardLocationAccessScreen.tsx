@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IoCloseCircleOutline } from "react-icons/io5";
 
@@ -17,38 +12,58 @@ export const OnboardLocationAccessScreen = ({
 }: RootStackScreenProps<"OnboardLocationAccess">) => {
   const locationAccess = require("../../../assets/locationAccess.png");
 
-  return (
-    <SafeAreaView
-      style={styles.safeArea}
-      edges={["top", "left", "right", "bottom"]}
-    >
-      <View style={styles.container}>
-        <View style={styles.mapImage}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => navigation.goBack()}
-          >
-            <IoCloseCircleOutline size={32} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
+  const requestLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
 
-        <View style={styles.card}>
-          <Image source={locationAccess} style={styles.image} />
-          <Text style={styles.title}>Allow location access</Text>
-          <Text style={styles.description}>
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission denied",
+        "Location permission is required to find nearby drivers."
+      );
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    console.log("User location:", location);
+    navigation.navigate("OnboardNotificationsAccess");
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1">
+        <View className="h-[340px] bg-neutral-300 flex-1" />
+        <View className="-mt-8 bg-white rounded-t-[31px] px-[10px] py-[20px] items-center">
+          <TouchableOpacity
+            className="absolute top-6 right-6 z-10"
+            onPress={() =>
+              navigation.navigate("OnboardNotificationsAccess")
+            }
+          >
+            <IoCloseCircleOutline size={32} color="#000000" />
+          </TouchableOpacity>
+          <Image
+            source={locationAccess}
+            resizeMode="contain"
+            style={{ width: 250, height: 220, marginBottom: 24 }}
+          />
+          <Text className="text-[24px] font-bold text-center text-gray-900 mb-3">
+            Allow location access
+          </Text>
+          <Text className="text-[15px] font-thin leading-6 text-center text-gray-400 mb-8">
             Allow location access to find the closest driver for your request.
           </Text>
-          <View style={styles.buttonContainer}>
+          <View className="w-full gap-3">
             <RoundedButton
               title="Allow location access"
               variant="primary"
+              onPress={requestLocation}
             />
             <RoundedButton
               title="Maybe later"
               variant="secondary"
-              onPress={() => {
-                navigation.navigate("OnboardNotificationsAccess");
-              }}
+              onPress={() =>
+                navigation.navigate("OnboardNotificationsAccess")
+              }
             />
           </View>
         </View>
@@ -56,69 +71,3 @@ export const OnboardLocationAccessScreen = ({
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-
-  container: {
-    flex: 1,
-  },
-
-  mapImage: {
-    height: 340,
-    backgroundColor: "#D9D9D9",
-    alignItems: "flex-end",
-    paddingTop: 24,
-    paddingHorizontal: 24,
-  },
-
-  closeButton: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  card: {
-    flex: 1,
-    marginTop: -32,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 24,
-    alignItems: "center",
-  },
-
-  image: {
-    width: 140,
-    height: 140,
-    resizeMode: "contain",
-    marginBottom: 24,
-  },
-
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#111827",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-
-  description: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 32,
-    maxWidth: 300,
-  },
-
-  buttonContainer: {
-    width: "100%",
-    gap: 12,
-    marginTop: "auto",
-  },
-});
