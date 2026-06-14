@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Animated,
+  Dimensions,
   Image,
   ImageBackground,
   Modal,
@@ -8,8 +9,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../navigation/types';
@@ -17,6 +18,19 @@ import { AppBottomNav } from '../components';
 
 const mapImage = require('../../assets/RawMap.png');
 const logo = require('../../assets/zubba icon.png');
+
+const { width: screenW, height: screenH } = Dimensions.get('window');
+const SCAN_SIZE = 330;
+const SCAN_LEFT = (screenW - SCAN_SIZE) / 2;
+const SCAN_TOP = screenH * 0.14;
+
+const TRICYCLES: { top: number; left: number; rotate: string }[] = [
+  { top: SCAN_TOP - 40, left: screenW * 0.41, rotate: '-42deg' },
+  { top: SCAN_TOP + 15, left: screenW * 0.82, rotate: '42deg' },
+  { top: SCAN_TOP + 65, left: 18, rotate: '53deg' },
+  { top: SCAN_TOP + 115, left: screenW * 0.56, rotate: '41deg' },
+  { top: SCAN_TOP + 148, left: screenW * 0.27, rotate: '44deg' },
+];
 
 export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>) {
   const spinValue = React.useRef(new Animated.Value(0)).current;
@@ -48,14 +62,12 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
   }, [spinValue]);
 
   useEffect(() => {
-    if (modalStep !== 'assigned') {
-      return;
-    }
+    if (modalStep !== 'assigned') return;
 
     assignedTimerRef.current = setTimeout(() => {
       assignedTimerRef.current = null;
       setShowModal(false);
-      navigation.navigate('DriverArrives');
+      navigation.navigate('DriversFound');
     }, 5000);
 
     return () => {
@@ -74,6 +86,7 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <ImageBackground source={mapImage} style={styles.map} resizeMode="cover">
+        {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
             <Text style={styles.chevronLeft}>‹</Text>
@@ -82,18 +95,39 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
           <View style={styles.placeholder} />
         </View>
 
-        <View style={styles.scannerContainer}>
-          <Animated.View style={[styles.scannerRing, { transform: [{ rotate: spin }] }]}>
-            <View style={styles.scannerInner}>
-              <View style={styles.centerDot} />
-            </View>
-          </Animated.View>
+        {/* Green scan circle */}
+        <View style={[styles.scanCircleContainer, { top: SCAN_TOP, left: SCAN_LEFT }]}>
+          {/* Fill + concentric rings */}
+          <View style={styles.scanCircle}>
+            <View style={[styles.scanRing, { width: 270, height: 270, borderRadius: 135 }]} />
+            <View style={[styles.scanRing, { width: 210, height: 210, borderRadius: 105 }]} />
+            <View style={[styles.scanRing, { width: 150, height: 150, borderRadius: 75 }]} />
+            <View style={[styles.scanRing, { width: 90, height: 90, borderRadius: 45 }]} />
+            <View style={styles.scanLineH} />
+            <View style={styles.scanLineV} />
+          </View>
 
-          <View style={styles.scannerLines}>
-            <View style={styles.horizontalLine} />
-            <View style={styles.verticalLine} />
+          {/* Spinning arc (radar sweep) */}
+          <Animated.View style={[styles.radarArc, { transform: [{ rotate: spin }] }]} />
+
+          {/* Center: map pin + location dot */}
+          <View style={styles.centerMarkers}>
+            <MaterialIcons name="location-on" size={28} color="#38A667" />
+            <View style={styles.userLocOuter}>
+              <View style={styles.userLocInner} />
+            </View>
           </View>
         </View>
+
+        {/* Tricycle icons */}
+        {TRICYCLES.map((t, i) => (
+          <View
+            key={i}
+            style={[styles.tricycleIcon, { top: t.top, left: t.left, transform: [{ rotate: t.rotate }] }]}
+          >
+            <Text style={styles.tricycleEmoji}>🛺</Text>
+          </View>
+        ))}
 
         <AppBottomNav
           activeTab="home"
@@ -109,7 +143,9 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
                 <View style={styles.requestContent}>
                   <View style={styles.requestProfileCard}>
                     <View style={styles.requestAvatarShell}>
-                      <Image source={logo} style={styles.requestAvatar} />
+                      <View style={styles.requestAvatarInnerShell}>
+                        <Image source={logo} style={styles.requestAvatar} />
+                      </View>
                     </View>
 
                     <View style={styles.requestTextGroup}>
@@ -126,7 +162,6 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
                     <Pressable style={styles.requestPrimaryButton} onPress={() => setModalStep('assigned')}>
                       <Text style={styles.requestPrimaryButtonText}>Proceed to request</Text>
                     </Pressable>
-
                     <Pressable style={styles.requestSecondaryButton} onPress={() => setShowModal(false)}>
                       <View style={styles.requestSecondaryIconWrap}>
                         <Text style={styles.requestSecondaryIcon}>✕</Text>
@@ -141,10 +176,8 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
                     <View style={styles.assignedAvatarShell}>
                       <Image source={logo} style={styles.assignedAvatar} />
                     </View>
-
                     <Text style={styles.assignedName}>MARCUS CHEN</Text>
                     <Text style={styles.assignedMeta}>★ 4.9 • ZB-0248</Text>
-
                     <View style={styles.assignedActionsRow}>
                       <Pressable style={styles.assignedActionChip}>
                         <Text style={styles.assignedActionText}>☎  Call</Text>
@@ -154,7 +187,6 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
                       </Pressable>
                     </View>
                   </View>
-
                   <Pressable
                     style={styles.requestSecondaryButton}
                     onPress={() => {
@@ -181,11 +213,10 @@ export function ScanningScreen({ navigation }: RootStackScreenProps<'Scanning'>)
   );
 }
 
-const { width, height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  map: { flex: 1, width: '100%', height: '100%', position: 'relative' },
+  map: { flex: 1, width: '100%', height: '100%' },
+
   header: {
     position: 'absolute',
     top: 0,
@@ -199,70 +230,103 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
+    zIndex: 10,
   },
   backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   chevronLeft: { fontSize: 24, color: '#1F2A33' },
-  title: { fontSize: 16, fontWeight: '400', color: '#1F2A33' },
+  title: { fontSize: 16, fontWeight: '600', fontFamily: 'Inter', color: '#1F2A33' },
   placeholder: { width: 24, height: 24 },
-  scannerContainer: {
+
+  /* Scan circle */
+  scanCircleContainer: {
     position: 'absolute',
-    top: height / 2 - 150,
-    left: width / 2 - 150,
-    width: 300,
-    height: 300,
+    width: SCAN_SIZE,
+    height: SCAN_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scannerRing: {
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    borderWidth: 2,
-    borderColor: 'rgba(217, 217, 217, 0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  scanCircle: {
     position: 'absolute',
-  },
-  scannerInner: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: 'rgba(217, 217, 217, 0.4)',
+    width: SCAN_SIZE,
+    height: SCAN_SIZE,
+    borderRadius: SCAN_SIZE / 2,
+    backgroundColor: 'rgba(52,168,83,0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  centerDot: { width: 100, height: 100, borderRadius: 50, borderWidth: 2, borderColor: 'rgba(217, 217, 217, 0.3)' },
-  scannerLines: { position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
-  horizontalLine: { position: 'absolute', width: 200, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.5)' },
-  verticalLine: { position: 'absolute', width: 1, height: 200, backgroundColor: 'rgba(255, 255, 255, 0.5)' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 130 },
+  scanRing: {
+    position: 'absolute',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.65)',
+  },
+  scanLineH: {
+    position: 'absolute',
+    width: 210,
+    height: 0.5,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  scanLineV: {
+    position: 'absolute',
+    width: 0.5,
+    height: 210,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  radarArc: {
+    position: 'absolute',
+    width: SCAN_SIZE,
+    height: SCAN_SIZE,
+    borderRadius: SCAN_SIZE / 2,
+    borderWidth: 2,
+    borderTopColor: 'rgba(52,168,83,0.75)',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: 'transparent',
+  },
+
+  /* Center markers */
+  centerMarkers: {
+    position: 'absolute',
+    alignItems: 'center',
+  },
+  userLocOuter: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(52,168,83,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  userLocInner: {
+    width: 17,
+    height: 17,
+    borderRadius: 9,
+    backgroundColor: '#31973D',
+  },
+
+  /* Tricycles */
+  tricycleIcon: { position: 'absolute' },
+  tricycleEmoji: { fontSize: 22 },
+
+  /* Modal */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 130,
+  },
   modalCard: { backgroundColor: '#FFFFFF', borderRadius: 22, alignItems: 'center' },
   modalCardRequest: { width: 375, maxWidth: '96%', height: 372, paddingHorizontal: 12, paddingVertical: 16, gap: 20 },
   modalCardAssigned: { width: 375, maxWidth: '96%', height: 324, paddingHorizontal: 12, paddingVertical: 16, gap: 20 },
   requestContent: { width: 366, maxWidth: '100%', gap: 20, alignItems: 'center' },
   requestProfileCard: {
-    width: 358,
-    maxWidth: '100%',
-    height: 212,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 24,
+    width: 358, maxWidth: '100%', height: 212, borderWidth: 1, borderColor: '#E2E8F0',
+    borderRadius: 24, backgroundColor: '#FFFFFF', padding: 24, alignItems: 'center', justifyContent: 'center', gap: 24,
   },
-  requestAvatarShell: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
-    backgroundColor: '#F4F4F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  requestAvatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', resizeMode: 'cover' },
+  requestAvatarShell: { width: 64, height: 64, borderRadius: 12, backgroundColor: '#F4F4F5', alignItems: 'center', justifyContent: 'center' },
+  requestAvatarInnerShell: { width: 54, height: 54, borderRadius: 9999, borderWidth: 2, borderColor: '#90FA96', overflow: 'hidden' },
+  requestAvatar: { width: '100%', height: '100%', resizeMode: 'cover' },
   requestTextGroup: { width: '100%', alignItems: 'center', gap: 4 },
   requestName: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textAlign: 'center', textTransform: 'uppercase' },
   requestPriceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
@@ -270,55 +334,28 @@ const styles = StyleSheet.create({
   requestPriceUnit: { color: '#1F2A33', fontWeight: '700', fontSize: 16, lineHeight: 24 },
   requestMeta: { color: '#0D631B', fontSize: 14, lineHeight: 20, textAlign: 'center' },
   requestActions: { width: '100%', gap: 12 },
-  requestPrimaryButton: { height: 48, backgroundColor: '#31973D', borderRadius: 12, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
+  requestPrimaryButton: { height: 48, backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
   requestPrimaryButtonText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontWeight: '400' },
   requestSecondaryButton: {
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    gap: 8,
+    height: 48, borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: 16, flexDirection: 'row', gap: 8,
   },
   requestSecondaryIconWrap: { width: 16, height: 16, borderRadius: 8, backgroundColor: '#EF4444', alignItems: 'center', justifyContent: 'center' },
   requestSecondaryIcon: { color: '#FFFFFF', fontSize: 10, lineHeight: 10, fontWeight: '700' },
   requestSecondaryButtonText: { color: '#EF4444', fontSize: 14, lineHeight: 20, fontWeight: '500' },
   assignedContent: { width: 366, maxWidth: '100%', gap: 20, alignItems: 'center' },
   assignedProfileCard: {
-    width: 358,
-    maxWidth: '100%',
-    height: 224,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 24,
+    width: 358, maxWidth: '100%', height: 224, borderWidth: 1, borderColor: '#E2E8F0',
+    borderRadius: 16, backgroundColor: '#FFFFFF', padding: 24, alignItems: 'center', justifyContent: 'center', gap: 24,
   },
-  assignedAvatarShell: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
-    backgroundColor: '#F4F4F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  assignedAvatarShell: { width: 64, height: 64, borderRadius: 12, backgroundColor: '#F4F4F5', alignItems: 'center', justifyContent: 'center' },
   assignedAvatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', resizeMode: 'cover' },
   assignedName: { fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textAlign: 'center', textTransform: 'uppercase' },
   assignedMeta: { color: '#0D631B', fontSize: 14, lineHeight: 20, textAlign: 'center' },
   assignedActionsRow: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' },
   assignedActionChip: { height: 36, borderRadius: 9999, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16, flexDirection: 'row' },
   assignedActionText: { fontSize: 14, lineHeight: 20, color: '#1F2A33' },
-  proceedButtonModal: { marginTop: 18, backgroundColor: '#31973D', paddingVertical: 14, borderRadius: 12, width: '100%', alignItems: 'center' },
-  proceedButtonModalText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
-  cancelButtonModal: { marginTop: 10, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F44336', paddingVertical: 12, borderRadius: 12, width: '100%', alignItems: 'center' },
-  cancelButtonModalText: { color: '#F44336', fontSize: 15, fontWeight: '600' },
 });
 
 export default ScanningScreen;

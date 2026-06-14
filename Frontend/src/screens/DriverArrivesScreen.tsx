@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../navigation/types';
 import { AppBottomNav } from '../components';
 
-const logo = require('../../assets/zubba icon.png');
+const driverPhoto = require('../../assets/tricycle image.png');
 
 export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'DriverArrives'>) {
   return (
@@ -21,18 +21,18 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
         <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.driverCard}>
             <View style={styles.avatarWrap}>
-              <Image source={logo} style={styles.avatar} />
+              <Image source={driverPhoto} style={styles.avatar} />
             </View>
 
             <Text style={styles.name}>MARCUS CHEN</Text>
-            <Text style={styles.meta}>4.9 • ZB-0248</Text>
+            <Text style={styles.meta}><Text style={styles.metaValue}>4.9</Text> • ZB-0248</Text>
 
             <View style={styles.actionsRow}>
               <Pressable style={styles.actionChip}>
-                <Text style={styles.actionLabel}>☎  Call</Text>
+                <Text style={styles.actionLabel}>☎ Call</Text>
               </Pressable>
               <Pressable style={styles.actionChip}>
-                <Text style={styles.actionLabel}>▭  Message</Text>
+                <Text style={styles.actionLabel}>▭ Message</Text>
               </Pressable>
             </View>
           </View>
@@ -49,7 +49,7 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
           </View>
 
           <View style={styles.confirmCard}>
-            <View>
+            <View style={styles.confirmTextGroup}>
               <Text style={styles.confirmTitle}>Confirm Collection</Text>
               <Text style={styles.confirmSubtitle}>Please verify the materials are loaded</Text>
             </View>
@@ -60,7 +60,7 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
             </View>
           </View>
 
-          <Pressable style={styles.primaryButton} onPress={() => navigation.navigate('Payment')}>
+          <Pressable style={styles.primaryButton} onPress={() => navigation.navigate('PremiumPayment')}>
             <Text style={styles.primaryButtonText}>Proceed to payment</Text>
           </Pressable>
 
@@ -71,9 +71,11 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<'Driver
 
         <AppBottomNav
           activeTab="home"
-          onHomePress={() => navigation.navigate('LocationSharing')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          paddingBottom={14}
+          onHomePress={() => navigation.navigate('PremiumHome')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
         />
       </View>
     </SafeAreaView>
@@ -96,38 +98,69 @@ const styles = StyleSheet.create({
   screenTitle: { fontSize: 16, fontWeight: '600', color: '#1F2A33' },
   headerSpacer: { width: 32, height: 32 },
   contentScroll: { flex: 1 },
-  content: { paddingHorizontal: 18, paddingTop: 24, paddingBottom: 120, gap: 24 },
+  content: { paddingHorizontal: 16, paddingTop: 24, paddingBottom: 120, gap: 16 },
   driverCard: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 24,
     alignItems: 'center',
-    gap: 12,
+    gap: 24,
   },
-  avatarWrap: { width: 64, height: 64, borderRadius: 12, backgroundColor: '#F4F4F5', alignItems: 'center', justifyContent: 'center' },
+  avatarWrap: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    backgroundColor: '#F4F4F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
+  },
   avatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', resizeMode: 'cover' },
   name: { fontSize: 16, fontWeight: '700', color: '#1F2A33', letterSpacing: 1.6, textAlign: 'center' },
-  meta: { color: '#0D631B', fontSize: 14, textAlign: 'center' },
-  actionsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24 },
+  meta: { color: '#0D631B', fontSize: 14, textAlign: 'center', fontWeight: '400', lineHeight: 20 },
+  metaValue: { fontWeight: '400' },
+  actionsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 36 },
   actionChip: { flexDirection: 'row', alignItems: 'center' },
-  actionLabel: { fontSize: 14, color: '#171D14', fontWeight: '400' },
-  codeCard: { backgroundColor: '#31973D', borderRadius: 16, paddingVertical: 24, paddingHorizontal: 24, alignItems: 'center' },
+  actionLabel: { fontSize: 14, color: '#171D14', fontWeight: '400', lineHeight: 20 },
+  codeCard: { backgroundColor: '#31973D', borderRadius: 24, padding: 24, alignItems: 'center', gap: 24 },
   codeLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 10, lineHeight: 15, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
   codeRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
-  codeBox: { width: 47, height: 56, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
+  codeBox: {
+    width: 47,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   codeDigit: { fontSize: 36, lineHeight: 40, fontWeight: '900', color: '#FFFFFF' },
   codeHint: { color: '#FFFFFF', opacity: 0.9, fontSize: 12, lineHeight: 16, fontWeight: '500', textAlign: 'center' },
-  confirmCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  confirmTitle: { fontSize: 14, fontWeight: '600', color: '#1F2A33' },
+  confirmCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  confirmTextGroup: { flex: 1, minWidth: 0 },
+  confirmTitle: { fontSize: 14, fontWeight: '600', color: '#1F2A33', lineHeight: 20 },
   confirmSubtitle: { marginTop: 4, fontSize: 12, color: '#64748A', lineHeight: 16, maxWidth: 185 },
-  readyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', paddingHorizontal: 12, paddingVertical: 6, gap: 8 },
+  readyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', paddingHorizontal: 12, paddingVertical: 6, gap: 8 },
   readyDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2E7D32' },
   readyText: { fontSize: 13, lineHeight: 20, color: '#31973D', fontWeight: '400' },
-  primaryButton: { backgroundColor: '#31973D', borderRadius: 12, height: 48, alignItems: 'center', justifyContent: 'center' },
+  primaryButton: { backgroundColor: '#31973D', borderRadius: 9999, height: 48, alignItems: 'center', justifyContent: 'center' },
   primaryButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '400' },
-  issueButton: { alignItems: 'center', justifyContent: 'center', height: 48 },
+  issueButton: { alignItems: 'center', justifyContent: 'center', height: 48, borderRadius: 16 },
   issueButtonText: { color: '#171D14', fontSize: 14, fontWeight: '400' },
 });
 

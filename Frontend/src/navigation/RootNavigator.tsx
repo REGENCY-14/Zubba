@@ -30,6 +30,14 @@ import { VerifyOtpScreen } from '../screens/VerifyOtpScreen';
 import { NewUserOnboardingScreen } from '../screens/NewUserOnboardingScreen';
 import { KycCollectionScreen } from '../screens/KycCollectionScreen';
 import { TermsAcceptanceScreen } from '../screens/TermsAcceptanceScreen';
+import { ChoosePlanScreen } from '../screens/ChoosePlanScreen';
+import { ConfirmSubscriptionScreen } from '../screens/ConfirmSubscriptionScreen';
+import { AddCardScreen } from '../screens/AddCardScreen';
+import { PremiumPaymentScreen } from '../screens/PremiumPaymentScreen';
+import { WalletNumberScreen } from '../screens/WalletNumberScreen';
+import { PremiumHomeScreen } from '../screens/PremiumHomeScreen';
+import { DriversFoundScreen } from '../screens/DriversFoundScreen';
+import { WalletCheckoutScreen } from '../screens/WalletCheckoutScreen';
 import type { RootStackParamList } from './types';
 
 const { SignInScreen } = require('../screens/SignInScreen');
@@ -78,6 +86,14 @@ export function RootNavigator() {
       <Stack.Screen name="NewUserOnboarding" component={NewUserOnboardingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="KycCollection" component={KycCollectionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsAcceptance" component={TermsAcceptanceScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ChoosePlan" component={ChoosePlanScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ConfirmSubscription" component={ConfirmSubscriptionScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AddCard" component={AddCardScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PremiumPayment" component={PremiumPaymentScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="WalletNumber" component={WalletNumberScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PremiumHome" component={PremiumHomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="DriversFound" component={DriversFoundScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="WalletCheckout" component={WalletCheckoutScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Details" component={DetailsScreen} options={{ title: 'Details' }} />
       <Stack.Screen name="FindAccount" component={FindAccountScreen} options={{ headerShown: false }} />
       <Stack.Screen name="FindAccountEmail" component={FindAccountEmailScreen} options={{ headerShown: false }} />

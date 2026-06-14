@@ -20,7 +20,7 @@ export function AppBottomNav({
   onAccountPress,
   onCalendarPress,
   activeTab,
-  paddingBottom = 8,
+  paddingBottom = 14,
 }: AppBottomNavProps) {
   const insets = useSafeAreaInsets();
   const isHomeActive = activeTab === 'home';
@@ -57,15 +57,16 @@ export function AppBottomNav({
 const styles = StyleSheet.create({
   bottomNavWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center' },
   bottomNav: {
-    width: '100%',
-    maxWidth: 402,
-    height: 78,
+    width: 332,
+    height: 64,
     backgroundColor: '#FFFFFF',
-    borderRadius: 75,
+    borderRadius: 39,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#D4D4D4',
   },
   navItem: {
     width: 64,
@@ -80,12 +81,13 @@ const styles = StyleSheet.create({
   },
   activeNav: {
     backgroundColor: '#31973D',
-    width: 105,
+    width: 104,
     gap: 6,
+    borderRadius: 23,
   },
   homeIconWrap: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   navLabelActive: {
-    fontFamily: 'Nexa Text-Trial',
+    fontFamily: 'Inter',
     fontSize: 12,
     lineHeight: 16,
     color: '#FFFFFF',
