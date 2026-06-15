@@ -1,177 +1,145 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, Image, Pressable, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMemo, useState } from "react";
+import {
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
+import { FaCaretDown } from "react-icons/fa";
 
-import { Card } from '../../components/Card';
-import type { RootStackScreenProps } from '../../navigation/types';
+import type { RootStackScreenProps } from "../../navigation/types";
+import { userService } from "../../api/userService";
 
-const ghanaFlag = require('../../../assets/ghana-flag.png');
+const ghanaFlag = require("../../../assets/ghana-flag.png");
 
-export function FindAccountScreen({ route, navigation }: RootStackScreenProps<'FindAccount'>) {
-  const item = route.params;
-  const [phoneNumber, setPhoneNumber] = useState('');
+export function FindAccountScreen({
+  route,
+  navigation,
+}: RootStackScreenProps<"FindAccount">) {
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const isPhoneValid = phoneNumber.trim().length > 0;
+  const [loading, setLoading] = useState(false);
+
+  const isPhoneValid = useMemo(
+    () => phoneNumber.trim().length > 0,
+    [phoneNumber],
+  );
+
+  const handleFindUser = async () => {
+    const phone = phoneNumber.trim();
+
+    if (!isPhoneValid) return;
+
+    try {
+      setLoading(true);
+
+      console.log(phone)
+
+      const res = await userService.findUser({
+        authKey: "phone",
+        authValue: phone,
+      });
+
+      const user = res.data.user;
+
+      if (!user) {
+        console.log("User not found");
+        return;
+      }
+
+      navigation.navigate("FindAccountOtp", {
+        phone,
+      });
+    } catch (err) {
+      console.log("Find user failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.findAccountSafeArea} edges={['top', 'left', 'right', 'bottom']}>
-      <View style={styles.findAccountContainer}>
-        <View style={styles.findAccountContent}>
-          <Text style={styles.findAccountTitle}>What's your phone number</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 p-5 pt-10 pb-6 justify-between">
+        <View className="gap-4">
+          <Text className="text-[15px] text-[#1F2A33]">
+            What's your phone number
+          </Text>
 
-          <View style={styles.findAccountInputWrapper}>
-            <View style={styles.countryCodePicker}>
-              <Image source={ghanaFlag} style={styles.flagIcon} resizeMode="contain" />
-              <Text style={styles.chevron}>›</Text>
+          <View className="flex-row items-center gap-2 h-12">
+            <View className="flex-row rounded-full items-center justify-between gap-4 h-12 p-[10px] bg-white border border-[#F2F2F2]">
+              <View className="rounded-full overflow-hidden">
+                <Image
+                  source={ghanaFlag}
+                  style={{ width: 28, height: 20 }}
+                  resizeMode="contain"
+                />
+              </View>
+              <FaCaretDown size={24} color={"#000000"} />
             </View>
-            <TextInput
-              style={[styles.phoneInputDisabled, (isFocused || isPhoneValid) && styles.phoneInputActive]}
-              placeholder="phone number"
-              placeholderTextColor="#A8A8A8"
-              keyboardType="phone-pad"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              editable={true}
-            />
+
+            <View
+              className={[
+                "flex-1 h-12 justify-center px-4 rounded-full border",
+                isFocused || isPhoneValid ? "border-black" : "border-black/5",
+              ].join(" ")}
+            >
+              <TextInput
+                className={[
+                  "text-[15px] outline-none",
+                  isPhoneValid ? "text-[#1F2A33]" : "text-[#707579]",
+                ].join(" ")}
+                placeholder="phone number"
+                placeholderTextColor="#707579"
+                keyboardType="phone-pad"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+              />
+            </View>
           </View>
 
-          <Pressable 
-            style={styles.emailButton}
-            onPress={() => navigation.navigate('FindAccountEmail')}
+          <Pressable
+            className="self-start px-5 h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
+            onPress={() => navigation.navigate("FindAccountEmail")}
           >
-            <Text style={styles.emailButtonText}>Find account with email</Text>
+            <Text className="text-xs font-medium text-[#1F2A33]">
+              Find account with email
+            </Text>
           </Pressable>
         </View>
 
-        <View style={styles.findAccountFooter}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Text style={styles.backArrow}>←</Text>
-          </Pressable>
-          <Pressable 
-            style={[styles.nextButton, isPhoneValid && styles.nextButtonActive]}
-            onPress={() => isPhoneValid && navigation.navigate('FindAccountOtp', { phone: phoneNumber })}
+        <View className="flex-row items-center justify-between h-12">
+          <Pressable
+            onPress={() => navigation.goBack()}
+            className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <Text style={styles.nextButtonText}>Next</Text>
+            <IoMdArrowBack color="#000000" size={24} />
+          </Pressable>
+
+          <Pressable
+            disabled={!isPhoneValid || loading}
+            onPress={handleFindUser}
+            className={[
+              "w-24 h-12 rounded-xl items-center justify-center flex-row gap-1",
+              isPhoneValid && !loading ? "bg-[#34A853]" : "bg-[#34A85380]",
+            ].join(" ")}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Text className="text-white text-sm">Next</Text>
+                <IoMdArrowForward size={12} color="#fff" />
+              </>
+            )}
           </Pressable>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  findAccountSafeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF'
-  },
-  findAccountContainer: {
-    flex: 1,
-    paddingHorizontal: 23,
-    paddingTop: 40,
-    paddingBottom: 24,
-    justifyContent: 'space-between'
-  },
-  findAccountContent: {
-    gap: 16
-  },
-  findAccountTitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#1F2A33',
-    fontWeight: '400',
-    marginBottom: 8
-  },
-  findAccountInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    height: 48
-  },
-  countryCodePicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: 94,
-    height: 48,
-    padding: 10,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F2F2F2',
-    borderRadius: 12
-  },
-  flagIcon: {
-    width: 28,
-    height: 20
-  },
-  chevron: {
-    fontSize: 24,
-    lineHeight: 24,
-    color: '#000000'
-  },
-  phoneInputDisabled: {
-    flex: 1,
-    height: 48,
-    paddingHorizontal: 16,
-    paddingVertical: 0,
-    borderWidth: 1.8,
-    borderColor: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    fontSize: 15,
-    lineHeight: 18,
-    color: '#707579',
-    opacity: 0.5
-  },
-  phoneInputActive: {
-    borderColor: '#000000',
-    opacity: 1,
-    color: '#1F2A33'
-  },
-  emailButton: {
-    width: 178,
-    height: 32,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8
-  },
-  emailButtonText: {
-    color: '#1F2A33',
-    fontSize: 12,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  findAccountFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 48
-  },
-  backArrow: {
-    fontSize: 24,
-    color: '#000000',
-    fontWeight: '400'
-  },
-  nextButton: {
-    width: 96,
-    height: 48,
-    backgroundColor: 'rgba(52, 168, 83, 0.5)',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  nextButtonActive: {
-    backgroundColor: '#34A853'
-  },
-  nextButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '400'
-  }
-});

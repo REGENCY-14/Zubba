@@ -1,24 +1,74 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMemo, useState } from "react";
+import {
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 
-import type { RootStackScreenProps } from '../../navigation/types';
+import type { RootStackScreenProps } from "../../navigation/types";
+import { userService } from "../../api/userService";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function FindAccountEmailScreen({ route, navigation }: RootStackScreenProps<'FindAccountEmail'>) {
-  const [email, setEmail] = useState('');
+export function FindAccountEmailScreen({
+  route,
+  navigation,
+}: RootStackScreenProps<"FindAccountEmail">) {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const isEmailValid = useMemo(() => EMAIL_REGEX.test(email.trim()), [email]);
 
-  return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>What's your email address</Text>
+  const handleFindUser = async () => {
+    const trimmedEmail = email.trim();
 
-          <View style={[styles.inputField, isEmailValid && styles.inputFieldActive]}>
+    if (!isEmailValid) return;
+
+    try {
+      setLoading(true);
+
+      const res = await userService.findUser({
+        authKey: "email",
+        authValue: trimmedEmail,
+      });
+
+      const user = res.data.user;
+
+      if (!user) {
+        console.log("User not found");
+        return;
+      }
+
+      navigation.navigate("FindAccountEmailOtp", {
+        email: trimmedEmail,
+      });
+    } catch (err) {
+      console.log("Find user failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 p-5 pb-6 justify-between">
+        <View className="gap-4">
+          <Text className="text-[15px] text-[#1F2A33] mb-2">
+            What's your email address
+          </Text>
+
+          <View
+            className={[
+              "min-h-12 justify-center px-4 bg-white rounded-full border-[1.8px]",
+              isEmailValid ? "border-[#34A85333]" : "border-black/[0.05]",
+            ].join(" ")}
+          >
             <TextInput
-              style={styles.emailInput}
+              className="text-[13px] text-[#1F2A33] py-2 outline-none"
               placeholder="Enter your email"
               placeholderTextColor="#707579"
               keyboardType="email-address"
@@ -30,119 +80,42 @@ export function FindAccountEmailScreen({ route, navigation }: RootStackScreenPro
           </View>
 
           <Pressable
-            style={styles.findButton}
-            onPress={() => navigation.navigate('FindAccount')}
+            className="self-start px-5 h-8 border border-[#E2E8F0] rounded-full items-center justify-center bg-white"
+            onPress={() => navigation.navigate("FindAccount")}
           >
-            <Text style={styles.findButtonText}>Find account with phone number</Text>
+            <Text className="text-xs font-medium text-[#1F2A33]">
+              Find account with phone number
+            </Text>
           </Pressable>
         </View>
 
-        <View style={styles.footer}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Text style={styles.backArrow}>←</Text>
-          </Pressable>
+        <View className="flex-row items-center justify-between h-12">
           <Pressable
-            style={[styles.nextButton, isEmailValid && styles.nextButtonActive]}
-            disabled={!isEmailValid}
-            onPress={() => isEmailValid && navigation.navigate('FindAccountEmailOtp', { email: email.trim() })}
+            onPress={() => navigation.goBack()}
+            className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <Text style={styles.nextButtonText}>Next</Text>
+            <IoMdArrowBack color="#000000" size={24} />
+          </Pressable>
+
+          <Pressable
+            disabled={!isEmailValid || loading}
+            onPress={handleFindUser}
+            className={[
+              "w-24 h-12 rounded-xl items-center justify-center flex-row gap-1",
+              isEmailValid && !loading ? "bg-[#34A853]" : "bg-[#34A85380]",
+            ].join(" ")}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Text className="text-white text-sm">Next</Text>
+                <IoMdArrowForward size={12} color="#fff" />
+              </>
+            )}
           </Pressable>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF'
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 23,
-    paddingTop: 66,
-    paddingBottom: 24,
-    justifyContent: 'space-between'
-  },
-  content: {
-    gap: 16
-  },
-  title: {
-    fontSize: 20,
-    lineHeight: 22,
-    fontWeight: '700',
-    color: '#1F2A33',
-    letterSpacing: 0.15,
-    marginBottom: 8
-  },
-  inputField: {
-    borderWidth: 1.8,
-    borderColor: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: 12,
-    minHeight: 48,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 15,
-    backgroundColor: '#FFFFFF',
-    width: 357,
-    alignSelf: 'center'
-  },
-  inputFieldActive: {
-    borderColor: '#34A85333'
-  },
-  emailInput: {
-    fontSize: 13,
-    color: '#1F2A33',
-    lineHeight: 24,
-    paddingVertical: 8
-  },
-  findButton: {
-    width: 183,
-    height: 32,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  findButtonDisabled: {
-    opacity: 0.5
-  },
-  findButtonText: {
-    color: '#1F2A33',
-    fontSize: 12,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 48
-  },
-  backArrow: {
-    fontSize: 24,
-    color: '#000000',
-    fontWeight: '400'
-  },
-  nextButton: {
-    width: 96,
-    height: 48,
-    backgroundColor: 'rgba(52, 168, 83, 0.5)',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  nextButtonActive: {
-    backgroundColor: '#34A853'
-  },
-  nextButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '400'
-  }
-});

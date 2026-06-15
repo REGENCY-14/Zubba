@@ -10,8 +10,11 @@ import {
   View,
 } from "react-native";
 import { IoMdArrowBack } from "react-icons/io";
+import { RootState } from "../../store";
 
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { userService } from "../../api/userService";
 
 export function NewUserOnboardingScreen({
   route,
@@ -19,18 +22,29 @@ export function NewUserOnboardingScreen({
 }: RootStackScreenProps<"NewUserOnboarding">) {
   const existingPhone = route.params?.phone;
   const existingEmail = route.params?.email;
-
   const shouldCollectPhone = Boolean(existingEmail && !existingPhone);
-
   const [contactInput, setContactInput] = useState("");
-
   const contactCandidate = contactInput.trim();
+
+  const { user } = useAppSelector((state: RootState) => state.auth);
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactCandidate);
   const phoneDigits = contactCandidate.replace(/\D/g, "");
   const isPhoneValid = phoneDigits.length >= 6;
 
   const isValid = shouldCollectPhone ? isPhoneValid : isEmailValid;
+
+  const handleNext = async () => {
+  if (!user?.id) return;
+
+  try {
+    const payload = shouldCollectPhone ? { phone: contactCandidate } : { email: contactCandidate };
+    await userService.updateUser(user.id, payload);
+    navigation.navigate("KycCollection", nextParams);
+  } catch (err) {
+    console.log("Update user failed:", err);
+  }
+};
 
   const nextParams = useMemo(() => {
     if (shouldCollectPhone) {
@@ -102,7 +116,7 @@ export function NewUserOnboardingScreen({
 
             <Pressable
               disabled={!isValid}
-              onPress={() => navigation.navigate("KycCollection", nextParams)}
+              onPress={handleNext}
               className={[
                 "w-24 h-12 rounded-xl items-center justify-center",
                 isValid ? "bg-[#34A853]" : "bg-[#34A85380]",

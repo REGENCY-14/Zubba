@@ -1,17 +1,73 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 
-type AppBottomNavProps = {
+import {
+  HiHome,
+  HiOutlineHome,
+  HiCalendar,
+  HiOutlineCalendar,
+  HiCog6Tooth,
+  HiOutlineCog6Tooth,
+} from 'react-icons/hi2';
+import { HiOutlineSaveAs, HiSaveAs } from "react-icons/hi";
+
+
+type Tab = 'home' | 'calendar' | 'saved' | 'settings';
+
+type Props = {
   onHomePress: () => void;
   onSavedPress: () => void;
   onSettingsPress?: () => void;
   onAccountPress?: () => void;
   onCalendarPress?: () => void;
-  activeTab?: 'home' | 'settings';
+  activeTab: Tab;
   paddingBottom?: number;
 };
+
+function NavItem({
+  active,
+  onPress,
+  icon,
+  label,
+}: {
+  active?: boolean;
+  onPress: () => void;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  const scale = useSharedValue(1);
+
+  React.useEffect(() => {
+    scale.value = withSpring(active ? 1.08 : 1);
+  }, [active]);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <Animated.View style={animStyle}>
+      <Pressable
+        onPress={onPress}
+        className={`flex-row items-center justify-center rounded-full px-5 py-2 gap-2 ${
+          active ? 'bg-[#31973D]' : 'bg-transparent'
+        }`}
+      >
+        <View className="w-6 h-6 items-center justify-center">
+          {icon}
+        </View>
+
+        {active && (
+          <Text className="text-white text-xs font-normal">
+            {label}
+          </Text>
+        )}
+      </Pressable>
+    </Animated.View>
+  );
+}
 
 export function AppBottomNav({
   onHomePress,
@@ -21,84 +77,70 @@ export function AppBottomNav({
   onCalendarPress,
   activeTab,
   paddingBottom = 8,
-}: AppBottomNavProps) {
+}: Props) {
   const insets = useSafeAreaInsets();
-
-  const isHomeActive = activeTab === 'home';
-  const isSettingsActive = activeTab === 'settings';
-
   const bottomPadding = Math.max(insets.bottom, paddingBottom);
+  const isActive = (tab: Tab) => activeTab === tab;
+  const iconColor = (tab: Tab) => isActive(tab) ? '#fff' : '#64748B';
 
   return (
     <View
-      className="absolute left-0 right-0 bottom-0 items-center"
+      className="absolute left-0 right-0 bottom-5 items-center"
       style={{ paddingBottom: bottomPadding }}
     >
-      <View className="w-full max-w-[402px] h-[78px] bg-white border border-black/10 rounded-full flex-row items-center justify-between px-4">
+      <View className="w-full max-w-[402px] h-[78px] flex-row items-center justify-between px-4 bg-white rounded-full border border-black/10 shadow-sm">
 
-        {/* HOME */}
-        <Pressable
+        <NavItem
+          active={isActive('home')}
           onPress={onHomePress}
-          className={`flex-row items-center justify-center rounded-full px-5 py-2 gap-2 ${
-            isHomeActive ? 'bg-[#31973D] w-[105px]' : 'w-[64px]'
-          }`}
-        >
-          <MaterialIcons
-            name="home"
-            size={24}
-            color={isHomeActive ? '#FFFFFF' : '#64748A'}
-          />
+          icon={
+            isActive('home') ? (
+              <HiHome size={20} color="#fff" />
+            ) : (
+              <HiOutlineHome size={20} color="#64748B" />
+            )
+          }
+          label="Home"
+        />
 
-          {isHomeActive && (
-            <Text className="text-white text-xs leading-4 font-normal">
-              Home
-            </Text>
-          )}
-        </Pressable>
+        <NavItem
+          active={isActive('calendar')}
+          onPress={onCalendarPress ?? (() => {})}
+          icon={
+            isActive('calendar') ? (
+              <HiCalendar size={20} color="#fff" />
+            ) : (
+              <HiOutlineCalendar size={20} color="#64748B" />
+            )
+          }
+          label="Calendar"
+        />
 
-        {/* CALENDAR */}
-        <Pressable
-          onPress={onCalendarPress}
-          className="w-[64px] h-[44px] items-center justify-center"
-        >
-          <MaterialCommunityIcons
-            name="calendar-outline"
-            size={24}
-            color="#64748A"
-          />
-        </Pressable>
-
-        {/* SAVED */}
-        <Pressable
+        <NavItem
+          active={isActive('saved')}
           onPress={onSavedPress}
-          className="w-[64px] h-[44px] items-center justify-center"
-        >
-          <MaterialCommunityIcons
-            name="content-save-outline"
-            size={24}
-            color="#64748A"
-          />
-        </Pressable>
+          icon={
+            isActive('saved') ? (
+              <HiSaveAs size={20} color="#fff" />
+            ) : (
+              <HiOutlineSaveAs size={20} color="#64748B" />
+            )
+          }
+          label="Saved"
+        />
 
-        {/* SETTINGS */}
-        <Pressable
-          onPress={onSettingsPress ?? onAccountPress}
-          className={`flex-row items-center justify-center rounded-full px-5 py-2 gap-2 ${
-            isSettingsActive ? 'bg-[#31973D] w-[105px]' : 'w-[64px]'
-          }`}
-        >
-          <MaterialCommunityIcons
-            name="cog-outline"
-            size={24}
-            color={isSettingsActive ? '#FFFFFF' : '#64748A'}
-          />
-
-          {isSettingsActive && (
-            <Text className="text-white text-xs leading-4 font-normal">
-              Settings
-            </Text>
-          )}
-        </Pressable>
+        <NavItem
+          active={isActive('settings')}
+          onPress={onSettingsPress ?? onAccountPress ?? (() => {})}
+          icon={
+            isActive('settings') ? (
+              <HiCog6Tooth size={20} color="#fff" />
+            ) : (
+              <HiOutlineCog6Tooth size={20} color="#64748B" />
+            )
+          }
+          label="Settings"
+        />
 
       </View>
     </View>

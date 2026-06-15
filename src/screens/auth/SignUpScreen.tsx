@@ -14,18 +14,38 @@ import { FaCaretDown } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import { MdOutlineEmail } from "react-icons/md";
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useRegister } from "../../slices/auth/auth.hooks";
+import { TbBrandApple } from "react-icons/tb";
 
 const googleIcon = require("../../../assets/Google icon.png");
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
 export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const registerMutation = useRegister();
 
   const digitsOnly = phoneNumber.replace(/\D/g, "");
   const canContinue = digitsOnly.length >= 6;
 
-  const existingTail = "1234567890";
-  const isExisting = digitsOnly === existingTail || digitsOnly.endsWith(existingTail);
+  const handleRegister = async () => {
+    try {
+      const res = await registerMutation.mutateAsync({
+        authKey: "phone",
+        authValue: phoneNumber,
+        role: "customer",
+      });
+      console.log(res);
+      const isExisting = res.message.includes("Welcome back");
+      navigation.navigate("Verify", {
+        phone: phoneNumber,
+        userExists: isExisting,
+      });
+
+      console.log("Register success:", res);
+    } catch (err) {
+      console.log("Register error:", err);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -78,15 +98,12 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   "h-12 rounded-full items-center justify-center mb-4",
                   canContinue ? "bg-[#34A853]" : "bg-[#34A853] opacity-60",
                 ].join(" ")}
-                onPress={() =>
-                  navigation.navigate("Verify", {
-                    phone: phoneNumber,
-                    userExists: isExisting,
-                  })
-                }
-                disabled={!canContinue}
+                onPress={handleRegister}
+                disabled={!canContinue || registerMutation.isPending}
               >
-                <Text className="text-white text-sm">Continue</Text>
+                <Text className="text-white text-sm">
+                  {registerMutation.isPending ? "Please wait..." : "Continue"}
+                </Text>
               </Pressable>
 
               <View className="flex-row items-center my-4">
@@ -103,6 +120,13 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 />
                 <Text className="text-sm text-[#262D3A] font-medium">
                   Continue with Google
+                </Text>
+              </Pressable>
+
+              <Pressable className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-3">
+                <TbBrandApple size={16} color="#000000" />
+                <Text className="text-[#1F2A33] text-sm font-medium">
+                  Continue with Apple
                 </Text>
               </Pressable>
 

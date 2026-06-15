@@ -1,17 +1,21 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   View,
   Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useResendOtp, useVerifyOtp } from "../../slices/auth/auth.hooks";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setCredentials } from "../../slices/auth/authSlice";
+import { authStorage } from "../../utils/authStorage";
+import { OTPInput } from "../../components/common/OTPInput";
 
 export function VerifyOtpScreen({
   route,
@@ -19,6 +23,9 @@ export function VerifyOtpScreen({
 }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";
   const email = route.params?.email ?? "";
+  const verifyOtpMutation = useVerifyOtp();
+  const resendOtpMutation = useResendOtp();
+  const dispatch = useAppDispatch();
 
   const contact = email || phone;
   const deliveryLabel = email ? "email" : "SMS";
@@ -27,17 +34,6 @@ export function VerifyOtpScreen({
   const [resendTimer, setResendTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [showResendModal, setShowResendModal] = useState(false);
-
-  const inputRefs = [
-    useRef<TextInput | null>(null),
-    useRef<TextInput | null>(null),
-    useRef<TextInput | null>(null),
-    useRef<TextInput | null>(null),
-  ];
-
-  useEffect(() => {
-    inputRefs[0].current?.focus();
-  }, []);
 
   useEffect(() => {
     if (resendTimer === 0) {
@@ -57,9 +53,53 @@ export function VerifyOtpScreen({
     [codeDigits],
   );
 
-  const userExists = route.params?.userExists ?? false;
-  const knownExistingContacts = ["+233241122310"];
   const contactValue = contact;
+
+  const handleVerify = async (otp: string) => {
+    try {
+      const res = await verifyOtpMutation.mutateAsync({
+        authKey: email ? "email" : "phone",
+        authValue: contactValue,
+        otp,
+        purpose: "login",
+      });
+
+      const { user, accessToken, refreshToken } = res.data;
+      console.log(user);
+      dispatch(setCredentials({ user, accessToken, refreshToken }));
+      await authStorage.save({ user, accessToken, refreshToken });
+
+      if (user.role) {
+        navigation.replace("NewUserOnboarding", {
+          ...(email ? { email: contactValue } : { phone: contactValue }),
+        });
+      } else {
+        navigation.replace("ExistingUserNotification", {
+          ...(email ? { email: contactValue } : { phone: contactValue }),
+        });
+      }
+    } catch (err) {
+      console.log("OTP verify failed:", err);
+      setCodeDigits(["", "", "", ""]);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      await resendOtpMutation.mutateAsync({
+        authKey: email ? "email" : "phone",
+        authValue: contactValue,
+        purpose: "email_verification",
+      });
+
+      setShowResendModal(false);
+      setCodeDigits(["", "", "", ""]);
+      setResendTimer(60);
+      setCanResend(false);
+    } catch (err) {
+      console.log("Resend OTP failed:", err);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -68,12 +108,7 @@ export function VerifyOtpScreen({
         className="flex-1"
       >
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{
-            paddingHorizontal: 22,
-            paddingTop: 66,
-            paddingBottom: 24,
-          }}
+          className="flex-1 p-5"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -98,133 +133,15 @@ export function VerifyOtpScreen({
             </View>
           )}
 
-          <View className="flex-row gap-3 mt-5">
-            {[0, 1, 2, 3].map((i) => (
-              <TextInput
-                key={i}
-                ref={inputRefs[i]}
-                value={codeDigits[i]}
-                keyboardType="number-pad"
-                maxLength={1}
-                className={[
-                  "w-[44px] h-[44px] rounded-md border text-[20px] font-medium text-[#1F2A33] text-center pb-[4px]",
-                  codeDigits[i]
-                    ? "border-[#F47309] bg-white"
-                    : "border-[#B8B8B833] bg-[#B8B8B833]",
-                ].join(" ")}
-                onChangeText={(ch) => {
-                  if (ch.length > 1) {
-                    const chars = ch.slice(0, 4).split("");
-                    const newDigits = ["", "", "", ""];
-
-                    chars.forEach((c, index) => {
-                      newDigits[index] = c;
-                    });
-
-                    setCodeDigits(newDigits);
-
-                    const isComplete = newDigits.every((d) => d !== "");
-
-                    if (isComplete) {
-                      setTimeout(() => {
-                        const otp = newDigits.join("");
-                        const exists =
-                          userExists ||
-                          knownExistingContacts.includes(contactValue);
-
-                        const isInvalid = otp !== "1234";
-
-                        if (isInvalid) {
-                          setCodeDigits(["", "", "", ""]);
-                          inputRefs[0].current?.focus();
-                          return;
-                        }
-
-                        if (exists) {
-                          navigation.replace(
-                            "ExistingUserNotification",
-                            email
-                              ? { email: contactValue }
-                              : { phone: contactValue },
-                          );
-                        } else {
-                          navigation.replace(
-                            "NewUserOnboarding",
-                            email
-                              ? { email: contactValue }
-                              : { phone: contactValue },
-                          );
-                        }
-                      }, 150);
-                    }
-
-                    inputRefs[Math.min(chars.length, 3)]?.current?.focus();
-                    return;
-                  }
-
-                  if (!/^[0-9]$/.test(ch)) return;
-
-                  const digits = [...codeDigits];
-                  digits[i] = ch;
-                  setCodeDigits(digits);
-
-                  if (i < 3) {
-                    inputRefs[i + 1].current?.focus();
-                  }
-
-                  const isComplete = digits.every((d) => d !== "");
-
-                  if (isComplete) {
-                    setTimeout(() => {
-                      const otp = digits.join("");
-                      const exists =
-                        userExists ||
-                        knownExistingContacts.includes(contactValue);
-
-                      const isInvalid = otp !== "1234";
-
-                      if (isInvalid) {
-                        setCodeDigits(["", "", "", ""]);
-                        inputRefs[0].current?.focus();
-                        return;
-                      }
-
-                      if (exists) {
-                        navigation.replace(
-                          "ExistingUserNotification",
-                          email
-                            ? { email: contactValue }
-                            : { phone: contactValue },
-                        );
-                      } else {
-                        navigation.replace(
-                          "NewUserOnboarding",
-                          email
-                            ? { email: contactValue }
-                            : { phone: contactValue },
-                        );
-                      }
-                    }, 150);
-                  }
-                }}
-                onKeyPress={(e) => {
-                  if (e.nativeEvent.key === "Backspace") {
-                    const digits = [...codeDigits];
-
-                    if (digits[i] === "") {
-                      if (i > 0) {
-                        inputRefs[i - 1].current?.focus();
-                        digits[i - 1] = "";
-                      }
-                    } else {
-                      digits[i] = "";
-                    }
-
-                    setCodeDigits(digits);
-                  }
-                }}
-              />
-            ))}
+          <View className="mt-5">
+            <OTPInput
+              value={codeDigits}
+              onChange={setCodeDigits}
+              length={4}
+              onComplete={(otp) => {
+                handleVerify(otp);
+              }}
+            />
           </View>
 
           {email && (
@@ -239,32 +156,7 @@ export function VerifyOtpScreen({
               "h-12 rounded-full items-center justify-center mt-5",
               isValid ? "bg-[#34A853]" : "bg-[#34A85380]",
             ].join(" ")}
-            onPress={() => {
-              const otp = codeDigits.join("");
-
-              const exists =
-                userExists || knownExistingContacts.includes(contactValue);
-
-              const isInvalid = otp !== "1234";
-
-              if (isInvalid) {
-                setCodeDigits(["", "", "", ""]);
-                inputRefs[0].current?.focus();
-                return;
-              }
-
-              if (exists) {
-                navigation.replace(
-                  "ExistingUserNotification",
-                  email ? { email: contactValue } : { phone: contactValue },
-                );
-              } else {
-                navigation.replace(
-                  "NewUserOnboarding",
-                  email ? { email: contactValue } : { phone: contactValue },
-                );
-              }
-            }}
+            onPress={() => handleVerify(codeDigits.join(""))}
           >
             <Text className="text-white text-sm">Verify</Text>
           </Pressable>
@@ -305,13 +197,7 @@ export function VerifyOtpScreen({
 
                 <View className="w-full gap-3">
                   <Pressable
-                    onPress={() => {
-                      setShowResendModal(false);
-                      setCodeDigits(["", "", "", ""]);
-                      setResendTimer(60);
-                      setCanResend(false);
-                      inputRefs[0].current?.focus();
-                    }}
+                    onPress={handleResend}
                     className="h-12 bg-[#31973D] rounded-full items-center justify-center"
                   >
                     <Text className="text-white text-sm">Resend</Text>

@@ -42,7 +42,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="LocationSharing"
+      initialRouteName="Splash"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'

@@ -10,18 +10,38 @@ import {
   ScrollView,
 } from "react-native";
 import { IoMdArrowBack } from "react-icons/io";
+import { RootState } from "../../store";
 
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { userService } from "../../api/userService";
 
 export function KycCollectionScreen({
   route,
   navigation,
 }: RootStackScreenProps<"KycCollection">) {
-  const contact = route.params?.phone ?? route.params?.email ?? "";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-
+  const { user } = useAppSelector((state: RootState) => state.auth);
   const isValid = firstName.trim().length > 0 && lastName.trim().length > 0;
+
+  const handleContinue = async () => {
+  if (!user?.id) return;
+
+  try {
+    await userService.updateUser(user.id, {
+      firstname: firstName.trim(),
+      lastname: lastName.trim(),
+    });
+
+    navigation.navigate("TermsAcceptance", {
+      firstName,
+      lastName,
+    });
+  } catch (err) {
+    console.log("KYC update failed:", err);
+  }
+};
 
   return (
     <SafeAreaView
@@ -84,9 +104,7 @@ export function KycCollectionScreen({
 
           <Pressable
             disabled={!isValid}
-            onPress={() =>
-              navigation.navigate("TermsAcceptance", { firstName, lastName })
-            }
+            onPress={handleContinue}
             className={`w-24 h-12 rounded-xl items-center justify-center ${
               isValid ? "bg-[#34A853]" : "bg-[#34A853]/50"
             }`}
