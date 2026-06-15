@@ -3,7 +3,7 @@ import { store } from "../store";
 import { config } from "dotenv"
 
 export const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  baseURL: (globalThis as any).process?.env?.EXPO_PUBLIC_API_URL,
 });
 
 api.interceptors.request.use(config => {

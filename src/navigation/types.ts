@@ -29,6 +29,14 @@ export type RootStackParamList = {
   UpdateDetails: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
   UpdateDetailsOtp: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
   UpdateDetailsSuccess: undefined;
+  ChoosePlan: undefined;
+  ConfirmSubscription: { planIndex?: number } | undefined;
+  AddCard: { planIndex?: number } | undefined;
+  PremiumPayment: undefined;
+  WalletNumber: undefined;
+  PremiumHome: undefined;
+  DriversFound: undefined;
+  WalletCheckout: undefined;
   Details: { itemId: string; title: string } | undefined;
   Verify: { phone?: string; email?: string; userExists?: boolean } | undefined;
   FindAccount: { itemId: string; title: string } | undefined;

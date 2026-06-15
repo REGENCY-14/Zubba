@@ -7,7 +7,6 @@ import { AppBottomNav } from '../../components';
 
 export function PaymentMethodScreen({ navigation }: RootStackScreenProps<'PaymentMethod'>) {
   const [phoneNumber, setPhoneNumber] = React.useState<string>('055 123 4567');
-  const [selectedMethod, setSelectedMethod] = React.useState<'momo' | 'telecel'>('momo');
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -24,51 +23,13 @@ export function PaymentMethodScreen({ navigation }: RootStackScreenProps<'Paymen
           <View style={styles.main}>
             <View style={styles.summaryCard}>
               <View style={styles.summaryIconWrap}>
-                <Text style={styles.summaryIcon}>◍</Text>
+                <Text style={styles.summaryIcon}>◉</Text>
               </View>
               <Text style={styles.totalLabel}>Total to Pay</Text>
               <Text style={styles.totalAmount}>GHS 45.00</Text>
               <View style={styles.summaryDivider} />
               <View style={styles.feesBadge}>
                 <Text style={styles.feesBadgeText}>Includes all fees</Text>
-              </View>
-            </View>
-
-            <View style={styles.networkSection}>
-              <Text style={styles.networkTitle}>Network Provider</Text>
-
-              <View style={styles.networkGrid}>
-                {/* MTN MoMo Button */}
-                <Pressable
-                  style={[styles.networkButton, selectedMethod === 'momo' && styles.networkButtonActive]}
-                  onPress={() => setSelectedMethod('momo')}
-                >
-                  <View style={styles.networkIconMtn}>
-                    <Text style={styles.networkIconText}>MTN</Text>
-                  </View>
-                  <Text style={styles.networkButtonLabel}>MTN MoMo</Text>
-                  {selectedMethod === 'momo' && (
-                    <View style={styles.checkmark}>
-                      <Text style={styles.checkmarkText}>✓</Text>
-                    </View>
-                  )}
-                </Pressable>
-
-                {/* Telecel Cash Button */}
-                <Pressable
-                  style={[styles.networkButton, selectedMethod !== 'telecel' && styles.networkButtonInactive, selectedMethod === 'telecel' && styles.networkButtonActive]}
-                  onPress={() => setSelectedMethod('telecel')}
-                >
-                  <View style={styles.networkIconTelecel}>
-                    <Text style={styles.networkIconTelecelText}>Tigo{`\n`}Cash</Text>
-                  </View>
-                  <Text style={[styles.networkButtonLabel, selectedMethod !== 'telecel' && styles.networkButtonLabelInactive]}>Telecel Cash</Text>
-                  {selectedMethod === 'telecel' && (
-                    <View style={styles.checkmark}>
-                      <Text style={styles.checkmarkText}>✓</Text>
-                    </View>
-                  )}
-                </Pressable>
               </View>
             </View>
 
@@ -99,13 +60,13 @@ export function PaymentMethodScreen({ navigation }: RootStackScreenProps<'Paymen
 
             <Pressable
               style={styles.continueButton}
-                onPress={() => navigation.navigate('PaymentVerification')}
+              onPress={() => navigation.navigate('PaymentVerification')}
             >
               <Text style={styles.continueButtonText}>Proceed to verify</Text>
             </Pressable>
-          </View>
 
-          <Text style={styles.securityText}>SECURED BY ZUBBA PAY ARCHITECTURE</Text>
+            <Text style={styles.securityText}>SECURED BY ZUBBA PAY ARCHITECTURE</Text>
+          </View>
         </ScrollView>
 
         <AppBottomNav
@@ -123,27 +84,27 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F9F9F9' },
   screen: { flex: 1, backgroundColor: '#F9F9F9' },
   header: {
-    height: 56,
+    height: 90,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+    paddingTop: 12,
+    borderBottomWidth: 0,
   },
   backButton: { width: 24, height: 24, alignItems: 'flex-start', justifyContent: 'center' },
   backText: { fontSize: 28, color: '#1F2A33', lineHeight: 28, marginTop: -2 },
   title: { fontSize: 16, fontWeight: '600', color: '#1F2A33' },
   headerSpacer: { width: 24, height: 24 },
   scrollView: { flex: 1 },
-  scrollContent: { paddingHorizontal: 18, paddingTop: 24, paddingBottom: 120 },
+  scrollContent: { paddingHorizontal: 12, paddingTop: 16, paddingBottom: 120 },
   main: { gap: 24 },
 
   summaryCard: {
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 24,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
@@ -171,69 +132,13 @@ const styles = StyleSheet.create({
   },
   feesBadgeText: { color: '#31973D', fontSize: 13, lineHeight: 20, fontWeight: '700' },
 
-  networkSection: { gap: 16 },
-  networkTitle: { fontSize: 16, lineHeight: 24, color: '#1F2A33', fontWeight: '400' },
-  networkGrid: { flexDirection: 'row', gap: 16, justifyContent: 'space-between' },
-  networkButton: {
-    flex: 1,
-    paddingVertical: 17,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    gap: 8,
-    minHeight: 114,
-  },
-  networkButtonActive: {
-    borderColor: '#31973D',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-  },
-  networkButtonInactive: {
-    opacity: 0.6,
-  },
-  networkIconMtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: '#FFCC00',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  networkIconTelecel: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#DC2626',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  networkIconText: { fontSize: 12, fontWeight: '700', color: '#1F2A33' },
-  networkIconTelecelText: { color: '#FFFFFF', fontSize: 12, lineHeight: 15, fontWeight: '700', textAlign: 'center' },
-  networkButtonLabel: { fontSize: 16, lineHeight: 24, color: '#1F2A33', fontWeight: '400', textAlign: 'center' },
-  networkButtonLabelInactive: { color: '#94A3B8' },
-  checkmark: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#006B23',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 10,
-    right: 10,
-  },
-  checkmarkText: { fontSize: 12, fontWeight: '700', color: '#FFFFFF' },
-
   inputSection: { gap: 7 },
   inputLabel: { fontSize: 16, lineHeight: 16, color: '#1F2A33', fontWeight: '400' },
   textInput: {
     height: 48,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: '#CBD5E0',
     backgroundColor: '#FFFFFF',
@@ -247,7 +152,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     gap: 16,
-    borderRadius: 16,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: '#BECAB9',
     backgroundColor: '#FFFFFF',
@@ -267,7 +172,7 @@ const styles = StyleSheet.create({
 
   continueButton: {
     height: 48,
-    borderRadius: 12,
+    borderRadius: 999,
     backgroundColor: '#31973D',
     alignItems: 'center',
     justifyContent: 'center',
@@ -275,7 +180,7 @@ const styles = StyleSheet.create({
   continueButtonText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontWeight: '400' },
 
   securityText: {
-    marginTop: 24,
+    marginTop: 0,
     fontSize: 10,
     lineHeight: 16,
     letterSpacing: -0.275,

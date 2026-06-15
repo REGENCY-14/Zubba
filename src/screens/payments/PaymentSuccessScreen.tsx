@@ -1,204 +1,107 @@
 import React from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav, PaymentProviderHeader } from '../../components';
 
 export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'PaymentSuccess'>) {
-  const [feedbackVisible, setFeedbackVisible] = React.useState(false);
-  const [rating, setRating] = React.useState(4);
-  const [feedback, setFeedback] = React.useState('');
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => setFeedbackVisible(true), 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.screen}>
+
+        {/* Background: header + checkmark */}
         <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>‹</Text>
+          <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <Text style={styles.chevron}>‹</Text>
           </Pressable>
           <Text style={styles.headerTitle}>Success</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        <PaymentProviderHeader
-          provider="MTN MoMo"
-          providerColor="#31973D"
-          isActive={true}
-          onMenuPress={() => {}}
-          onClosePress={() => navigation.navigate('LocationSharing')}
-        />
+        <View style={styles.successArea}>
+          <View style={styles.checkCircle}>
+            <MaterialCommunityIcons name="check" size={40} color="#FFFFFF" />
+          </View>
+          <Text style={styles.successTitle}>Your transaction is{'\n'}successful</Text>
+        </View>
 
-        <ScrollView style={styles.main} contentContainerStyle={styles.mainContent} showsVerticalScrollIndicator={false}>
-          <View style={styles.successBadge}>
-            <Text style={styles.successBadgeIcon}>✓</Text>
+        {/* Dark overlay — covers everything behind the sheet */}
+        <View style={styles.overlay} pointerEvents="none" />
+
+        {/* Receipt bottom sheet */}
+        <View style={styles.bottomSheet}>
+          {/* Handle bar */}
+          <View style={styles.handle} />
+
+          {/* Sheet title */}
+          <View style={styles.titleRow}>
+            <Text style={styles.sheetTitle}>Select a transfer method</Text>
           </View>
 
-          <View style={styles.successTextWrap}>
-            <Text style={styles.successTitle}>Payment Successful</Text>
-            <Text style={styles.successSubtitle}>Your pickup has been confirmed.</Text>
-          </View>
+          {/* Transaction receipt card */}
+          <View style={styles.receiptWrap}>
+            <View style={styles.receiptCard}>
+              {/* Transaction ID */}
+              <View style={[styles.receiptRow, styles.receiptRowBorderBottom]}>
+                <Text style={styles.receiptLabel}>Transaction ID</Text>
+                <Text style={styles.receiptValue}>ZB-9928374</Text>
+              </View>
 
-          {!feedbackVisible && (
-            <>
-              <View style={styles.receiptCard}>
-                <View style={styles.receiptRowTop}>
-                  <Text style={styles.receiptLabel}>Transaction ID</Text>
-                  <Text style={styles.receiptValue}>ZB-9928374</Text>
+              {/* Middle detail rows */}
+              <View style={styles.receiptMidGroup}>
+                <View style={styles.receiptRow}>
+                  <Text style={styles.receiptLabel}>Bin Bags</Text>
+                  <Text style={styles.receiptValue}>2 Bags</Text>
                 </View>
-
-                <View style={styles.receiptRows}>
-                  <View style={styles.receiptRow}>
-                    <Text style={styles.receiptLabel}>Bin Bags</Text>
-                    <Text style={styles.receiptValue}>2 Bags</Text>
-                  </View>
-
-                  <View style={styles.receiptRow}>
-                    <Text style={styles.receiptLabel}>Pickup time</Text>
-                    <Text style={styles.receiptValue}>Today, 10:30 AM</Text>
-                  </View>
-
-                  <View style={styles.receiptRow}>
-                    <Text style={styles.receiptLabel}>Payment Method</Text>
-                    <Text style={styles.receiptValue}>MTN MoMo</Text>
-                  </View>
+                <View style={styles.receiptRow}>
+                  <Text style={styles.receiptLabel}>Pickup time</Text>
+                  <Text style={styles.receiptValue}>Today, 10:30 AM</Text>
                 </View>
-
-                <View style={styles.amountRow}>
-                  <Text style={styles.amountLabel}>Amount Paid</Text>
-                  <Text style={styles.amountValue}>GHS 45.00</Text>
+                <View style={styles.receiptRow}>
+                  <Text style={styles.receiptLabel}>Payment Method</Text>
+                  <Text style={styles.receiptValue}>MTN MoMo</Text>
                 </View>
               </View>
 
-              <View style={styles.infoCard}>
-                <View style={styles.infoIconWrap}>
-                  <Text style={styles.infoIcon}>i</Text>
-                </View>
-                <View style={styles.infoTextWrap}>
-                  <Text style={styles.infoTitle}>Collection done</Text>
-                  <Text style={styles.infoBody}>Waste has been picked and payment successfully made</Text>
-                </View>
-              </View>
-
-              <Pressable style={styles.homeButton} onPress={() => navigation.navigate('LocationSharing')}>
-                <Text style={styles.homeButtonText}>Back to Home</Text>
-              </Pressable>
-
-              <View style={styles.supportWrap}>
-                <Text style={styles.supportText}>Need help? </Text>
-                <Pressable onPress={() => { /* handle contact */ }}>
-                  <Text style={styles.supportLink}>Contact Zubba Support</Text>
-                </Pressable>
-              </View>
-              <Text style={styles.thanksText}>THANK YOU FOR CHOOSING ZUBBA</Text>
-            </>
-          )}
-        </ScrollView>
-
-        <Modal visible={feedbackVisible} transparent animationType="fade" onRequestClose={() => setFeedbackVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalSheet}>
-              <View style={styles.modalHandle} />
-
-              <View style={styles.modalHeadline}>
-                <Text style={styles.modalTitle}>Rate your pickup experience</Text>
-                <Text style={styles.modalSubtitle}>Your feedback helps us keep the city green.</Text>
-              </View>
-
-              <View style={styles.reactionCard}>
-                <View style={styles.reactionHeader}>
-                  <Text style={styles.reactionTitle}>Service experience</Text>
-                </View>
-                <View style={styles.starRow}>
-                  {[1, 2, 3, 4, 5, 6].map((star) => {
-                    const isFilled = star <= rating;
-                    const isOutline = star === rating + 1;
-                    return (
-                      <Pressable key={star} onPress={() => setRating(Math.min(star, 5))} style={styles.starPressable}>
-                        <Text
-                          style={[
-                            styles.starIcon,
-                            isFilled
-                              ? styles.starIconActive
-                              : isOutline
-                                ? styles.starIconOutline
-                                : styles.starIconInactive
-                          ]}
-                        >
-                          {isFilled ? '★' : '☆'}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              </View>
-
-              <View style={styles.subCard}>
-                <Text style={styles.subCardTitle}>What did you like</Text>
-                <View style={styles.quickChoices}>
-                  <View style={[styles.choiceButton, styles.choiceButtonActive]}>
-                    <Text style={styles.choiceButtonTextActive}>Professional</Text>
-                  </View>
-                  <View style={[styles.choiceButton, styles.choiceButtonGhost]}>
-                    <Text style={styles.choiceButtonTextGhost}>Punctual</Text>
+              {/* Amount paid — dashed separator above */}
+              <View style={styles.amountSection}>
+                <View style={styles.receiptRow}>
+                  <Text style={styles.receiptLabel}>Amount Paid</Text>
+                  <View style={styles.amountCol}>
+                    <Text style={styles.receiptValue}>GHS</Text>
+                    <Text style={styles.receiptValue}>45.00</Text>
                   </View>
                 </View>
-
-                <View style={styles.quickChoices}>
-                  <View style={[styles.choiceButton, styles.choiceButtonGhost]}>
-                    <Text style={styles.choiceButtonTextGhost}>Eco-friendly</Text>
-                  </View>
-                  <View style={[styles.choiceButton, styles.choiceButtonGhost]}>
-                    <Text style={styles.choiceButtonTextGhost}>Efficient</Text>
-                  </View>
-                </View>
-
-                <View style={[styles.choiceButton, styles.choiceButtonMore]}>
-                  <Text style={styles.choiceButtonTextGhost}>more...</Text>
-                  <Text style={styles.choiceArrow}>›</Text>
-                </View>
               </View>
-
-              <View style={styles.quickChoices}>
-                <View style={[styles.choiceButton, styles.choiceButtonGhost, styles.choiceButtonWide]}>
-                  <Text style={styles.choiceButtonTextGhost}>Delivery too fast</Text>
-                </View>
-              </View>
-
-              <View style={styles.feedbackBlock}>
-                <Text style={styles.feedbackLabel}>Additional comment</Text>
-                <TextInput
-                  style={styles.feedbackInput}
-                  placeholder="Tell us more....."
-                  placeholderTextColor="#94A3B7"
-                  value={feedback}
-                  onChangeText={setFeedback}
-                  multiline
-                />
-              </View>
-
-              <Pressable style={styles.modalPrimaryButton} onPress={() => setFeedbackVisible(false)}>
-                <Text style={styles.modalPrimaryButtonText}>Submit Feedback</Text>
-              </Pressable>
-
-              <Pressable style={styles.modalSecondaryButton} onPress={() => setFeedbackVisible(false)}>
-                <Text style={styles.modalSecondaryButtonText}>Not now</Text>
-              </Pressable>
             </View>
           </View>
-        </Modal>
 
-        <AppBottomNav
-          activeTab="home"
-          onHomePress={() => navigation.navigate('LocationSharing')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-        />
+          {/* Action buttons */}
+          <View style={styles.buttonsArea}>
+            <Pressable
+              style={styles.continueBtn}
+              onPress={() => navigation.navigate('PremiumHome')}
+            >
+              <Text style={styles.continueBtnText}>Continue</Text>
+            </Pressable>
+
+            <Pressable style={styles.downloadBtn} onPress={() => {}}>
+              <Text style={styles.downloadBtnText}>Download Transaction</Text>
+            </Pressable>
+
+            <Pressable style={styles.reportBtn} onPress={() => {}}>
+              <Text style={styles.reportBtnText}>Report Issue</Text>
+            </Pressable>
+          </View>
+        </View>
+
       </View>
     </SafeAreaView>
   );
@@ -207,255 +110,159 @@ export function PaymentSuccessScreen({ navigation }: RootStackScreenProps<'Payme
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   screen: { flex: 1, backgroundColor: '#FFFFFF' },
+
+  /* Header */
   header: {
     height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF'
-  },
-  backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
-  backText: { fontSize: 24, color: '#1F2A33' },
-  headerTitle: { fontSize: 16, lineHeight: 24, fontWeight: '600', color: '#1F2A33' },
-  headerSpacer: { width: 16, height: 16 },
-
-  main: { flex: 1 },
-  mainContent: {
-    alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 132,
-    gap: 20
-  },
-
-  successBadge: {
-    width: 60,
-    height: 60,
-    borderRadius: 999,
-    backgroundColor: '#31973D',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  successBadgeIcon: { color: '#FFFFFF', fontSize: 30, fontWeight: '700' },
-  successTextWrap: { alignItems: 'center', gap: 6 },
-  successTitle: { fontSize: 36, lineHeight: 40, fontWeight: '700', color: '#31973D' },
-  successSubtitle: { fontSize: 16, lineHeight: 24, color: '#64748A' },
-
-  receiptCard: {
-    width: '100%',
-    maxWidth: 366,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 12,
     backgroundColor: '#FFFFFF',
-    padding: 24,
-    shadowColor: '#006B23',
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
-    gap: 16
   },
-  receiptRowTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E2E5'
-  },
-  receiptRows: { gap: 8 },
-  receiptRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  receiptLabel: { fontSize: 16, lineHeight: 24, color: '#3F4A3D' },
-  receiptValue: { fontSize: 15, lineHeight: 24, color: '#1A1C1E' },
-  amountRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(190,202,185,0.5)',
-    borderStyle: 'dashed'
-  },
-  amountLabel: { fontSize: 16, lineHeight: 24, color: '#1A1C1E' },
-  amountValue: { fontSize: 16, lineHeight: 24, color: '#006B23' },
+  backBtn: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
+  chevron: { fontSize: 28, color: '#1F2A33', lineHeight: 30 },
+  headerTitle: { fontSize: 16, fontWeight: '600', color: '#1F2A33' },
+  headerSpacer: { width: 24, height: 24 },
 
-  infoCard: {
-    width: '100%',
-    maxWidth: 366,
-    minHeight: 105,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#BECAB9',
-    backgroundColor: '#F3F3F6',
-    padding: 16,
-    flexDirection: 'row',
-    gap: 16
-  },
-  infoIconWrap: {
-    width: 39,
-    height: 29,
-    borderRadius: 999,
-    backgroundColor: 'rgba(0,107,35,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  infoIcon: { fontSize: 16, color: '#31973D', fontWeight: '700' },
-  infoTextWrap: { flex: 1, gap: 4 },
-  infoTitle: { fontSize: 16, lineHeight: 24, color: '#1A1C1E' },
-  infoBody: { fontSize: 14, lineHeight: 24, color: '#3F4A3D' },
-
-  homeButton: {
-    width: '100%',
-    maxWidth: 366,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#31973D',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  homeButtonText: { fontSize: 14, lineHeight: 20, color: '#FFFFFF' },
-  supportText: { fontSize: 16, lineHeight: 24, color: '#1F2A33' },
-  supportWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  supportLink: { fontSize: 16, lineHeight: 24, color: '#31973D', fontWeight: '700' },
-  thanksText: { fontSize: 10, lineHeight: 16, color: '#A1A1AA', textAlign: 'center', letterSpacing: -0.2 },
-
-  modalOverlay: {
+  /* Success background content */
+  successArea: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'flex-end'
-  },
-  modalSheet: {
-    width: '100%',
-    maxWidth: 402,
-    alignSelf: 'center',
-    height: 787,
-    backgroundColor: '#F8FAFC',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
-    gap: 16
-  },
-  modalHandle: {
-    width: 60,
-    height: 6,
-    borderRadius: 10,
-    backgroundColor: '#E9EBED',
-    alignSelf: 'center'
-  },
-  modalHeadline: { gap: 0, alignItems: 'center' },
-  modalTitle: {
-    fontFamily: 'Manrope',
-    fontSize: 18,
-    lineHeight: 28,
-    fontWeight: '600',
-    color: '#1A1C1E',
-    textAlign: 'center'
-  },
-  modalSubtitle: {
-    fontFamily: 'Nexa Text-Trial',
-    fontSize: 14,
-    lineHeight: 24,
-    color: '#3F4A3D',
-    textAlign: 'center'
-  },
-  reactionCard: {
-    width: '100%',
-    height: 129,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 16,
-    justifyContent: 'center'
-  },
-  reactionHeader: { marginBottom: 12 },
-  reactionTitle: { fontFamily: 'Nexa Text-Trial', fontSize: 16, lineHeight: 24, color: '#1A1C1E' },
-  starRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start'
-  },
-  starPressable: { padding: 2, marginRight: 8 },
-  starIcon: { fontSize: 34, lineHeight: 34 },
-  starIconActive: { color: '#31973D' },
-  starIconOutline: { color: '#BECAB9' },
-  starIconInactive: { color: '#F4F4F7' },
-  subCard: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    gap: 16
-  },
-  subCardTitle: { fontFamily: 'Nexa Text-Trial', fontSize: 16, lineHeight: 24, fontWeight: '700', color: '#1A1C1E' },
-  quickChoices: { flexDirection: 'row', gap: 16 },
-  choiceButton: {
-    flex: 1,
-    height: 48,
-    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    borderWidth: 1
+    gap: 24,
+    paddingBottom: 120,
   },
-  choiceButtonActive: { backgroundColor: '#F8FAFC', borderColor: '#31973D' },
-  choiceButtonGhost: { backgroundColor: '#F8FAFC', borderColor: '#E2E8F0' },
-  choiceButtonMore: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12 },
-  choiceButtonWide: { flex: 1 },
-  choiceButtonTextActive: { fontFamily: 'Nexa Text-Trial', fontSize: 14, lineHeight: 20, color: '#31973D' },
-  choiceButtonTextGhost: { fontFamily: 'Nexa Text-Trial', fontSize: 14, lineHeight: 20, color: '#1A1C1E' },
-  choiceArrow: { fontSize: 18, lineHeight: 20, color: '#64748A' },
-  feedbackBlock: {
-    width: '100%',
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF',
-    paddingTop: 16,
-    gap: 4
+  checkCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#16A34A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.10,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 6,
   },
-  feedbackLabel: {
-    fontFamily: 'Nexa Text-Trial',
-    fontSize: 16,
-    lineHeight: 16,
+  successTitle: {
+    fontSize: 24,
     fontWeight: '700',
-    color: '#1A1C1E'
+    color: '#111827',
+    textAlign: 'center',
+    lineHeight: 30,
   },
-  feedbackInput: {
-    borderWidth: 1,
-    borderColor: '#CBD5E0',
-    borderRadius: 8,
-    minHeight: 48,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontFamily: 'Nexa Text-Trial',
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#1A1C1E',
-    textAlignVertical: 'top'
+
+  /* Dark overlay */
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.40)',
   },
-  modalPrimaryButton: {
-    width: '100%',
+
+  /* Bottom sheet */
+  bottomSheet: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    paddingTop: 16,
+    paddingBottom: 24,
+    gap: 16,
+  },
+
+  handle: {
+    width: 152,
+    height: 3,
+    backgroundColor: '#334154',
+    borderRadius: 20,
+    alignSelf: 'center',
+  },
+
+  titleRow: { paddingHorizontal: 24 },
+  sheetTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000000',
+    lineHeight: 28,
+    letterSpacing: -0.48,
+  },
+
+  /* Receipt card */
+  receiptWrap: { paddingHorizontal: 20 },
+  receiptCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    gap: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+
+  receiptRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  receiptRowBorderBottom: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E2E5',
+    paddingBottom: 16,
+  },
+  receiptLabel: { fontSize: 16, color: '#64748A', fontWeight: '400', lineHeight: 24 },
+  receiptValue: { fontSize: 15, color: '#1F2A33', fontWeight: '500', lineHeight: 24 },
+
+  receiptMidGroup: { gap: 8 },
+
+  amountSection: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(190,202,185,0.5)',
+    borderStyle: 'dashed',
+    paddingTop: 16,
+  },
+  amountCol: { alignItems: 'flex-end' },
+
+  /* Buttons */
+  buttonsArea: { paddingHorizontal: 24, gap: 4 },
+
+  continueBtn: {
     height: 48,
-    borderRadius: 12,
     backgroundColor: '#31973D',
+    borderRadius: 999,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  modalPrimaryButtonText: { fontFamily: 'Plus Jakarta Sans', fontSize: 14, lineHeight: 20, color: '#FFFFFF' },
-  modalSecondaryButton: {
-    width: '100%',
+  continueBtnText: { fontSize: 14, color: '#FFFFFF', fontWeight: '400', lineHeight: 20 },
+
+  downloadBtn: {
     height: 48,
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  modalSecondaryButtonText: { fontFamily: 'Plus Jakarta Sans', fontSize: 14, lineHeight: 20, color: '#1F2A33' }
+  downloadBtnText: { fontSize: 14, color: '#1F2A33', fontWeight: '500', lineHeight: 20 },
+
+  reportBtn: {
+    height: 48,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reportBtnText: { fontSize: 14, color: '#1F2A33', fontWeight: '600', lineHeight: 20 },
 });
 
 export default PaymentSuccessScreen;
