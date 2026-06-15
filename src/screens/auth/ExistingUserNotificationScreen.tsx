@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FaRegCircleUser } from "react-icons/fa6";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -18,10 +18,10 @@ export function ExistingUserNotificationScreen({
       <View className="flex-1 flex items-center w-full p-5">
         <View className="items-center flex-1 justify-center w-full">
           <View className="h-[110px] w-[110px] mb-4 rounded-full bg-gray-200 flex items-center justify-center">
-            <FaRegCircleUser color="#000000" size={50}/>
+            <MaterialCommunityIcons name="account-circle" color="#000000" size={50}/>
           </View>
           <Text className="text-[24px] leading-7 font-[500] text-gray-900 text-center">
-            Welcome, Zakaria!
+            Welcome, {user?.firstname}
           </Text>
           <Text className="text-[14px] leading-6 font-light text-[#707579] text-center mt-2 max-w-[366px]">
             You previously signed in to one of our apps using {contact}

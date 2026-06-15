@@ -10,12 +10,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FaCaretDown } from "react-icons/fa";
-import { CiSearch } from "react-icons/ci";
-import { MdOutlineEmail } from "react-icons/md";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useRegister } from "../../slices/auth/auth.hooks";
-import { TbBrandApple } from "react-icons/tb";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const googleIcon = require("../../../assets/Google icon.png");
 const ghanaFlag = require("../../../assets/ghana-flag.png");
@@ -74,7 +71,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                       resizeMode="contain"
                     />
                   </View>
-                  <FaCaretDown size={24} color={"#000000"} />
+                  <MaterialCommunityIcons name="chevron-down" size={24} color="#000000" />
                 </View>
 
                 <TextInput
@@ -124,7 +121,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               </Pressable>
 
               <Pressable className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-3">
-                <TbBrandApple size={16} color="#000000" />
+                <MaterialCommunityIcons name="apple" size={16} color="#000000" />
                 <Text className="text-[#1F2A33] text-sm font-medium">
                   Continue with Apple
                 </Text>
@@ -135,7 +132,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 onPress={() => navigation.navigate("EmailSignUp")}
               >
                 <Text className="text-lg mr-2">
-                  <MdOutlineEmail size={16} color={"#000000"} />
+                  <MaterialCommunityIcons name="email" size={16} color="#000000" />
                 </Text>
                 <Text className="text-sm text-[#262D3A] font-medium">
                   Continue with Email
@@ -149,7 +146,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               </View>
 
               <View className="flex-row items-center justify-center gap-2">
-                <CiSearch size={14} color={"#000000"}></CiSearch>
+                <MaterialCommunityIcons name="magnify" size={14} color="#000000" />
                 <Pressable
                   onPress={() =>
                     navigation.navigate("FindAccount", {

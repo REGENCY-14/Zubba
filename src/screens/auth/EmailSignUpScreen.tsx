@@ -9,10 +9,8 @@ import {
   View,
   Image,
 } from "react-native";
-import { CiSearch } from "react-icons/ci";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MdOutlineLocalPhone } from "react-icons/md";
-import { TbBrandApple } from "react-icons/tb";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useRegister } from "../../slices/auth/auth.hooks";
@@ -111,7 +109,7 @@ export function EmailSignUpScreen({
             </Pressable>
 
             <Pressable className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-5">
-              <TbBrandApple size={16} color="#000000" />
+              <MaterialCommunityIcons name="apple" size={16} color="#000000" />
               <Text className="text-[#1F2A33] text-sm font-medium">
                 Continue with Apple
               </Text>
@@ -121,7 +119,7 @@ export function EmailSignUpScreen({
               className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-5"
               onPress={() => navigation.navigate("SignUp")}
             >
-              <MdOutlineLocalPhone size={16} color="#000000" />
+              <MaterialCommunityIcons name="phone" size={16} color="#000000" />
               <Text className="ml-2 text-[#262D3A] text-sm font-medium">
                 Continue with Phone
               </Text>
@@ -147,7 +145,7 @@ export function EmailSignUpScreen({
             </View>
 
             <View className="flex-row items-center justify-center gap-2">
-              <CiSearch size={14} color={"#000000"}></CiSearch>
+              <MaterialCommunityIcons name="magnify" size={14} color="#000000" />
               <Pressable
                 onPress={() =>
                   navigation.navigate("FindAccount", {

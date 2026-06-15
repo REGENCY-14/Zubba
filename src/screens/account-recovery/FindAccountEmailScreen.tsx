@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
@@ -94,7 +94,7 @@ export function FindAccountEmailScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <IoMdArrowBack color="#000000" size={24} />
+            <MaterialCommunityIcons name="arrow-left" color="#000000" size={24} />
           </Pressable>
 
           <Pressable
@@ -110,7 +110,7 @@ export function FindAccountEmailScreen({
             ) : (
               <>
                 <Text className="text-white text-sm">Next</Text>
-                <IoMdArrowForward size={12} color="#fff" />
+                <MaterialCommunityIcons name="arrow-right" size={12} color="#fff" />
               </>
             )}
           </Pressable>

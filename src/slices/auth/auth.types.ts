@@ -12,15 +12,11 @@ export interface User {
   id: string;
   email?: string;
   phone?: string;
+  firstname: string;
+  lastname: string;
   role: "customer" | "driver" | "admin";
   is_active: boolean;
   verified: boolean;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message: string;
 }
 
 export interface RegisterDto {

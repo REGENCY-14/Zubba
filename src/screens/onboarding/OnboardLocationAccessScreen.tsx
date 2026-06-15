@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { IoCloseCircleOutline } from "react-icons/io5";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
@@ -39,7 +39,7 @@ export const OnboardLocationAccessScreen = ({
               navigation.navigate("OnboardNotificationsAccess")
             }
           >
-            <IoCloseCircleOutline size={32} color="#000000" />
+            <MaterialCommunityIcons name="close-circle" size={32} color="#000000" />
           </TouchableOpacity>
           <Image
             source={locationAccess}

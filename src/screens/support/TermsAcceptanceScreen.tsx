@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import { IoMdArrowBack } from "react-icons/io";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 
@@ -76,7 +76,7 @@ export function TermsAcceptanceScreen({
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
             <Text className="text-2xl text-black">
-              <IoMdArrowBack color="#000000" size={24} />
+              <MaterialCommunityIcons name="arrow-left" color="#000000" size={24} />
             </Text>
           </Pressable>
 

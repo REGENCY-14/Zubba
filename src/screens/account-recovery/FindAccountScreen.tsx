@@ -8,8 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
-import { FaCaretDown } from "react-icons/fa";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
@@ -78,7 +77,7 @@ export function FindAccountScreen({
                   resizeMode="contain"
                 />
               </View>
-              <FaCaretDown size={24} color={"#000000"} />
+              <MaterialCommunityIcons name="chevron-down" size={24} color="#000000" />
             </View>
 
             <View
@@ -118,7 +117,7 @@ export function FindAccountScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <IoMdArrowBack color="#000000" size={24} />
+            <MaterialCommunityIcons color="#000000" name="arrow-left" size={24} />
           </Pressable>
 
           <Pressable

@@ -15,6 +15,9 @@
     "android": {
       "package": "com.zubba.app"
     },
-    "web": {}
+    "web": {},
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

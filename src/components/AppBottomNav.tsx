@@ -3,15 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 
-import {
-  HiHome,
-  HiOutlineHome,
-  HiCalendar,
-  HiOutlineCalendar,
-  HiCog6Tooth,
-  HiOutlineCog6Tooth,
-} from 'react-icons/hi2';
-import { HiOutlineSaveAs, HiSaveAs } from "react-icons/hi";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 type Tab = 'home' | 'calendar' | 'saved' | 'settings';
@@ -95,9 +87,9 @@ export function AppBottomNav({
           onPress={onHomePress}
           icon={
             isActive('home') ? (
-              <HiHome size={20} color="#fff" />
+              <MaterialCommunityIcons size={20} name="home" color="#fff" />
             ) : (
-              <HiOutlineHome size={20} color="#64748B" />
+              <MaterialCommunityIcons name="home-outline" size={20} color="#64748B" />
             )
           }
           label="Home"
@@ -108,9 +100,9 @@ export function AppBottomNav({
           onPress={onCalendarPress ?? (() => {})}
           icon={
             isActive('calendar') ? (
-              <HiCalendar size={20} color="#fff" />
+              <MaterialCommunityIcons size={20} name="calendar" color="#fff" />
             ) : (
-              <HiOutlineCalendar size={20} color="#64748B" />
+              <MaterialCommunityIcons name="calendar-outline" size={20} color="#64748B" />
             )
           }
           label="Calendar"
@@ -121,9 +113,9 @@ export function AppBottomNav({
           onPress={onSavedPress}
           icon={
             isActive('saved') ? (
-              <HiSaveAs size={20} color="#fff" />
+              <MaterialCommunityIcons size={20} name="bookmark" color="#fff" />
             ) : (
-              <HiOutlineSaveAs size={20} color="#64748B" />
+              <MaterialCommunityIcons name="bookmark-outline" size={20} color="#64748B" />
             )
           }
           label="Saved"
@@ -134,9 +126,9 @@ export function AppBottomNav({
           onPress={onSettingsPress ?? onAccountPress ?? (() => {})}
           icon={
             isActive('settings') ? (
-              <HiCog6Tooth size={20} color="#fff" />
+              <MaterialCommunityIcons size={20} name="cog" color="#fff" />
             ) : (
-              <HiOutlineCog6Tooth size={20} color="#64748B" />
+              <MaterialCommunityIcons name="cog" size={20} color="#64748B" />
             )
           }
           label="Settings"

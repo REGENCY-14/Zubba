@@ -8,10 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CiLock } from "react-icons/ci";
-import { FaBars } from "react-icons/fa6";
-import { TbBell } from "react-icons/tb";
-import { CiSearch, CiCircleRemove } from "react-icons/ci";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
@@ -32,11 +29,11 @@ export function LocationSharingScreen({
       <ImageBackground source={mapImage} className="flex-1 w-full h-full p-10">
         <View className="absolute w-full top-0 left-0 right-0 h-12 bg-white flex-row items-center justify-between px-4 z-10">
           <Pressable className="w-8 h-8 items-center justify-center">
-            <FaBars color="#0F1621" size={20} />
+            <MaterialCommunityIcons name="menu" size={20} color="#0F1621" />
           </Pressable>
 
           <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
-            <TbBell color="#0F1621" size={20} />
+            <MaterialCommunityIcons name="bell-outline" size={20} color="#0F1621" />
           </Pressable>
         </View>
 
@@ -50,7 +47,7 @@ export function LocationSharingScreen({
                 })
               }
             >
-              <CiSearch size={24} color="#000" />
+              <MaterialCommunityIcons name="magnify" size={24} color="#000" />
             </Pressable>
             <TextInput
               className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
@@ -64,7 +61,7 @@ export function LocationSharingScreen({
                 onPress={() => setSearchQuery("")}
                 className="w-8 h-8 items-center justify-center"
               >
-                <CiCircleRemove size={22} color="#EF4444" />
+                <MaterialCommunityIcons name="close-circle" size={22} color="#EF4444" />
               </Pressable>
             )}
           </View>
@@ -165,7 +162,7 @@ export function LocationSharingScreen({
             </View>
 
             <View className="text-sm text-[#574500] flex-row items-center justify-center gap-1">
-              <CiLock />
+              <MaterialCommunityIcons name="lock" size={16} color="#574500" />
               <Text className="text-[#574500] italic">
                 Upgrade to Gold for scheduled pickups
               </Text>
