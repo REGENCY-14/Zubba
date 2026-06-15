@@ -108,7 +108,7 @@ export function EmailSignUpScreen({
               </Text>
             </Pressable>
 
-            <Pressable className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-5">
+            <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 mb-5">
               <MaterialCommunityIcons name="apple" size={16} color="#000000" />
               <Text className="text-[#1F2A33] text-sm font-medium">
                 Continue with Apple
@@ -124,19 +124,6 @@ export function EmailSignUpScreen({
                 Continue with Phone
               </Text>
             </Pressable>
-
-            <View className="flex-row items-center justify-center gap-2 mb-4">
-              <Pressable
-                onPress={() =>
-                  navigation.navigate("FindAccount", {
-                    itemId: "find-account",
-                    title: "Find my account",
-                  })
-                }
-              >
-                <Text className="text-xs text-[#1F2A33]">Find my account</Text>
-              </Pressable>
-            </View>
 
             <View className="flex-row items-center my-4">
               <View className="flex-1 h-px bg-[#E8EEF3]" />

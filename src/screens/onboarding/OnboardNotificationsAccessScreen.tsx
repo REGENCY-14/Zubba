@@ -1,5 +1,4 @@
-import React from "react";
-import { View, Image, ScrollView, Text, Alert } from "react-native";
+import { View, Image, ScrollView, Text, Alert, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -11,33 +10,47 @@ export const OnboardNotificationsAccessScreen = ({
 }: RootStackScreenProps<"OnboardNotificationsAccess">) => {
   const sendNotification = require("../../../assets/sendNotification.png");
 
-  const enableNotifications = async () => {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+  const requestNotificationPermission = async () => {
+    try {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
 
-    let finalStatus = existingStatus;
+      if (finalStatus !== "granted") {
+        Alert.alert(
+          "Permission denied",
+          "You can enable notifications later in settings.",
+        );
+        return false;
+      }
 
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
+      return true;
+    } catch (error) {
+      console.log("Notification permission error:", error);
       Alert.alert(
-        "Permission denied",
-        "Notifications are required to keep you updated.",
+        "Error",
+        "Unable to request notification permissions right now.",
       );
-      return;
+      return false;
     }
-    Alert.alert("Success", "Notifications enabled!");
+  };
 
+  const enableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    if (!granted) return;
+
+    Alert.alert("Success", "Notifications enabled!");
     navigation.navigate("SignUp");
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView
-        className="flex-1 py-[20px] px-[20px]"
+        className="flex-1 px-[20px] py-[20px]"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
@@ -47,13 +60,16 @@ export const OnboardNotificationsAccessScreen = ({
             style={{ width: 250, height: 220, marginBottom: 24 }}
             resizeMode="contain"
           />
+
           <Text className="text-[24px] font-bold text-center text-gray-900 mb-3">
             Stay updated on requests and promos
           </Text>
-          <Text className="text-[15px] leading-6 font-thin text-center text-gray-400 mb-8">
+
+          <Text className="text-[15px] font-thin leading-6 text-center text-gray-500 mb-8">
             Get notified when your driver is nearby and for job updates.
           </Text>
         </View>
+
         <View className="w-full gap-3">
           <RoundedButton
             title="Enable notifications"

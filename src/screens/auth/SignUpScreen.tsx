@@ -120,8 +120,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 </Text>
               </Pressable>
 
-              <Pressable className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-3">
-                <MaterialCommunityIcons name="apple" size={16} color="#000000" />
+              <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 mb-3">
+                <MaterialCommunityIcons name="apple" size={18} color="#000000" />
                 <Text className="text-[#1F2A33] text-sm font-medium">
                   Continue with Apple
                 </Text>

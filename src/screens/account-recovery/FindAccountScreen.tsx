@@ -133,7 +133,7 @@ export function FindAccountScreen({
             ) : (
               <>
                 <Text className="text-white text-sm">Next</Text>
-                <IoMdArrowForward size={12} color="#fff" />
+                <MaterialCommunityIcons name="arrow-right" size={12} color="#fff" />
               </>
             )}
           </Pressable>

@@ -1,4 +1,3 @@
-import React from "react";
 import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,8 +22,6 @@ export const OnboardLocationAccessScreen = ({
       return;
     }
 
-    const location = await Location.getCurrentPositionAsync({});
-    console.log("User location:", location);
     navigation.navigate("OnboardNotificationsAccess");
   };
 
@@ -49,7 +46,7 @@ export const OnboardLocationAccessScreen = ({
           <Text className="text-[24px] font-bold text-center text-gray-900 mb-3">
             Allow location access
           </Text>
-          <Text className="text-[15px] font-thin leading-6 text-center text-gray-400 mb-8">
+          <Text className="text-[15px] font-thin leading-6 text-center text-gray-500 mb-8">
             Allow location access to find the closest driver for your request.
           </Text>
           <View className="w-full gap-3">
