@@ -1,32 +1,56 @@
-import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, TextInput, Pressable, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
+import { IoMdArrowBack } from "react-icons/io";
 
-import type { RootStackScreenProps } from '../../navigation/types';
+import type { RootStackScreenProps } from "../../navigation/types";
 
-// Purpose: Collect basic identity details as part of KYC flow.
-export function KycCollectionScreen({ route, navigation }: RootStackScreenProps<'KycCollection'>) {
-  const contact = route.params?.phone ?? route.params?.email ?? '';
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+export function KycCollectionScreen({
+  route,
+  navigation,
+}: RootStackScreenProps<"KycCollection">) {
+  const contact = route.params?.phone ?? route.params?.email ?? "";
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const isValid = firstName.trim().length > 0 && lastName.trim().length > 0;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right", "bottom"]}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoid}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <View style={styles.headerSpace} />
+    <SafeAreaView
+      className="flex-1 bg-white"
+      edges={["top", "left", "right", "bottom"]}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <ScrollView
+          contentContainerClassName="p-5"
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="h-[6px]" />
 
-          <View style={styles.frameTop}>
-            <Text style={styles.title}>What’s your name?</Text>
-            <Text style={styles.subtitle}>Let us know how to properly address you</Text>
+          <View className="w-full gap-3">
+            <Text className="text-[20px] font-bold text-[#1F2A33]">
+              What's your name?
+            </Text>
+            <Text className="text-[13px] text-[#1F2A33] mt-1">
+              Let us know how to properly address you
+            </Text>
           </View>
 
-          <View style={styles.form}>
-            <View style={styles.inputField}>
+          <View className="mt-6">
+            <View className="w-[358px] h-[56px] min-h-[56px] bg-white border border-black/5 rounded-full px-5 justify-center">
               <TextInput
-                style={styles.input}
+                className="text-[15px] text-[#707579] outline-none focus:outline-none"
                 placeholder="Please enter first name"
                 value={firstName}
                 onChangeText={setFirstName}
@@ -35,9 +59,9 @@ export function KycCollectionScreen({ route, navigation }: RootStackScreenProps<
               />
             </View>
 
-            <View style={[styles.inputField, { marginTop: 16 }]}>
+            <View className="w-[358px] h-[56px] min-h-[56px] bg-white border border-black/5 rounded-full px-5 justify-center mt-4">
               <TextInput
-                style={styles.input}
+                className="text-[15px] text-[#707579] outline-none focus:outline-none"
                 placeholder="Please enter last name"
                 value={lastName}
                 onChangeText={setLastName}
@@ -48,49 +72,29 @@ export function KycCollectionScreen({ route, navigation }: RootStackScreenProps<
           </View>
         </ScrollView>
 
-        <View style={styles.footer}>
-          <Pressable style={styles.arrowButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.arrow}>←</Text>
+        <View className="px-[22px] py-6 flex-row justify-between items-center">
+          <Pressable
+            onPress={() => navigation.goBack()}
+            className="w-12 h-12 rounded-xl items-center justify-center"
+          >
+            <Text className="text-2xl text-black">
+              <IoMdArrowBack color="#000000" size={24} />
+            </Text>
           </Pressable>
 
-          <Pressable disabled={!isValid} style={[styles.nextButton, !isValid && styles.nextButtonDisabled]} onPress={() => navigation.navigate('TermsAcceptance', { firstName, lastName })}>
-            <Text style={styles.nextText}>Continue</Text>
+          <Pressable
+            disabled={!isValid}
+            onPress={() =>
+              navigation.navigate("TermsAcceptance", { firstName, lastName })
+            }
+            className={`w-24 h-12 rounded-xl items-center justify-center ${
+              isValid ? "bg-[#34A853]" : "bg-[#34A853]/50"
+            }`}
+          >
+            <Text className="text-white text-sm">Continue</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  keyboardAvoid: { flex: 1, flexDirection: 'column' },
-  container: { paddingHorizontal: 22, paddingTop: 24, paddingBottom: 24 },
-  headerSpace: { height: 6 },
-  frameTop: { width: '100%', gap: 12 },
-  title: { fontSize: 20, fontWeight: '700', color: '#1F2A33' },
-  subtitle: { fontSize: 13, color: '#1F2A33', marginTop: 4 },
-  form: { marginTop: 24 },
-  inputField: {
-    width: 358,
-    height: 56,
-    minHeight: 56,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1.2,
-    borderColor: 'rgba(0,0,0,0.04)',
-    borderRadius: 18,
-    paddingHorizontal: 20,
-    justifyContent: 'center'
-  },
-  inputLabel: { fontFamily: 'Roboto', fontSize: 13, lineHeight: 24, color: '#707579', marginBottom: 0 },
-  input: { fontSize: 15, color: '#707579', lineHeight: 24 },
-  footer: { paddingHorizontal: 22, paddingVertical: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  arrowButton: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  arrow: { fontSize: 24, color: '#000' },
-  backButton: { width: 96, height: 48, backgroundColor: 'rgba(52,168,83,0.5)', borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  backText: { color: '#FFFFFF', fontSize: 14 },
-  nextButton: { width: 96, height: 48, backgroundColor: '#34A853', borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  nextButtonDisabled: { backgroundColor: 'rgba(52,168,83,0.5)' },
-  nextText: { color: '#FFFFFF', fontSize: 14 },
-  nextArrow: { color: '#FFFFFF', fontSize: 14, fontWeight: '500' }
-});

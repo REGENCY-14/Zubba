@@ -31,13 +31,13 @@ export const OnboardNotificationsAccessScreen = ({
     }
     Alert.alert("Success", "Notifications enabled!");
 
-    navigation.navigate("OnboardNotificationsAccess");
+    navigation.navigate("SignUp");
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView
-        className="flex-1 py-[20px] px-[10px]"
+        className="flex-1 py-[20px] px-[20px]"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >

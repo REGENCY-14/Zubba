@@ -1,34 +1,64 @@
-import { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from "react";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { FaCaretDown } from "react-icons/fa";
+import { CiSearch } from "react-icons/ci";
+import { MdOutlineEmail } from "react-icons/md";
+import type { RootStackScreenProps } from "../../navigation/types";
 
-import type { RootStackScreenProps } from '../../navigation/types';
+const googleIcon = require("../../../assets/Google icon.png");
+const ghanaFlag = require("../../../assets/ghana-flag.png");
 
-const googleIcon = require('../../../assets/Google icon.png');
-const ghanaFlag = require('../../../assets/ghana-flag.png');
+export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-export function SignUpScreen({ navigation }: RootStackScreenProps<'SignUp'>) {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const digitsOnly = phoneNumber.replace(/\D/g, '');
+  const digitsOnly = phoneNumber.replace(/\D/g, "");
   const canContinue = digitsOnly.length >= 6;
-  const existingTail = '1234567890';
+
+  const existingTail = "1234567890";
   const isExisting = digitsOnly === existingTail || digitsOnly.endsWith(existingTail);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoid}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-          <View style={styles.container}>
-            <View style={styles.content}>
-              <Text style={styles.title}>What's your phone number</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="flex-1 px-[20px] py-[20px]">
+            <View className="flex-1">
+              <Text className="text-[15px] font-normal text-[#1F2A33] mb-2">
+                What's your phone number
+              </Text>
 
-              <View style={styles.inputWrapper}>
-                <View style={styles.countryCodePicker}>
-                  <Image source={ghanaFlag} style={styles.flagIcon} resizeMode="contain" />
-                  <Text style={styles.chevron}>›</Text>
+              <View className="flex-row items-center gap-2 mb-4">
+                <View className="flex-row rounded-full items-center justify-between gap-4 h-12 p-[10px] bg-white border border-[#F2F2F2]">
+                  <View className="rounded-full overflow-hidden">
+                    <Image
+                      source={ghanaFlag}
+                      style={{ width: 28, height: 20 }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <FaCaretDown size={24} color={"#000000"} />
                 </View>
+
                 <TextInput
-                  style={styles.phoneInput}
+                  className="flex-1 h-12 px-4 border border-[#F2F2F2] rounded-full bg-white text-[15px] text-[#707579]"
                   placeholder="phone number"
                   placeholderTextColor="#A8A8A8"
                   keyboardType="phone-pad"
@@ -36,225 +66,88 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<'SignUp'>) {
                   onChangeText={setPhoneNumber}
                 />
               </View>
+
               {!canContinue && phoneNumber.length > 0 ? (
-                <Text style={styles.phoneError}>Enter a valid phone number</Text>
+                <Text className="text-red-600 text-xs mb-2 px-1">
+                  Enter a valid phone number
+                </Text>
               ) : null}
 
               <Pressable
-                style={[styles.continueButton, !canContinue && styles.continueButtonDisabled]}
-                onPress={() => navigation.navigate('Verify', { phone: phoneNumber, userExists: isExisting })}
+                className={[
+                  "h-12 rounded-full items-center justify-center mb-4",
+                  canContinue ? "bg-[#34A853]" : "bg-[#34A853] opacity-60",
+                ].join(" ")}
+                onPress={() =>
+                  navigation.navigate("Verify", {
+                    phone: phoneNumber,
+                    userExists: isExisting,
+                  })
+                }
                 disabled={!canContinue}
               >
-                <Text style={styles.continueButtonText}>Continue</Text>
+                <Text className="text-white text-sm">Continue</Text>
               </Pressable>
 
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or</Text>
-                <View style={styles.dividerLine} />
+              <View className="flex-row items-center my-4">
+                <View className="flex-1 h-px bg-[#E8EEF3]" />
+                <Text className="mx-4 text-xs text-[#656F77]">or</Text>
+                <View className="flex-1 h-px bg-[#E8EEF3]" />
               </View>
 
-              <Pressable style={styles.googleButton} onPress={() => {}}>
-                <Image source={googleIcon} style={styles.googleIcon} resizeMode="contain" />
-                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 bg-white mb-3">
+                <Image
+                  source={googleIcon}
+                  style={{ width: 16, height: 16 }}
+                  resizeMode="contain"
+                />
+                <Text className="text-sm text-[#262D3A] font-medium">
+                  Continue with Google
+                </Text>
               </Pressable>
 
-              <Pressable style={styles.emailButton} onPress={() => navigation.navigate('EmailSignUp')}>
-                <Text style={styles.emailIcon}>✉</Text>
-                <Text style={styles.emailButtonText}>Continue with Email</Text>
+              <Pressable
+                className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 bg-white mb-5"
+                onPress={() => navigation.navigate("EmailSignUp")}
+              >
+                <Text className="text-lg mr-2">
+                  <MdOutlineEmail size={16} color={"#000000"} />
+                </Text>
+                <Text className="text-sm text-[#262D3A] font-medium">
+                  Continue with Email
+                </Text>
               </Pressable>
 
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or</Text>
-                <View style={styles.dividerLine} />
+              <View className="flex-row items-center my-4">
+                <View className="flex-1 h-px bg-[#E8EEF3]" />
+                <Text className="mx-4 text-xs text-[#656F77]">or</Text>
+                <View className="flex-1 h-px bg-[#E8EEF3]" />
               </View>
 
-              <Pressable onPress={() => navigation.navigate('FindAccount', { itemId: 'find-account', title: 'Find my account' })}>
-                <Text style={styles.findAccountText}>Find my account</Text>
-              </Pressable>
+              <View className="flex-row items-center justify-center gap-2">
+                <CiSearch size={14} color={"#000000"}></CiSearch>
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("FindAccount", {
+                      itemId: "find-account",
+                      title: "Find my account",
+                    })
+                  }
+                >
+                  <Text className="text-center text-xs text-[#1F2A33]">
+                    Find my account
+                  </Text>
+                </Pressable>
+              </View>
+
+              <Text className="text-[11px] text-[#707579] mt-4 text-left">
+                By continuing, you agree to calls including autodialler,
+                WhatsApp or texts from Zubba and its affiliates.
+              </Text>
             </View>
-
-            <Text style={styles.disclaimer}>
-              By continuing, you agree to calls including autodialler, WhatsApp or texts from Zubba and its affiliates.
-            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF'
-  },
-  keyboardAvoid: {
-    flex: 1
-  },
-  scrollContent: {
-    flexGrow: 1
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 22,
-    paddingTop: 66,
-    paddingBottom: 24,
-    justifyContent: 'flex-start'
-  },
-  content: {
-    flex: 1,
-    marginBottom: 22
-  },
-  title: {
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: '400',
-    color: '#1F2A33',
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-    gap: 8
-  },
-  countryCodePicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: 94,
-    height: 48,
-    padding: 10,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F2F2F2',
-    borderRadius: 12,
-    overflow: 'hidden'
-  },
-  flagIcon: {
-    width: 28,
-    height: 20
-  },
-  chevron: {
-    fontSize: 24,
-    lineHeight: 24,
-    color: '#000000'
-  },
-  phoneInput: {
-    flex: 1,
-    height: 48,
-    paddingHorizontal: 16,
-    paddingVertical: 0,
-    borderWidth: 1,
-    borderColor: '#F2F2F2',
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    fontSize: 15,
-    lineHeight: 18,
-    color: '#707579'
-  },
-  continueButton: {
-    height: 48,
-    backgroundColor: '#34A853',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16
-  },
-  continueButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '400'
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    marginVertical: 16
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E8EEF3'
-  },
-  dividerText: {
-    color: '#656F77',
-    fontSize: 12,
-    lineHeight: 16
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 12,
-    height: 48,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 12
-  },
-  googleIcon: {
-    width: 16,
-    height: 16,
-    marginRight: 8
-  },
-  googleButtonText: {
-    color: '#262D3A',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  emailButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 12,
-    height: 48,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 20
-  },
-  emailIcon: {
-    fontSize: 18,
-    marginRight: 8
-  },
-  emailButtonText: {
-    color: '#262D3A',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  findAccountText: {
-    alignSelf: 'stretch',
-    textAlign: 'center',
-    color: '#1F2A33',
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '400',
-    paddingHorizontal: 4,
-    marginVertical: 4
-  },
-  disclaimer: {
-    fontSize: 11,
-    color: '#707579',
-    lineHeight: 16,
-    marginTop: 12,
-    textAlign: 'left',
-    alignSelf: 'stretch',
-    paddingHorizontal: 4
-  },
-  continueButtonDisabled: {
-    opacity: 0.6
-  },
-  phoneError: {
-    color: '#DC2626',
-    fontSize: 12,
-    marginTop: 6,
-    marginBottom: 8,
-    paddingHorizontal: 4
-  }
-});

@@ -32,7 +32,7 @@ export const OnboardLocationAccessScreen = ({
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1">
         <View className="h-[340px] bg-neutral-300 flex-1" />
-        <View className="-mt-8 bg-white rounded-t-[31px] px-[10px] py-[20px] items-center">
+        <View className="-mt-8 bg-white rounded-t-[31px] px-[20px] py-[20px] items-center">
           <TouchableOpacity
             className="absolute top-6 right-6 z-10"
             onPress={() =>

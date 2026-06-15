@@ -1,147 +1,328 @@
-import { useMemo, useState, useRef, useEffect } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMemo, useState, useRef, useEffect } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  Modal,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import type { RootStackScreenProps } from '../../navigation/types';
+import type { RootStackScreenProps } from "../../navigation/types";
 
-export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<'Verify'>) {
-  const phone = route.params?.phone ?? '';
-  const email = route.params?.email ?? '';
+export function VerifyOtpScreen({
+  route,
+  navigation,
+}: RootStackScreenProps<"Verify">) {
+  const phone = route.params?.phone ?? "";
+  const email = route.params?.email ?? "";
+
   const contact = email || phone;
-  const deliveryLabel = email ? 'email' : 'SMS';
-  const [codeDigits, setCodeDigits] = useState<string[]>(['', '', '', '']);
+  const deliveryLabel = email ? "email" : "SMS";
 
-  const inputRefs = [useRef<TextInput | null>(null), useRef<TextInput | null>(null), useRef<TextInput | null>(null), useRef<TextInput | null>(null)];
+  const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
+  const [resendTimer, setResendTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const [showResendModal, setShowResendModal] = useState(false);
+
+  const inputRefs = [
+    useRef<TextInput | null>(null),
+    useRef<TextInput | null>(null),
+    useRef<TextInput | null>(null),
+    useRef<TextInput | null>(null),
+  ];
 
   useEffect(() => {
     inputRefs[0].current?.focus();
   }, []);
 
-  const isValid = useMemo(() => codeDigits.every(digit => digit.length === 1), [codeDigits]);
-  const [showResendModal, setShowResendModal] = useState(false);
+  useEffect(() => {
+    if (resendTimer === 0) {
+      setCanResend(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const isValid = useMemo(
+    () => codeDigits.every((d) => d.length === 1),
+    [codeDigits],
+  );
+
   const userExists = route.params?.userExists ?? false;
-  const knownExistingContacts = ['+233241122310'];
+  const knownExistingContacts = ["+233241122310"];
   const contactValue = contact;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoid}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: 22,
+            paddingTop: 66,
+            paddingBottom: 24,
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {email ? (
-            <View style={styles.emailIntroWrap}>
-              <Text style={styles.emailTitle}>Enter the 4-digits code sent to you at:</Text>
-              <Text style={styles.contactText}>{contact}</Text>
+            <View className="gap-2 mb-3">
+              <Text className="text-[18px] text-[#1F2A33]">
+                Enter the 4-digits code sent to you at:
+              </Text>
+              <Text className="text-base text-[#1F2A33]">{contact}</Text>
             </View>
           ) : (
-            <View style={styles.introWrap}>
-              <Text style={styles.title}>Enter the 4-digits code sent via {deliveryLabel} at {contact}</Text>
-              <Pressable style={styles.changeContactButton} onPress={() => navigation.navigate('SignUp')}>
-                <Text style={styles.changeContactText}>changed my mobile number?</Text>
+            <View className="gap-1">
+              <Text className="text-[18px] text-[#1F2A33]">
+                Enter the 4-digits code sent via {deliveryLabel} at {contact}
+              </Text>
+
+              <Pressable onPress={() => navigation.navigate("SignUp")}>
+                <Text className="text-[13px] underline text-[#1F2A33]">
+                  changed my mobile number?
+                </Text>
               </Pressable>
             </View>
           )}
 
-          <View style={styles.codeRow}>
-            {[0, 1, 2, 3].map(i => (
+          <View className="flex-row gap-3 mt-5">
+            {[0, 1, 2, 3].map((i) => (
               <TextInput
                 key={i}
                 ref={inputRefs[i]}
-                style={[styles.codeBox, i === 0 && codeDigits[0] === '' ? styles.codeBoxActive : null]}
                 value={codeDigits[i]}
                 keyboardType="number-pad"
                 maxLength={1}
-                textAlign="center"
-                onChangeText={ch => {
+                className={[
+                  "w-[44px] h-[44px] rounded-md border text-[20px] font-medium text-[#1F2A33] text-center pb-[4px]",
+                  codeDigits[i]
+                    ? "border-[#F47309] bg-white"
+                    : "border-[#B8B8B833] bg-[#B8B8B833]",
+                ].join(" ")}
+                onChangeText={(ch) => {
+                  if (ch.length > 1) {
+                    const chars = ch.slice(0, 4).split("");
+                    const newDigits = ["", "", "", ""];
+
+                    chars.forEach((c, index) => {
+                      newDigits[index] = c;
+                    });
+
+                    setCodeDigits(newDigits);
+
+                    const isComplete = newDigits.every((d) => d !== "");
+
+                    if (isComplete) {
+                      setTimeout(() => {
+                        const otp = newDigits.join("");
+                        const exists =
+                          userExists ||
+                          knownExistingContacts.includes(contactValue);
+
+                        const isInvalid = otp !== "1234";
+
+                        if (isInvalid) {
+                          setCodeDigits(["", "", "", ""]);
+                          inputRefs[0].current?.focus();
+                          return;
+                        }
+
+                        if (exists) {
+                          navigation.replace(
+                            "ExistingUserNotification",
+                            email
+                              ? { email: contactValue }
+                              : { phone: contactValue },
+                          );
+                        } else {
+                          navigation.replace(
+                            "NewUserOnboarding",
+                            email
+                              ? { email: contactValue }
+                              : { phone: contactValue },
+                          );
+                        }
+                      }, 150);
+                    }
+
+                    inputRefs[Math.min(chars.length, 3)]?.current?.focus();
+                    return;
+                  }
+
                   if (!/^[0-9]$/.test(ch)) return;
+
                   const digits = [...codeDigits];
                   digits[i] = ch;
                   setCodeDigits(digits);
+
                   if (i < 3) {
                     inputRefs[i + 1].current?.focus();
                   }
+
+                  const isComplete = digits.every((d) => d !== "");
+
+                  if (isComplete) {
+                    setTimeout(() => {
+                      const otp = digits.join("");
+                      const exists =
+                        userExists ||
+                        knownExistingContacts.includes(contactValue);
+
+                      const isInvalid = otp !== "1234";
+
+                      if (isInvalid) {
+                        setCodeDigits(["", "", "", ""]);
+                        inputRefs[0].current?.focus();
+                        return;
+                      }
+
+                      if (exists) {
+                        navigation.replace(
+                          "ExistingUserNotification",
+                          email
+                            ? { email: contactValue }
+                            : { phone: contactValue },
+                        );
+                      } else {
+                        navigation.replace(
+                          "NewUserOnboarding",
+                          email
+                            ? { email: contactValue }
+                            : { phone: contactValue },
+                        );
+                      }
+                    }, 150);
+                  }
                 }}
-                onKeyPress={e => {
-                  if (e.nativeEvent.key === 'Backspace') {
-                    if (codeDigits[i] === '') {
-                      if (i > 0) inputRefs[i - 1].current?.focus();
+                onKeyPress={(e) => {
+                  if (e.nativeEvent.key === "Backspace") {
+                    const digits = [...codeDigits];
+
+                    if (digits[i] === "") {
                       if (i > 0) {
-                        const digits = [...codeDigits];
-                        digits[i - 1] = '';
-                        setCodeDigits(digits);
+                        inputRefs[i - 1].current?.focus();
+                        digits[i - 1] = "";
                       }
                     } else {
-                      const digits = [...codeDigits];
-                      digits[i] = '';
-                      setCodeDigits(digits);
+                      digits[i] = "";
                     }
+
+                    setCodeDigits(digits);
                   }
                 }}
               />
             ))}
           </View>
 
-          <Text style={styles.tipText}>Tip: Be sure to check your inbox and spam folders</Text>
+          {email && (
+            <Text className="text-xs underline text-[#1F2A33] mt-4">
+              Tip: Be sure to check your inbox and spam folders
+            </Text>
+          )}
 
           <Pressable
-            style={[styles.verifyButton, !isValid && styles.verifyButtonDisabled]}
             disabled={!isValid}
+            className={[
+              "h-12 rounded-full items-center justify-center mt-5",
+              isValid ? "bg-[#34A853]" : "bg-[#34A85380]",
+            ].join(" ")}
             onPress={() => {
-              if (!isValid) return;
-              const exists = userExists || knownExistingContacts.includes(contactValue);
+              const otp = codeDigits.join("");
+
+              const exists =
+                userExists || knownExistingContacts.includes(contactValue);
+
+              const isInvalid = otp !== "1234";
+
+              if (isInvalid) {
+                setCodeDigits(["", "", "", ""]);
+                inputRefs[0].current?.focus();
+                return;
+              }
+
               if (exists) {
-                if (email) {
-                  navigation.replace('ExistingUserNotification', { email: contactValue });
-                } else {
-                  navigation.replace('ExistingUserNotification', { phone: contactValue });
-                }
+                navigation.replace(
+                  "ExistingUserNotification",
+                  email ? { email: contactValue } : { phone: contactValue },
+                );
               } else {
-                // user doesn't exist -> show Inactive flow to collect additional info
-                if (email) {
-                  navigation.replace('NewUserOnboarding', { email: contactValue });
-                } else {
-                  navigation.replace('NewUserOnboarding', { phone: contactValue });
-                }
+                navigation.replace(
+                  "NewUserOnboarding",
+                  email ? { email: contactValue } : { phone: contactValue },
+                );
               }
             }}
           >
-            <Text style={styles.verifyButtonText}>Verify</Text>
+            <Text className="text-white text-sm">Verify</Text>
           </Pressable>
 
-          <Text style={styles.smallText}>Resend code by {deliveryLabel} (1:00)</Text>
+          <Text className="text-xs text-[#1F2A33] mt-2">
+            {canResend
+              ? `You can resend OTP now via ${deliveryLabel}`
+              : `Resend OTP in ${resendTimer}s via ${deliveryLabel}`}
+          </Text>
 
-          <View style={styles.actionsWrap}>
-            <Pressable style={styles.pillButton} onPress={() => setShowResendModal(true)}>
-              <Text style={styles.pillButtonText}>Resend</Text>
+          <View className="gap-2 mt-3">
+            <Pressable
+              disabled={!canResend}
+              onPress={() => setShowResendModal(true)}
+              className={[
+                "border border-[#E2E8F0] rounded-full px-7 py-2 self-start",
+                !canResend ? "opacity-40" : "",
+              ].join(" ")}
+            >
+              <Text className="text-xs font-medium text-[#1F2A33]">Resend</Text>
             </Pressable>
 
-            <Pressable style={styles.pillButton} onPress={() => {}}>
-              <Text style={styles.pillButtonText}>{email ? 'Send code to another email' : 'Send code via WhatsApp'}</Text>
+            <Pressable className="border border-[#E2E8F0] rounded-full px-7 py-2 self-start">
+              <Text className="text-xs font-medium text-[#1F2A33]">
+                {email
+                  ? "Send code to another email"
+                  : "Send code via WhatsApp"}
+              </Text>
             </Pressable>
           </View>
 
-          <Modal visible={showResendModal} transparent animationType="fade" onRequestClose={() => setShowResendModal(false)}>
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalCard}>
-                <View style={styles.modalInner}>
-                  <Text style={styles.modalTitle}>Resend code to: {contact}</Text>
+          <Modal visible={showResendModal} transparent animationType="fade">
+            <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
+              <View className="w-[94%] bg-white rounded-2xl p-6 mb-10 items-center">
+                <Text className="text-center text-[18px] font-medium mb-3">
+                  Resend code to: {contact}
+                </Text>
 
-                  <View style={styles.modalButtons}>
-                    <Pressable
-                      style={styles.modalPrimaryButton}
-                      onPress={() => {
-                        // placeholder resend action
-                        setShowResendModal(false);
-                        setCodeDigits(['', '', '', '']);
-                        inputRefs[0].current?.focus();
-                      }}
-                    >
-                      <Text style={styles.modalPrimaryText}>Resend</Text>
-                    </Pressable>
+                <View className="w-full gap-3">
+                  <Pressable
+                    onPress={() => {
+                      setShowResendModal(false);
+                      setCodeDigits(["", "", "", ""]);
+                      setResendTimer(60);
+                      setCanResend(false);
+                      inputRefs[0].current?.focus();
+                    }}
+                    className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+                  >
+                    <Text className="text-white text-sm">Resend</Text>
+                  </Pressable>
 
-                    <Pressable style={styles.modalSecondaryButton} onPress={() => setShowResendModal(false)}>
-                      <Text style={styles.modalSecondaryText}>Cancel</Text>
-                    </Pressable>
-                  </View>
+                  <Pressable
+                    onPress={() => setShowResendModal(false)}
+                    className="h-12 border border-[#E2E8F0] rounded-full items-center justify-center"
+                  >
+                    <Text className="text-[#1F2A33] text-sm">Cancel</Text>
+                  </Pressable>
                 </View>
               </View>
             </View>
@@ -151,103 +332,3 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<'Ver
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  keyboardAvoid: { flex: 1 },
-  container: { paddingHorizontal: 22, paddingTop: 66, paddingBottom: 24, gap: 18 },
-  introWrap: { gap: 4 },
-  emailIntroWrap: { gap: 8, marginBottom: 8 },
-  emailTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    lineHeight: 25,
-    letterSpacing: 0.15,
-    color: '#1F2A33'
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    lineHeight: 25,
-    letterSpacing: 0.15,
-    color: '#1F2A33'
-  },
-  contactText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#1F2A33'
-  },
-  changeContactButton: { alignSelf: 'flex-start' },
-  changeContactText: {
-    fontSize: 13,
-    lineHeight: 25,
-    letterSpacing: 0.1,
-    textDecorationLine: 'underline',
-    color: '#1F2A33'
-  },
-  codeRow: { flexDirection: 'row', gap: 12, marginTop: 18 },
-  codeBox: {
-    width: 39,
-    height: 34,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(184, 184, 184, 0.2)',
-    backgroundColor: 'rgba(184, 184, 184, 0.2)',
-    fontSize: 20,
-    color: '#1F2A33',
-    fontWeight: '500',
-    lineHeight: 25,
-    paddingVertical: 0
-  },
-  codeBoxActive: { borderColor: '#F47309', backgroundColor: '#FFFFFF' },
-  tipText: {
-    fontSize: 11,
-    lineHeight: 25,
-    letterSpacing: 0.1,
-    textDecorationLine: 'underline',
-    color: '#1F2A33'
-  },
-  verifyButton: {
-    height: 48,
-    backgroundColor: '#34A853',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  verifyButtonDisabled: { backgroundColor: 'rgba(52, 168, 83, 0.5)' },
-  verifyButtonText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20 },
-  smallText: { color: '#1F2A33', fontSize: 11, lineHeight: 16 },
-  actionsWrap: { gap: 8, alignItems: 'flex-start' },
-  pillButton: {
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 22,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF'
-  },
-  pillButtonText: { color: '#1F2A33', fontSize: 12, lineHeight: 20, fontWeight: '500' }
-,
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(31, 42, 51, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'flex-end'
-  },
-  modalCard: {
-    width: 382,
-    maxWidth: '94%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 23,
-    padding: 24,
-    marginBottom: 47,
-    alignItems: 'center'
-  },
-  modalInner: { width: '100%', alignItems: 'center' },
-  modalTitle: { fontSize: 18, fontWeight: '500', lineHeight: 28, textAlign: 'center', color: '#000000', marginBottom: 12 },
-  modalButtons: { width: '100%', marginTop: 12 },
-  modalPrimaryButton: { height: 48, backgroundColor: '#31973D', borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  modalPrimaryText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20 },
-  modalSecondaryButton: { height: 48, marginTop: 12, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' },
-  modalSecondaryText: { color: '#1F2A33', fontSize: 14, lineHeight: 20 },
-});

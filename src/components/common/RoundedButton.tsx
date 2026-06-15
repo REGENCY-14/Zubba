@@ -3,7 +3,7 @@ import { Pressable, Text, PressableProps } from "react-native";
 
 interface RoundedButtonProps extends PressableProps {
   title: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "premium";
 }
 
 export default function RoundedButton({
@@ -12,12 +12,13 @@ export default function RoundedButton({
   ...props
 }: RoundedButtonProps) {
   const isPrimary = variant === "primary";
+  const isPremium = variant === "premium";
 
   return (
     <Pressable
       className={[
         "h-12 rounded-full justify-center items-center px-4",
-        isPrimary ? "bg-[#31973D]" : "bg-white border border-[#E2E8F0]",
+        isPremium ? "bg-[#FFE088]" : isPrimary ? "bg-[#31973D]" : "bg-white border border-[#E2E8F0]",
       ].join(" ")}
       {...props}
     >
