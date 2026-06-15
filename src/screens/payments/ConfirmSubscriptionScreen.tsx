@@ -2,8 +2,8 @@ import React from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type { RootStackScreenProps } from '../navigation/types';
-import { AppBottomNav } from '../components';
+import type { RootStackScreenProps } from '../../navigation/types';
+import { AppBottomNav } from '../../components';
 
 const PLANS = [
   {

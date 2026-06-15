@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { RootStackScreenProps } from '../navigation/types';
-import { AppBottomNav } from '../components';
+import type { RootStackScreenProps } from '../../navigation/types';
+import { AppBottomNav } from '../../components';
 
 export function WalletCheckoutScreen({ navigation }: RootStackScreenProps<'WalletCheckout'>) {
   return (

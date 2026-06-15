@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AppBottomNav } from '../components';
-import type { RootStackScreenProps } from '../navigation/types';
+import { AppBottomNav } from '../../components';
+import type { RootStackScreenProps } from '../../navigation/types';
 
-const mapImage = require('../../assets/RawMap.png');
+const mapImage = require('../../../assets/RawMap.png');
 
 const CARD_W = 280;
 const CARD_GAP = 16;

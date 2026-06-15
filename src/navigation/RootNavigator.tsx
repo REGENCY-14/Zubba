@@ -32,14 +32,14 @@ import { OnboardLocationAccessScreen } from '../screens/onboarding/OnboardLocati
 import { OnboardNotificationsAccessScreen } from '../screens/onboarding/OnboardNotificationsAccessScreen';
 import { KycCollectionScreen } from '../screens/onboarding/KycCollectionScreen';
 import { TermsAcceptanceScreen } from '../screens/support/TermsAcceptanceScreen';
-import { ChoosePlanScreen } from '../screens/ChoosePlanScreen';
-import { ConfirmSubscriptionScreen } from '../screens/ConfirmSubscriptionScreen';
-import { AddCardScreen } from '../screens/AddCardScreen';
-import { PremiumPaymentScreen } from '../screens/PremiumPaymentScreen';
-import { WalletNumberScreen } from '../screens/WalletNumberScreen';
-import { PremiumHomeScreen } from '../screens/PremiumHomeScreen';
-import { DriversFoundScreen } from '../screens/DriversFoundScreen';
-import { WalletCheckoutScreen } from '../screens/WalletCheckoutScreen';
+import { ChoosePlanScreen } from '../screens/payments/ChoosePlanScreen';
+import { ConfirmSubscriptionScreen } from '../screens/payments/ConfirmSubscriptionScreen';
+import { AddCardScreen } from '../screens/payments/AddCardScreen';
+import { PremiumPaymentScreen } from '../screens/payments/PremiumPaymentScreen';
+import { WalletNumberScreen } from '../screens/payments/WalletNumberScreen';
+import { PremiumHomeScreen } from '../screens/payments/PremiumHomeScreen';
+import { DriversFoundScreen } from '../screens/payments/DriversFoundScreen';
+import { WalletCheckoutScreen } from '../screens/payments/WalletCheckoutScreen';
 import type { RootStackParamList } from './types';
 
 import { SignInScreen } from '../screens/auth/SignInScreen';

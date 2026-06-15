@@ -3,10 +3,10 @@ import { ImageBackground, Modal, Pressable, StatusBar, StyleSheet, Text, TextInp
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppBottomNav } from '../components';
-import type { RootStackScreenProps } from '../navigation/types';
+import { AppBottomNav } from '../../components';
+import type { RootStackScreenProps } from '../../navigation/types';
 
-const mapImage = require('../../assets/RawMap.png');
+const mapImage = require('../../../assets/RawMap.png');
 
 type MetricCardProps = {
   icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];

@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { RootStackScreenProps } from '../navigation/types';
+import type { RootStackScreenProps } from '../../navigation/types';
 
 export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletNumber'>) {
   const [phone, setPhone] = React.useState('');

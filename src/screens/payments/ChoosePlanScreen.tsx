@@ -10,9 +10,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppBottomNav } from '../../components';
 
-import type { RootStackScreenProps } from '../navigation/types';
-import { AppBottomNav } from '../components';
+import type { RootStackScreenProps } from '../../navigation/types';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - 48;

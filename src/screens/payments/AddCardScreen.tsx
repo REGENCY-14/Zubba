@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type { RootStackScreenProps } from '../navigation/types';
+import type { RootStackScreenProps } from '../../navigation/types';
 
 const PLAN_TOTALS = ['800/year', '50/month', '550/year'] as const;
 
