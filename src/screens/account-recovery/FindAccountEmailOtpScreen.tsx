@@ -5,6 +5,8 @@ import {
   View,
   Modal,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,6 +31,8 @@ export function FindAccountEmailOtpScreen({
     [codeDigits],
   );
 
+  const isResending = resendOtpMutation.isPending;
+
   const handleVerify = async (otp: string) => {
     try {
       await verifyOtpMutation.mutateAsync({
@@ -48,16 +52,19 @@ export function FindAccountEmailOtpScreen({
   };
 
   const handleResend = async () => {
+    if (isResending) return;
+
     try {
       await resendOtpMutation.mutateAsync({
         authKey: "email",
         authValue: email,
-        purpose: "email_verification",
+        purpose: "login",
       });
 
       setShowResendModal(false);
       setCodeDigits(["", "", "", ""]);
     } catch (err) {
+      Alert.alert("Failed to resend otp, please try again later");
       console.log("Resend OTP failed:", err);
     }
   };
@@ -66,7 +73,6 @@ export function FindAccountEmailOtpScreen({
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-5 pb-6">
-
           <Text className="text-[15px] text-[#1F2A33] mb-2">
             Enter the 4-digits code sent to you at: {email}
           </Text>
@@ -98,6 +104,7 @@ export function FindAccountEmailOtpScreen({
           </Pressable>
 
           <Pressable
+            disabled={isResending}
             onPress={() => setShowResendModal(true)}
             className="self-start px-5 h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
           >
@@ -111,31 +118,38 @@ export function FindAccountEmailOtpScreen({
           visible={showResendModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowResendModal(false)}
+          onRequestClose={() => {
+            if (!isResending) {
+              setShowResendModal(false);
+            }
+          }}
         >
           <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
             <View className="w-[94%] bg-white rounded-2xl p-6 mb-10 items-center">
-
               <Text className="text-center text-[18px] font-medium mb-3">
                 Resend code to: {email}
               </Text>
 
               <View className="w-full gap-3">
-
                 <Pressable
+                  disabled={isResending}
                   onPress={handleResend}
-                  className="h-12 bg-[#31973D] rounded-xl items-center justify-center"
+                  className={`h-12 bg-[#31973D] rounded-xl items-center justify-center ${isResending && "opacity-50"}`}
                 >
-                  <Text className="text-white text-sm">Resend</Text>
+                  {isResending ? (
+                    <ActivityIndicator color="#FFFFFF" />
+                  ) : (
+                    <Text className="text-white text-sm">Resend</Text>
+                  )}
                 </Pressable>
 
                 <Pressable
+                  disabled={isResending}
                   onPress={() => setShowResendModal(false)}
                   className="h-12 border border-[#E2E8F0] rounded-xl items-center justify-center"
                 >
                   <Text className="text-[#1F2A33] text-sm">Cancel</Text>
                 </Pressable>
-
               </View>
             </View>
           </View>

@@ -135,10 +135,7 @@ export function EmailSignUpScreen({
               <MaterialCommunityIcons name="magnify" size={14} color="#000000" />
               <Pressable
                 onPress={() =>
-                  navigation.navigate("FindAccount", {
-                    itemId: "find-account",
-                    title: "Find my account",
-                  })
+                  navigation.navigate("FindAccountEmail")
                 }
               >
                 <Text className="text-center text-xs text-[#1F2A33]">

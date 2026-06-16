@@ -5,11 +5,14 @@ import {
   View,
   Modal,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { OTPInput } from "../../components/common/OTPInput";
+import { useResendOtp } from "../../slices/auth/auth.hooks";
 
 export function FindAccountOtpScreen({
   route,
@@ -19,6 +22,9 @@ export function FindAccountOtpScreen({
 
   const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
   const [showResendModal, setShowResendModal] = useState(false);
+
+  const resendOtpMutation = useResendOtp();
+  const isResending = resendOtpMutation.isPending;
 
   const isCodeComplete = useMemo(
     () => codeDigits.every((d) => d !== ""),
@@ -33,11 +39,28 @@ export function FindAccountOtpScreen({
     });
   };
 
+  const handleResend = async () => {
+    if (isResending) return;
+
+    try {
+      await resendOtpMutation.mutateAsync({
+        authKey: "phone",
+        authValue: phone,
+        purpose: "login",
+      });
+
+      setShowResendModal(false);
+      setCodeDigits(["", "", "", ""]);
+    } catch (err) {
+      Alert.alert("Failed to resend otp, please try again later");
+      console.log("Resend OTP failed:", err);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-5 pb-6">
-
           <Text className="text-[18px] font-bold text-[#1F2A33] mb-8">
             Enter the 4-digits code sent via SMS at {phone}
           </Text>
@@ -69,6 +92,7 @@ export function FindAccountOtpScreen({
           </Pressable>
 
           <Pressable
+            disabled={isResending}
             onPress={() => setShowResendModal(true)}
             className="w-[99px] h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
           >
@@ -78,6 +102,7 @@ export function FindAccountOtpScreen({
           </Pressable>
 
           <Pressable
+            disabled={isResending}
             className="mt-2 w-[178px] h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
           >
             <Text className="text-xs font-medium text-[#1F2A33]">
@@ -90,33 +115,42 @@ export function FindAccountOtpScreen({
           visible={showResendModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowResendModal(false)}
+          onRequestClose={() => {
+            if (!isResending) {
+              setShowResendModal(false);
+            }
+          }}
         >
           <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
             <View className="w-[94%] bg-white rounded-2xl p-6 mb-10 items-center">
-
               <Text className="text-center text-[18px] font-medium mb-3">
                 Resend code to: {phone}
               </Text>
 
               <View className="w-full gap-3">
-
-                <Pressable className="h-12 bg-[#31973D] rounded-xl items-center justify-center">
-                  <Text className="text-white text-sm">Resend</Text>
+                <Pressable
+                  disabled={isResending}
+                  onPress={handleResend}
+                  className={`h-12 bg-[#31973D] rounded-xl items-center justify-center ${isResending && "opacity-50"}`}
+                >
+                  {isResending ? (
+                    <ActivityIndicator color="#FFFFFF" />
+                  ) : (
+                    <Text className="text-white text-sm">Resend</Text>
+                  )}
                 </Pressable>
 
                 <Pressable
+                  disabled={isResending}
                   onPress={() => setShowResendModal(false)}
                   className="h-12 border border-[#E2E8F0] rounded-xl items-center justify-center"
                 >
                   <Text className="text-[#1F2A33] text-sm">Cancel</Text>
                 </Pressable>
-
               </View>
             </View>
           </View>
         </Modal>
-
       </ScrollView>
     </SafeAreaView>
   );

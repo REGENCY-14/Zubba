@@ -28,7 +28,7 @@ export function OTPInput({
           keyboardType="number-pad"
           maxLength={i === 0 ? length : 1}
           className={[
-            "w-[44px] h-[44px] rounded-md border text-[20px] text-center font-medium pb-1",
+            "w-[44px] h-[44px] pb-2 rounded-md border text-[20px] text-center font-medium",
             value[i]
               ? "border-[#34A853] bg-white text-[#1F2A33]"
               : "border-[#B8B8B833] bg-[#B8B8B833] text-[#1F2A33]",
