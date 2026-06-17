@@ -1,13 +1,7 @@
 import { useState } from "react";
-import {
-  Text,
-  View,
-  Image,
-  Pressable,
-  TextInput,
-} from "react-native";
+import { Text, View, Image, Pressable, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { Card } from "../../components/Card";
 import type { RootStackScreenProps } from "../../navigation/types";
@@ -39,7 +33,6 @@ export function DetailsScreen({
             <View className="flex-row items-center gap-2 h-12">
 
               <View className="flex-row items-center justify-between w-[94px] h-12 px-[10px] border border-[#F2F2F2] rounded-xl bg-white">
-
                 <Image
                   source={ghanaFlag}
                   style={{ width: 28, height: 20 }}
@@ -74,16 +67,13 @@ export function DetailsScreen({
                 Search my account
               </Text>
             </Pressable>
+
           </View>
 
           <View className="flex-row items-center justify-between h-12">
 
             <Pressable onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons
-                name="arrow-left"
-                size={26}
-                color="#000"
-              />
+              <MaterialCommunityIcons name="arrow-left" size={26} color="#000" />
             </Pressable>
 
             <Pressable
@@ -93,7 +83,9 @@ export function DetailsScreen({
             >
               <Text className="text-white text-sm">Next</Text>
             </Pressable>
+
           </View>
+
         </View>
       </SafeAreaView>
     );

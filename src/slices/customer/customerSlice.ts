@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Customer } from "./customer.types";
 
 const initialState: Customer = {
@@ -11,7 +11,20 @@ const initialState: Customer = {
 const customerSlice = createSlice({
     name: "customer",
     initialState,
-    reducers: {}
+    reducers: {
+        setCustomer: (state, action: PayloadAction<{
+            id: string, points: number, mass_recycled: number,
+            is_premium: boolean
+        }>) => {
+            state.id = action.payload.id;
+            state.points = action.payload.points;
+            state.mass_recycled = action.payload.mass_recycled;
+            state.is_premium = action.payload.is_premium;
+        },
+        clearCustomer: (state) => {
+            state = initialState
+        }
+    }
 })
 
 export const {} = customerSlice.actions

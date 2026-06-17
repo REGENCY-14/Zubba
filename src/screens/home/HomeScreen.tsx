@@ -1,80 +1,72 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const zubbaLogo = require('../../../assets/zubba icon.png');
 
-export function LocationSharingScreen({ navigation }: RootStackScreenProps<'LocationSharing'>) {
+export function LocationSharingScreen({
+  navigation
+}: RootStackScreenProps<'LocationSharing'>) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.banner}>
-        <Text style={styles.bannerIcon}>⌖</Text>
-        <Text style={styles.bannerText}>Location sharing is disabled. Tap here to enable</Text>
-        <Pressable onPress={() => navigation.navigate('Details', { itemId: 'location', title: 'Enable location sharing' })} hitSlop={10}>
-          <Text style={styles.bannerChevron}>›</Text>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="min-h-[56px] px-[14px] bg-[#3AA548] flex-row items-center justify-between">
+        <View className="flex-row items-center flex-1">
+          <MaterialCommunityIcons
+            name="map-marker-outline"
+            size={18}
+            color="#FFFFFF"
+            style={{ width: 24, marginRight: 10, textAlign: 'center' }}
+          />
+
+          <Text className="flex-1 text-white text-[15px] leading-5 font-medium">
+            Location sharing is disabled. Tap here to enable
+          </Text>
+        </View>
+
+        <Pressable
+          onPress={() =>
+            navigation.navigate('Details', {
+              itemId: 'location',
+              title: 'Enable location sharing'
+            })
+          }
+          hitSlop={10}
+        >
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={28}
+            color="#FFFFFF"
+            style={{ marginLeft: 10 }}
+          />
         </Pressable>
       </View>
 
-      <View style={styles.container}>
-        <View style={styles.logoWrap}>
-          <Pressable onPress={() => navigation.navigate('Details', { itemId: 'logo', title: 'Zubba' })}>
-            <Image source={zubbaLogo} style={styles.logo} resizeMode="contain" />
+      <View className="flex-1 bg-white items-center justify-center">
+        <View className="items-center justify-center">
+          <Pressable
+            onPress={() =>
+              navigation.navigate('Details', {
+                itemId: 'logo',
+                title: 'Zubba'
+              })
+            }
+          >
+            <Image
+              source={zubbaLogo}
+              resizeMode="contain"
+              style={{
+                width: 360,
+                height: 350,
+                tintColor: '#F97316',
+                transform: [{ scaleY: 0.92 }]
+              }}
+            />
           </Pressable>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF'
-  },
-  banner: {
-    minHeight: 56,
-    paddingHorizontal: 14,
-    backgroundColor: '#3AA548',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-  bannerIcon: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    width: 24,
-    textAlign: 'center',
-    marginRight: 10
-  },
-  bannerText: {
-    flex: 1,
-    color: '#FFFFFF',
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  bannerChevron: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: '400',
-    marginLeft: 10,
-    marginTop: -2
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  logoWrap: {
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  logo: {
-    width: 360,
-    height: 350,
-    tintColor: '#F97316',
-    transform: [{ scaleY: 0.92 }]
-  }
-});

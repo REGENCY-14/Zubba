@@ -1,6 +1,5 @@
 import { api } from "./axios";
 import {
-  ApiResponse,
   RegisterDto,
   VerifyOtpDto,
   ResendOtpDto,
@@ -8,6 +7,7 @@ import {
   User,
   AuthTokens,
 } from "../slices/auth/auth.types";
+import { ApiResponse } from "../types/api.types";
 
 export const authService = {
   register: async (payload: RegisterDto) => {

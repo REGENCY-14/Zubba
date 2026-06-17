@@ -4,7 +4,8 @@ import {
   UpdateUserDto,
   FindUserDto,
 } from "../types/user.types";
-import { ApiResponse, User } from "../slices/auth/auth.types";
+import { User } from "../slices/auth/auth.types";
+import { ApiResponse } from "../types/api.types";
 
 export const userService = {
   getUsers: async (params?: { limit?: number; current_page?: number }) => {
