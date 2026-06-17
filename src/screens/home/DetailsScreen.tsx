@@ -1,33 +1,64 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, Image, Pressable, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from "react";
+import {
+  Text,
+  View,
+  Image,
+  Pressable,
+  TextInput,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { Card } from '../../components/Card';
-import type { RootStackScreenProps } from '../../navigation/types';
+import { Card } from "../../components/Card";
+import type { RootStackScreenProps } from "../../navigation/types";
 
-const ghanaFlag = require('../../../assets/ghana-flag.png');
+const ghanaFlag = require("../../../assets/ghana-flag.png");
 
-export function DetailsScreen({ route, navigation }: RootStackScreenProps<'Details'>) {
+export function DetailsScreen({
+  route,
+  navigation,
+}: RootStackScreenProps<"Details">) {
   const item = route.params;
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const isFindAccount = item?.itemId === 'find-account';
+
+  const isFindAccount = item?.itemId === "find-account";
   const isPhoneValid = phoneNumber.trim().length > 0;
 
   if (isFindAccount) {
     return (
-      <SafeAreaView style={styles.findAccountSafeArea} edges={['top', 'left', 'right', 'bottom']}>
-        <View style={styles.findAccountContainer}>
-          <View style={styles.findAccountContent}>
-            <Text style={styles.findAccountTitle}>What's your phone number</Text>
+      <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right", "bottom"]}>
+        <View className="flex-1 px-[23px] pt-10 pb-6 justify-between">
 
-            <View style={styles.findAccountInputWrapper}>
-              <View style={styles.countryCodePicker}>
-                <Image source={ghanaFlag} style={styles.flagIcon} resizeMode="contain" />
-                <Text style={styles.chevron}>›</Text>
+          <View className="gap-4">
+
+            <Text className="text-[15px] leading-[22px] text-[#1F2A33]">
+              What's your phone number
+            </Text>
+
+            <View className="flex-row items-center gap-2 h-12">
+
+              <View className="flex-row items-center justify-between w-[94px] h-12 px-[10px] border border-[#F2F2F2] rounded-xl bg-white">
+
+                <Image
+                  source={ghanaFlag}
+                  style={{ width: 28, height: 20 }}
+                  resizeMode="contain"
+                />
+
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={22}
+                  color="#000"
+                />
               </View>
+
               <TextInput
-                style={[styles.phoneInputDisabled, (isFocused || isPhoneValid) && styles.phoneInputActive]}
+                className={`flex-1 h-12 px-4 border rounded-xl text-[15px] ${
+                  isFocused || isPhoneValid
+                    ? "border-black text-[#1F2A33] opacity-100"
+                    : "border-black/10 text-[#707579] opacity-50"
+                }`}
                 placeholder="phone number"
                 placeholderTextColor="#A8A8A8"
                 keyboardType="phone-pad"
@@ -35,21 +66,32 @@ export function DetailsScreen({ route, navigation }: RootStackScreenProps<'Detai
                 onChangeText={setPhoneNumber}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                editable={true}
               />
             </View>
 
-            <Pressable style={styles.searchButton}>
-              <Text style={styles.searchButtonText}>Search my account</Text>
+            <Pressable className="w-[178px] h-8 border border-[#E2E8F0] rounded-full items-center justify-center">
+              <Text className="text-xs text-[#1F2A33] font-medium">
+                Search my account
+              </Text>
             </Pressable>
           </View>
 
-          <View style={styles.findAccountFooter}>
+          <View className="flex-row items-center justify-between h-12">
+
             <Pressable onPress={() => navigation.goBack()}>
-              <Text style={styles.backArrow}>←</Text>
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={26}
+                color="#000"
+              />
             </Pressable>
-            <Pressable style={[styles.nextButton, isPhoneValid && styles.nextButtonActive]}>
-              <Text style={styles.nextButtonText}>Next</Text>
+
+            <Pressable
+              className={`w-24 h-12 rounded-xl items-center justify-center ${
+                isPhoneValid ? "bg-[#34A853]" : "bg-[#34A853]/50"
+              }`}
+            >
+              <Text className="text-white text-sm">Next</Text>
             </Pressable>
           </View>
         </View>
@@ -58,149 +100,20 @@ export function DetailsScreen({ route, navigation }: RootStackScreenProps<'Detai
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#F8FAFC] p-5">
       <Card>
-        <Text style={styles.heading}>{item?.title ?? 'Details'}</Text>
-        <Text style={styles.body}>This is a placeholder screen connected through typed React Navigation.</Text>
-        <Text style={styles.meta}>Item ID: {item?.itemId ?? 'n/a'}</Text>
+        <Text className="text-[#0F172A] text-2xl font-extrabold mb-2">
+          {item?.title ?? "Details"}
+        </Text>
+
+        <Text className="text-[#475569] text-base leading-6 mb-3">
+          This is a placeholder screen connected through typed React Navigation.
+        </Text>
+
+        <Text className="text-[#334155] text-sm font-semibold">
+          Item ID: {item?.itemId ?? "n/a"}
+        </Text>
       </Card>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#F8FAFC'
-  },
-  heading: {
-    color: '#0F172A',
-    fontSize: 24,
-    fontWeight: '800',
-    marginBottom: 8
-  },
-  body: {
-    color: '#475569',
-    fontSize: 16,
-    lineHeight: 24,
-    marginBottom: 12
-  },
-  meta: {
-    color: '#334155',
-    fontSize: 14,
-    fontWeight: '600'
-  },
-  findAccountSafeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF'
-  },
-  findAccountContainer: {
-    flex: 1,
-    paddingHorizontal: 23,
-    paddingTop: 40,
-    paddingBottom: 24,
-    justifyContent: 'space-between'
-  },
-  findAccountContent: {
-    gap: 16
-  },
-  findAccountTitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#1F2A33',
-    fontWeight: '400',
-    marginBottom: 8
-  },
-  findAccountInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    height: 48
-  },
-  countryCodePicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: 94,
-    height: 48,
-    padding: 10,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F2F2F2',
-    borderRadius: 12
-  },
-  flagIcon: {
-    width: 28,
-    height: 20
-  },
-  chevron: {
-    fontSize: 24,
-    lineHeight: 24,
-    color: '#000000'
-  },
-  phoneInputDisabled: {
-    flex: 1,
-    height: 48,
-    paddingHorizontal: 16,
-    paddingVertical: 0,
-    borderWidth: 1.8,
-    borderColor: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    fontSize: 15,
-    lineHeight: 18,
-    color: '#707579',
-    opacity: 0.5
-  },
-  phoneInputActive: {
-    borderColor: '#000000',
-    opacity: 1,
-    color: '#1F2A33'
-  },
-  searchButton: {
-    width: 178,
-    height: 32,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8
-  },
-  searchButtonText: {
-    color: '#1F2A33',
-    fontSize: 12,
-    lineHeight: 20,
-    fontWeight: '500'
-  },
-  findAccountFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 48
-  },
-  backArrow: {
-    fontSize: 24,
-    color: '#000000',
-    fontWeight: '400'
-  },
-  nextButton: {
-    width: 96,
-    height: 48,
-    backgroundColor: 'rgba(52, 168, 83, 0.5)',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  nextButtonActive: {
-    backgroundColor: '#34A853'
-  },
-  nextButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '400'
-  }
-});

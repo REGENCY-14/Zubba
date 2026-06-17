@@ -15,7 +15,6 @@ import { AppBottomNav } from "../../components";
 import RoundedButton from "../../components/common/RoundedButton";
 
 const mapImage = require("../../../assets/RawMap.png");
-const logo = require("../../../assets/zubba icon.png");
 const premium = require("../../../assets/premium.png");
 const tricycle = require("../../../assets/picktricycle.png");
 

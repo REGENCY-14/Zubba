@@ -69,7 +69,7 @@ export function VerifyOtpScreen({
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
 
-      if (user.role) {
+      if (!user.email || !user.phone) {
         navigation.replace("NewUserOnboarding", {
           ...(email ? { email: contactValue } : { phone: contactValue }),
         });

@@ -34,31 +34,12 @@ export function NewUserOnboardingScreen({
 
   const isValid = shouldCollectPhone ? isPhoneValid : isEmailValid;
 
-  const handleNext = async () => {
-  if (!user?.id) return;
-
-  try {
-    const payload = shouldCollectPhone ? { phone: contactCandidate } : { email: contactCandidate };
-    await userService.updateUser(user.id, payload);
-    navigation.navigate("KycCollection", nextParams);
-  } catch (err) {
-    console.log("Update user failed:", err);
-  }
-};
-
-  const nextParams = useMemo(() => {
-    if (shouldCollectPhone) {
-      return {
-        email: existingEmail,
-        phone: contactCandidate,
-      };
-    }
-
-    return {
-      phone: existingPhone,
-      email: contactCandidate,
-    };
-  }, [shouldCollectPhone, existingEmail, existingPhone, contactCandidate]);
+  const handleNext = () => {
+    navigation.navigate("KycCollection", {
+      email: shouldCollectPhone ? existingEmail : contactCandidate,
+      phone: shouldCollectPhone ? contactCandidate : existingPhone,
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -110,7 +91,11 @@ export function NewUserOnboardingScreen({
           <View className="absolute bottom-6 left-[22px] right-[22px] flex-row justify-between items-center">
             <Pressable className="w-12 h-12 rounded-xl items-center justify-center">
               <Text className="text-2xl text-black">
-                <MaterialCommunityIcons name="arrow-left" color="#000000" size={24} />
+                <MaterialCommunityIcons
+                  name="arrow-left"
+                  color="#000000"
+                  size={24}
+                />
               </Text>
             </Pressable>
 

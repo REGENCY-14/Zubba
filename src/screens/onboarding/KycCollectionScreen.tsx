@@ -20,28 +20,32 @@ export function KycCollectionScreen({
   route,
   navigation,
 }: RootStackScreenProps<"KycCollection">) {
+  const phone = route.params?.phone;
+  const email = route.params?.email;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const { user } = useAppSelector((state: RootState) => state.auth);
   const isValid = firstName.trim().length > 0 && lastName.trim().length > 0;
 
   const handleContinue = async () => {
-  if (!user?.id) return;
+    if (!user?.id) return;
 
-  try {
-    await userService.updateUser(user.id, {
-      firstname: firstName.trim(),
-      lastname: lastName.trim(),
-    });
+    try {
+      await userService.updateUser(user.id, {
+        email,
+        phone,
+        firstname: firstName.trim(),
+        lastname: lastName.trim(),
+      });
 
-    navigation.navigate("TermsAcceptance", {
-      firstName,
-      lastName,
-    });
-  } catch (err) {
-    console.log("KYC update failed:", err);
-  }
-};
+      navigation.navigate("TermsAcceptance", {
+        firstName,
+        lastName,
+      });
+    } catch (err) {
+      console.log("KYC update failed:", err);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -98,7 +102,11 @@ export function KycCollectionScreen({
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
             <Text className="text-2xl text-black">
-              <MaterialCommunityIcons name="arrow-left" color="#000000" size={24} />
+              <MaterialCommunityIcons
+                name="arrow-left"
+                color="#000000"
+                size={24}
+              />
             </Text>
           </Pressable>
 
