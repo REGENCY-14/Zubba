@@ -1,9 +1,4 @@
 import { api } from "./axios";
-import {
-  UsersListResponse,
-  UpdateUserDto,
-  FindUserDto,
-} from "../types/user.types";
 import { ApiResponse } from "../types/api.types";
 import { Customer } from "../slices/customer/customer.types";
 
