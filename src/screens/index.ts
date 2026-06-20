@@ -8,7 +8,7 @@ export * from './account-recovery/FindAccountScreen';
 export * from './account-recovery/FindAccountEmailScreen';
 export * from './account-recovery/FindAccountEmailOtpScreen';
 export * from './account-recovery/FindAccountOtpScreen';
-export * from './pickup/LocationSharingScreen';
+export * from './home/HomeScreen';
 export * from './pickup/ScanningScreen';
 export * from './onboarding/SplashScreen';
 export * from './auth/VerifyOtpScreen';

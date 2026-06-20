@@ -101,7 +101,7 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
               style={successStyles.secondaryBtn}
               onPress={() => {
                 setShowSuccess(false);
-                navigation.navigate('LocationSharing');
+                navigation.navigate('Home');
               }}
             >
               <Text style={successStyles.secondaryBtnText}>Set Package expiry alert</Text>

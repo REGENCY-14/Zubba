@@ -65,7 +65,6 @@ export function VerifyOtpScreen({
       });
 
       const { user, accessToken, refreshToken } = res.data;
-      console.log(user);
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
 

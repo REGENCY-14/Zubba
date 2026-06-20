@@ -120,7 +120,7 @@ export function ActiveSessionScreen({ navigation }: RootStackScreenProps<'Active
         <AppBottomNav
           activeTab="settings"
           paddingBottom={0}
-          onHomePress={() => navigation.navigate('LocationSharing')}
+          onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
         />

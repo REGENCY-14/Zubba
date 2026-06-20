@@ -12,7 +12,7 @@ export type RootStackParamList = {
   NewUserOnboarding: { phone?: string; email?: string } | undefined;
   KycCollection: { phone?: string; email?: string } | undefined;
   TermsAcceptance: { phone?: string; email?: string; firstName?: string; lastName?: string } | undefined;
-  LocationSharing: undefined;
+  Home: undefined;
   Scanning: undefined;
   DriverArrives: undefined;
   Payment: undefined;

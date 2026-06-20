@@ -82,7 +82,7 @@ export function TermsAcceptanceScreen({
 
           <Pressable
             disabled={!agreedToTerms}
-            onPress={() => navigation.replace("LocationSharing")}
+            onPress={() => navigation.replace("Home")}
             className={`w-24 h-12 rounded-xl items-center justify-center ${
               agreedToTerms ? "bg-[#34A853]" : "bg-[#34A853]/50"
             }`}

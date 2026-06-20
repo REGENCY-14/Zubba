@@ -30,7 +30,7 @@ export function ExistingUserNotificationScreen({
         <View className="w-full mt-6">
           <Pressable
             className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center"
-            onPress={() => navigation.replace("LocationSharing")}
+            onPress={() => navigation.replace("Home")}
           >
             <Text className="text-white text-sm font-normal">Continue</Text>
           </Pressable>

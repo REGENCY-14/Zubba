@@ -24,7 +24,7 @@ export function UpdateDetailsSuccessScreen({ navigation }: RootStackScreenProps<
             <Text style={styles.primaryButtonText}>Back to Settings</Text>
           </Pressable>
 
-          <Pressable style={styles.secondaryButton} onPress={() => navigation.navigate('LocationSharing')}>
+          <Pressable style={styles.secondaryButton} onPress={() => navigation.navigate('Home')}>
             <Text style={styles.secondaryButtonText}>Back to Home</Text>
           </Pressable>
         </View>

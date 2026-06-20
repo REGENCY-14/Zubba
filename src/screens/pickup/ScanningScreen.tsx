@@ -187,7 +187,7 @@ export function ScanningScreen({
 
         <AppBottomNav
           activeTab="home"
-          onHomePress={() => navigation.navigate("LocationSharing")}
+          onHomePress={() => navigation.navigate("Home")}
           onSavedPress={() =>
             navigation.navigate("Details", { itemId: "save", title: "Saved" })
           }
@@ -205,7 +205,7 @@ export function ScanningScreen({
               assignedTimerRef.current = null;
             }
             setShowModal(false);
-            navigation.navigate("LocationSharing");
+            navigation.navigate("Home");
           }}
         />
       </ImageBackground>

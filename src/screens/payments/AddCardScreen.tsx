@@ -249,7 +249,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 style={successStyles.secondaryButton}
                 onPress={() => {
                   setShowSuccess(false);
-                  navigation.navigate('LocationSharing');
+                  navigation.navigate('Home');
                 }}
               >
                 <Text style={successStyles.secondaryButtonText}>Set Package expiry alert</Text>

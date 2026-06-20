@@ -201,7 +201,7 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
 
         <AppBottomNav
           activeTab="home"
-          onHomePress={() => navigation.navigate('LocationSharing')}
+          onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
         />

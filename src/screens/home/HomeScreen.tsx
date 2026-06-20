@@ -1,72 +1,186 @@
-import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
+import {
+  Image,
+  ImageBackground,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import type { RootStackScreenProps } from '../../navigation/types';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import type { RootStackScreenProps } from "../../navigation/types";
+import { AppBottomNav } from "../../components";
+import RoundedButton from "../../components/common/RoundedButton";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
-const zubbaLogo = require('../../../assets/zubba icon.png');
+const mapImage = require("../../../assets/RawMap.png");
+const premium = require("../../../assets/premium.png");
+const tricycle = require("../../../assets/picktricycle.png");
 
-export function LocationSharingScreen({
-  navigation
-}: RootStackScreenProps<'LocationSharing'>) {
+export function HomeScreen({
+  navigation,
+}: RootStackScreenProps<"Home">) {
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const customer = useAppSelector((state) => state.customer)
+
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
-      <View className="min-h-[56px] px-[14px] bg-[#3AA548] flex-row items-center justify-between">
-        <View className="flex-row items-center flex-1">
-          <MaterialCommunityIcons
-            name="map-marker-outline"
-            size={18}
-            color="#FFFFFF"
-            style={{ width: 24, marginRight: 10, textAlign: 'center' }}
-          />
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      <ImageBackground source={mapImage} className="flex-1 w-full h-full p-10">
+        <View className="absolute w-full top-0 left-0 right-0 h-12 bg-white flex-row items-center justify-between px-4 z-10">
+          <Pressable className="w-8 h-8 items-center justify-center">
+            <MaterialCommunityIcons name="menu" size={20} color="#0F1621" />
+          </Pressable>
 
-          <Text className="flex-1 text-white text-[15px] leading-5 font-medium">
-            Location sharing is disabled. Tap here to enable
-          </Text>
-        </View>
-
-        <Pressable
-          onPress={() =>
-            navigation.navigate('Details', {
-              itemId: 'location',
-              title: 'Enable location sharing'
-            })
-          }
-          hitSlop={10}
-        >
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={28}
-            color="#FFFFFF"
-            style={{ marginLeft: 10 }}
-          />
-        </Pressable>
-      </View>
-
-      <View className="flex-1 bg-white items-center justify-center">
-        <View className="items-center justify-center">
-          <Pressable
-            onPress={() =>
-              navigation.navigate('Details', {
-                itemId: 'logo',
-                title: 'Zubba'
-              })
-            }
-          >
-            <Image
-              source={zubbaLogo}
-              resizeMode="contain"
-              style={{
-                width: 360,
-                height: 350,
-                tintColor: '#F97316',
-                transform: [{ scaleY: 0.92 }]
-              }}
-            />
+          <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
+            <MaterialCommunityIcons name="bell-outline" size={20} color="#0F1621" />
           </Pressable>
         </View>
-      </View>
+
+        <View className="absolute top-[58px] left-2.5 right-2.5 space-y-6">
+          <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
+            <Pressable
+              onPress={() =>
+                navigation.navigate("Details", {
+                  itemId: "search",
+                  title: "Search",
+                })
+              }
+            >
+              <MaterialCommunityIcons name="magnify" size={24} color="#000" />
+            </Pressable>
+            <TextInput
+              className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
+              placeholder="Where is your waste?"
+              placeholderTextColor="#999999"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery.length > 0 && (
+              <Pressable
+                onPress={() => setSearchQuery("")}
+                className="w-8 h-8 items-center justify-center"
+              >
+                <MaterialCommunityIcons name="close-circle" size={22} color="#EF4444" />
+              </Pressable>
+            )}
+          </View>
+
+          <View className="flex-row gap-5 px-4">
+            <View
+              className="flex-1 bg-white border border-[#E2E8F0] p-3"
+              style={{ borderRadius: 24 }}
+            >
+              <View className="flex-row justify-between items-center">
+                <Image
+                  source={require("../../../assets/recycle.png")}
+                  className="w-[21px] h-[21px]"
+                  resizeMode="contain"
+                />
+                <Text className="text-[#31973D] text-xs font-semibold uppercase">
+                  ACTIVE
+                </Text>
+              </View>
+              <Text className="text-xl font-bold text-[#1F2A33] mt-2">
+                {customer.mass_recycled}kg
+              </Text>
+              <Text className="text-sm text-[#6F7A6C] mt-1">
+                Recycled this month
+              </Text>
+            </View>
+
+            <View
+              className="flex-1 bg-white border border-[#E2E8F0] p-3"
+              style={{ borderRadius: 24 }}
+            >
+              <View className="flex-row justify-between items-center">
+                <Image
+                  source={require("../../../assets/points.png")}
+                  className="w-[18px] h-[18px]"
+                  resizeMode="contain"
+                />
+                <Text className="text-[#735C00] text-xs font-semibold uppercase">
+                  POINTS
+                </Text>
+              </View>
+              <Text className="text-xl font-bold text-[#1F2A33] mt-2">
+                1,250
+              </Text>
+              <Text className="text-sm text-[#6F7A6C] mt-1">
+                Eco Credits earned
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="absolute bottom-[102px] left-2 right-2 p-4">
+          <View className="space-y-3">
+            <View className="flex-row gap-2 items-center bg-white border border-[#E2E8F0] rounded-full p-3">
+              <View className="w-10 h-10 bg-[#419E6A1A] rounded-full items-center justify-center">
+                <Image
+                  source={tricycle}
+                  style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] }}
+                  resizeMode="contain"
+                />
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm font-semibold text-[#1F2A33]">
+                  Find nearby tricycles
+                </Text>
+                <Text className="text-xs text-[#6F7A6C]">Instant pickup</Text>
+              </View>
+
+              <RoundedButton
+                title="Request now"
+                variant="primary"
+                onPress={() => navigation.navigate("Scanning")}
+              ></RoundedButton>
+            </View>
+
+            <View className="flex-row gap-2 items-center bg-white border border-[#FFE088] rounded-full p-3">
+              <View className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center">
+                <Image
+                  source={premium}
+                  style={{ width: 20, height: 20, transform: [{ scaleX: -1 }] }}
+                  resizeMode="contain"
+                />
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm font-semibold text-[#1F2A33]">
+                  Plan future pickup
+                </Text>
+                <Text className="text-xs text-[#6F7A6C]">Future service</Text>
+              </View>
+
+              <RoundedButton
+                title="Premium Tier"
+                variant="premium"
+                onPress={() => navigation.navigate("Scanning")}
+              ></RoundedButton>
+            </View>
+
+            <View className="text-sm text-[#574500] flex-row items-center justify-center gap-1">
+              <MaterialCommunityIcons name="lock" size={16} color="#574500" />
+              <Text className="text-[#574500] italic">
+                Upgrade to Gold for scheduled pickups
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <AppBottomNav
+          activeTab="home"
+          paddingBottom={0}
+          onHomePress={() => navigation.navigate("Home")}
+          onSavedPress={() =>
+            navigation.navigate("Details", { itemId: "save", title: "Saved" })
+          }
+          onSettingsPress={() => navigation.navigate("Settings")}
+        />
+      </ImageBackground>
     </SafeAreaView>
   );
 }

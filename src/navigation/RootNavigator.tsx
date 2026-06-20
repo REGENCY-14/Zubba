@@ -4,7 +4,7 @@ import { LandingScreen } from '../screens/auth/LandingScreen';
 import { SplashScreen } from '../screens/onboarding/SplashScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { EmailSignUpScreen } from '../screens/auth/EmailSignUpScreen';
-import { LocationSharingScreen } from '../screens/pickup/LocationSharingScreen';
+import { HomeScreen } from '../screens/home/HomeScreen';
 import { ScanningScreen } from '../screens/pickup/ScanningScreen';
 import { DriverArrivesScreen } from '../screens/pickup/DriverArrivesScreen';
 import { PaymentScreen } from '../screens/payments/PaymentScreen';
@@ -69,7 +69,7 @@ export function RootNavigator() {
       <Stack.Screen name="EmailSignUp" component={EmailSignUpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ExistingUserNotification" component={ExistingUserNotificationScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="LocationSharing" component={LocationSharingScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Scanning" component={ScanningScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriverArrives" component={DriverArrivesScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
