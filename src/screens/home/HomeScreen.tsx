@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
+  Easing,
   Image,
   ImageBackground,
+  ImageSourcePropType,
   Pressable,
+  Switch,
   Text,
   TextInput,
   View,
@@ -14,23 +18,39 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import RoundedButton from "../../components/common/RoundedButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
+import { TextAvatar } from "../../components/onboarding/TextAvatar";
 
 const mapImage = require("../../../assets/RawMap.png");
 const premium = require("../../../assets/premium.png");
 const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activePill, setActivePill] = useState(0);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
+  const [isBinFull, setIsBinFull] = useState<boolean>(false);
+  const isPremium = true;
+  const closeDrivers = ["Aaron", "Bob", "Candice"];
+
+  const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(translateX, {
+      toValue: isBinFull ? 14 : 0,
+      duration: 220,
+      easing: Easing.out(Easing.circle),
+      useNativeDriver: true,
+    }).start();
+  }, [isBinFull]);
 
   const changeActivePill = (value: number) => {
-    if(customer.is_premium){
-      setActivePill(0)
-    }else{
-      setActivePill(value)
+    if (isPremium) {
+      setActivePill(value);
+    } else {
+      setActivePill(0);
     }
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
@@ -40,23 +60,61 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             <MaterialCommunityIcons name="menu" size={20} color="#0F1621" />
           </Pressable>
 
-          <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
-            <MaterialCommunityIcons
-              name="bell-outline"
-              size={20}
-              color="#0F1621"
-            />
-          </Pressable>
+          <View className="flex-row gap-2 items-center justify-center">
+            {isPremium && (
+              <View className="flex-row gap-2 items-center justify-center">
+                <Text className="text-xs text-[#3F4A3D]">Bin Full?</Text>
+
+                <Pressable
+                  onPress={() => setIsBinFull((prev) => !prev)}
+                  style={{
+                    backgroundColor: isBinFull ? "#31973D" : "#FFFFFF",
+                  }}
+                  className="w-9 h-5 rounded-full border border-[#31973D]"
+                >
+                  <Animated.View
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: 999,
+                      position: "absolute",
+                      left: 2,
+                      top: 1,
+                      transform: [{ translateX }],
+                      backgroundColor: isBinFull ? "#FFFFFF" : "#31973D",
+                    }}
+                  />
+                </Pressable>
+              </View>
+            )}
+            <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
+              <MaterialCommunityIcons
+                name="bell-outline"
+                size={20}
+                color="#0F1621"
+              />
+            </Pressable>
+          </View>
         </View>
 
         <View className="absolute top-[58px] left-2.5 right-2.5 space-y-6">
-          {!customer.is_premium ? (
-            <View className="bg-white border-black/10 border-[1px] rounded-2xl p-2 gap-2">
-              <View className="h-[54px] bg-gray-100 p-2 rounded-full flex flex-row gap-2 justify-between">
-                <Pressable onPress={() => {changeActivePill(0)}} className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2 ${activePill === 0 ? "bg-white border-[1px]" : ""}`}>
+          {isPremium ? (
+            <View className="bg-white border-black/10 border-[1px] rounded-2xl p-2 gap-3">
+              <View className="bg-gray-100 p-2.5 rounded-full flex flex-row gap-2 justify-between">
+                <Pressable
+                  onPress={() => {
+                    changeActivePill(0);
+                  }}
+                  className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2.5 ${activePill === 0 ? "bg-white border-[1px]" : ""}`}
+                >
                   <Text className="text-md font-semibold">Pickup Location</Text>
                 </Pressable>
-                <Pressable onPress={() => {changeActivePill(1)}} className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2 ${activePill === 1 ? "bg-white border-[1px]" : ""}`}>
+                <Pressable
+                  onPress={() => {
+                    changeActivePill(1);
+                  }}
+                  className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2.5 ${activePill === 1 ? "bg-white border-[1px]" : ""}`}
+                >
                   <Text className="text-md font-semibold">Find Driver</Text>
                 </Pressable>
               </View>
@@ -77,7 +135,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 </Pressable>
                 <TextInput
                   className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
-                  placeholder="Where is your waste?"
+                  placeholder={
+                    activePill == 0
+                      ? "Tarkwa, UMaT Campus, Hall 3"
+                      : "Search driver by name ..."
+                  }
                   placeholderTextColor="#999999"
                   value={searchQuery}
                   onChangeText={setSearchQuery}
@@ -95,6 +157,38 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   </Pressable>
                 )}
               </View>
+              <View className="flex-row justify-between gap-3 px-3">
+                <View className="flex-row gap-3 items-center justify-center">
+                  <View className="flex-row items-center">
+                    {closeDrivers.slice(0, 2).map((driver, index) => (
+                      <View
+                        key={index}
+                        style={{
+                          marginLeft: index === 0 ? 0 : -8,
+                          zIndex: index === 0 ? 1 : 2,
+                        }}
+                      >
+                        <TextAvatar
+                          size={24}
+                          bgColor={index == 1 ? "#FFE088" : "#90FA96"}
+                          name={driver}
+                        />
+                      </View>
+                    ))}
+                  </View>
+                  <Text className="text-sm font-medium text-[#3F4A3D]">
+                    {closeDrivers.length} verified driver
+                    {closeDrivers.length == 1 ? "" : "s"} nearby
+                  </Text>
+                </View>
+                <View className="rounded-full bg-[#148732] py-0.5 px-2 max-h-[15px]">
+                  <Text className="text-sm text-white">New</Text>
+                </View>
+              </View>
+              <StatCardsRow
+                mass_recycled={customer.mass_recycled}
+                points={customer.points}
+              />
             </View>
           ) : (
             <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
@@ -130,51 +224,12 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             </View>
           )}
 
-          <View className="flex-row gap-5 px-4">
-            <View
-              className="flex-1 bg-white border border-[#E2E8F0] p-3"
-              style={{ borderRadius: 24 }}
-            >
-              <View className="flex-row justify-between items-center">
-                <Image
-                  source={require("../../../assets/recycle.png")}
-                  className="w-[21px] h-[21px]"
-                  resizeMode="contain"
-                />
-                <Text className="text-[#31973D] text-xs font-semibold uppercase">
-                  ACTIVE
-                </Text>
-              </View>
-              <Text className="text-xl font-bold text-[#1F2A33] mt-2">
-                {customer.mass_recycled}kg
-              </Text>
-              <Text className="text-sm text-[#6F7A6C] mt-1">
-                Recycled this month
-              </Text>
-            </View>
-
-            <View
-              className="flex-1 bg-white border border-[#E2E8F0] p-3"
-              style={{ borderRadius: 24 }}
-            >
-              <View className="flex-row justify-between items-center">
-                <Image
-                  source={require("../../../assets/points.png")}
-                  className="w-[18px] h-[18px]"
-                  resizeMode="contain"
-                />
-                <Text className="text-[#735C00] text-xs font-semibold uppercase">
-                  POINTS
-                </Text>
-              </View>
-              <Text className="text-xl font-bold text-[#1F2A33] mt-2">
-                {customer.points}
-              </Text>
-              <Text className="text-sm text-[#6F7A6C] mt-1">
-                Eco Credits earned
-              </Text>
-            </View>
-          </View>
+          {!isPremium && (
+            <StatCardsRow
+              mass_recycled={customer.mass_recycled}
+              points={customer.points}
+            />
+          )}
         </View>
 
         <View className="absolute bottom-[102px] left-2 right-2 p-4">
@@ -218,7 +273,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <Text className="text-xs text-[#6F7A6C]">Future service</Text>
               </View>
 
-              {customer.is_premium ? (
+              {isPremium ? (
                 <RoundedButton
                   title="Plan for later"
                   variant="premium"
@@ -233,7 +288,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               )}
             </View>
 
-            {!customer.is_premium && (
+            {!isPremium && (
               <View className="text-sm text-[#574500] flex-row items-center justify-center gap-1">
                 <MaterialCommunityIcons name="lock" size={16} color="#574500" />
                 <Text className="text-[#574500] italic">
