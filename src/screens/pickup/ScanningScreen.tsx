@@ -103,10 +103,7 @@ export function ScanningScreen({
         className="flex-1 w-full h-full"
         resizeMode="cover"
       >
-        <CustomAppBar
-          title={appBarText}
-          navigation={navigation}
-        />
+        <CustomAppBar title={appBarText} navigation={navigation} />
 
         <View
           style={{
@@ -185,20 +182,23 @@ export function ScanningScreen({
           </View>
         ))}
 
-        <AppBottomNav
+        {/* <AppBottomNav
           activeTab="home"
           onHomePress={() => navigation.navigate("Home")}
           onSavedPress={() =>
             navigation.navigate("Details", { itemId: "save", title: "Saved" })
           }
           onSettingsPress={() => navigation.navigate("Settings")}
-        />
+        /> */}
         <PickupRequestModal
           visible={showModal}
           step={modalStep}
           avatar={avatar}
           onProceed={() => setModalStep("assigned")}
-          onCancel={() => setShowModal(false)}
+          onCancel={() => {
+            navigation.pop();
+            setShowModal(false);
+          }}
           onAssignedCancel={() => {
             if (assignedTimerRef.current) {
               clearTimeout(assignedTimerRef.current);

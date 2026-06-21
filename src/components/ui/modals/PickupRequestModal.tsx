@@ -23,9 +23,8 @@ export default function PickupRequestModal({
     <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 bg-black/50 justify-end items-center pb-[130px]">
         <View
-          className={`bg-white rounded-[22px] items-center px-3 py-4 w-[375px] max-w-[96%] ${
-            step === "request" ? "h-[372px]" : "h-[324px]"
-          }`}
+          className={`bg-white rounded-[22px] items-center px-3 py-4 w-[375px] max-w-[96%]
+          `}
           style={{ gap: 20 }}
         >
           {step === "request" ? (
@@ -62,22 +61,24 @@ export default function PickupRequestModal({
                 </View>
               </View>
 
-              <Pressable
-                className="h-12 bg-[#31973D] rounded-full items-center justify-center w-full"
-                onPress={onProceed}
-              >
-                <Text className="text-white">Proceed to request</Text>
-              </Pressable>
+              <View className="flex gap-3 w-full context-stretch">
+                <Pressable
+                  className="h-12 bg-[#31973D] rounded-full items-center justify-center w-full"
+                  onPress={onProceed}
+                >
+                  <Text className="text-white">Proceed to request</Text>
+                </Pressable>
 
-              <Pressable
-                className="h-12 rounded-full border border-[#E2E8F0] items-center justify-center w-full flex-row"
-                onPress={onCancel}
-              >
-                <View className="w-4 h-4 rounded-full bg-[#EF4444] items-center justify-center mr-2">
-                  <MaterialIcons name="close" size={10} color="#fff" />
-                </View>
-                <Text className="text-[#EF4444]">Cancel pickup</Text>
-              </Pressable>
+                <Pressable
+                  className="h-12 rounded-full border border-[#E2E8F0] items-center justify-center w-full flex-row"
+                  onPress={onCancel}
+                >
+                  <View className="w-4 h-4 rounded-full bg-[#EF4444] items-center justify-center mr-2">
+                    <MaterialIcons name="close" size={10} color="#fff" />
+                  </View>
+                  <Text className="text-[#EF4444]">Cancel pickup</Text>
+                </Pressable>
+              </View>
             </View>
           ) : (
             <View

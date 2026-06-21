@@ -77,10 +77,10 @@ export function AppBottomNav({
 
   return (
     <View
-      className="absolute left-0 right-0 bottom-5 items-center"
+      className="absolute left-0 right-0 bottom-5 items-center px-2"
       style={{ paddingBottom: bottomPadding }}
     >
-      <View className="w-full max-w-[402px] h-[78px] flex-row items-center justify-between px-4 bg-white rounded-full border border-black/10 shadow-sm">
+      <View className="w-full max-w-[402px] py-3 flex-row items-center justify-between px-4 bg-white rounded-full border border-black/10 shadow-sm">
 
         <NavItem
           active={isActive('home')}

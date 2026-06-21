@@ -124,15 +124,6 @@ export function PaymentVerificationScreen({
             <Text className="text-white text-sm">Verify</Text>
           </Pressable>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "save", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-        />
       </View>
     </SafeAreaView>
   );

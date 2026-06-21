@@ -20,6 +20,7 @@ export type RootStackParamList = {
   PaymentVerification: undefined;
   AuthorizePayment: undefined;
   PaymentSuccess: undefined;
+  RateRide: undefined;
   Settings: undefined;
   TermsAndConditions: undefined;
   AboutUs: undefined;

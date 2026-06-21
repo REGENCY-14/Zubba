@@ -25,7 +25,7 @@ export function PaymentMethodScreen({
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 12, paddingTop: 16, paddingBottom: 120, gap: 24 }}
+          contentContainerStyle={{ padding: 16, gap: 24 }}
         >
 
           <View className="gap-6">
@@ -114,14 +114,6 @@ export function PaymentMethodScreen({
           </View>
         </ScrollView>
 
-        <AppBottomNav
-          activeTab="home"
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "save", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-        />
       </View>
     </SafeAreaView>
   );

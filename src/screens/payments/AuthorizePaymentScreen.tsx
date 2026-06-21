@@ -95,15 +95,6 @@ export function AuthorizePaymentScreen({
             <Text className="text-white text-sm">Proceed to pay</Text>
           </Pressable>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "save", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-        />
       </View>
     </SafeAreaView>
   );

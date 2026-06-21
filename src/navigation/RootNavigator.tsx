@@ -44,13 +44,14 @@ import type { RootStackParamList } from './types';
 
 import { SignInScreen } from '../screens/auth/SignInScreen';
 import { ExistingUserNotificationScreen } from '../screens/auth/ExistingUserNotificationScreen';
+import RateRideScreen from '../screens/payments/RateRideScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Splash"
+      initialRouteName="PaymentSuccess"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'
@@ -77,6 +78,7 @@ export function RootNavigator() {
       <Stack.Screen name="PaymentVerification" component={PaymentVerificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AuthorizePayment" component={AuthorizePaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="RateRide" component={RateRideScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />

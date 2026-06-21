@@ -27,12 +27,12 @@ export function PaymentSuccessScreen({
           <View className="w-6 h-6" />
         </View>
 
-        <View className="flex-1 items-center justify-center gap-6 pb-28">
+        <View className="flex-1 items-center gap-6 pt-28">
           <View className="w-24 h-24 rounded-full bg-[#16A34A] items-center justify-center shadow-md">
             <MaterialCommunityIcons name="check" size={40} color="#fff" />
           </View>
 
-          <Text className="text-2xl font-bold text-[#111827] text-center leading-8">
+          <Text className="text-2xl font-bold text-black text-center leading-8">
             Your transaction is{"\n"}successful
           </Text>
         </View>
@@ -83,9 +83,9 @@ export function PaymentSuccessScreen({
             </View>
           </View>
 
-          <View className="px-6 gap-1">
+          <View className="px-6 gap-2">
             <Pressable
-              onPress={() => navigation.navigate("PremiumHome")}
+              onPress={() => navigation.navigate("RateRide")}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">Continue</Text>

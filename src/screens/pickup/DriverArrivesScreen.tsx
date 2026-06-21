@@ -127,22 +127,6 @@ export function DriverArrivesScreen({
             </Pressable>
           </View>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          onHomePress={() => navigation.navigate("PremiumHome")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "saved", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={() =>
-            navigation.navigate("Details", {
-              itemId: "calendar",
-              title: "Calendar",
-            })
-          }
-        />
       </View>
     </SafeAreaView>
   );

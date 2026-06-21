@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   ImageBackground,
@@ -19,11 +19,18 @@ const mapImage = require("../../../assets/RawMap.png");
 const premium = require("../../../assets/premium.png");
 const tricycle = require("../../../assets/picktricycle.png");
 
-export function HomeScreen({
-  navigation,
-}: RootStackScreenProps<"Home">) {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const customer = useAppSelector((state) => state.customer)
+export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activePill, setActivePill] = useState(0);
+  const customer = useAppSelector((state) => state.customer);
+
+  const changeActivePill = (value: number) => {
+    if(customer.is_premium){
+      setActivePill(0)
+    }else{
+      setActivePill(value)
+    }
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
@@ -34,38 +41,94 @@ export function HomeScreen({
           </Pressable>
 
           <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
-            <MaterialCommunityIcons name="bell-outline" size={20} color="#0F1621" />
+            <MaterialCommunityIcons
+              name="bell-outline"
+              size={20}
+              color="#0F1621"
+            />
           </Pressable>
         </View>
 
         <View className="absolute top-[58px] left-2.5 right-2.5 space-y-6">
-          <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
-            <Pressable
-              onPress={() =>
-                navigation.navigate("Details", {
-                  itemId: "search",
-                  title: "Search",
-                })
-              }
-            >
-              <MaterialCommunityIcons name="magnify" size={24} color="#000" />
-            </Pressable>
-            <TextInput
-              className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
-              placeholder="Where is your waste?"
-              placeholderTextColor="#999999"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            {searchQuery.length > 0 && (
+          {!customer.is_premium ? (
+            <View className="bg-white border-black/10 border-[1px] rounded-2xl p-2 gap-2">
+              <View className="h-[54px] bg-gray-100 p-2 rounded-full flex flex-row gap-2 justify-between">
+                <Pressable onPress={() => {changeActivePill(0)}} className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2 ${activePill === 0 ? "bg-white border-[1px]" : ""}`}>
+                  <Text className="text-md font-semibold">Pickup Location</Text>
+                </Pressable>
+                <Pressable onPress={() => {changeActivePill(1)}} className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2 ${activePill === 1 ? "bg-white border-[1px]" : ""}`}>
+                  <Text className="text-md font-semibold">Find Driver</Text>
+                </Pressable>
+              </View>
+              <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("Details", {
+                      itemId: "search",
+                      title: "Search",
+                    })
+                  }
+                >
+                  <MaterialCommunityIcons
+                    name="magnify"
+                    size={24}
+                    color="#000"
+                  />
+                </Pressable>
+                <TextInput
+                  className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
+                  placeholder="Where is your waste?"
+                  placeholderTextColor="#999999"
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+                {searchQuery.length > 0 && (
+                  <Pressable
+                    onPress={() => setSearchQuery("")}
+                    className="w-8 h-8 items-center justify-center"
+                  >
+                    <MaterialCommunityIcons
+                      name="close-circle"
+                      size={22}
+                      color="#EF4444"
+                    />
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          ) : (
+            <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
               <Pressable
-                onPress={() => setSearchQuery("")}
-                className="w-8 h-8 items-center justify-center"
+                onPress={() =>
+                  navigation.navigate("Details", {
+                    itemId: "search",
+                    title: "Search",
+                  })
+                }
               >
-                <MaterialCommunityIcons name="close-circle" size={22} color="#EF4444" />
+                <MaterialCommunityIcons name="magnify" size={24} color="#000" />
               </Pressable>
-            )}
-          </View>
+              <TextInput
+                className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
+                placeholder="Where is your waste?"
+                placeholderTextColor="#999999"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+              {searchQuery.length > 0 && (
+                <Pressable
+                  onPress={() => setSearchQuery("")}
+                  className="w-8 h-8 items-center justify-center"
+                >
+                  <MaterialCommunityIcons
+                    name="close-circle"
+                    size={22}
+                    color="#EF4444"
+                  />
+                </Pressable>
+              )}
+            </View>
+          )}
 
           <View className="flex-row gap-5 px-4">
             <View
@@ -105,7 +168,7 @@ export function HomeScreen({
                 </Text>
               </View>
               <Text className="text-xl font-bold text-[#1F2A33] mt-2">
-                1,250
+                {customer.points}
               </Text>
               <Text className="text-sm text-[#6F7A6C] mt-1">
                 Eco Credits earned
@@ -155,19 +218,29 @@ export function HomeScreen({
                 <Text className="text-xs text-[#6F7A6C]">Future service</Text>
               </View>
 
-              <RoundedButton
-                title="Premium Tier"
-                variant="premium"
-                onPress={() => navigation.navigate("Scanning")}
-              ></RoundedButton>
+              {customer.is_premium ? (
+                <RoundedButton
+                  title="Plan for later"
+                  variant="premium"
+                  onPress={() => navigation.navigate("Scanning")}
+                ></RoundedButton>
+              ) : (
+                <RoundedButton
+                  title="Premium Tier"
+                  variant="premium"
+                  onPress={() => {}}
+                ></RoundedButton>
+              )}
             </View>
 
-            <View className="text-sm text-[#574500] flex-row items-center justify-center gap-1">
-              <MaterialCommunityIcons name="lock" size={16} color="#574500" />
-              <Text className="text-[#574500] italic">
-                Upgrade to Gold for scheduled pickups
-              </Text>
-            </View>
+            {!customer.is_premium && (
+              <View className="text-sm text-[#574500] flex-row items-center justify-center gap-1">
+                <MaterialCommunityIcons name="lock" size={16} color="#574500" />
+                <Text className="text-[#574500] italic">
+                  Upgrade to Gold for scheduled pickups
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
