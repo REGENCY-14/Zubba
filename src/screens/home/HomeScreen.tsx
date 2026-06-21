@@ -20,9 +20,11 @@ import RoundedButton from "../../components/common/RoundedButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
+import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 
 const mapImage = require("../../../assets/RawMap.png");
 const premium = require("../../../assets/premium.png");
+const futurePlan = require("../../../assets/futurePlan.png");
 const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
@@ -65,26 +67,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               <View className="flex-row gap-2 items-center justify-center">
                 <Text className="text-xs text-[#3F4A3D]">Bin Full?</Text>
 
-                <Pressable
-                  onPress={() => setIsBinFull((prev) => !prev)}
-                  style={{
-                    backgroundColor: isBinFull ? "#31973D" : "#FFFFFF",
-                  }}
-                  className="w-9 h-5 rounded-full border border-[#31973D]"
-                >
-                  <Animated.View
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 999,
-                      position: "absolute",
-                      left: 2,
-                      top: 1,
-                      transform: [{ translateX }],
-                      backgroundColor: isBinFull ? "#FFFFFF" : "#31973D",
-                    }}
-                  />
-                </Pressable>
+                <AnimatedSwitch value={isBinFull} onChange={setIsBinFull} />
               </View>
             )}
             <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
@@ -181,7 +164,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     {closeDrivers.length == 1 ? "" : "s"} nearby
                   </Text>
                 </View>
-                <View className="rounded-full bg-[#148732] py-0.5 px-2 max-h-[15px]">
+                <View className="rounded-full bg-[#148732] py-0.5 px-2">
                   <Text className="text-sm text-white">New</Text>
                 </View>
               </View>
@@ -247,7 +230,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <Text className="text-sm font-semibold text-[#1F2A33]">
                   Find nearby tricycles
                 </Text>
-                <Text className="text-xs text-[#6F7A6C]">Instant pickup</Text>
+                <Text
+                  className={`text-xs text-[#6F7A6C] ${isPremium && "font-bold"}`}
+                >
+                  Instant pickup
+                </Text>
               </View>
 
               <RoundedButton
@@ -258,9 +245,9 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             </View>
 
             <View className="flex-row gap-2 items-center bg-white border border-[#FFE088] rounded-full p-3">
-              <View className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center">
+              <View className="w-10 h-10 bg-[##EFF5FF] rounded-full items-center justify-center">
                 <Image
-                  source={premium}
+                  source={isPremium ? futurePlan : premium}
                   style={{ width: 20, height: 20, transform: [{ scaleX: -1 }] }}
                   resizeMode="contain"
                 />
@@ -270,7 +257,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <Text className="text-sm font-semibold text-[#1F2A33]">
                   Plan future pickup
                 </Text>
-                <Text className="text-xs text-[#6F7A6C]">Future service</Text>
+                <Text
+                  className={`text-xs text-[#6F7A6C] ${isPremium && "font-bold"}`}
+                >
+                  Future service
+                </Text>
               </View>
 
               {isPremium ? (

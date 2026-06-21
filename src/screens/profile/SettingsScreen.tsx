@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,15 +19,18 @@ function SettingsRow({ icon, title, subtitle, onPress, rightSlot, showChevron = 
   const Container = onPress ? Pressable : View;
 
   return (
-    <Container style={styles.row} onPress={onPress}>
-      <View style={styles.rowLeft}>
-        <View style={styles.iconShell}>{icon}</View>
-        <View style={styles.rowTextGroup}>
-          <Text style={styles.rowTitle}>{title}</Text>
-          {subtitle ? <Text style={styles.rowSubtitle}>{subtitle}</Text> : null}
+    <Container
+      className="min-h-[72px] flex-row items-center justify-between p-4 border-b border-b-[#F1F5F9] gap-4"
+      onPress={onPress}
+    >
+      <View className="flex-1 flex-row items-center gap-4">
+        <View className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] items-center justify-center">{icon}</View>
+        <View className="flex-1 gap-1">
+          <Text className="text-sm leading-5 font-medium text-[#101828]">{title}</Text>
+          {subtitle ? <Text className="text-xs leading-4 text-[#64748A]">{subtitle}</Text> : null}
         </View>
       </View>
-      <View style={styles.rowRight}>
+      <View className="flex-row items-center gap-2">
         {rightSlot}
         {showChevron ? <MaterialCommunityIcons name="chevron-right" size={22} color="#C7C4D7" /> : null}
       </View>
@@ -37,9 +40,11 @@ function SettingsRow({ icon, title, subtitle, onPress, rightSlot, showChevron = 
 
 function SectionCard({ title, children, compact = false }: { title: string; children: React.ReactNode; compact?: boolean }) {
   return (
-    <View style={[styles.card, compact && styles.compactCard]}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.sectionDivider} />
+    <View
+      className={`bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden ${compact ? 'gap-0' : ''}`}
+    >
+      <Text className="text-base leading-6 font-semibold text-[#111827] p-4">{title}</Text>
+      <View className="h-px bg-[#F1F5F9]" />
       {children}
     </View>
   );
@@ -49,51 +54,56 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
   const [appearanceEnabled, setAppearanceEnabled] = React.useState(true);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-white">
+        <View className="h-12 px-4 flex-row items-center justify-between bg-white">
+          <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
           </Pressable>
-          <Text style={styles.headerTitle}>Settings</Text>
-          <View style={styles.headerSpacer} />
+          <Text className="text-base leading-6 font-semibold text-[#1F2A33]">Settings</Text>
+          <View className="w-6 h-6" />
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={styles.brandCard}>
-            <Text style={styles.brandMark}>ZUBBA</Text>
-            <Text style={styles.brandSubtitle}>Waste Pickup and Recycling Control</Text>
-            <View style={styles.versionPill}>
-              <Text style={styles.versionText}>Version 1.0.0</Text>
+        <ScrollView
+          contentContainerClassName="px-3 pt-4 pb-32 gap-6"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="items-center bg-white rounded-2xl border border-[#F1F5F9] py-6 px-4 gap-2">
+            <Text className="text-3xl leading-[34px] font-bold text-[#31973D] tracking-[1px]">ZUBBA</Text>
+            <Text className="text-xs leading-4 text-[#64748A] text-center">Waste Pickup and Recycling Control</Text>
+            <View className="bg-[#E3F2F7] rounded-full px-2.5 py-1">
+              <Text className="text-[8px] leading-[11px] text-black font-['Inter']">Version 1.0.0</Text>
             </View>
           </View>
 
-          <View style={styles.premiumCard}>
-            <Text style={styles.premiumTitle}>Premium Benefits</Text>
-            <View style={styles.premiumGrid}>
-              <View style={styles.premiumTile}>
+          <View className="bg-[#31973D] rounded-2xl p-4 gap-4 overflow-hidden">
+            <Text className="text-white text-base leading-6 font-semibold">Premium Benefits</Text>
+            <View className="flex-row gap-[5px]">
+              <View className="flex-1 min-h-[72px] rounded-lg border border-[rgba(144,250,150,0.2)] bg-[rgba(20,135,50,0.4)] p-3 gap-2">
                 <MaterialCommunityIcons name="flash-outline" size={20} color="#90FA96" />
-                <Text style={styles.premiumTileText}>Double Eco-Points</Text>
+                <Text className="text-white text-[13px] leading-5 font-['Inter']">Double Eco-Points</Text>
               </View>
-              <View style={styles.premiumTile}>
+              <View className="flex-1 min-h-[72px] rounded-lg border border-[rgba(144,250,150,0.2)] bg-[rgba(20,135,50,0.4)] p-3 gap-2">
                 <MaterialCommunityIcons name="headset" size={20} color="#90FA96" />
-                <Text style={styles.premiumTileText}>Priority Support</Text>
+                <Text className="text-white text-[13px] leading-5 font-['Inter']">Priority Support</Text>
               </View>
             </View>
           </View>
 
           <SectionCard title="Security and Configuration">
-            <View style={styles.row}>
-              <View style={styles.rowLeft}>
-                <View style={styles.iconShell}>
+            <View className="min-h-[72px] flex-row items-center justify-between p-4 border-b border-b-[#F1F5F9] gap-4">
+              <View className="flex-1 flex-row items-center gap-4">
+                <View className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] items-center justify-center">
                   <MaterialCommunityIcons name="earth" size={22} color="#111827" />
                 </View>
-                <View style={styles.rowTextGroup}>
-                  <Text style={styles.rowTitle}>Language</Text>
-                  <Text style={styles.rowSubtitle}>App display language</Text>
+                <View className="flex-1 gap-1">
+                  <Text className="text-sm leading-5 font-medium text-[#101828]">Language</Text>
+                  <Text className="text-xs leading-4 text-[#64748A]">App display language</Text>
                 </View>
               </View>
-              <View style={styles.languageButton}><Text style={styles.languageButtonText}>English</Text></View>
+              <View className="border border-[#E2E8F0] rounded-lg px-3 py-1.5 bg-white">
+                <Text className="text-xs leading-4 text-[#1F2A33]">English</Text>
+              </View>
             </View>
 
             <SettingsRow
@@ -117,14 +127,14 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
           </SectionCard>
 
           <SectionCard title="Preferences">
-            <View style={styles.row}>
-              <View style={styles.rowLeft}>
-                <View style={styles.iconShell}>
+            <View className="min-h-[72px] flex-row items-center justify-between p-4 border-b border-b-[#F1F5F9] gap-4">
+              <View className="flex-1 flex-row items-center gap-4">
+                <View className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] items-center justify-center">
                   <MaterialCommunityIcons name="theme-light-dark" size={22} color="#111827" />
                 </View>
-                <View style={styles.rowTextGroup}>
-                  <Text style={styles.rowTitle}>Appearance</Text>
-                  <Text style={styles.rowSubtitle}>Light mode</Text>
+                <View className="flex-1 gap-1">
+                  <Text className="text-sm leading-5 font-medium text-[#101828]">Appearance</Text>
+                  <Text className="text-xs leading-4 text-[#64748A]">Light mode</Text>
                 </View>
               </View>
               <Switch
@@ -136,18 +146,20 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
             </View>
           </SectionCard>
 
-          <View style={styles.bentoCard}>
-            <View style={styles.bentoHeader}>
-              <View style={styles.bentoTitleWrap}>
-                <View style={styles.iconShell}><MaterialCommunityIcons name="chart-box-outline" size={22} color="#111827" /></View>
+          <View className="bg-white rounded-2xl border border-[#E2E8F0] p-4">
+            <View className="flex-row items-center justify-between gap-4">
+              <View className="flex-1 flex-row items-center gap-4">
+                <View className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] items-center justify-center">
+                  <MaterialCommunityIcons name="chart-box-outline" size={22} color="#111827" />
+                </View>
                 <View>
-                  <Text style={styles.rowTitle}>Eco-Impact Reports</Text>
-                  <Text style={styles.rowSubtitle}>Weekly detailed insights</Text>
+                  <Text className="text-sm leading-5 font-medium text-[#101828]">Eco-Impact Reports</Text>
+                  <Text className="text-xs leading-4 text-[#64748A]">Weekly detailed insights</Text>
                 </View>
               </View>
-              <Pressable style={styles.exportButton}>
+              <Pressable className="flex-row items-center gap-2 border border-[#E2E8F0] rounded-2xl bg-[#F8FAFC] px-4 py-2.5">
                 <MaterialCommunityIcons name="download-outline" size={16} color="#1F2A33" />
-                <Text style={styles.exportButtonText}>Export data</Text>
+                <Text className="text-sm leading-5 text-[#1F2A33]">Export data</Text>
               </Pressable>
             </View>
           </View>
@@ -173,9 +185,12 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
             />
           </SectionCard>
 
-          <Pressable style={styles.signOutButton} onPress={() => navigation.navigate('SignIn')}>
+          <Pressable
+            className="h-[42px] rounded-xl border border-[#C10007] items-center justify-center flex-row gap-2 bg-white"
+            onPress={() => navigation.navigate('SignIn')}
+          >
             <MaterialCommunityIcons name="logout" size={16} color="#C10007" />
-            <Text style={styles.signOutText}>Sign out</Text>
+            <Text className="text-sm leading-5 text-[#C10007] font-['Manrope']">Sign out</Text>
           </Pressable>
         </ScrollView>
 
@@ -190,131 +205,5 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    height: 48,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-  },
-  backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 16, lineHeight: 24, fontWeight: '600', color: '#1F2A33' },
-  headerSpacer: { width: 24, height: 24 },
-  content: { paddingHorizontal: 12, paddingTop: 16, paddingBottom: 128, gap: 24 },
-  brandCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-  brandMark: { fontSize: 30, lineHeight: 34, fontWeight: '700', color: '#31973D', letterSpacing: 1 },
-  brandSubtitle: { fontSize: 12, lineHeight: 16, color: '#64748A', textAlign: 'center' },
-  versionPill: { backgroundColor: '#E3F2F7', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
-  versionText: { fontSize: 8, lineHeight: 11, color: '#000000', fontFamily: 'Inter' },
-  premiumCard: {
-    backgroundColor: '#31973D',
-    borderRadius: 16,
-    padding: 16,
-    gap: 16,
-    overflow: 'hidden',
-  },
-  premiumTitle: { color: '#FFFFFF', fontSize: 16, lineHeight: 24, fontWeight: '600' },
-  premiumGrid: { flexDirection: 'row', gap: 5 },
-  premiumTile: {
-    flex: 1,
-    minHeight: 72,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(144,250,150,0.2)',
-    backgroundColor: 'rgba(20,135,50,0.4)',
-    padding: 12,
-    gap: 8,
-  },
-  premiumTileText: { color: '#FFFFFF', fontSize: 13, lineHeight: 20, fontFamily: 'Inter' },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    overflow: 'hidden',
-  },
-  compactCard: { gap: 0 },
-  sectionTitle: { fontSize: 16, lineHeight: 24, fontWeight: '600', color: '#111827', padding: 16 },
-  sectionDivider: { height: 1, backgroundColor: '#F1F5F9' },
-  row: {
-    minHeight: 72,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-    gap: 16,
-  },
-  rowLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16 },
-  rowTextGroup: { flex: 1, gap: 4 },
-  rowTitle: { fontSize: 14, lineHeight: 20, fontWeight: '500', color: '#101828' },
-  rowSubtitle: { fontSize: 12, lineHeight: 16, color: '#64748A' },
-  rowRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  iconShell: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: '#F1F5F9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  languageButton: {
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#FFFFFF',
-  },
-  languageButtonText: { fontSize: 12, lineHeight: 16, color: '#1F2A33' },
-  bentoCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 16,
-  },
-  bentoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 },
-  bentoTitleWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16 },
-  exportButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 16,
-    backgroundColor: '#F8FAFC',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  exportButtonText: { fontSize: 14, lineHeight: 20, color: '#1F2A33' },
-  signOutButton: {
-    height: 42,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#C10007',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    backgroundColor: '#FFFFFF',
-  },
-  signOutText: { fontSize: 14, lineHeight: 20, color: '#C10007', fontFamily: 'Manrope' },
-});
 
 export default SettingsScreen;

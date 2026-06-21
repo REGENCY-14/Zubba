@@ -16,6 +16,8 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { stat } from "node:fs";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -40,7 +42,8 @@ export function ScanningScreen({
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [appBarText, setAppBarText] = useState("Scanning...");
-  const [isPremium] = useState(false);
+  const customer = useAppSelector((state) => state.customer.is_premium)
+  const isPremium = true
   const [modalStep, setModalStep] = useState<"request" | "assigned">("request");
   const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -182,14 +185,17 @@ export function ScanningScreen({
           </View>
         ))}
 
-        {/* <AppBottomNav
+        <AppBottomNav
           activeTab="home"
           onHomePress={() => navigation.navigate("Home")}
           onSavedPress={() =>
             navigation.navigate("Details", { itemId: "save", title: "Saved" })
           }
           onSettingsPress={() => navigation.navigate("Settings")}
-        /> */}
+        />
+        {
+
+        }
         <PickupRequestModal
           visible={showModal}
           step={modalStep}
