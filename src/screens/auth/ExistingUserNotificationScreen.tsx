@@ -18,7 +18,7 @@ export function ExistingUserNotificationScreen({
       <View className="flex-1 flex items-center w-full p-5">
         <View className="items-center flex-1 justify-center w-full">
           <View className="h-[110px] w-[110px] mb-4 rounded-full bg-gray-200 flex items-center justify-center">
-            <MaterialCommunityIcons name="account-circle" color="#000000" size={50}/>
+            <MaterialCommunityIcons name="account-circle-outline" color="#000000" size={50}/>
           </View>
           <Text className="text-[24px] leading-7 font-[500] text-gray-900 text-center">
             Welcome, {user?.firstname}

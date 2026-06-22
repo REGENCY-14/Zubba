@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
