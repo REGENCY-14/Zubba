@@ -1,65 +1,44 @@
-import { Image, Pressable, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import type { RootStackScreenProps } from '../../navigation/types';
-import { useAppSelector } from '../../hooks/useAppSelector';
+import type { RootStackScreenProps } from "../../navigation/types";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
-const zubbaAvatar = require('../../../assets/zubba icon.png');
-
-export function SignInScreen({ navigation }: RootStackScreenProps<'SignIn'>) {
-  const { user } = useAppSelector((state) => state.auth)
+export function SignInScreen({ route, navigation }: RootStackScreenProps<"SignIn">) {
+  const { user } = useAppSelector((state) => state.auth);
+  const contact = route.params?.phone ?? route.params?.email ?? "+233241122310";
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-white"
-      edges={['top', 'left', 'right', 'bottom']}
-    >
-      <View className="flex-1 items-center justify-between bg-white px-5 pt-[120px] pb-6">
-        <View className="max-w-[320px] items-center justify-center px-[18px]">
-          <View className="mb-[14px] h-[84px] w-[84px] items-center justify-center rounded-full bg-[#F1F1F1]">
-            <View className="h-[34px] w-[34px] items-center justify-center">
-              <Image
-                source={zubbaAvatar}
-                resizeMode="contain"
-                className="h-[34px] w-[34px]"
-                tintColor="#111111"
-              />
-            </View>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 flex items-center w-full p-5">
+        <View className="items-center flex-1 justify-center w-full">
+          <View className="h-[110px] w-[110px] mb-4 rounded-full bg-gray-200 flex items-center justify-center">
+            <MaterialCommunityIcons
+              name="account-circle-outline"
+              color="#000000"
+              size={50}
+            />
           </View>
-
-          <Text className="text-center text-2xl font-bold leading-[26px] text-[#262D3A]">
-            Welcome, {user?.firstname}!
+          <Text className="text-[24px] leading-7 font-[500] text-gray-900 text-center">
+            Welcome, {user?.firstname}
           </Text>
-
-          <Text className="mt-[10px] text-center text-[13px] leading-[15px] text-[#B8B8B8]">
-            You previously signed in to one of our apps using
-          </Text>
-
-          <Text className="mt-[2px] text-center text-[15px] leading-[15px] text-[#B8B8B8]">
-            +233241122310
+          <Text className="text-[14px] leading-6 font-light text-[#707579] text-center mt-2 max-w-[366px]">
+            You previously signed in to one of our apps using {contact}
           </Text>
         </View>
-
-        <View className="w-full gap-[10px] pb-[18px]">
+        <View className="w-full mt-6">
           <Pressable
-            className="h-[38px] items-center justify-center rounded-lg bg-[#3DA440]"
-            onPress={() => navigation.replace('ExistingUserNotification')}
+            className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center"
+            onPress={() => navigation.replace("Home")}
           >
-            <Text className="text-[13px] text-white">
-              Continue
-            </Text>
+            <Text className="text-white text-sm font-normal">Continue</Text>
           </Pressable>
-
           <Pressable
-            className="h-[38px] items-center justify-center rounded-lg border border-[#E4E8EF] bg-white"
-            onPress={() =>
-              navigation.navigate('Details', {
-                itemId: 'account-switch',
-                title: 'Use another account',
-              })
-            }
+            className="w-full h-12 mt-3 bg-white rounded-full border border-[#E2E8F0] items-center justify-center"
+            onPress={() => navigation.navigate("SignIn")}
           >
-            <Text className="text-[13px] text-[#364153]">
+            <Text className="text-[#1F2A33] text-sm font-medium">
               Use another account
             </Text>
           </Pressable>

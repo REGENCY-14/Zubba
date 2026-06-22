@@ -7,7 +7,7 @@ export type RootStackParamList = {
   Landing: undefined;
   SignUp: undefined;
   EmailSignUp: undefined;
-  SignIn: undefined;
+  SignIn: { phone?: string; email?: string } | undefined;
   ExistingUserNotification: { phone?: string; email?: string } | undefined;
   NewUserOnboarding: { phone?: string; email?: string } | undefined;
   KycCollection: { phone?: string; email?: string } | undefined;
