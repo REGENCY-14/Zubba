@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
+import { Pressable, Text, ViewStyle } from 'react-native';
 
 import type { ButtonVariant } from '../types/ui';
 
@@ -12,58 +12,28 @@ type ButtonProps = {
   leftIcon?: ReactNode;
 };
 
+const variantClass: Record<ButtonVariant, string> = {
+  primary: 'bg-[#0F172A]',
+  secondary: 'bg-[#E2E8F0]',
+  ghost: 'bg-transparent border border-[#CBD5E1]',
+};
+
+const labelClass: Record<ButtonVariant, string> = {
+  primary: 'text-[#F8FAFC]',
+  secondary: 'text-[#0F172A]',
+  ghost: 'text-[#F8FAFC]',
+};
+
 export function Button({ label, onPress, variant = 'primary', disabled = false, style, leftIcon }: ButtonProps) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
-        styles.base,
-        styles[variant],
-        disabled && styles.disabled,
-        pressed && !disabled && styles.pressed,
-        style
-      ]}
+      style={style}
+      className={`min-h-[48px] rounded-[14px] px-[18px] items-center justify-center flex-row gap-2 active:scale-[0.99] ${variantClass[variant]} ${disabled ? 'opacity-55' : ''}`}
     >
       {leftIcon}
-      <Text style={[styles.label, variant === 'secondary' && styles.labelSecondary]}>{label}</Text>
+      <Text className={`text-base font-semibold ${labelClass[variant]}`}>{label}</Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    minHeight: 48,
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8
-  },
-  primary: {
-    backgroundColor: '#0F172A'
-  },
-  secondary: {
-    backgroundColor: '#E2E8F0'
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#CBD5E1'
-  },
-  disabled: {
-    opacity: 0.55
-  },
-  pressed: {
-    transform: [{ scale: 0.99 }]
-  },
-  label: {
-    color: '#F8FAFC',
-    fontSize: 16,
-    fontWeight: '600'
-  },
-  labelSecondary: {
-    color: '#0F172A'
-  }
-});

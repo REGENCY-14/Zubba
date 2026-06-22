@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -7,115 +7,46 @@ import type { RootStackScreenProps } from '../../navigation/types';
 
 export function UpdateDetailsSuccessScreen({ navigation }: RootStackScreenProps<'UpdateDetailsSuccess'>) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-      <View style={styles.screen}>
-        <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <View style={styles.iconBg}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
+      <View className="flex-1 bg-white justify-center items-center px-4">
+        <View className="w-full max-w-[320px] items-center gap-3">
+          <View className="items-center justify-center">
+            <View
+              className="w-16 h-16 rounded-full bg-[#DCFCE7] justify-center items-center"
+              style={{ shadowColor: '#006C49', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.12, shadowRadius: 40, elevation: 8 }}
+            >
               <MaterialCommunityIcons name="check" size={40} color="#497D00" />
             </View>
           </View>
 
-          <Text style={styles.title}>Details Updated successfully.</Text>
+          <Text
+            className="text-[24px] leading-[38px] font-medium text-[#1B1B23] text-center tracking-[-0.64px] mt-4"
+            style={{ fontFamily: 'Poppins' }}
+          >
+            Details Updated successfully.
+          </Text>
 
-          <Text style={styles.subtitle}>Your account details has been updated successfully.</Text>
+          <Text className="text-sm leading-[26px] text-[#464554] text-center" style={{ fontFamily: 'Poppins' }}>
+            Your account details has been updated successfully.
+          </Text>
 
-          <Pressable style={styles.primaryButton} onPress={() => navigation.navigate('Settings')}>
-            <Text style={styles.primaryButtonText}>Back to Settings</Text>
+          <Pressable
+            className="w-full h-12 bg-[#31973D] rounded-xl justify-center items-center mt-4"
+            onPress={() => navigation.navigate('Settings')}
+          >
+            <Text className="text-white text-sm leading-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>Back to Settings</Text>
           </Pressable>
 
-          <Pressable style={styles.secondaryButton} onPress={() => navigation.navigate('Home')}>
-            <Text style={styles.secondaryButtonText}>Back to Home</Text>
+          <Pressable
+            className="w-full h-12 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0] justify-center items-center"
+            onPress={() => navigation.navigate('Home')}
+          >
+            <Text className="text-[#0F1621] text-sm leading-5" style={{ fontFamily: 'Manrope' }}>Back to Home</Text>
           </Pressable>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  content: {
-    width: '100%',
-    maxWidth: 320,
-    alignItems: 'center',
-    gap: 12,
-  },
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconBg: {
-    width: 64,
-    height: 64,
-    borderRadius: 999,
-    backgroundColor: '#DCFCE7',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#006C49',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.12,
-    shadowRadius: 40,
-    elevation: 8,
-  },
-  title: {
-    fontSize: 24,
-    lineHeight: 38,
-    fontWeight: '500',
-    color: '#1B1B23',
-    textAlign: 'center',
-    letterSpacing: -0.64,
-    fontFamily: 'Poppins',
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 14,
-    lineHeight: 26,
-    fontWeight: '400',
-    color: '#464554',
-    textAlign: 'center',
-    fontFamily: 'Poppins',
-  },
-  primaryButton: {
-    width: '100%',
-    height: 48,
-    backgroundColor: '#31973D',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '400',
-    fontFamily: 'Plus Jakarta Sans',
-  },
-  secondaryButton: {
-    width: '100%',
-    height: 48,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: '#0F1621',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '400',
-    fontFamily: 'Manrope',
-  },
-});
 
 export default UpdateDetailsSuccessScreen;

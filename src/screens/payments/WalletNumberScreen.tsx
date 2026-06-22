@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -18,44 +17,40 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
   const [showSuccess, setShowSuccess] = React.useState(false);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
       >
-        <View style={styles.screen}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
-              <Text style={styles.backText}>‹</Text>
+        <View className="flex-1 bg-white">
+          <View className="h-12 flex-row items-center justify-between px-4">
+            <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
+              <Text className="text-[28px] text-[#1F2A33] leading-7 -mt-[2px]">‹</Text>
             </Pressable>
-            <Text style={styles.headerTitle}>Payment</Text>
-            <View style={styles.headerSpacer} />
+            <Text className="text-base font-semibold text-[#1F2A33]">Payment</Text>
+            <View className="w-6 h-6" />
           </View>
 
           <ScrollView
-            style={styles.main}
-            contentContainerStyle={styles.mainContent}
+            className="flex-1"
+            contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.card}>
-              {/* Top section */}
-              <View style={styles.topSection}>
-                {/* Heading + subtitle */}
-                <View style={styles.headingSection}>
-                  <Text style={styles.heading}>Wallet Number</Text>
-                  <Text style={styles.subtitle}>
+            <View className="border border-[#E2E8F0] rounded-3xl p-4 gap-8 bg-white">
+              <View className="gap-6">
+                <View className="gap-4">
+                  <Text className="text-2xl font-medium text-[#1F2A33] leading-8">Wallet Number</Text>
+                  <Text className="text-sm text-[#64748A] leading-[26px]">
                     Enter your wallet number to proceed with the transaction.
                   </Text>
                 </View>
 
-                {/* Input group */}
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Wallet Phone Number</Text>
+                <View className="gap-[7px]">
+                  <Text className="text-base text-[#1F2A33] leading-4">Wallet Phone Number</Text>
                   <TextInput
-                    style={styles.input}
+                    className="h-12 border border-[#CBD5E0] rounded-full px-3 text-base text-[#1F2A33] bg-white"
                     value={phone}
                     onChangeText={setPhone}
                     placeholder="055 123 4567"
@@ -64,47 +59,51 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
                     autoFocus
                     returnKeyType="done"
                   />
-                  <Text style={styles.helpText}>Enter your mobile money number</Text>
+                  <Text className="text-xs text-[#64748A] leading-4">Enter your mobile money number</Text>
                 </View>
               </View>
 
-              {/* Continue button */}
               <Pressable
-                style={styles.continueButton}
+                className="h-12 bg-[#31973D] rounded-full items-center justify-center"
                 onPress={() => setShowSuccess(true)}
               >
-                <Text style={styles.continueText}>Continue</Text>
+                <Text className="text-sm text-white leading-5">Continue</Text>
               </Pressable>
             </View>
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
 
-      {/* Success overlay */}
       <Modal visible={showSuccess} transparent animationType="fade">
-        <View style={successStyles.overlay}>
-          <View style={successStyles.card}>
-            <Text style={successStyles.heading}>Successful</Text>
-            <Text style={successStyles.subtitle}>
+        <View
+          className="flex-1 items-center justify-center px-6"
+          style={{ backgroundColor: 'rgba(255,255,255,0.88)' }}
+        >
+          <View
+            className="w-full bg-white rounded-3xl px-6 py-8 items-center gap-4"
+            style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 6 }}
+          >
+            <Text className="text-[36px] font-medium text-[#1F2A33] text-center">Successful</Text>
+            <Text className="text-sm text-[#64748A] text-center leading-[22px]">
               Enjoy double Eco-Points, priority support,{'\n'}and a cleaner tomorrow.
             </Text>
             <Pressable
-              style={successStyles.primaryBtn}
+              className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center mt-2"
               onPress={() => {
                 setShowSuccess(false);
                 navigation.navigate('PremiumHome');
               }}
             >
-              <Text style={successStyles.primaryBtnText}>Proceed to Premium</Text>
+              <Text className="text-sm font-medium text-white">Proceed to Premium</Text>
             </Pressable>
             <Pressable
-              style={successStyles.secondaryBtn}
+              className="w-full h-12 rounded-full border border-[#31973D] items-center justify-center"
               onPress={() => {
                 setShowSuccess(false);
                 navigation.navigate('Home');
               }}
             >
-              <Text style={successStyles.secondaryBtnText}>Set Package expiry alert</Text>
+              <Text className="text-sm font-medium text-[#31973D]">Set Package expiry alert</Text>
             </Pressable>
           </View>
         </View>
@@ -112,127 +111,5 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    height: 48,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-  },
-  backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
-  backText: { fontSize: 28, color: '#1F2A33', lineHeight: 28, marginTop: -2 },
-  headerTitle: { fontSize: 16, fontWeight: '600', color: '#1F2A33' },
-  headerSpacer: { width: 24, height: 24 },
-
-  main: { flex: 1 },
-  mainContent: { paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40 },
-
-  card: {
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 24,
-    padding: 16,
-    gap: 32,
-    backgroundColor: '#FFFFFF',
-  },
-
-  topSection: { gap: 24 },
-
-  headingSection: { gap: 16 },
-  heading: { fontSize: 24, fontWeight: '500', color: '#1F2A33', lineHeight: 32 },
-  subtitle: { fontSize: 14, fontWeight: '400', color: '#64748A', lineHeight: 26 },
-
-  inputGroup: { gap: 7 },
-  inputLabel: { fontSize: 16, fontWeight: '400', color: '#1F2A33', lineHeight: 16 },
-  input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#CBD5E0',
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: '#1F2A33',
-    backgroundColor: '#FFFFFF',
-  },
-  helpText: { fontSize: 12, fontWeight: '400', color: '#64748A', lineHeight: 16 },
-
-  continueButton: {
-    height: 48,
-    backgroundColor: '#31973D',
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  continueText: { fontSize: 14, fontWeight: '400', color: '#FFFFFF', lineHeight: 20 },
-});
-
-const successStyles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.88)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  card: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-    alignItems: 'center',
-    gap: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 6,
-  },
-  heading: {
-    fontSize: 36,
-    fontWeight: '500',
-    color: '#1F2A33',
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: '#64748A',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  primaryBtn: {
-    width: '100%',
-    height: 48,
-    backgroundColor: '#31973D',
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  primaryBtnText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#FFFFFF',
-  },
-  secondaryBtn: {
-    width: '100%',
-    height: 48,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#31973D',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryBtnText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#31973D',
-  },
-});
 
 export default WalletNumberScreen;

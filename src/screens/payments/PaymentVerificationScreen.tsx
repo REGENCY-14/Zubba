@@ -53,7 +53,7 @@ export function PaymentVerificationScreen({
           <View className="w-6" />
         </View>
 
-        <ScrollView className="flex-1 px-6 pt-6">
+        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 120 }}>
 
           <Text className="text-2xl font-medium text-[#1F2A33] mb-4">
             Verification Code
@@ -124,6 +124,15 @@ export function PaymentVerificationScreen({
             <Text className="text-white text-sm">Verify</Text>
           </Pressable>
         </ScrollView>
+
+        <AppBottomNav
+          activeTab="home"
+          paddingBottom={14}
+          onHomePress={() => navigation.navigate('Home')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+        />
       </View>
     </SafeAreaView>
   );
