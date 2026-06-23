@@ -86,7 +86,7 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 16, gap: 24 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 24 }}
         >
           <View className="border border-[#E2E8F0] bg-white rounded-3xl p-6 gap-4">
             <View className="flex-row justify-between items-start">
@@ -159,6 +159,15 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
             <Text className="text-white text-sm">Continue</Text>
           </Pressable>
         </ScrollView>
+
+        <AppBottomNav
+          activeTab="home"
+          paddingBottom={14}
+          onHomePress={() => navigation.navigate('Home')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+        />
       </View>
     </SafeAreaView>
   );

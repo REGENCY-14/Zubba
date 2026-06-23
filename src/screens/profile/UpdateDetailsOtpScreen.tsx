@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -26,19 +26,22 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-white">
+        <View className="h-12 px-4 flex-row items-center justify-between bg-white">
+          <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
           </Pressable>
-          <Text style={styles.headerTitle}>Code Verification</Text>
-          <View style={styles.headerSpacer} />
+          <Text className="text-base leading-6 font-semibold text-[#1F2A33] text-center">Code Verification</Text>
+          <View className="w-6 h-6" />
         </View>
 
-        <View style={styles.content}>
-          <View style={styles.introWrap}>
-            <Text style={styles.title}>
+        <View className="flex-1 px-[22px] pt-[18px] gap-[18px]">
+          <View className="gap-1">
+            <Text
+              className="text-[18px] font-bold leading-[25px] tracking-[0.15px] text-[#1F2A33]"
+              style={{ fontFamily: 'Nexa Text-Trial' }}
+            >
               {kind === 'email'
                 ? step === 'old'
                   ? `Enter the 4-digits code sent via email at ${email}`
@@ -49,18 +52,20 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
             </Text>
           </View>
 
-          <View style={styles.codeRow}>
+          <View className="flex-row gap-3 mt-[10px]">
             {[0, 1, 2, 3].map((index) => (
               <Pressable
                 key={index}
                 onPress={() => inputRefs.current[index]?.focus()}
-                style={[styles.codeBox, index === 0 && codeDigits[0] === '' ? styles.codeBoxActive : null]}
+                className={`w-[39px] h-[34px] rounded-[6px] border items-center justify-center ${
+                  index === 0 && codeDigits[0] === ''
+                    ? 'border-[#31973D] bg-white'
+                    : 'border-[#B8B8B8]/20 bg-[#B8B8B8]/20'
+                }`}
               >
                 <TextInput
-                  ref={(ref) => {
-                    inputRefs.current[index] = ref;
-                  }}
-                  style={styles.codeInput}
+                  ref={(ref) => { inputRefs.current[index] = ref; }}
+                  className="w-full h-full text-[20px] font-medium text-[#1F2A33]"
                   value={codeDigits[index]}
                   onChangeText={(value) => updateDigit(index, value)}
                   keyboardType="number-pad"
@@ -72,7 +77,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
           </View>
 
           <Pressable
-            style={[styles.verifyButton, !isCodeComplete && styles.verifyButtonDisabled]}
+            className={`h-12 rounded-xl items-center justify-center mt-[10px] ${isCodeComplete ? 'bg-[#34A853]' : 'bg-[#34A853]/50'}`}
             disabled={!isCodeComplete}
             onPress={() =>
               step === 'old'
@@ -85,106 +90,29 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
                 : navigation.navigate('UpdateDetailsSuccess')
             }
           >
-            <Text style={styles.verifyButtonText}>Verify</Text>
+            <Text className="text-white text-sm leading-5">Verify</Text>
           </Pressable>
 
-          <Text style={styles.smallText}>{kind === 'email' ? 'Resend code by email (1:00)' : 'Resend code by SMS (1:00)'}</Text>
+          <Text className="text-[#1F2A33] text-[11px] leading-4" style={{ fontFamily: 'Poppins' }}>
+            {kind === 'email' ? 'Resend code by email (1:00)' : 'Resend code by SMS (1:00)'}
+          </Text>
 
-          <View style={styles.actionsWrap}>
-            <Pressable style={styles.pillButton} onPress={() => {}}>
-              <Text style={styles.pillButtonText}>Resend</Text>
+          <View className="gap-2 items-start">
+            <Pressable className="border border-[#E2E8F0] rounded-[22px] py-[6px] px-3 bg-white" onPress={() => {}}>
+              <Text className="text-[#1F2A33] text-xs leading-5 font-medium">Resend</Text>
             </Pressable>
-
-            <Pressable style={styles.pillButton} onPress={() => {}}>
-              <Text style={styles.pillButtonText}>Send code via WhatsApp</Text>
+            <Pressable className="border border-[#E2E8F0] rounded-[22px] py-[6px] px-3 bg-white" onPress={() => {}}>
+              <Text className="text-[#1F2A33] text-xs leading-5 font-medium">Send code via WhatsApp</Text>
             </Pressable>
           </View>
         </View>
 
-        <View style={styles.androidNavBar}>
-          <View style={styles.androidHandle} />
+        <View className="h-6 items-center justify-center pb-2">
+          <View className="w-[108px] h-1 rounded-[12px] bg-black opacity-90" />
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    height: 48,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-  },
-  backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 16, lineHeight: 24, fontWeight: '600', color: '#1F2A33', textAlign: 'center' },
-  headerSpacer: { width: 24, height: 24 },
-  content: {
-    flex: 1,
-    paddingHorizontal: 22,
-    paddingTop: 18,
-    gap: 18,
-  },
-  introWrap: { gap: 4 },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    lineHeight: 25,
-    letterSpacing: 0.15,
-    color: '#1F2A33',
-    fontFamily: 'Nexa Text-Trial',
-  },
-  codeRow: { flexDirection: 'row', gap: 12, marginTop: 10 },
-  codeBox: {
-    width: 39,
-    height: 34,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(184, 184, 184, 0.2)',
-    backgroundColor: 'rgba(184, 184, 184, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  codeBoxActive: { borderColor: '#31973D', backgroundColor: '#FFFFFF' },
-  codeInput: { width: '100%', height: '100%', fontSize: 20, fontWeight: '500', color: '#1F2A33' },
-  verifyButton: {
-    height: 48,
-    backgroundColor: '#34A853',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  verifyButtonDisabled: { backgroundColor: 'rgba(52, 168, 83, 0.5)' },
-  verifyButtonText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontWeight: '400' },
-  smallText: { color: '#1F2A33', fontSize: 11, lineHeight: 16, fontFamily: 'Poppins' },
-  actionsWrap: { gap: 8, alignItems: 'flex-start' },
-  pillButton: {
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 22,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF',
-  },
-  pillButtonText: { color: '#1F2A33', fontSize: 12, lineHeight: 20, fontWeight: '500' },
-  androidNavBar: {
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 8,
-  },
-  androidHandle: {
-    width: 108,
-    height: 4,
-    borderRadius: 12,
-    backgroundColor: '#000000',
-    opacity: 0.9,
-  },
-});
 
 export default UpdateDetailsOtpScreen;

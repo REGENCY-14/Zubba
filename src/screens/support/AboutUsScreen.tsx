@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,12 +15,15 @@ function AccordionSection({ title, children, defaultOpen = false }: AccordionSec
   const [open, setOpen] = React.useState(defaultOpen);
 
   return (
-    <View style={styles.card}>
-      <Pressable style={styles.accordionHeader} onPress={() => setOpen((value) => !value)}>
-        <Text style={styles.accordionTitle}>{title}</Text>
+    <View className="bg-white rounded-2xl border border-[#F1F5F9] overflow-hidden">
+      <Pressable
+        className="min-h-[64px] px-4 py-[14px] flex-row items-center justify-between border-b border-b-[#F1F5F9]"
+        onPress={() => setOpen((value) => !value)}
+      >
+        <Text className="text-[22px] leading-[30px] font-semibold text-[#111827]" style={{ fontFamily: 'Poppins' }}>{title}</Text>
         <MaterialCommunityIcons name={open ? 'chevron-up' : 'chevron-down'} size={28} color="#64748A" />
       </Pressable>
-      {open ? <View style={styles.accordionBody}>{children}</View> : null}
+      {open ? <View className="px-4 py-[18px]">{children}</View> : null}
     </View>
   );
 }
@@ -35,48 +38,54 @@ type FeatureCardProps = {
 
 function FeatureCard({ icon, title, description, backgroundColor, accentColor }: FeatureCardProps) {
   return (
-    <View style={[styles.featureCard, { backgroundColor }] }>
-      <View style={[styles.featureIconWrap, { backgroundColor: 'transparent' }]}>
+    <View className="min-h-[141px] rounded-2xl border border-[#E2E8F0] p-[18px] gap-[10px]" style={{ backgroundColor }}>
+      <View className="w-8 h-8 items-start justify-center">
         {icon}
       </View>
-      <Text style={styles.featureTitle}>{title}</Text>
-      <Text style={[styles.featureDescription, { color: accentColor }]}>{description}</Text>
+      <Text className="text-[24px] leading-[30px] font-semibold text-[#1A1C1E]" style={{ fontFamily: 'Poppins' }}>{title}</Text>
+      <Text className="text-[18px] leading-[30px]" style={{ fontFamily: 'Poppins', color: accentColor }}>{description}</Text>
     </View>
   );
 }
 
 function ResourceRow({ title, subtitle, icon, onPress }: { title: string; subtitle?: string; icon: React.ReactNode; onPress?: () => void }) {
   return (
-    <Pressable style={styles.resourceRow} onPress={onPress}>
+    <Pressable
+      className="min-h-[64px] px-4 py-3 flex-row items-center justify-between border-b border-b-[#F1F5F9]"
+      onPress={onPress}
+    >
       <View>
-        <Text style={styles.resourceTitle}>{title}</Text>
-        {subtitle ? <Text style={styles.resourceSubtitle}>{subtitle}</Text> : null}
+        <Text className="text-[22px] leading-[30px] text-[#1A1C1E]" style={{ fontFamily: 'Poppins' }}>{title}</Text>
+        {subtitle ? <Text className="text-sm leading-[22px] text-[#64748A]" style={{ fontFamily: 'Poppins' }}>{subtitle}</Text> : null}
       </View>
-      <View style={styles.resourceAction}>{icon}</View>
+      <View className="w-[26px] items-center justify-center">{icon}</View>
     </Pressable>
   );
 }
 
 export function AboutUsScreen({ navigation }: RootStackScreenProps<'AboutUs'>) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.screen}>
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={styles.brandCard}>
-            <Text style={styles.brandMark}>ZUBBA</Text>
-            <Text style={styles.brandSubtitle}>Waste Pickup and Recycling Control</Text>
-            <View style={styles.versionPill}>
-              <Text style={styles.versionText}>Version 1.0.0</Text>
+    <SafeAreaView className="flex-1 bg-[#F8FAFC]" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-[#F8FAFC]">
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 14, paddingBottom: 24, gap: 24 }} showsVerticalScrollIndicator={false}>
+          <View
+            className="items-center bg-white rounded-[20px] border border-[#E2E8F0] py-[26px] px-4 gap-[10px]"
+            style={{ shadowColor: '#CBD5E1', shadowOpacity: 0.2, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 2 }}
+          >
+            <Text className="text-[30px] leading-[34px] font-bold text-[#31973D] tracking-[1.4px]">ZUBBA</Text>
+            <Text className="text-xs leading-4 text-[#64748A] text-center" style={{ fontFamily: 'Poppins' }}>Waste Pickup and Recycling Control</Text>
+            <View className="bg-[#E3F2F7] rounded-full px-3 py-1">
+              <Text className="text-[10px] leading-[14px] text-[#1F2A33]" style={{ fontFamily: 'Poppins' }}>Version 1.0.0</Text>
             </View>
           </View>
 
           <AccordionSection title="Our Mission" defaultOpen>
-            <Text style={styles.missionText}>
+            <Text className="text-[22px] leading-[34px] text-[#64748A]" style={{ fontFamily: 'Poppins' }}>
               At Zubba, our mission is to make waste management simple, sustainable, and accessible through smart technology and eco-friendly solutions.
             </Text>
           </AccordionSection>
 
-          <View style={styles.featureGrid}>
+          <View className="gap-[18px]">
             <FeatureCard
               icon={<MaterialCommunityIcons name="recycle" size={28} color="#148732" />}
               title="Zero Waste Goal"
@@ -93,9 +102,9 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<'AboutUs'>) {
             />
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Resources</Text>
-            <View style={styles.sectionDivider} />
+          <View className="bg-white rounded-2xl border border-[#F1F5F9] overflow-hidden">
+            <Text className="text-[22px] leading-[30px] font-semibold text-[#111827] p-4" style={{ fontFamily: 'Poppins' }}>Resources</Text>
+            <View className="h-px bg-[#F1F5F9]" />
             <ResourceRow
               title="Website"
               subtitle="https://zubbaaste.com/"
@@ -114,94 +123,11 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<'AboutUs'>) {
             />
           </View>
 
-          <Text style={styles.footerText}>2026 Zubba Eco Solutions.</Text>
+          <Text className="text-xs leading-4 text-[#64748A] text-center mt-2" style={{ fontFamily: 'Poppins' }}>2026 Zubba Eco Solutions.</Text>
         </ScrollView>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F8FAFC' },
-  screen: { flex: 1, backgroundColor: '#F8FAFC' },
-  content: {
-    paddingHorizontal: 12,
-    paddingTop: 14,
-    paddingBottom: 24,
-    gap: 24,
-  },
-  brandCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingVertical: 26,
-    paddingHorizontal: 16,
-    gap: 10,
-    shadowColor: '#CBD5E1',
-    shadowOpacity: 0.2,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 2,
-  },
-  brandMark: { fontSize: 30, lineHeight: 34, fontWeight: '700', color: '#31973D', letterSpacing: 1.4 },
-  brandSubtitle: { fontSize: 12, lineHeight: 16, color: '#64748A', textAlign: 'center', fontFamily: 'Poppins' },
-  versionPill: { backgroundColor: '#E3F2F7', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 },
-  versionText: { fontSize: 10, lineHeight: 14, color: '#1F2A33', fontFamily: 'Poppins' },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    overflow: 'hidden',
-  },
-  accordionHeader: {
-    minHeight: 64,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  accordionTitle: { fontSize: 22, lineHeight: 30, fontWeight: '600', color: '#111827', fontFamily: 'Poppins' },
-  accordionBody: { paddingHorizontal: 16, paddingVertical: 18 },
-  missionText: { fontSize: 22, lineHeight: 34, color: '#64748A', fontFamily: 'Poppins' },
-  featureGrid: { gap: 18 },
-  featureCard: {
-    minHeight: 141,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 18,
-    gap: 10,
-  },
-  featureIconWrap: {
-    width: 32,
-    height: 32,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  featureTitle: { fontSize: 24, lineHeight: 30, fontWeight: '600', color: '#1A1C1E', fontFamily: 'Poppins' },
-  featureDescription: { fontSize: 18, lineHeight: 30, fontWeight: '400', fontFamily: 'Poppins' },
-  sectionTitle: { fontSize: 22, lineHeight: 30, fontWeight: '600', color: '#111827', padding: 16, fontFamily: 'Poppins' },
-  sectionDivider: { height: 1, backgroundColor: '#F1F5F9' },
-  resourceRow: {
-    minHeight: 64,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  resourceTitle: { fontSize: 22, lineHeight: 30, color: '#1A1C1E', fontFamily: 'Poppins' },
-  resourceSubtitle: { fontSize: 14, lineHeight: 22, color: '#64748A', fontFamily: 'Poppins' },
-  resourceAction: { width: 26, alignItems: 'center', justifyContent: 'center' },
-  footerText: { fontSize: 12, lineHeight: 16, color: '#64748A', textAlign: 'center', fontFamily: 'Poppins', marginTop: 8 },
-});
 
 export default AboutUsScreen;

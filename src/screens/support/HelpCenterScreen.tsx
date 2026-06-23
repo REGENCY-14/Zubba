@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -18,27 +18,30 @@ function Section({ title, children, defaultOpen = false, compact = false }: Sect
   const [open, setOpen] = React.useState(defaultOpen);
 
   return (
-    <View style={[styles.sectionCard, compact && styles.compactSectionCard]}>
-      <Pressable style={styles.sectionHeader} onPress={() => setOpen((value) => !value)}>
-        <Text style={styles.sectionTitle}>{title}</Text>
+    <View className={`bg-white rounded-2xl border border-[#F1F5F9] overflow-hidden${compact ? '' : ''}`}>
+      <Pressable
+        className="min-h-[44px] px-4 py-3 flex-row items-center justify-between border-b border-b-[#F1F5F9]"
+        onPress={() => setOpen((value) => !value)}
+      >
+        <Text className="text-sm leading-5 font-semibold text-[#1F2A33]" style={{ fontFamily: 'Poppins' }}>{title}</Text>
         <MaterialCommunityIcons name={open ? 'chevron-up' : 'chevron-down'} size={18} color="#64748A" />
       </Pressable>
-      {open ? <View style={styles.sectionBody}>{children}</View> : null}
+      {open ? <View className="px-4 py-2 gap-3">{children}</View> : null}
     </View>
   );
 }
 
 function Paragraph({ children }: { children: React.ReactNode }) {
-  return <Text style={styles.paragraph}>{children}</Text>;
+  return <Text className="text-sm leading-5 text-[#64748A]" style={{ fontFamily: 'Poppins' }}>{children}</Text>;
 }
 
 function BulletList({ items }: { items: string[] }) {
   return (
-    <View style={styles.bulletList}>
+    <View className="gap-2">
       {items.map((item) => (
-        <View key={item} style={styles.bulletRow}>
-          <Text style={styles.bullet}>•</Text>
-          <Text style={styles.bulletText}>{item}</Text>
+        <View key={item} className="flex-row items-start gap-2">
+          <Text className="w-3 text-[#64748A] text-[18px] leading-5">•</Text>
+          <Text className="flex-1 text-sm leading-5 text-[#64748A]" style={{ fontFamily: 'Poppins' }}>{item}</Text>
         </View>
       ))}
     </View>
@@ -47,20 +50,23 @@ function BulletList({ items }: { items: string[] }) {
 
 export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCenter'>) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-white">
+        <View className="h-12 px-4 flex-row items-center justify-between bg-white">
+          <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons name="chevron-left" size={28} color="#1F2A33" />
           </Pressable>
-          <Text style={styles.headerTitle}>Help Center</Text>
-          <View style={styles.headerSpacer} />
+          <Text className="text-base leading-6 font-semibold text-[#1F2A33]" style={{ fontFamily: 'Inter' }}>Help Center</Text>
+          <View className="w-6 h-6" />
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={styles.searchBar}>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24, gap: 14, backgroundColor: '#F8FAFC' }} showsVerticalScrollIndicator={false}>
+          <View
+            className="h-[50px] rounded-[10px] border bg-white flex-row items-center px-[14px] gap-[10px]"
+            style={{ borderColor: 'rgba(0, 0, 0, 0.11)' }}
+          >
             <MaterialCommunityIcons name="magnify" size={24} color="#111111" />
-            <Text style={styles.searchText}>Search for help</Text>
+            <Text className="text-sm leading-[21px] font-bold text-[#333333]" style={{ fontFamily: 'Nexa Text-Trial' }}>Search for help</Text>
           </View>
 
           <Section title="Getting Started" defaultOpen>
@@ -123,22 +129,32 @@ export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCente
             </Paragraph>
           </Section>
 
-          <View style={styles.helpCard}>
-            <Text style={styles.helpCardTitle}>Still need help</Text>
-            <Text style={styles.helpCardBody}>
+          <View className="rounded-2xl border border-[#31973D] p-4 gap-2" style={{ backgroundColor: 'rgba(0, 107, 35, 0.1)' }}>
+            <Text className="text-sm leading-5 font-semibold text-[#1F2A33]" style={{ fontFamily: 'Poppins' }}>Still need help</Text>
+            <Text className="text-sm leading-5 text-[#64748A]" style={{ fontFamily: 'Poppins' }}>
               Visit our website or contact our support team for personalized assistance.
             </Text>
-            <Pressable style={styles.helpButton} onPress={() => {}}>
-              <Text style={styles.helpButtonText}>Visit Zubba website</Text>
+            <Pressable
+              className="self-start min-w-[198px] h-12 px-4 rounded-xl bg-[#31973D] flex-row items-center justify-center gap-2"
+              onPress={() => {}}
+            >
+              <Text className="text-white text-sm leading-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>Visit Zubba website</Text>
               <MaterialCommunityIcons name="open-in-new" size={18} color="#FFFFFF" />
             </Pressable>
           </View>
 
-          <View style={styles.heroImageWrap}>
-            <Image source={supportImage} style={styles.heroImage} resizeMode="cover" />
-            <View style={styles.heroOverlay}>
-              <Text style={styles.heroEyebrow}>OUR COMMITMENT</Text>
-              <Text style={styles.heroCaption}>We&apos;re here to make sustainability simple.</Text>
+          <View className="h-[230px] rounded-2xl overflow-hidden">
+            <Image source={supportImage} className="w-full h-full" resizeMode="cover" />
+            <View className="absolute left-0 right-0 bottom-0 p-6 gap-2" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+              <Text
+                className="text-[12px] leading-[14px] tracking-[1.2px] uppercase font-medium"
+                style={{ fontFamily: 'Poppins', color: 'rgba(255, 255, 255, 0.8)' }}
+              >
+                OUR COMMITMENT
+              </Text>
+              <Text className="text-base leading-7 text-white font-semibold" style={{ fontFamily: 'Manrope' }}>
+                We&apos;re here to make sustainability simple.
+              </Text>
             </View>
           </View>
         </ScrollView>
@@ -146,100 +162,5 @@ export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCente
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    height: 48,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-  },
-  backButton: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 16, lineHeight: 24, fontWeight: '600', color: '#1F2A33', fontFamily: 'Inter' },
-  headerSpacer: { width: 24, height: 24 },
-  content: { padding: 16, paddingBottom: 24, gap: 14, backgroundColor: '#F8FAFC' },
-  searchBar: {
-    height: 50,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.11)',
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    gap: 10,
-  },
-  searchText: { fontSize: 14, lineHeight: 21, color: '#333333', fontFamily: 'Nexa Text-Trial', fontWeight: '700' },
-  sectionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    overflow: 'hidden',
-  },
-  compactSectionCard: { marginBottom: 0 },
-  sectionHeader: {
-    minHeight: 44,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  sectionTitle: { fontSize: 14, lineHeight: 20, fontWeight: '600', color: '#1F2A33', fontFamily: 'Poppins' },
-  sectionBody: { paddingHorizontal: 16, paddingVertical: 8, gap: 12 },
-  paragraph: { fontSize: 14, lineHeight: 20, color: '#64748A', fontFamily: 'Poppins' },
-  bulletList: { gap: 8 },
-  bulletRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  bullet: { width: 12, color: '#64748A', fontSize: 18, lineHeight: 20 },
-  bulletText: { flex: 1, fontSize: 14, lineHeight: 20, color: '#64748A', fontFamily: 'Poppins' },
-  helpCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#31973D',
-    backgroundColor: 'rgba(0, 107, 35, 0.1)',
-    padding: 16,
-    gap: 8,
-  },
-  helpCardTitle: { fontSize: 14, lineHeight: 20, fontWeight: '600', color: '#1F2A33', fontFamily: 'Poppins' },
-  helpCardBody: { fontSize: 14, lineHeight: 20, color: '#64748A', fontFamily: 'Poppins' },
-  helpButton: {
-    alignSelf: 'flex-start',
-    minWidth: 198,
-    height: 48,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    backgroundColor: '#31973D',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  helpButtonText: { color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontWeight: '400', fontFamily: 'Plus Jakarta Sans' },
-  heroImageWrap: {
-    height: 230,
-    borderRadius: 16,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  heroImage: { width: '100%', height: '100%' },
-  heroOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: 24,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    gap: 8,
-  },
-  heroEyebrow: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 12, lineHeight: 14, letterSpacing: 1.2, textTransform: 'uppercase', fontFamily: 'Poppins', fontWeight: '500' },
-  heroCaption: { color: '#FFFFFF', fontSize: 16, lineHeight: 28, fontFamily: 'Manrope', fontWeight: '600' },
-});
 
 export default HelpCenterScreen;

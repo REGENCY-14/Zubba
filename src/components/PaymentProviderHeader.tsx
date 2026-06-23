@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 type PaymentProviderHeaderProps = {
   provider: string;
@@ -17,69 +17,22 @@ export function PaymentProviderHeader({
   onClosePress,
 }: PaymentProviderHeaderProps) {
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.iconButton} onPress={onMenuPress}>
-        <Text style={styles.iconText}>☰</Text>
+    <View className="h-14 flex-row items-center justify-between px-4 border-b bg-white" style={{ borderBottomColor: 'rgba(0,0,0,0.08)' }}>
+      <Pressable className="w-8 h-8 items-center justify-center" onPress={onMenuPress}>
+        <Text className="text-base text-[#1F2A33]">☰</Text>
       </Pressable>
 
-      <View style={styles.centerContent}>
-        <View style={styles.providerRow}>
-          <View style={[styles.providerDot, { backgroundColor: providerColor }]} />
-          <Text style={styles.providerText}>{provider}</Text>
+      <View className="items-center justify-center">
+        <View className="flex-row items-center gap-2">
+          <View className="w-[10px] h-[10px] rounded-full" style={{ backgroundColor: providerColor }} />
+          <Text className="text-sm text-[#1F2A33] font-semibold">{provider}</Text>
         </View>
-        {isActive ? <Text style={styles.statusText}>Active</Text> : null}
+        {isActive ? <Text className="mt-[2px] text-xs text-[#31973D]">Active</Text> : null}
       </View>
 
-      <Pressable style={styles.iconButton} onPress={onClosePress}>
-        <Text style={styles.iconText}>✕</Text>
+      <Pressable className="w-8 h-8 items-center justify-center" onPress={onClosePress}>
+        <Text className="text-base text-[#1F2A33]">✕</Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.08)',
-    backgroundColor: '#FFFFFF',
-  },
-  iconButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconText: {
-    fontSize: 16,
-    color: '#1F2A33',
-  },
-  centerContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  providerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  providerDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  providerText: {
-    fontSize: 14,
-    color: '#1F2A33',
-    fontWeight: '600',
-  },
-  statusText: {
-    marginTop: 2,
-    fontSize: 12,
-    color: '#31973D',
-  },
-});

@@ -18,7 +18,7 @@ export function DriverArrivesScreen({
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 16, gap: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 16 }}
           showsVerticalScrollIndicator={false}
         >
           <View className="w-full h-[224px] gap-6 border border-[#E2E8F0] rounded-3xl bg-white p-6 items-center justify-center">
@@ -127,6 +127,15 @@ export function DriverArrivesScreen({
             </Pressable>
           </View>
         </ScrollView>
+
+        <AppBottomNav
+          activeTab="home"
+          paddingBottom={14}
+          onHomePress={() => navigation.navigate('Home')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+        />
       </View>
     </SafeAreaView>
   );

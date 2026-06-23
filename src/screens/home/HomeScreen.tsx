@@ -32,7 +32,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
-  const isPremium = true;
+  const isPremium = false;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
 
   const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
@@ -280,12 +280,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             </View>
 
             {!isPremium && (
-              <View className="text-sm text-[#574500] flex-row items-center justify-center gap-1">
+              <Pressable
+                onPress={() => navigation.navigate("ChoosePlan")}
+                className="flex-row items-center justify-center gap-1"
+              >
                 <MaterialCommunityIcons name="lock" size={16} color="#574500" />
                 <Text className="text-[#574500] italic">
                   Upgrade to Gold for scheduled pickups
                 </Text>
-              </View>
+              </Pressable>
             )}
           </View>
         </View>

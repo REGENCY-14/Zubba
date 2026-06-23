@@ -10,38 +10,38 @@ export const OnboardNotificationsAccessScreen = ({
 }: RootStackScreenProps<"OnboardNotificationsAccess">) => {
   const sendNotification = require("../../../assets/sendNotification.png");
 
-  const requestNotificationPermission = async () => {
-    try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
+  // const requestNotificationPermission = async () => {
+  //   try {
+  //     const { status: existingStatus } =
+  //       await Notifications.getPermissionsAsync();
+  //     let finalStatus = existingStatus;
+  //     if (existingStatus !== "granted") {
+  //       const { status } = await Notifications.requestPermissionsAsync();
+  //       finalStatus = status;
+  //     }
 
-      if (finalStatus !== "granted") {
-        Alert.alert(
-          "Permission denied",
-          "You can enable notifications later in settings.",
-        );
-        return false;
-      }
+  //     if (finalStatus !== "granted") {
+  //       Alert.alert(
+  //         "Permission denied",
+  //         "You can enable notifications later in settings.",
+  //       );
+  //       return false;
+  //     }
 
-      return true;
-    } catch (error) {
-      console.log("Notification permission error:", error);
-      Alert.alert(
-        "Error",
-        "Unable to request notification permissions right now.",
-      );
-      return false;
-    }
-  };
+  //     return true;
+  //   } catch (error) {
+  //     console.log("Notification permission error:", error);
+  //     Alert.alert(
+  //       "Error",
+  //       "Unable to request notification permissions right now.",
+  //     );
+  //     return false;
+  //   }
+  // };
 
   const enableNotifications = async () => {
-    const granted = await requestNotificationPermission();
-    if (!granted) return;
+    // const granted = await requestNotificationPermission();
+    // if (!granted) return;
 
     Alert.alert("Success", "Notifications enabled!");
     navigation.navigate("SignUp");
