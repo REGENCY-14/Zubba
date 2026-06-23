@@ -5,10 +5,23 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 
+const TAGS = ["Professional", "Punctual", "Eco-friendly", "Efficient"];
+
 export function RateRideScreen({
   navigation,
 }: RootStackScreenProps<"RateRide">) {
+  const [rating, setRating] = useState<number>(0);
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [comment, setComment] = useState<string>("");
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => {
+      const next = new Set(prev);
+      if (next.has(tag)) next.delete(tag);
+      else next.add(tag);
+      return next;
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
@@ -18,13 +31,7 @@ export function RateRideScreen({
             onPress={() => navigation.goBack()}
             className="w-6 h-6 items-center justify-center"
           >
-            <Text className="text-[28px] text-[#1F2A33]">
-              <MaterialCommunityIcons
-                name="chevron-left"
-                color="#000"
-                size={24}
-              />
-            </Text>
+            <MaterialCommunityIcons name="chevron-left" color="#000" size={24} />
           </Pressable>
 
           <Text className="text-base font-semibold text-[#1F2A33]">
@@ -46,92 +53,90 @@ export function RateRideScreen({
 
         <View className="absolute inset-0 bg-black/40" pointerEvents="none" />
 
-        <View className="absolute bottom-0 left-0 right-0 bg-[#F8FAFC] rounded-t-[32px] pt-4 pb-6 px-4 gap-4 max-h-[calc(100vh-30%)]">
+        <View className="absolute bottom-0 left-0 right-0 bg-[#F8FAFC] rounded-t-[32px] pt-4 pb-6 px-4 gap-4 max-h-[70%]">
           <View className="w-36 h-[3px] bg-[#334154] rounded-full self-center" />
+
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1 }}
+            contentContainerStyle={{ gap: 12, paddingBottom: 8 }}
           >
-            <View className="flex items-center w-full mb-4">
-              <Text className="px-6 text-lg font-medium text-black">
+            <View className="items-center gap-1">
+              <Text className="text-lg font-medium text-black">
                 Rate your pickup experience
               </Text>
-              <Text className="px-6 text-sm font-medium text-[#3F4A3D]">
+              <Text className="text-sm text-[#3F4A3D]">
                 Your feedback helps us keep the city green.
               </Text>
             </View>
 
-            <View className="bg-white rounded-xl py-3 px-4 gap-3 mb-4">
-              <View className="border-[1px] border-black/10 rounded-3xl p-4 pb-6 gap-6">
+            <View className="bg-white rounded-xl py-3 px-4 gap-3">
+              {/* Star rating */}
+              <View className="border border-black/10 rounded-3xl p-4 pb-6 gap-4">
                 <Text className="text-base">Service experience</Text>
-                <View className="flex flex-row gap-2">
-                  {Array.from({ length: 5 }).map((_, index) => {
-                    if (index < 4) {
-                      return (
-                        <MaterialCommunityIcons
-                          name="star"
-                          color="#31973D"
-                          size={30}
-                        />
-                      );
-                    } else {
-                      return (
-                        <MaterialCommunityIcons
-                          name="star-outline"
-                          color="#BECAB9"
-                          size={30}
-                        />
-                      );
-                    }
-                  })}
-                </View>
-              </View>
-
-              <View className="border-[1px] border-black/10 rounded-3xl p-4 pb-6 gap-6">
-                <Text className="text-base font-semibold">
-                  What did you like
-                </Text>
-                <View className="grid grid-cols-2 gap-4">
-                  {[
-                    "Professional",
-                    "Punctual",
-                    "Eco-friendly",
-                    "Efficient",
-                  ].map((item, index) => (
-                    <View
-                      key={index}
-                      className="border-[1px] border-black/10 bg-[#F8FAFC] rounded-3xl p-3.5 items-center justify-center"
-                    >
-                      <Text className="text-sm">{item}</Text>
-                    </View>
+                <View className="flex-row gap-2">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Pressable key={index} onPress={() => setRating(index + 1)} hitSlop={6}>
+                      <MaterialCommunityIcons
+                        name={index < rating ? "star" : "star-outline"}
+                        color={index < rating ? "#31973D" : "#BECAB9"}
+                        size={32}
+                      />
+                    </Pressable>
                   ))}
-                  <View className="border-[1px] col-span-2 border-black/10 bg-[#F8FAFC] flex-row rounded-3xl py-3.5 px-4 items-center justify-between">
-                    <Text>more...</Text>
-                    <MaterialCommunityIcons
-                      name="chevron-right"
-                      color="#000"
-                      size={24}
-                    />
-                  </View>
+                </View>
+                {rating > 0 && (
+                  <Text className="text-sm text-[#31973D]">
+                    {["", "Poor", "Fair", "Good", "Great", "Excellent"][rating]}
+                  </Text>
+                )}
+              </View>
+
+              {/* Tags */}
+              <View className="border border-black/10 rounded-3xl p-4 pb-6 gap-4">
+                <Text className="text-base font-semibold">What did you like</Text>
+                <View className="flex-row flex-wrap gap-3">
+                  {TAGS.map((tag) => {
+                    const active = selectedTags.has(tag);
+                    return (
+                      <Pressable
+                        key={tag}
+                        onPress={() => toggleTag(tag)}
+                        className={`rounded-3xl px-4 py-3 border ${
+                          active
+                            ? "border-[#31973D] bg-[#31973D]/10"
+                            : "border-black/10 bg-[#F8FAFC]"
+                        }`}
+                        style={{ minWidth: '45%', flexGrow: 1, alignItems: 'center' }}
+                      >
+                        <Text className={`text-sm ${active ? "text-[#31973D] font-semibold" : "text-[#1F2A33]"}`}>
+                          {tag}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                  <Pressable className="border border-black/10 bg-[#F8FAFC] flex-row rounded-3xl py-3 px-4 items-center justify-between w-full">
+                    <Text className="text-sm text-[#1F2A33]">More options</Text>
+                    <MaterialCommunityIcons name="chevron-right" color="#000" size={20} />
+                  </Pressable>
                 </View>
               </View>
             </View>
 
-            <View className="bg-white border-t-[1px] border-black/10 gap-4 p-4 mb-4">
+            {/* Comment */}
+            <View className="bg-white border-t border-black/10 gap-3 p-4">
               <Text className="text-base font-bold">Additional comment</Text>
-              <View className="flex-row items-center gap-2 mb-4">
-                <TextInput
-                  className="flex-1 h-12 px-4 border border-[#F2F2F2] rounded-full bg-white text-[15px] text-[#707579]"
-                  placeholder="Tell us more..."
-                  placeholderTextColor="#A8A8A8"
-                  value={comment}
-                  onChangeText={setComment}
-                />
-              </View>
+              <TextInput
+                className="h-12 px-4 border border-[#F2F2F2] rounded-full bg-white text-[15px] text-[#707579]"
+                placeholder="Tell us more..."
+                placeholderTextColor="#A8A8A8"
+                value={comment}
+                onChangeText={setComment}
+              />
             </View>
 
-            <View className="px-6 gap-2">
+            {/* Actions */}
+            <View className="px-2 gap-2">
               <Pressable
                 onPress={() => navigation.navigate("Home")}
                 className="h-12 bg-[#31973D] rounded-full items-center justify-center"
