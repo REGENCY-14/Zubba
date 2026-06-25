@@ -1,9 +1,11 @@
 import React from 'react';
-import { ImageBackground, Modal, Pressable, StatusBar, Text, TextInput, View } from 'react-native';
+import { Animated, ImageBackground, Modal, Pressable, StatusBar, Text, TextInput, View } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppBottomNav } from '../../components';
+import AnimatedSwitch from '../../components/ui/inputs/AnimatedSwitch';
+import { TextAvatar } from '../../components/onboarding/TextAvatar';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 const mapImage = require('../../../assets/RawMap.png');
@@ -28,6 +30,7 @@ type ActionRowProps = {
   buttonBackground: string;
   buttonBorderColor?: string;
   buttonTextColor: string;
+  rowBorderColor?: string;
   borderless?: boolean;
   onButtonPress?: () => void;
 };
@@ -57,12 +60,14 @@ function ActionRow({
   buttonBackground,
   buttonBorderColor,
   buttonTextColor,
+  rowBorderColor,
   borderless,
   onButtonPress,
 }: ActionRowProps) {
   return (
     <View
-      className={`min-h-[72px] p-3 rounded-[40px] flex-row items-center justify-between gap-3 ${borderless ? 'border-0' : 'border border-[#E2E8F0] bg-white'}`}
+      className={`min-h-[72px] p-3 rounded-[40px] flex-row items-center justify-between gap-3 ${borderless ? 'border-0' : 'border bg-white'}`}
+      style={!borderless ? { borderColor: rowBorderColor ?? '#E2E8F0' } : undefined}
     >
       <View className="flex-1 flex-row items-center gap-2 min-w-0">
         <View className="w-10 h-10 rounded-full items-center justify-center" style={{ backgroundColor: iconBackground }}>
@@ -70,7 +75,7 @@ function ActionRow({
         </View>
         <View className="flex-1 min-w-0">
           <Text className="text-sm leading-5 font-medium text-[#1F2A33]" style={{ fontFamily: 'Poppins' }}>{title}</Text>
-          <Text className="mt-[2px] text-[10px] leading-4 text-[#64748A]" style={{ fontFamily: 'Poppins' }}>{subtitle}</Text>
+          <Text className="mt-[2px] text-[10px] leading-4 font-bold text-[#64748A]" style={{ fontFamily: 'Poppins' }}>{subtitle}</Text>
         </View>
       </View>
       <Pressable
@@ -90,6 +95,28 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
   const [activeTab, setActiveTab] = React.useState<'pickup' | 'driver'>('pickup');
   const [binFull, setBinFull] = React.useState(true);
   const [showBusyModal, setShowBusyModal] = React.useState(false);
+  const toastOpacity = React.useRef(new Animated.Value(0)).current;
+  const toastTranslateY = React.useRef(new Animated.Value(-12)).current;
+  const toastTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = () => {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    Animated.parallel([
+      Animated.timing(toastOpacity, { toValue: 1, duration: 220, useNativeDriver: true }),
+      Animated.timing(toastTranslateY, { toValue: 0, duration: 220, useNativeDriver: true }),
+    ]).start();
+    toastTimeout.current = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(toastOpacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+        Animated.timing(toastTranslateY, { toValue: -12, duration: 200, useNativeDriver: true }),
+      ]).start();
+    }, 3000);
+  };
+
+  const handleBinFull = (value: boolean) => {
+    setBinFull(value);
+    if (value) showToast();
+  };
 
   React.useEffect(() => {
     if (activeTab === 'driver' && searchQuery.trim().toLowerCase().includes('marcus chen')) {
@@ -109,12 +136,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
 
           <View className="flex-row items-center gap-[6px]">
             <Text className="text-[9px] font-semibold text-[#3F4A3D] leading-[14px]" style={{ fontFamily: 'Poppins' }}>Bin Full?</Text>
-            <Pressable
-              onPress={() => setBinFull(v => !v)}
-              className={`w-9 h-5 rounded-full border justify-center px-[2px] bg-white ${binFull ? 'border-[#31973D]' : 'border-[#D1D5DB]'}`}
-            >
-              <View className={`w-4 h-4 rounded-full ${binFull ? 'bg-[#31973D] self-end' : 'bg-[#D1D5DB] self-start'}`} />
-            </Pressable>
+            <AnimatedSwitch value={binFull} onChange={handleBinFull} />
           </View>
 
           <Pressable
@@ -164,11 +186,9 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
 
           <View className="flex-row items-center px-1 gap-3">
             <View className="flex-row w-10">
-              <View className="w-6 h-6 rounded-full border-2 border-white items-center justify-center bg-[#90FA96]">
-                <Text className="text-[10px] font-bold text-[#1A1C1E] leading-[15px]" style={{ fontFamily: 'Inter' }}>A</Text>
-              </View>
-              <View className="w-6 h-6 rounded-full border-2 border-white items-center justify-center -ml-2 bg-[#FFE088]">
-                <Text className="text-[10px] font-bold text-[#1A1C1E] leading-[15px]" style={{ fontFamily: 'Inter' }}>B</Text>
+              <TextAvatar name="A B" size={24} bgColor="#90FA96" />
+              <View className="-ml-2">
+                <TextAvatar name="B C" size={24} bgColor="#FFE088" />
               </View>
             </View>
             <Text className="text-xs font-medium text-[#3F4A3D] leading-4" style={{ fontFamily: 'Poppins' }}>3 verified drivers nearby</Text>
@@ -177,27 +197,27 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
               <Text className="text-[10px] text-white leading-[15px]" style={{ fontFamily: 'Poppins' }}>NEW</Text>
             </View>
           </View>
-        </View>
 
-        <View className="mt-4 px-4 flex-row gap-[10px]">
-          <MetricCard
-            icon="recycle"
-            iconColor="#2F9E44"
-            iconBackground="rgba(47, 158, 68, 0.08)"
-            accentColor="#31973D"
-            label="ACTIVE"
-            value="42kg"
-            caption="Recycled this month"
-          />
-          <MetricCard
-            icon="star-circle-outline"
-            iconColor="#8B6B00"
-            iconBackground="rgba(255, 224, 136, 0.38)"
-            accentColor="#8B6B00"
-            label="POINTS"
-            value="1,250"
-            caption="Eco Credits earned"
-          />
+          <View className="flex-row gap-[10px] mt-1">
+            <MetricCard
+              icon="recycle"
+              iconColor="#2F9E44"
+              iconBackground="rgba(47, 158, 68, 0.08)"
+              accentColor="#31973D"
+              label="ACTIVE"
+              value="42kg"
+              caption="Recycled this month"
+            />
+            <MetricCard
+              icon="star-circle-outline"
+              iconColor="#8B6B00"
+              iconBackground="rgba(255, 224, 136, 0.38)"
+              accentColor="#8B6B00"
+              label="POINTS"
+              value="1,250"
+              caption="Eco Credits earned"
+            />
+          </View>
         </View>
 
         <View className="flex-1" />
@@ -212,10 +232,10 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
             buttonLabel="Request now"
             buttonBackground="#31973D"
             buttonTextColor="#FFFFFF"
-            onButtonPress={() => navigation.navigate('Scanning')}
+            onButtonPress={() => navigation.navigate('DriversFound')}
           />
           <ActionRow
-            icon="shopping-outline"
+            icon="calendar-month-outline"
             iconBackground="#EFF5FF"
             iconColor="#508BFE"
             title="Plan future pickup"
@@ -223,15 +243,38 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
             buttonLabel="Plan for later"
             buttonBackground="#FFE088"
             buttonTextColor="#1F2A33"
-            borderless
+            rowBorderColor="#FFE088"
+            onButtonPress={() => navigation.navigate('PlanForLater')}
           />
         </View>
 
         <View className="h-[92px]" />
 
+        <Animated.View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            top: 56,
+            alignSelf: 'center',
+            opacity: toastOpacity,
+            transform: [{ translateY: toastTranslateY }],
+          }}
+        >
+          <View
+            className="flex-row items-center gap-3 rounded-full"
+            style={{ backgroundColor: '#31973D', paddingHorizontal: 24, paddingVertical: 12, width: 304 }}
+          >
+            <MaterialCommunityIcons name="check-circle-outline" size={20} color="#FFFFFF" />
+            <Text className="text-xs leading-5 text-white" style={{ fontFamily: 'Inter', fontWeight: '500' }}>
+              Bin Signal Sent. Your driver will call you.
+            </Text>
+          </View>
+        </Animated.View>
+
         <AppBottomNav
           activeTab="home"
           paddingBottom={14}
+          bottomOffset={8}
           onHomePress={() => navigation.navigate('PremiumHome')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
@@ -304,6 +347,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<'PremiumH
           </View>
         </View>
       </Modal>
+
     </SafeAreaView>
   );
 }

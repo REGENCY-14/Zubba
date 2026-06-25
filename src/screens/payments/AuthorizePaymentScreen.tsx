@@ -99,6 +99,7 @@ export function AuthorizePaymentScreen({
         <AppBottomNav
           activeTab="home"
           paddingBottom={14}
+          bottomOffset={8}
           onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}

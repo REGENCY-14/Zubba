@@ -3,7 +3,6 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
-import { AppBottomNav } from '../../components';
 
 const PLANS = [
   {
@@ -145,12 +144,7 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
           </View>
         </ScrollView>
 
-        <AppBottomNav
-          activeTab="home"
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-        />
+
       </View>
 
       <Modal

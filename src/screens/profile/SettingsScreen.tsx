@@ -164,6 +164,23 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
             </View>
           </View>
 
+          <View style={{ backgroundColor: 'rgba(255,224,136,0.29)', borderRadius: 24, borderWidth: 1, borderColor: '#FFE088', padding: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+                <View style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
+                  <MaterialCommunityIcons name="phone" size={22} color="#000000" />
+                </View>
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 20, color: '#1F2A33' }}>Support line</Text>
+                  <Text style={{ fontFamily: 'Inter', fontWeight: '400', fontSize: 12, lineHeight: 18, color: '#64748A' }}>Average response: &lt; 2 mins</Text>
+                </View>
+              </View>
+              <Pressable style={{ backgroundColor: '#FFE088', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 10, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '700', fontSize: 14, lineHeight: 20, color: '#1F2A33' }}>Call now</Text>
+              </Pressable>
+            </View>
+          </View>
+
           <SectionCard title="Support & Legal" compact>
             <SettingsRow
               icon={<MaterialCommunityIcons name="help-circle-outline" size={22} color="#111827" />}

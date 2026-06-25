@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Animated,
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -66,17 +67,20 @@ const FEATURES = [
   { label: 'Community Support', free: true, gold: true },
 ];
 
+const INACTIVE_SHRINK = 52;
+
 type PlanCardProps = {
   plan: (typeof PLANS)[number];
   isActive: boolean;
   recommended?: boolean;
-  cardHeight: number;
+  cardHeight: Animated.AnimatedInterpolation<number>;
+  cardMarginTop: Animated.AnimatedInterpolation<number>;
   onPress: () => void;
 };
 
-function PlanCard({ plan, isActive, recommended, cardHeight, onPress }: PlanCardProps) {
+function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPress }: PlanCardProps) {
   return (
-    <View style={{ width: CARD_WIDTH, height: cardHeight }}>
+    <Animated.View style={{ width: CARD_WIDTH, height: cardHeight, marginTop: cardMarginTop }}>
       {recommended && (
         <View
           className="absolute bg-[#FFE088] rounded-full px-4 py-[6px] flex-row items-center gap-1"
@@ -129,7 +133,7 @@ function PlanCard({ plan, isActive, recommended, cardHeight, onPress }: PlanCard
         </View>
       </Pressable>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -138,6 +142,7 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
   const [activePlanIndex, setActivePlanIndex] = React.useState(1);
   const [tableHeight, setTableHeight] = React.useState(0);
   const insets = useSafeAreaInsets();
+  const scrollX = React.useRef(new Animated.Value(CARD_WIDTH + CARD_GAP)).current;
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -146,12 +151,40 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
     return () => clearTimeout(timer);
   }, []);
 
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const x = e.nativeEvent.contentOffset.x;
-    const index = Math.round(x / (CARD_WIDTH + CARD_GAP));
-    const clamped = Math.max(0, Math.min(PLANS.length - 1, index));
-    if (clamped !== activePlanIndex) setActivePlanIndex(clamped);
-  };
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    {
+      useNativeDriver: false,
+      listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const x = e.nativeEvent.contentOffset.x;
+        const index = Math.round(x / (CARD_WIDTH + CARD_GAP));
+        const clamped = Math.max(0, Math.min(PLANS.length - 1, index));
+        setActivePlanIndex(clamped);
+      },
+    },
+  );
+
+  const getCardHeight = (index: number) =>
+    scrollX.interpolate({
+      inputRange: [
+        (index - 1) * (CARD_WIDTH + CARD_GAP),
+        index * (CARD_WIDTH + CARD_GAP),
+        (index + 1) * (CARD_WIDTH + CARD_GAP),
+      ],
+      outputRange: [cardsMinHeight - INACTIVE_SHRINK, cardsMinHeight, cardsMinHeight - INACTIVE_SHRINK],
+      extrapolate: 'clamp',
+    });
+
+  const getCardMarginTop = (index: number) =>
+    scrollX.interpolate({
+      inputRange: [
+        (index - 1) * (CARD_WIDTH + CARD_GAP),
+        index * (CARD_WIDTH + CARD_GAP),
+        (index + 1) * (CARD_WIDTH + CARD_GAP),
+      ],
+      outputRange: [INACTIVE_SHRINK, 0, INACTIVE_SHRINK],
+      extrapolate: 'clamp',
+    });
 
   const accentColor = PLANS[activePlanIndex].accentColor;
 
@@ -240,7 +273,8 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
                 plan={plan}
                 isActive={i === activePlanIndex}
                 recommended={plan.label === 'MONTHLY'}
-                cardHeight={cardsMinHeight}
+                cardHeight={getCardHeight(i)}
+                cardMarginTop={getCardMarginTop(i)}
                 onPress={() => navigation.navigate('ConfirmSubscription', { planIndex: i })}
               />
             ))}

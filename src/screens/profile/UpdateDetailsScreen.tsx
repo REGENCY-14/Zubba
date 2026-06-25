@@ -98,7 +98,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                 <View className="flex-row items-center gap-2">
                   {!isEmailMode ? (
                     <View className="w-[94px] h-12 p-[10px] border border-[#F2F2F2] rounded-xl bg-white flex-row items-center justify-between">
-                      <Image source={ghanaFlag} className="w-7 h-5" resizeMode="contain" />
+                      <Image source={ghanaFlag} style={{ width: 28, height: 20 }} resizeMode="contain" />
                       <MaterialCommunityIcons name="menu-down" size={24} color="#111827" />
                     </View>
                   ) : null}

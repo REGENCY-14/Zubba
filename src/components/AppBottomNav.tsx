@@ -16,6 +16,7 @@ type Props = {
   onCalendarPress?: () => void;
   activeTab: Tab;
   paddingBottom?: number;
+  bottomOffset?: number;
 };
 
 function NavItem({
@@ -69,6 +70,7 @@ export function AppBottomNav({
   onCalendarPress,
   activeTab,
   paddingBottom = 8,
+  bottomOffset = 20,
 }: Props) {
   const insets = useSafeAreaInsets();
   const bottomPadding = Math.max(insets.bottom, paddingBottom);
@@ -77,8 +79,8 @@ export function AppBottomNav({
 
   return (
     <View
-      className="absolute left-0 right-0 bottom-5 items-center px-2"
-      style={{ paddingBottom: bottomPadding }}
+      className="absolute left-0 right-0 items-center px-2"
+      style={{ bottom: bottomOffset, paddingBottom: bottomPadding }}
     >
       <View className="w-full max-w-[402px] py-3 flex-row items-center justify-between px-4 bg-white rounded-full border border-black/10 shadow-sm">
 
