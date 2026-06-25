@@ -5,6 +5,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { Card } from "../../components/Card";
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from "../../context/ThemeContext";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
@@ -12,6 +13,7 @@ export function DetailsScreen({
   route,
   navigation,
 }: RootStackScreenProps<"Details">) {
+  const { colors } = useTheme();
   const item = route.params;
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -21,18 +23,18 @@ export function DetailsScreen({
 
   if (isFindAccount) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right", "bottom"]}>
-        <View className="flex-1 px-[23px] pt-10 pb-6 justify-between">
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
+        <View style={{ flex: 1, paddingHorizontal: 23, paddingTop: 40, paddingBottom: 24, justifyContent: 'space-between' }}>
 
-          <View className="gap-4">
+          <View style={{ gap: 16 }}>
 
-            <Text className="text-[15px] leading-[22px] text-[#1F2A33]">
+            <Text style={{ fontSize: 15, lineHeight: 22, color: colors.text }}>
               What's your phone number
             </Text>
 
-            <View className="flex-row items-center gap-2 h-12">
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, height: 48 }}>
 
-              <View className="flex-row items-center justify-between w-[94px] h-12 px-[10px] border border-[#F2F2F2] rounded-xl bg-white">
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 94, height: 48, paddingHorizontal: 10, borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.card }}>
                 <Image
                   source={ghanaFlag}
                   style={{ width: 28, height: 20 }}
@@ -42,18 +44,25 @@ export function DetailsScreen({
                 <MaterialCommunityIcons
                   name="chevron-right"
                   size={22}
-                  color="#000"
+                  color={colors.iconColor}
                 />
               </View>
 
               <TextInput
-                className={`flex-1 h-12 px-4 border rounded-xl text-[15px] ${
-                  isFocused || isPhoneValid
-                    ? "border-black text-[#1F2A33] opacity-100"
-                    : "border-black/10 text-[#707579] opacity-50"
-                }`}
+                style={{
+                  flex: 1,
+                  height: 48,
+                  paddingHorizontal: 16,
+                  borderWidth: 1,
+                  borderRadius: 12,
+                  fontSize: 15,
+                  borderColor: isFocused || isPhoneValid ? colors.text : colors.border,
+                  color: isFocused || isPhoneValid ? colors.text : colors.textMuted,
+                  backgroundColor: colors.card,
+                  opacity: isFocused || isPhoneValid ? 1 : 0.5,
+                }}
                 placeholder="phone number"
-                placeholderTextColor="#A8A8A8"
+                placeholderTextColor={colors.textMuted}
                 keyboardType="phone-pad"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
@@ -62,26 +71,24 @@ export function DetailsScreen({
               />
             </View>
 
-            <Pressable className="w-[178px] h-8 border border-[#E2E8F0] rounded-full items-center justify-center">
-              <Text className="text-xs text-[#1F2A33] font-medium">
+            <Pressable style={{ width: 178, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 12, color: colors.text, fontWeight: '500' }}>
                 Search my account
               </Text>
             </Pressable>
 
           </View>
 
-          <View className="flex-row items-center justify-between h-12">
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 48 }}>
 
             <Pressable onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="arrow-left" size={26} color="#000" />
+              <MaterialCommunityIcons name="arrow-left" size={26} color={colors.text} />
             </Pressable>
 
             <Pressable
-              className={`w-24 h-12 rounded-xl items-center justify-center ${
-                isPhoneValid ? "bg-[#34A853]" : "bg-[#34A853]/50"
-              }`}
+              style={{ width: 96, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: isPhoneValid ? '#34A853' : 'rgba(52, 168, 83, 0.5)' }}
             >
-              <Text className="text-white text-sm">Next</Text>
+              <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Next</Text>
             </Pressable>
 
           </View>
@@ -92,17 +99,17 @@ export function DetailsScreen({
   }
 
   return (
-    <View className="flex-1 bg-[#F8FAFC] p-5">
+    <View style={{ flex: 1, backgroundColor: colors.surface, padding: 20 }}>
       <Card>
-        <Text className="text-[#0F172A] text-2xl font-extrabold mb-2">
+        <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800', marginBottom: 8 }}>
           {item?.title ?? "Details"}
         </Text>
 
-        <Text className="text-[#475569] text-base leading-6 mb-3">
+        <Text style={{ color: colors.textSub, fontSize: 16, lineHeight: 24, marginBottom: 12 }}>
           This is a placeholder screen connected through typed React Navigation.
         </Text>
 
-        <Text className="text-[#334155] text-sm font-semibold">
+        <Text style={{ color: colors.text, fontSize: 14, fontWeight: '600' }}>
           Item ID: {item?.itemId ?? "n/a"}
         </Text>
       </Card>

@@ -11,46 +11,57 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useTheme } from '../../context/ThemeContext';
 
 export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletNumber'>) {
   const [phone, setPhone] = React.useState('');
   const [showSuccess, setShowSuccess] = React.useState(false);
+  const { colors } = useTheme();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView
-        className="flex-1"
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
       >
-        <View className="flex-1 bg-white">
-          <View className="h-12 flex-row items-center justify-between px-4">
-            <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-              <Text className="text-[28px] text-[#1F2A33] leading-7 -mt-[2px]">‹</Text>
+        <View style={{ flex: 1, backgroundColor: colors.bg }}>
+          <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+            <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
+              <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
             </Pressable>
-            <Text className="text-base font-semibold text-[#1F2A33]">Payment</Text>
-            <View className="w-6 h-6" />
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Payment</Text>
+            <View style={{ width: 24, height: 24 }} />
           </View>
 
           <ScrollView
-            className="flex-1"
+            style={{ flex: 1 }}
             contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
-            <View className="border border-[#E2E8F0] rounded-3xl p-4 gap-8 bg-white">
-              <View className="gap-6">
-                <View className="gap-4">
-                  <Text className="text-2xl font-medium text-[#1F2A33] leading-8">Wallet Number</Text>
-                  <Text className="text-sm text-[#64748A] leading-[26px]">
+            <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 32, backgroundColor: colors.card }}>
+              <View style={{ gap: 24 }}>
+                <View style={{ gap: 16 }}>
+                  <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, lineHeight: 32 }}>Wallet Number</Text>
+                  <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 26 }}>
                     Enter your wallet number to proceed with the transaction.
                   </Text>
                 </View>
 
-                <View className="gap-[7px]">
-                  <Text className="text-base text-[#1F2A33] leading-4">Wallet Phone Number</Text>
+                <View style={{ gap: 7 }}>
+                  <Text style={{ fontSize: 16, color: colors.text, lineHeight: 16 }}>Wallet Phone Number</Text>
                   <TextInput
-                    className="h-12 border border-[#CBD5E0] rounded-full px-3 text-base text-[#1F2A33] bg-white"
+                    style={{
+                      height: 48,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      borderRadius: 999,
+                      paddingHorizontal: 12,
+                      fontSize: 16,
+                      color: colors.text,
+                      backgroundColor: colors.bg,
+                    }}
                     value={phone}
                     onChangeText={setPhone}
                     placeholder="055 123 4567"
@@ -59,15 +70,15 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
                     autoFocus
                     returnKeyType="done"
                   />
-                  <Text className="text-xs text-[#64748A] leading-4">Enter your mobile money number</Text>
+                  <Text style={{ fontSize: 12, color: colors.textSub, lineHeight: 16 }}>Enter your mobile money number</Text>
                 </View>
               </View>
 
               <Pressable
-                className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+                style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => setShowSuccess(true)}
               >
-                <Text className="text-sm text-white leading-5">Continue</Text>
+                <Text style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 20 }}>Continue</Text>
               </Pressable>
             </View>
           </ScrollView>
@@ -76,34 +87,32 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
 
       <Modal visible={showSuccess} transparent animationType="fade">
         <View
-          className="flex-1 items-center justify-center px-6"
-          style={{ backgroundColor: 'rgba(255,255,255,0.88)' }}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, backgroundColor: 'rgba(0,0,0,0.5)' }}
         >
           <View
-            className="w-full bg-white rounded-3xl px-6 py-8 items-center gap-4"
-            style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 6 }}
+            style={{ width: '100%', backgroundColor: colors.card, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 32, alignItems: 'center', gap: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 6 }}
           >
-            <Text className="text-[36px] font-medium text-[#1F2A33] text-center">Successful</Text>
-            <Text className="text-sm text-[#64748A] text-center leading-[22px]">
+            <Text style={{ fontSize: 36, fontWeight: '500', color: colors.text, textAlign: 'center' }}>Successful</Text>
+            <Text style={{ fontSize: 14, color: colors.textSub, textAlign: 'center', lineHeight: 22 }}>
               Enjoy double Eco-Points, priority support,{'\n'}and a cleaner tomorrow.
             </Text>
             <Pressable
-              className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center mt-2"
+              style={{ width: '100%', height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center', marginTop: 8 }}
               onPress={() => {
                 setShowSuccess(false);
                 navigation.navigate('PremiumHome');
               }}
             >
-              <Text className="text-sm font-medium text-white">Proceed to Premium</Text>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#FFFFFF' }}>Proceed to Premium</Text>
             </Pressable>
             <Pressable
-              className="w-full h-12 rounded-full border border-[#31973D] items-center justify-center"
+              style={{ width: '100%', height: 48, borderRadius: 999, borderWidth: 1, borderColor: '#31973D', alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
                 setShowSuccess(false);
                 navigation.navigate('Home');
               }}
             >
-              <Text className="text-sm font-medium text-[#31973D]">Set Package expiry alert</Text>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#31973D' }}>Set Package expiry alert</Text>
             </Pressable>
           </View>
         </View>

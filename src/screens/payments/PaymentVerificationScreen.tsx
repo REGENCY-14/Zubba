@@ -11,10 +11,12 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
+import { useTheme } from "../../context/ThemeContext";
 
 export function PaymentVerificationScreen({
   navigation,
 }: RootStackScreenProps<"PaymentVerification">) {
+  const { colors } = useTheme();
   const [code, setCode] = React.useState("");
   const [resendTimer, setResendTimer] = React.useState(60);
   const inputRef = React.useRef<TextInput | null>(null);
@@ -34,19 +36,19 @@ export function PaymentVerificationScreen({
   const codeDigits = ["", "", "", ""].map((_, i) => code[i] || "");
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      <View className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
-        <View className="h-12 flex-row items-center justify-between px-4 bg-white">
+        <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, backgroundColor: colors.bg }}>
           <Pressable onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons
               name="chevron-left"
               size={28}
-              color="#1F2A33"
+              color={colors.text}
             />
           </Pressable>
 
-          <Text className="text-base font-semibold text-[#1F2A33]">
+          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
             Payment Verification
           </Text>
 
@@ -55,15 +57,15 @@ export function PaymentVerificationScreen({
 
         <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 120 }}>
 
-          <Text className="text-2xl font-medium text-[#1F2A33] mb-4">
+          <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, marginBottom: 16 }}>
             Verification Code
           </Text>
 
-          <Text className="text-base leading-6 text-[#64748A] mb-8">
+          <Text style={{ fontSize: 16, lineHeight: 24, color: colors.textSub, marginBottom: 32 }}>
             We've sent a 4-digit code to{" "}
-            <Text className="text-[#1A1C1E] font-semibold">+233 55 123 4567</Text>. Please
+            <Text style={{ color: colors.text, fontWeight: '600' }}>+233 55 123 4567</Text>. Please
             enter it below to authorize your{" "}
-            <Text className="text-[#006B23] font-semibold">GHS 45.00</Text> payment.
+            <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS 45.00</Text> payment.
           </Text>
 
           <View className="flex-row gap-4 mb-6">
@@ -74,7 +76,7 @@ export function PaymentVerificationScreen({
                 <Pressable
                   key={index}
                   onPress={() => inputRef.current?.focus()}
-                  className="w-[52px] h-[64px] border-2 border-[#BECAB9] rounded-xl items-center justify-center bg-white shadow-sm"
+                  style={{ width: 52, height: 64, borderWidth: 2, borderColor: colors.border, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface }}
                 >
                   {isFilled && (
                     <View className="w-3 h-3 rounded-full bg-[#31973D]" />
@@ -96,7 +98,7 @@ export function PaymentVerificationScreen({
           />
 
           <View className="items-start mb-8 gap-2">
-            <Text className="text-xs font-medium text-[#1F2A33]">
+            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
               {resendTimer > 0
                 ? `Resend code in ${resendTimer}s`
                 : "Resend code"}
@@ -105,11 +107,12 @@ export function PaymentVerificationScreen({
             <Pressable
               onPress={handleResend}
               disabled={resendTimer > 0}
-              className={`px-3 py-1 rounded-full border border-[#E2E8F0] ${
-                resendTimer > 0 ? "opacity-50" : "bg-white"
-              }`}
+              style={[
+                { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+                resendTimer > 0 ? { opacity: 0.5 } : {},
+              ]}
             >
-              <Text className="text-xs font-medium text-[#1F2A33]">
+              <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
                 Resend
               </Text>
             </Pressable>

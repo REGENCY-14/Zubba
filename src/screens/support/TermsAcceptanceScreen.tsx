@@ -11,34 +11,35 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from "../../context/ThemeContext";
 
 export function TermsAcceptanceScreen({
   route,
   navigation,
 }: RootStackScreenProps<"TermsAcceptance">) {
+  const { colors } = useTheme();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white"
+      style={{ flex: 1, backgroundColor: colors.bg }}
       edges={["top", "left", "right", "bottom"]}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 p-5"
+        style={{ flex: 1, padding: 20 }}
       >
         <ScrollView
-          contentContainerClassName=""
           keyboardShouldPersistTaps="handled"
         >
           <View className="h-[42px]" />
 
           <View className="w-full gap-3 mb-6">
-            <Text className="text-[20px] font-normal text-[#1F2A33] leading-[22px]">
+            <Text style={{ fontSize: 20, fontWeight: '400', color: colors.text, lineHeight: 22 }}>
               Accept Zubba's Terms & Review Privacy Notice
             </Text>
 
-            <Text className="text-[11px] font-normal text-[#1F2A33] leading-4">
+            <Text style={{ fontSize: 11, fontWeight: '400', color: colors.text, lineHeight: 16 }}>
               By selecting 'I Agree' below, I have reviewed and agree to the{" "}
               <Text style={{ color: '#3b82f6', textDecorationLine: 'underline' }}>Terms of Use</Text> and
               acknowledged the{" "}
@@ -49,19 +50,20 @@ export function TermsAcceptanceScreen({
         </ScrollView>
 
         <View className="w-full mt-4 gap-[17px]">
-          <View className="border-t border-black/15" />
+          <View style={{ borderTopWidth: 1, borderTopColor: colors.border }} />
 
           <View className="flex-row items-center justify-between">
-            <Text className="text-[10px] text-[#1F2A33] leading-4">
+            <Text style={{ fontSize: 10, color: colors.text, lineHeight: 16 }}>
               I agree
             </Text>
             <Pressable
               onPress={() => setAgreedToTerms(!agreedToTerms)}
-              className={`w-[18px] h-[18px] border rounded bg-white items-center justify-center ${
+              style={[
+                { width: 18, height: 18, borderWidth: 1, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
                 agreedToTerms
-                  ? "bg-[#34A853] border-[#34A853]"
-                  : "border-black/70"
-              }`}
+                  ? { backgroundColor: '#34A853', borderColor: '#34A853' }
+                  : { backgroundColor: colors.surface, borderColor: colors.text },
+              ]}
             >
               {agreedToTerms && (
                 <Text className="text-white text-[12px] font-semibold">✓</Text>
@@ -73,19 +75,18 @@ export function TermsAcceptanceScreen({
         <View className="pt-6 flex-row justify-between items-center">
           <Pressable
             onPress={() => navigation.goBack()}
-            className="w-12 h-12 rounded-xl items-center justify-center"
+            style={{ width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text className="text-2xl text-black">
-              <MaterialCommunityIcons name="arrow-left" color="#000000" size={24} />
-            </Text>
+            <MaterialCommunityIcons name="arrow-left" color={colors.text} size={24} />
           </Pressable>
 
           <Pressable
             disabled={!agreedToTerms}
             onPress={() => navigation.replace("Home")}
-            className={`w-24 h-12 rounded-xl items-center justify-center ${
-              agreedToTerms ? "bg-[#34A853]" : "bg-[#34A853]/50"
-            }`}
+            style={[
+              { width: 96, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+              agreedToTerms ? { backgroundColor: '#34A853' } : { backgroundColor: 'rgba(52, 168, 83, 0.5)' },
+            ]}
           >
             <Text className="text-white text-sm">Continue</Text>
           </Pressable>

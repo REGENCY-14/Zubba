@@ -12,15 +12,17 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "../../context/ThemeContext";
 
 export function PaymentMethodScreen({
   navigation,
 }: RootStackScreenProps<"PaymentMethod">) {
   const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
+  const { colors } = useTheme();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      <View className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment" />
 
         <ScrollView
@@ -30,7 +32,7 @@ export function PaymentMethodScreen({
 
           <View className="gap-6">
 
-            <View className="bg-white border border-[#E2E8F0] rounded-3xl p-6 items-center gap-4">
+            <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 24, alignItems: "center", gap: 16 }}>
 
               <View className="w-14 h-14 rounded-full bg-[#41A06A]/10 items-center justify-center">
                 <MaterialCommunityIcons
@@ -40,15 +42,15 @@ export function PaymentMethodScreen({
                 />
               </View>
 
-              <Text className="text-base text-center text-[#3F4A3D]">
+              <Text style={{ fontSize: 16, textAlign: "center", color: colors.textSub }}>
                 Total to Pay
               </Text>
 
-              <Text className="text-[32px] font-semibold text-[#1F2A33] text-center">
+              <Text style={{ fontSize: 32, fontWeight: "600", color: colors.text, textAlign: "center" }}>
                 GHS 45.00
               </Text>
 
-              <View className="w-full border-t border-black/10" />
+              <View style={{ width: "100%", borderTopWidth: 1, borderTopColor: colors.border }} />
 
               <View className="bg-[#E8F2E8] px-3 py-1 rounded-full border border-[#E2E8F0]">
                 <Text className="text-[#31973D] text-[13px] font-bold">
@@ -59,25 +61,34 @@ export function PaymentMethodScreen({
 
             <View className="gap-2">
 
-              <Text className="text-base text-[#1F2A33]">
+              <Text style={{ fontSize: 16, color: colors.text }}>
                 Wallet Phone Number
               </Text>
 
               <TextInput
-                className="h-12 px-4 border border-[#CBD5E0] rounded-full bg-white text-[#1F2A33]"
+                style={{
+                  height: 48,
+                  paddingHorizontal: 16,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  borderRadius: 999,
+                  backgroundColor: colors.card,
+                  color: colors.text,
+                  fontSize: 14,
+                }}
                 placeholder="055 123 4567"
-                placeholderTextColor="#64748A"
+                placeholderTextColor={colors.textSub}
                 keyboardType="phone-pad"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
               />
 
-              <Text className="text-xs text-[#64748A]">
+              <Text style={{ fontSize: 12, color: colors.textSub }}>
                 Enter your mobile money number
               </Text>
             </View>
 
-            <View className="flex-row gap-4 p-4 border border-[#BECAB9] rounded-3xl bg-white">
+            <View style={{ flexDirection: "row", gap: 16, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card }}>
 
               <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
                 <MaterialCommunityIcons
@@ -88,11 +99,11 @@ export function PaymentMethodScreen({
               </View>
 
               <View className="flex-1 gap-1">
-                <Text className="text-base text-[#1F2A33]">
+                <Text style={{ fontSize: 16, color: colors.text }}>
                   How it works
                 </Text>
 
-                <Text className="text-sm text-[#64748A] leading-6">
+                <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 24 }}>
                   You will receive a secure payment prompt on your mobile phone.
                   Enter your MM PIN to authorize the transaction instantly.
                 </Text>
@@ -108,7 +119,7 @@ export function PaymentMethodScreen({
               </Text>
             </Pressable>
 
-            <Text className="text-[10px] text-center uppercase text-gray-400">
+            <Text style={{ fontSize: 10, textAlign: "center", textTransform: "uppercase", color: colors.textMuted }}>
               Secured by Zubba Pay Architecture
             </Text>
           </View>

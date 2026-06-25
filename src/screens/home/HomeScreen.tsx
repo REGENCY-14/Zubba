@@ -21,6 +21,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
+import { useTheme } from "../../context/ThemeContext";
 
 const mapImage = require("../../../assets/RawMap.png");
 const premium = require("../../../assets/premium.png");
@@ -34,6 +35,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
   const isPremium = false;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
+  const { colors } = useTheme();
 
   const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
 
@@ -55,26 +57,53 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
       <ImageBackground source={mapImage} className="flex-1 w-full h-full p-10">
-        <View className="absolute w-full top-0 left-0 right-0 h-12 bg-white flex-row items-center justify-between px-4 z-10">
+        {/* Top bar */}
+        <View
+          style={{
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 48,
+            backgroundColor: colors.bg,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 16,
+            zIndex: 10,
+          }}
+        >
           <Pressable className="w-8 h-8 items-center justify-center">
-            <MaterialCommunityIcons name="menu" size={20} color="#0F1621" />
+            <MaterialCommunityIcons name="menu" size={20} color={colors.iconColor} />
           </Pressable>
 
           <View className="flex-row gap-2 items-center justify-center">
             {isPremium && (
               <View className="flex-row gap-2 items-center justify-center">
-                <Text className="text-xs text-[#3F4A3D]">Bin Full?</Text>
-
+                <Text style={{ fontSize: 12, color: colors.textSub }}>Bin Full?</Text>
                 <AnimatedSwitch value={isBinFull} onChange={setIsBinFull} />
               </View>
             )}
-            <Pressable className="w-10 h-10 p-1 border border-black/10 bg-gray-100 rounded-md items-center justify-center">
+            <Pressable
+              style={{
+                width: 40,
+                height: 40,
+                padding: 4,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.iconBg,
+                borderRadius: 8,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <MaterialCommunityIcons
                 name="bell-outline"
                 size={20}
-                color="#0F1621"
+                color={colors.iconColor}
               />
             </Pressable>
           </View>
@@ -82,26 +111,82 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
 
         <View className="absolute top-[58px] left-2.5 right-2.5 space-y-6">
           {isPremium ? (
-            <View className="bg-white border-black/10 border-[1px] rounded-2xl p-2 gap-3">
-              <View className="bg-gray-100 p-2.5 rounded-full flex flex-row gap-2 justify-between">
+            <View
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                borderWidth: 1,
+                borderRadius: 16,
+                padding: 8,
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: colors.surface,
+                  padding: 10,
+                  borderRadius: 999,
+                  flexDirection: "row",
+                  gap: 8,
+                  justifyContent: "space-between",
+                }}
+              >
                 <Pressable
                   onPress={() => {
                     changeActivePill(0);
                   }}
-                  className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2.5 ${activePill === 0 ? "bg-white border-[1px]" : ""}`}
+                  style={[
+                    {
+                      borderRadius: 999,
+                      flex: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                    },
+                    activePill === 0
+                      ? { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }
+                      : {},
+                  ]}
                 >
-                  <Text className="text-md font-semibold">Pickup Location</Text>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>Pickup Location</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => {
                     changeActivePill(1);
                   }}
-                  className={`rounded-full flex-1 items-center justify-center border-black/10 px-3 py-2.5 ${activePill === 1 ? "bg-white border-[1px]" : ""}`}
+                  style={[
+                    {
+                      borderRadius: 999,
+                      flex: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                    },
+                    activePill === 1
+                      ? { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }
+                      : {},
+                  ]}
                 >
-                  <Text className="text-md font-semibold">Find Driver</Text>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>Find Driver</Text>
                 </Pressable>
               </View>
-              <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
+
+              {/* Search bar */}
+              <View
+                style={{
+                  height: 54,
+                  backgroundColor: colors.card,
+                  borderRadius: 999,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  paddingHorizontal: 12,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
                 <Pressable
                   onPress={() =>
                     navigation.navigate("Details", {
@@ -113,17 +198,17 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <MaterialCommunityIcons
                     name="magnify"
                     size={24}
-                    color="#000"
+                    color={colors.iconColor}
                   />
                 </Pressable>
                 <TextInput
-                  className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
+                  style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0 }}
                   placeholder={
                     activePill == 0
                       ? "Tarkwa, UMaT Campus, Hall 3"
                       : "Search driver by name ..."
                   }
-                  placeholderTextColor="#999999"
+                  placeholderTextColor={colors.textMuted}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                 />
@@ -140,6 +225,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   </Pressable>
                 )}
               </View>
+
               <View className="flex-row justify-between gap-3 px-3">
                 <View className="flex-row gap-3 items-center justify-center">
                   <View className="flex-row items-center">
@@ -159,7 +245,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                       </View>
                     ))}
                   </View>
-                  <Text className="text-sm font-medium text-[#3F4A3D]">
+                  <Text style={{ fontSize: 14, fontWeight: "500", color: colors.textSub }}>
                     {closeDrivers.length} verified driver
                     {closeDrivers.length == 1 ? "" : "s"} nearby
                   </Text>
@@ -174,7 +260,20 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               />
             </View>
           ) : (
-            <View className="h-[54px] bg-white rounded-full border border-black/10 px-3 flex-row items-center gap-2">
+            /* Non-premium search bar */
+            <View
+              style={{
+                height: 54,
+                backgroundColor: colors.card,
+                borderRadius: 999,
+                borderWidth: 1,
+                borderColor: colors.border,
+                paddingHorizontal: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
               <Pressable
                 onPress={() =>
                   navigation.navigate("Details", {
@@ -183,12 +282,12 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   })
                 }
               >
-                <MaterialCommunityIcons name="magnify" size={24} color="#000" />
+                <MaterialCommunityIcons name="magnify" size={24} color={colors.iconColor} />
               </Pressable>
               <TextInput
-                className="flex-1 text-[14px] text-[#333333] p-0 outline-none"
+                style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0 }}
                 placeholder="Where is your waste?"
-                placeholderTextColor="#999999"
+                placeholderTextColor={colors.textMuted}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
@@ -215,9 +314,22 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           )}
         </View>
 
+        {/* Bottom action cards */}
         <View className="absolute bottom-[102px] left-2 right-2 p-4">
           <View className="space-y-3">
-            <View className="flex-row gap-2 items-center bg-white border border-[#E2E8F0] rounded-full p-3">
+            {/* Tricycle row */}
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 8,
+                alignItems: "center",
+                backgroundColor: colors.card,
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: 999,
+                padding: 12,
+              }}
+            >
               <View className="w-10 h-10 bg-[#419E6A1A] rounded-full items-center justify-center">
                 <Image
                   source={tricycle}
@@ -227,12 +339,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               </View>
 
               <View className="flex-1">
-                <Text className="text-sm font-semibold text-[#1F2A33]">
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>
                   Find nearby tricycles
                 </Text>
-                <Text
-                  className={`text-xs text-[#6F7A6C] ${isPremium && "font-bold"}`}
-                >
+                <Text style={{ fontSize: 12, color: colors.textSub, fontWeight: isPremium ? "700" : "400" }}>
                   Instant pickup
                 </Text>
               </View>
@@ -241,10 +351,22 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 title="Request now"
                 variant="primary"
                 onPress={() => navigation.navigate("Scanning")}
-              ></RoundedButton>
+              />
             </View>
 
-            <View className="flex-row gap-2 items-center bg-white border border-[#FFE088] rounded-full p-3">
+            {/* Premium / future pickup row */}
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 8,
+                alignItems: "center",
+                backgroundColor: colors.card,
+                borderWidth: 1,
+                borderColor: "#FFE088",
+                borderRadius: 999,
+                padding: 12,
+              }}
+            >
               <View className="w-10 h-10 bg-[##EFF5FF] rounded-full items-center justify-center">
                 <Image
                   source={isPremium ? futurePlan : premium}
@@ -254,12 +376,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               </View>
 
               <View className="flex-1">
-                <Text className="text-sm font-semibold text-[#1F2A33]">
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>
                   Plan future pickup
                 </Text>
-                <Text
-                  className={`text-xs text-[#6F7A6C] ${isPremium && "font-bold"}`}
-                >
+                <Text style={{ fontSize: 12, color: colors.textSub, fontWeight: isPremium ? "700" : "400" }}>
                   Future service
                 </Text>
               </View>
@@ -269,13 +389,13 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   title="Plan for later"
                   variant="premium"
                   onPress={() => navigation.navigate("Scanning")}
-                ></RoundedButton>
+                />
               ) : (
                 <RoundedButton
                   title="Premium Tier"
                   variant="premium"
                   onPress={() => {}}
-                ></RoundedButton>
+                />
               )}
             </View>
 

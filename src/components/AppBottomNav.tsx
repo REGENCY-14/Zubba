@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 
 
 type Tab = 'home' | 'calendar' | 'saved' | 'settings';
@@ -73,16 +74,24 @@ export function AppBottomNav({
   bottomOffset = 20,
 }: Props) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const bottomPadding = Math.max(insets.bottom, paddingBottom);
   const isActive = (tab: Tab) => activeTab === tab;
-  const iconColor = (tab: Tab) => isActive(tab) ? '#fff' : '#64748B';
+  const iconColor = (tab: Tab) => isActive(tab) ? '#fff' : colors.textSub;
 
   return (
     <View
       className="absolute left-0 right-0 items-center px-2"
       style={{ bottom: bottomOffset, paddingBottom: bottomPadding }}
     >
-      <View className="w-full max-w-[402px] py-3 flex-row items-center justify-between px-4 bg-white rounded-full border border-black/10 shadow-sm">
+      <View
+        className="w-full max-w-[402px] py-3 flex-row items-center justify-between px-4 rounded-full shadow-sm"
+        style={{
+          backgroundColor: colors.card,
+          borderWidth: 1,
+          borderColor: colors.border,
+        }}
+      >
 
         <NavItem
           active={isActive('home')}
@@ -91,7 +100,7 @@ export function AppBottomNav({
             isActive('home') ? (
               <MaterialCommunityIcons size={20} name="home" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="home-outline" size={20} color="#64748B" />
+              <MaterialCommunityIcons name="home-outline" size={20} color={colors.textSub} />
             )
           }
           label="Home"
@@ -104,7 +113,7 @@ export function AppBottomNav({
             isActive('calendar') ? (
               <MaterialCommunityIcons size={20} name="calendar" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="calendar-outline" size={20} color="#64748B" />
+              <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.textSub} />
             )
           }
           label="Calendar"
@@ -117,7 +126,7 @@ export function AppBottomNav({
             isActive('saved') ? (
               <MaterialCommunityIcons size={20} name="bookmark" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="bookmark-outline" size={20} color="#64748B" />
+              <MaterialCommunityIcons name="bookmark-outline" size={20} color={colors.textSub} />
             )
           }
           label="Saved"
@@ -130,7 +139,7 @@ export function AppBottomNav({
             isActive('settings') ? (
               <MaterialCommunityIcons size={20} name="cog" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="cog" size={20} color="#64748B" />
+              <MaterialCommunityIcons name="cog" size={20} color={colors.textSub} />
             )
           }
           label="Settings"
