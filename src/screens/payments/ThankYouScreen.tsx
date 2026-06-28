@@ -1,17 +1,13 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet } from "react-native";
+import { View, Text, Pressable, StatusBar, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from "../../context/ThemeContext";
 
-/**
- * ThankYouScreen
- * Pixel-faithful replica of the "Thank you" confirmation screen.
- * Styling: NativeWind (Tailwind CSS for React Native) + a small StyleSheet
- * for the dashed border and radial-ish gradient simulation.
- */
-export default function ThankYouScreen({
+export function ThankYouScreen({
   navigation,
 }: RootStackScreenProps<"ThankYou">) {
+  const { colors } = useTheme();
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" />
@@ -36,15 +32,14 @@ export default function ThankYouScreen({
             the best experiences..
           </Text>
 
-          <TouchableOpacity
-            onPress={navigation.navigate("Home")}
-            activeOpacity={0.85}
+          <Pressable
+            onPress={() => navigation.navigate("Home")}
             className="w-full bg-[#3a8c3f] rounded-full py-4 items-center"
           >
             <Text className="text-white text-base font-medium tracking-wide">
               Proceed to Home
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
