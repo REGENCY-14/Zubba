@@ -1,124 +1,238 @@
-import React from 'react';
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import type { RootStackScreenProps } from '../../navigation/types';
-import { AppBottomNav } from '../../components';
-import { useTheme } from '../../context/ThemeContext';
+import React from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import type { RootStackScreenProps } from "../../navigation/types";
+import { AppBottomNav } from "../../components";
+import { useTheme } from "../../context/ThemeContext";
+import CustomAppBar from "../../components/common/CustomAppBar";
 
-export function WalletCheckoutScreen({ navigation }: RootStackScreenProps<'WalletCheckout'>) {
+export function WalletCheckoutScreen({
+  navigation,
+}: RootStackScreenProps<"WalletCheckout">) {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-      <View style={{ flex: 1, backgroundColor: colors.surface }}>
-        <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderTopWidth: 0, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, paddingBottom: 24 }}>
-          <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-            <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
-              <Text style={{ fontSize: 28, color: colors.text, lineHeight: 30 }}>‹</Text>
-            </Pressable>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Payment</Text>
-            <View style={{ width: 24, height: 24 }} />
-          </View>
+    <SafeAreaView
+      style={{ backgroundColor: colors.bg }}
+      className="flex-1"
+      edges={["top", "left", "right"]}
+    >
+      <View style={{ backgroundColor: colors.surface }} className="flex-1">
+        <View
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+          }}
+          className="border border-t-0 rounded-b-[32px] pb-6"
+        >
+          <CustomAppBar
+            title="Payment"
+            navigation={() => navigation.goBack()}
+          />
 
-          <View style={{ alignItems: 'center', gap: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: 'rgba(255,255,255,0.7)' }}>
-              <View style={{ borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: colors.border, backgroundColor: 'rgba(0,107,35,0.10)' }}>
-                <Text style={{ fontSize: 13, color: '#31973D', lineHeight: 20 }}>Total to pay</Text>
+          <View className="items-center gap-2.5">
+            <View className="flex-row items-center gap-1.5 rounded-full px-2 py-1 bg-white/70">
+              <View
+                style={{ borderColor: colors.border }}
+                className="rounded-full px-3 py-1 border bg-[#006B231A]"
+              >
+                <Text className="text-[13px] text-[#31973D] leading-5">
+                  Total to pay
+                </Text>
               </View>
-              <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 0.5, color: colors.text }}>GHS</Text>
+
+              <Text
+                style={{ color: colors.text }}
+                className="text-[10px] font-bold tracking-wide"
+              >
+                GHS
+              </Text>
             </View>
 
-            <Text style={{ fontSize: 48, fontWeight: '700', color: colors.text, lineHeight: 56, letterSpacing: -1.2 }}>GHS 45.00</Text>
+            <Text
+              style={{ color: colors.text }}
+              className="text-[48px] font-bold leading-[56px] tracking-[-1.2px]"
+            >
+              GHS 45.00
+            </Text>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#31973D', borderRadius: 999, borderWidth: 2, borderColor: colors.card, paddingHorizontal: 12, paddingVertical: 4 }}>
-              <MaterialCommunityIcons name="trending-up" size={12} color="#FFFFFF" />
-              <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF', lineHeight: 16 }}>2X Eco-Points</Text>
+            <View className="flex-row items-center gap-1 bg-[#31973D] rounded-full border-2 border-white px-3 py-1">
+              <MaterialCommunityIcons
+                name="trending-up"
+                size={12}
+                color="#fff"
+              />
+              <Text className="text-white text-xs font-bold">
+                2X Eco-Points
+              </Text>
             </View>
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 16, gap: 10, backgroundColor: colors.surface }}>
+        <View
+          style={{ backgroundColor: colors.surface }}
+          className="flex-row items-center px-6 py-4 gap-2.5"
+        >
           <Pressable
-            style={{ width: 32, height: 32, backgroundColor: '#FFE2E2', borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
-            onPress={() => navigation.navigate('PremiumHome')}
+            onPress={() => navigation.navigate("Home")}
+            className="w-8 h-8 bg-red-100 rounded-xl items-center justify-center"
           >
             <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
           </Pressable>
+
           <Pressable
-            style={{ flex: 1, height: 40, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
-            onPress={() => navigation.navigate('PaymentSuccess')}
+            onPress={() => navigation.navigate("PaymentSuccess")}
+            className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
           >
-            <Text style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 20 }}>Pay</Text>
+            <Text className="text-white text-sm">Pay</Text>
           </Pressable>
         </View>
 
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 4, paddingBottom: 120, gap: 12 }}
-          showsVerticalScrollIndicator={false}
+        <View
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+          }}
+          className="border border-b-0 rounded-t-[32px] py-4 flex-1"
         >
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingHorizontal: 16, backgroundColor: colors.card }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.borderLight }}>
-              <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>EStimated Cost</Text>
-              <Text style={{ fontSize: 16, color: colors.text, fontWeight: '700', lineHeight: 24 }}>GHS 45.00</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.borderLight }}>
-              <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>Pickup - Organic Waste</Text>
-              <Text style={{ fontSize: 16, color: colors.text, fontWeight: '700', lineHeight: 24 }}>GHS 35.00</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14 }}>
-              <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>Service Fee</Text>
-              <Text style={{ fontSize: 16, color: colors.text, fontWeight: '700', lineHeight: 24 }}>GHS 10.00</Text>
-            </View>
-          </View>
-
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 16, backgroundColor: colors.card }}>
-            <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.card }}>
-              <View style={{ gap: 4 }}>
-                <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, lineHeight: 24 }}>Zubba Wallet Balance</Text>
-                <Text style={{ fontSize: 16, fontWeight: '500', color: colors.textSub, lineHeight: 24 }}>GHS 124.50</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#31973D', lineHeight: 24 }}>READY</Text>
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#31973D' }} />
-              </View>
-            </View>
-
-            <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 20, gap: 12, backgroundColor: colors.card }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>Base Points</Text>
-                <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>45 XP</Text>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>Premium Multiplier</Text>
-                  <MaterialCommunityIcons name="lightning-bolt" size={10} color={colors.text} />
+          <ScrollView
+            className="flex-1"
+            contentContainerClassName="px-3 gap-3 rounded-t-[32px]"
+            showsVerticalScrollIndicator={false}
+          >
+            <View
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+              }}
+              className="border rounded-3xl px-4"
+            >
+              {[
+                ["Estimated Cost", "GHS 45.00"],
+                ["Pickup - Organic Waste", "GHS 35.00"],
+                ["Service Fee", "GHS 10.00"],
+              ].map(([label, value], i) => (
+                <View
+                  key={label}
+                  style={{
+                    borderBottomColor:
+                      i !== 2 ? colors.borderLight : "transparent",
+                  }}
+                  className="flex-row justify-between items-center py-3"
+                >
+                  <Text style={{ color: colors.textSub }} className="text-base">
+                    {label}
+                  </Text>
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-base font-bold"
+                  >
+                    {value}
+                  </Text>
                 </View>
-                <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>x 2</Text>
+              ))}
+            </View>
+
+            <View
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+              }}
+              className="border rounded-3xl p-4 gap-4"
+            >
+              <View
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.card,
+                }}
+                className="border rounded-3xl p-5 flex-row justify-between items-center"
+              >
+                <View className="gap-1">
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-base font-medium"
+                  >
+                    Zubba Wallet Balance
+                  </Text>
+                  <Text style={{ color: colors.textSub }} className="text-base">
+                    GHS 124.50
+                  </Text>
+                </View>
+
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-[#31973D] font-bold">READY</Text>
+                  <View className="w-2 h-2 rounded-full bg-[#31973D]" />
+                </View>
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>Total Reward</Text>
-                <Text style={{ fontSize: 16, color: '#31973D', lineHeight: 24 }}>90 Eco-Points</Text>
+
+              <View
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.card,
+                }}
+                className="border rounded-3xl p-5 gap-3"
+              >
+                <View className="flex-row justify-between">
+                  <Text style={{ color: colors.textSub }} className="text-base">
+                    Base Points
+                  </Text>
+                  <Text style={{ color: colors.text }} className="text-base">
+                    45 XP
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-row items-center gap-1">
+                    <Text
+                      style={{ color: colors.textSub }}
+                      className="text-base"
+                    >
+                      Premium Multiplier
+                    </Text>
+                    <MaterialCommunityIcons
+                      name="lightning-bolt"
+                      size={10}
+                      color={colors.text}
+                    />
+                  </View>
+                  <Text style={{ color: colors.text }} className="text-base">
+                    x 2
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between">
+                  <Text style={{ color: colors.text }} className="text-base">
+                    Total Reward
+                  </Text>
+                  <Text className="text-[#31973D] text-base">
+                    90 Eco-Points
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
 
-        <AppBottomNav
+        {/* <AppBottomNav
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
-          onHomePress={() => navigation.navigate('PremiumHome')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
-        />
+          onHomePress={() => navigation.navigate("Home")}
+          onSavedPress={() =>
+            navigation.navigate("Details", {
+              itemId: "saved",
+              title: "Saved",
+            })
+          }
+          onSettingsPress={() => navigation.navigate("Settings")}
+          onCalendarPress={() =>
+            navigation.navigate("Details", {
+              itemId: "calendar",
+              title: "Calendar",
+            })
+          }
+        /> */}
       </View>
     </SafeAreaView>
   );

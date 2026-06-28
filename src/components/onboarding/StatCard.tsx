@@ -36,8 +36,7 @@ export function StatCard({
       </View>
 
       <Text className="text-xl font-bold text-[#1F2A33] mt-2">{value}</Text>
-
-      <Text className="text-sm text-[#6F7A6C] mt-1">{description}</Text>
+      <Text className="text-sm text-[#6F7A6C] mt-1 font-medium">{description}</Text>
     </View>
   );
 }
