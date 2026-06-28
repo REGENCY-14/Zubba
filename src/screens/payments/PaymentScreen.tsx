@@ -15,7 +15,7 @@ const airtelTigo = require("../../../assets/airtelTigo.png");
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
   const { colors } = useTheme();
   const customer = useAppSelector((state) => state.customer);
-  const isPremium = true;
+  const isPremium = false;
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
 
   return (

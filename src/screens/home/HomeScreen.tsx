@@ -33,7 +33,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
-  const isPremium = true;
+  const isPremium = false;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { colors } = useTheme();
 
@@ -62,7 +62,6 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
         <View
           style={{
             position: "absolute",
-            width: "100%",
             top: 0,
             left: 0,
             right: 0,
@@ -269,6 +268,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 8,
+                marginBottom: 12
               }}
             >
               <Pressable
@@ -312,7 +312,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
         </View>
 
         <View className="absolute bottom-[102px] left-2 right-2 p-4">
-          <View className="space-y-3">
+          <View className="space-y-3 gap-3">
             <View
               style={{
                 flexDirection: "row",

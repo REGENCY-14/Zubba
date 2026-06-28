@@ -29,7 +29,7 @@ export function RateRideScreen({
     <SafeAreaView
       style={{ backgroundColor: colors.bg }}
       className="flex-1"
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ backgroundColor: colors.bg }} className="flex-1">
         <View className="h-12 flex-row items-center justify-between px-4">

@@ -265,6 +265,33 @@ export function SettingsScreen({
             </View>
           </View>
 
+          <View className="bg-[#FFE088]/30 rounded-2xl border border-[#D4AF37] p-4">
+            <View className="flex-row items-center justify-between gap-4">
+              <View className="flex-1 flex-row items-center gap-4">
+                <View className="w-10 h-10 rounded-[10px] bg-[#F1F5F9] items-center justify-center">
+                  <MaterialCommunityIcons
+                    name="phone"
+                    size={22}
+                    color="#111827"
+                  />
+                </View>
+                <View className="flex-1 gap-1">
+                  <Text className="text-sm leading-5 font-medium text-[#101828]">
+                    Support line
+                  </Text>
+                  <Text className="text-xs leading-4 text-[#64748A]">
+                    Average response: &lt;2 mins
+                  </Text>
+                </View>
+              </View>
+              <Pressable className="flex-row items-center gap-2 border border-[#D4AF37] rounded-full bg-[#FFE088] px-4 py-2.5">
+                <Text className="text-sm leading-5 text-[#1F2A33]">
+                  Call Now
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
           <SectionCard title="Support & Legal">
             <SettingsRow
               icon={<MaterialCommunityIcons name="help-circle-outline" size={22} color="#111827" />}
