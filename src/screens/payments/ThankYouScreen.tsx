@@ -1,65 +1,77 @@
-import { View, Text, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackScreenProps } from "../../navigation/types";
 
-export function ThankYouScreen({
+/**
+ * ThankYouScreen
+ * Pixel-faithful replica of the "Thank you" confirmation screen.
+ * Styling: NativeWind (Tailwind CSS for React Native) + a small StyleSheet
+ * for the dashed border and radial-ish gradient simulation.
+ */
+export default function ThankYouScreen({
   navigation,
 }: RootStackScreenProps<"ThankYou">) {
   return (
-    <SafeAreaView className="flex-1" edges={["top", "left", "right", "bottom"]}>
-      <View className="flex-1">
-        <View className="absolute inset-0 items-center justify-center gap-[540px]">
-          <View
-            className="w-[280px] h-[280px] rounded-full bg-transparent"
-            style={{
-              boxShadow: [
-                {
-                  offsetX: 0,
-                  offsetY: 0,
-                  blurRadius: 100,
-                  spreadDistance: 150,
-                  color: "#DCFCE7",
-                },
-              ],
-            }}
-          />
-          <View
-            className="w-[280px] h-[280px] rounded-full bg-transparent"
-            style={{
-              boxShadow: [
-                {
-                  offsetX: 0,
-                  offsetY: 0,
-                  blurRadius: 100,
-                  spreadDistance: 150,
-                  color: "#DCFCE7",
-                },
-              ],
-            }}
-          />
-        </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="dark-content" />
 
-        <View className="absolute inset-0 bg-black/40" />
-
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="text-3xl font-bold text-white text-center">
+      <View className="flex-1 bg-[#c8e6c0] items-center justify-center px-6">
+        <View style={styles.glowOverlay} pointerEvents="none" />
+        <View
+          style={styles.card}
+          className="w-full bg-white/80 rounded-2xl px-8 py-10 items-center"
+        >
+          <Text
+            className="text-[#1a1a1a] text-2xl font-semibold tracking-tight mb-3 text-center"
+          >
             Thank you
           </Text>
-          <Text className="text-sm leading-6 text-white/80 text-center">
-            Will do this later, going to sleep
+
+          <Text
+            className="text-[#3a3a3a] text-sm text-center leading-relaxed mb-8"
+            style={styles.body}
+          >
+            You help fellow customers find what's good out there in discovering
+            the best experiences..
           </Text>
 
-          <Pressable
-            className="h-12 bg-[#31973D] rounded-full items-center justify-center w-full"
-            onPress={() => navigation.navigate("Home")}
+          <TouchableOpacity
+            onPress={navigation.navigate("Home")}
+            activeOpacity={0.85}
+            className="w-full bg-[#3a8c3f] rounded-full py-4 items-center"
           >
-            <Text className="text-sm text-white leading-5">
+            <Text className="text-white text-base font-medium tracking-wide">
               Proceed to Home
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  glowOverlay: {
+    position: "absolute",
+    width: 340,
+    height: 340,
+    borderRadius: 170,
+    backgroundColor: "rgba(200, 240, 190, 0.55)",
+    top: "28%",
+    alignSelf: "center",
+  },
+  card: {
+    borderWidth: 1.5,
+    borderColor: "#6abf6a",
+    borderStyle: "dashed",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  body: {
+    maxWidth: 240,
+  },
+});
