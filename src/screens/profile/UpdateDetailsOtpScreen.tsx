@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useTheme } from '../../context/ThemeContext';
 
 export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenProps<'UpdateDetailsOtp'>) {
+  const { colors } = useTheme();
   const contact = route.params?.phone ?? '024 11 22 310';
   const email = route.params?.email ?? 'name@example.com';
   const kind = route.params?.kind ?? 'phone';
@@ -26,21 +28,20 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
-      <View className="flex-1 bg-white">
-        <View className="h-12 px-4 flex-row items-center justify-between bg-white">
-          <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
+        <View style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg }}>
+          <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
+            <MaterialCommunityIcons name="chevron-left" size={24} color={colors.text} />
           </Pressable>
-          <Text className="text-base leading-6 font-semibold text-[#1F2A33] text-center">Code Verification</Text>
-          <View className="w-6 h-6" />
+          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, textAlign: 'center' }}>Code Verification</Text>
+          <View style={{ width: 24, height: 24 }} />
         </View>
 
-        <View className="flex-1 px-[22px] pt-[18px] gap-[18px]">
-          <View className="gap-1">
+        <View style={{ flex: 1, paddingHorizontal: 22, paddingTop: 18, gap: 18 }}>
+          <View style={{ gap: 4 }}>
             <Text
-              className="text-[18px] font-bold leading-[25px] tracking-[0.15px] text-[#1F2A33]"
-              style={{ fontFamily: 'Nexa Text-Trial' }}
+              style={{ fontSize: 18, fontWeight: 'bold', lineHeight: 25, letterSpacing: 0.15, color: colors.text, fontFamily: 'Nexa Text-Trial' }}
             >
               {kind === 'email'
                 ? step === 'old'
@@ -52,20 +53,25 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
             </Text>
           </View>
 
-          <View className="flex-row gap-3 mt-[10px]">
+          <View style={{ flexDirection: 'row', gap: 12, marginTop: 10 }}>
             {[0, 1, 2, 3].map((index) => (
               <Pressable
                 key={index}
                 onPress={() => inputRefs.current[index]?.focus()}
-                className={`w-[39px] h-[34px] rounded-[6px] border items-center justify-center ${
-                  index === 0 && codeDigits[0] === ''
-                    ? 'border-[#31973D] bg-white'
-                    : 'border-[#B8B8B8]/20 bg-[#B8B8B8]/20'
-                }`}
+                style={{
+                  width: 39,
+                  height: 34,
+                  borderRadius: 6,
+                  borderWidth: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderColor: index === 0 && codeDigits[0] === '' ? '#31973D' : colors.border,
+                  backgroundColor: index === 0 && codeDigits[0] === '' ? colors.card : colors.surface,
+                }}
               >
                 <TextInput
                   ref={(ref) => { inputRefs.current[index] = ref; }}
-                  className="w-full h-full text-[20px] font-medium text-[#1F2A33]"
+                  style={{ width: '100%', height: '100%', fontSize: 20, fontWeight: '500', color: colors.text, textAlign: 'center' }}
                   value={codeDigits[index]}
                   onChangeText={(value) => updateDigit(index, value)}
                   keyboardType="number-pad"
@@ -77,7 +83,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
           </View>
 
           <Pressable
-            className={`h-12 rounded-xl items-center justify-center mt-[10px] ${isCodeComplete ? 'bg-[#34A853]' : 'bg-[#34A853]/50'}`}
+            style={{ height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 10, backgroundColor: isCodeComplete ? '#34A853' : 'rgba(52,168,83,0.5)' }}
             disabled={!isCodeComplete}
             onPress={() =>
               step === 'old'
@@ -90,25 +96,25 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
                 : navigation.navigate('UpdateDetailsSuccess')
             }
           >
-            <Text className="text-white text-sm leading-5">Verify</Text>
+            <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20 }}>Verify</Text>
           </Pressable>
 
-          <Text className="text-[#1F2A33] text-[11px] leading-4" style={{ fontFamily: 'Poppins' }}>
+          <Text style={{ color: colors.text, fontSize: 11, lineHeight: 16, fontFamily: 'Poppins' }}>
             {kind === 'email' ? 'Resend code by email (1:00)' : 'Resend code by SMS (1:00)'}
           </Text>
 
-          <View className="gap-2 items-start">
-            <Pressable className="border border-[#E2E8F0] rounded-[22px] py-[6px] px-3 bg-white" onPress={() => {}}>
-              <Text className="text-[#1F2A33] text-xs leading-5 font-medium">Resend</Text>
+          <View style={{ gap: 8, alignItems: 'flex-start' }}>
+            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 22, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: colors.card }} onPress={() => {}}>
+              <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500' }}>Resend</Text>
             </Pressable>
-            <Pressable className="border border-[#E2E8F0] rounded-[22px] py-[6px] px-3 bg-white" onPress={() => {}}>
-              <Text className="text-[#1F2A33] text-xs leading-5 font-medium">Send code via WhatsApp</Text>
+            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 22, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: colors.card }} onPress={() => {}}>
+              <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500' }}>Send code via WhatsApp</Text>
             </Pressable>
           </View>
         </View>
 
-        <View className="h-6 items-center justify-center pb-2">
-          <View className="w-[108px] h-1 rounded-[12px] bg-black opacity-90" />
+        <View style={{ height: 24, alignItems: 'center', justifyContent: 'center', paddingBottom: 8 }}>
+          <View style={{ width: 108, height: 4, borderRadius: 12, backgroundColor: colors.border }} />
         </View>
       </View>
     </SafeAreaView>

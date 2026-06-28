@@ -38,6 +38,7 @@ export type RootStackParamList = {
   PremiumHome: undefined;
   DriversFound: undefined;
   WalletCheckout: undefined;
+  PlanForLater: undefined;
   Details: { itemId: string; title: string } | undefined;
   Verify: { phone?: string; email?: string; userExists?: boolean } | undefined;
   FindAccount: { itemId: string; title: string } | undefined;

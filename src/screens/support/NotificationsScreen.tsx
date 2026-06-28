@@ -1,154 +1,154 @@
 import React from 'react';
-import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AppBottomNav } from '../../components';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useTheme } from '../../context/ThemeContext';
 
-type ToggleRowProps = {
-  icon: React.ReactNode;
-  title: string;
-  subtitle: string;
-  value: boolean;
-  onValueChange: (value: boolean) => void;
+type NotificationItem = {
+  id: string;
+  message: string;
+  time: string;
 };
 
-function ToggleRow({ icon, title, subtitle, value, onValueChange }: ToggleRowProps) {
+const TODAY: NotificationItem[] = [
+  { id: '1', message: 'Your waste collection request has been received and is being processed.', time: '5:30PM' },
+  { id: '2', message: 'A driver has been assigned to your pickup request and will arrive shortly.', time: '3:04PM' },
+  { id: '3', message: 'Congratulations! You earned 25 reward points from your recent collection.', time: '3:04PM' },
+];
+
+const WEEK_AGO: NotificationItem[] = [
+  { id: '4', message: 'Your Premium subscription will expire in 3 days. Renew now to continue enjoying premium benefits.', time: '3:04PM' },
+  { id: '5', message: "We couldn't process your payment. Please try again or use another payment method.", time: '3:04PM' },
+  { id: '6', message: 'Your waste has been successfully collected. Thank you for choosing Zubba.', time: '3:04PM' },
+  { id: '7', message: 'GHS 50.00 has been added to your Zubba Wallet successfully.', time: '3:04PM' },
+];
+
+function NotificationRow({ item, iconSize, colors }: { item: NotificationItem; iconSize: number; colors: ReturnType<typeof useTheme>['colors'] }) {
   return (
-    <View className="flex-row items-center justify-between px-4 py-3 min-h-[72px] bg-white border border-slate-200 rounded-2xl">
-      <View className="flex-row items-center flex-1 mr-3">
-        <View className="w-10 h-10 rounded-[10px] bg-slate-50 items-center justify-center mr-4">
-          {icon}
-        </View>
-
-        <View className="flex-1">
-          <Text className="text-[14px] leading-5 font-semibold text-[#1A1C1E]">
-            {title}
-          </Text>
-          <Text className="text-[12px] leading-4 text-[#64748A]">
-            {subtitle}
-          </Text>
-        </View>
+    <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingVertical: 12, gap: 16 }}>
+      <View style={{ width: iconSize, height: iconSize, backgroundColor: colors.iconBg, borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <MaterialCommunityIcons name="bell-outline" size={16} color="#31973D" />
       </View>
-
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: '#CBD5E0', true: '#31973D' }}
-        thumbColor="#FFFFFF"
-      />
+      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+        <Text style={{ flex: 1, fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.text }}>
+          {item.message}
+        </Text>
+        <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub, paddingTop: 5, flexShrink: 0 }}>
+          {item.time}
+        </Text>
+      </View>
     </View>
   );
 }
 
+function BellIllustration() {
+  return (
+    <View style={{ width: 196, height: 146, alignItems: 'center', justifyContent: 'flex-end' }}>
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 72, backgroundColor: '#EDE9FE', borderRadius: 999 }} />
+      <View style={{ position: 'absolute', top: 52, left: 14, width: 8, height: 8, borderRadius: 999, backgroundColor: '#31973D' }} />
+      <View style={{ position: 'absolute', bottom: 18, right: 12, width: 6, height: 6, borderRadius: 999, backgroundColor: '#31973D' }} />
+      <View style={{ zIndex: 1, marginBottom: 8 }}>
+        <MaterialCommunityIcons name="bell-sleep" size={86} color="#1B5E20" />
+      </View>
+      <Text style={{ position: 'absolute', top: 22, right: 50, fontSize: 20, fontWeight: '700', color: '#31973D', zIndex: 2 }}>Z</Text>
+      <Text style={{ position: 'absolute', top: 6, right: 34, fontSize: 14, fontWeight: '700', color: '#31973D', zIndex: 2 }}>z</Text>
+    </View>
+  );
+}
+
+const hasActivity = TODAY.length > 0 || WEEK_AGO.length > 0;
+
 export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifications'>) {
-  const [pickupAlerts, setPickupAlerts] = React.useState(true);
-  const [rewardMilestone, setRewardMilestone] = React.useState(true);
-  const [walletUpdates, setWalletUpdates] = React.useState(true);
-  const [newsOffers, setNewsOffers] = React.useState(false);
-  const [pushNotifications, setPushNotifications] = React.useState(true);
-  const [emailNotifications, setEmailNotifications] = React.useState(true);
-  const [smsNotifications, setSmsNotifications] = React.useState(false);
+  const { colors } = useTheme();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
-      <View className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
-        <View className="h-12 px-4 flex-row items-center justify-between bg-white">
-          <Pressable onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#1F2A33" />
+        {/* Header */}
+        <View
+          style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg, borderBottomWidth: 0.5, borderBottomColor: colors.border }}
+        >
+          <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
+            <MaterialCommunityIcons name="chevron-left" size={28} color={colors.text} />
           </Pressable>
-
-          <Text className="text-[16px] font-semibold text-[#1F2A33]">
-            Notification
-          </Text>
-
-          <View className="w-6 h-6" />
+          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Notification</Text>
+          <View style={{ width: 28 }} />
         </View>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerClassName="px-3 pt-4 pb-32 gap-6"
+          contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 24 }}
         >
-          <View className="items-center bg-white border border-slate-200 rounded-2xl px-[18px] py-6 gap-4">
-            <View className="w-[54px] h-[54px] rounded-full bg-[#E5F3EA] items-center justify-center">
-              <MaterialCommunityIcons name="bell-outline" size={28} color="#006B23" />
+          {hasActivity ? (
+            /* ── Activity list ── */
+            <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingVertical: 11 }}>
+              <View style={{ paddingHorizontal: 16, gap: 16 }}>
+
+                {/* Section header */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 20, lineHeight: 28, color: colors.text }}>
+                    Recent Activity
+                  </Text>
+                  <MaterialCommunityIcons name="tune-variant" size={18} color={colors.textSub} />
+                </View>
+
+                {/* Today */}
+                <View>
+                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub, marginBottom: 0 }}>
+                    Today
+                  </Text>
+                  {TODAY.map(item => (
+                    <NotificationRow key={item.id} item={item} iconSize={32} colors={colors} />
+                  ))}
+                </View>
+
+                {/* 7 Days Ago */}
+                <View>
+                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub }}>
+                    7 Days Ago
+                  </Text>
+                  {WEEK_AGO.map(item => (
+                    <NotificationRow key={item.id} item={item} iconSize={48} colors={colors} />
+                  ))}
+                </View>
+
+              </View>
             </View>
+          ) : (
+            /* ── Empty state ── */
+            <>
+              <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16 }}>
+                <View style={{ alignItems: 'center', paddingHorizontal: 24, paddingTop: 48, paddingBottom: 24, gap: 12 }}>
+                  <BellIllustration />
+                  <View style={{ alignItems: 'center', gap: 5, marginTop: 8 }}>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, lineHeight: 24, color: colors.text, textAlign: 'center' }}>
+                      All quiet here
+                    </Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.textSub, textAlign: 'center' }}>
+                      You're all caught up! We'll notify you here about all activities on the platform
+                    </Text>
+                  </View>
+                </View>
+              </View>
 
-            <Text className="text-[14px] leading-5 text-center text-slate-500">
-              Manage how you want to be notified about your waste collection services.
-            </Text>
-          </View>
-
-          <View className="bg-slate-50 border border-slate-200 rounded-xl p-1.5 gap-3">
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="trash-can-outline" size={24} color="#111827" />}
-              title="Pickup Alerts"
-              subtitle="Real-time truck tracking"
-              value={pickupAlerts}
-              onValueChange={setPickupAlerts}
-            />
-
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="star-outline" size={24} color="#111827" />}
-              title="Reward Milestone"
-              subtitle="Eco-point updates"
-              value={rewardMilestone}
-              onValueChange={setRewardMilestone}
-            />
-
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="wallet-outline" size={24} color="#111827" />}
-              title="Wallet Updates"
-              subtitle="Transaction confirmations"
-              value={walletUpdates}
-              onValueChange={setWalletUpdates}
-            />
-
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="newspaper-variant-outline" size={24} color="#111827" />}
-              title="News/Offers"
-              subtitle="New features and discounts"
-              value={newsOffers}
-              onValueChange={setNewsOffers}
-            />
-          </View>
-
-          <View className="bg-slate-50 border border-slate-200 rounded-xl p-1.5 gap-3">
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="bell-ring-outline" size={24} color="#111827" />}
-              title="Push Notifications"
-              subtitle="Instant app alerts"
-              value={pushNotifications}
-              onValueChange={setPushNotifications}
-            />
-
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="star-outline" size={24} color="#111827" />}
-              title="Email"
-              subtitle="Zubba-user@example.com"
-              value={emailNotifications}
-              onValueChange={setEmailNotifications}
-            />
-
-            <ToggleRow
-              icon={<MaterialCommunityIcons name="message-text-outline" size={24} color="#111827" />}
-              title="SMS"
-              subtitle="+233 20 0000 000"
-              value={smsNotifications}
-              onValueChange={setSmsNotifications}
-            />
-          </View>
+              <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16 }}>
+                <View style={{ backgroundColor: '#EDE9FE', borderRadius: 28, padding: 24, flexDirection: 'row', alignItems: 'flex-start', gap: 16 }}>
+                  <View style={{ width: 32, height: 32, backgroundColor: '#DDD6FE', borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MaterialCommunityIcons name="lightbulb-outline" size={16} color="#7C3AED" />
+                  </View>
+                  <View style={{ flex: 1, gap: 4 }}>
+                    <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '600', fontSize: 14, lineHeight: 20, color: '#0F1621' }}>Quick Tip</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 18, color: '#1F2A33' }}>
+                      Customize your notification preferences in settings.
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </>
+          )}
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="settings"
-          paddingBottom={0}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-        />
       </View>
     </SafeAreaView>
   );

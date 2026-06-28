@@ -12,18 +12,20 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { useTheme } from "../../context/ThemeContext";
 
 export function AuthorizePaymentScreen({
   navigation,
 }: RootStackScreenProps<"AuthorizePayment">) {
+  const { colors } = useTheme();
   const [pin, setPin] = React.useState("");
   const inputRef = React.useRef<TextInput | null>(null);
 
   const digits = Array.from({ length: 4 }).map((_, i) => pin[i] || "");
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      <View className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 
         <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 120, gap: 24 }}>
@@ -32,21 +34,21 @@ export function AuthorizePaymentScreen({
               <View className="w-8 h-8 rounded-lg bg-[#31973D] items-center justify-center">
                 <MaterialCommunityIcons name="shield-account-outline" size={16} color="#fff" />
               </View>
-              <Text className="text-base text-[#1A1C1E]">Enter PIN</Text>
+              <Text style={{ fontSize: 16, color: colors.text }}>Enter PIN</Text>
             </View>
 
-            <View className="flex-row items-center gap-2 px-3 py-1 rounded-full bg-[#F3F3F6]">
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, backgroundColor: colors.iconBg }}>
               <View className="w-2 h-2 rounded-full bg-[#006B23]" />
-              <Text className="text-xs font-semibold text-[#1A1C1E]">
+              <Text style={{ fontSize: 12, fontWeight: '600', color: colors.text }}>
                 MTN MoMo
               </Text>
             </View>
           </View>
 
-          <Text className="text-base text-[#64748A] leading-6">
+          <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>
             Enter your 4-digit PIN to authorize the payment of{" "}
-            <Text className="font-bold text-[#1A1C1E]">GHS 45.00</Text> to{" "}
-            <Text className="font-bold text-[#1A1C1E]">Zubba</Text>.
+            <Text style={{ fontWeight: '700', color: colors.text }}>GHS 45.00</Text> to{" "}
+            <Text style={{ fontWeight: '700', color: colors.text }}>Zubba</Text>.
           </Text>
 
           <View className="flex-row gap-3">
@@ -58,13 +60,18 @@ export function AuthorizePaymentScreen({
                 <Pressable
                   key={i}
                   onPress={() => inputRef.current?.focus()}
-                  className={[
-                    "w-[52px] h-[64px] rounded-xl border items-center justify-center bg-white",
-                    filled || active
-                      ? "border-[#31973D]"
-                      : "border-[#BECAB9]",
-                    active ? "w-[56px] h-[68px]" : "",
-                  ].join(" ")}
+                  style={[
+                    {
+                      width: active ? 56 : 52,
+                      height: active ? 68 : 64,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: colors.surface,
+                      borderColor: filled || active ? '#31973D' : colors.border,
+                    },
+                  ]}
                 >
                   {filled && (
                     <View className="w-3 h-3 rounded-full bg-[#31973D]" />
@@ -99,6 +106,7 @@ export function AuthorizePaymentScreen({
         <AppBottomNav
           activeTab="home"
           paddingBottom={14}
+          bottomOffset={8}
           onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}

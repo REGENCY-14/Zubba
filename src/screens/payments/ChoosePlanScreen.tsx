@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Animated,
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -12,6 +13,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useTheme } from '../../context/ThemeContext';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -66,17 +68,20 @@ const FEATURES = [
   { label: 'Community Support', free: true, gold: true },
 ];
 
+const INACTIVE_SHRINK = 52;
+
 type PlanCardProps = {
   plan: (typeof PLANS)[number];
   isActive: boolean;
   recommended?: boolean;
-  cardHeight: number;
+  cardHeight: Animated.AnimatedInterpolation<number>;
+  cardMarginTop: Animated.AnimatedInterpolation<number>;
   onPress: () => void;
 };
 
-function PlanCard({ plan, isActive, recommended, cardHeight, onPress }: PlanCardProps) {
+function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPress }: PlanCardProps) {
   return (
-    <View style={{ width: CARD_WIDTH, height: cardHeight }}>
+    <Animated.View style={{ width: CARD_WIDTH, height: cardHeight, marginTop: cardMarginTop }}>
       {recommended && (
         <View
           className="absolute bg-[#FFE088] rounded-full px-4 py-[6px] flex-row items-center gap-1"
@@ -129,15 +134,17 @@ function PlanCard({ plan, isActive, recommended, cardHeight, onPress }: PlanCard
         </View>
       </Pressable>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
 export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePlan'>) {
+  const { colors } = useTheme();
   const plansRef = React.useRef<ScrollView>(null);
   const [activePlanIndex, setActivePlanIndex] = React.useState(1);
   const [tableHeight, setTableHeight] = React.useState(0);
   const insets = useSafeAreaInsets();
+  const scrollX = React.useRef(new Animated.Value(CARD_WIDTH + CARD_GAP)).current;
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -146,12 +153,40 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
     return () => clearTimeout(timer);
   }, []);
 
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const x = e.nativeEvent.contentOffset.x;
-    const index = Math.round(x / (CARD_WIDTH + CARD_GAP));
-    const clamped = Math.max(0, Math.min(PLANS.length - 1, index));
-    if (clamped !== activePlanIndex) setActivePlanIndex(clamped);
-  };
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    {
+      useNativeDriver: false,
+      listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const x = e.nativeEvent.contentOffset.x;
+        const index = Math.round(x / (CARD_WIDTH + CARD_GAP));
+        const clamped = Math.max(0, Math.min(PLANS.length - 1, index));
+        setActivePlanIndex(clamped);
+      },
+    },
+  );
+
+  const getCardHeight = (index: number) =>
+    scrollX.interpolate({
+      inputRange: [
+        (index - 1) * (CARD_WIDTH + CARD_GAP),
+        index * (CARD_WIDTH + CARD_GAP),
+        (index + 1) * (CARD_WIDTH + CARD_GAP),
+      ],
+      outputRange: [cardsMinHeight - INACTIVE_SHRINK, cardsMinHeight, cardsMinHeight - INACTIVE_SHRINK],
+      extrapolate: 'clamp',
+    });
+
+  const getCardMarginTop = (index: number) =>
+    scrollX.interpolate({
+      inputRange: [
+        (index - 1) * (CARD_WIDTH + CARD_GAP),
+        index * (CARD_WIDTH + CARD_GAP),
+        (index + 1) * (CARD_WIDTH + CARD_GAP),
+      ],
+      outputRange: [INACTIVE_SHRINK, 0, INACTIVE_SHRINK],
+      extrapolate: 'clamp',
+    });
 
   const accentColor = PLANS[activePlanIndex].accentColor;
 
@@ -165,15 +200,15 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
-      <View className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
         {/* Header */}
-        <View className="h-12 bg-white flex-row items-center justify-between px-4">
+        <View style={{ height: 48, backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
           <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <Text className="text-[28px] text-[#1F2A33] leading-7 -mt-[2px]">‹</Text>
+            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
           </Pressable>
-          <Text className="text-base font-semibold text-[#1F2A33]">Choose your plan</Text>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Choose your plan</Text>
           <View className="w-6 h-6" />
         </View>
 
@@ -181,10 +216,10 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
 
         {/* Comparison table */}
         <View
-          className="border border-[#E2E8F0] rounded-3xl p-4 mx-4 mt-4 bg-white gap-6"
+          style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, marginHorizontal: 16, marginTop: 16, backgroundColor: colors.card, gap: 24 }}
           onLayout={e => setTableHeight(e.nativeEvent.layout.height)}
         >
-          <Text className="text-[30px] font-extrabold leading-[38px] tracking-[-0.75px] uppercase text-[#1F2A33] text-center">
+          <Text style={{ fontSize: 30, fontWeight: '800', lineHeight: 38, letterSpacing: -0.75, textTransform: 'uppercase', color: colors.text, textAlign: 'center' }}>
             {'START YOUR '}
             <Text style={{ color: '#16CE2C' }}>FREE</Text>
             {'\n'}
@@ -196,23 +231,23 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
             <View className="flex-row items-center mb-1">
               <View className="flex-1" />
               <View className="w-[72px] items-center">
-                <Text className="text-[10px] font-bold tracking-[1px] uppercase text-[#1F2A33]">FREE</Text>
+                <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.text }}>FREE</Text>
               </View>
               <View className="w-[72px] items-center">
-                <Text className="text-[10px] font-bold tracking-[1px] uppercase" style={{ color: accentColor }}>GOLD</Text>
+                <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }}>GOLD</Text>
               </View>
             </View>
 
             {FEATURES.map((f, i) => (
               <View
                 key={i}
-                className={`flex-row items-center h-[45px] ${i < FEATURES.length - 1 ? 'border-b border-b-black/[0.06]' : ''}`}
+                style={{ flexDirection: 'row', alignItems: 'center', height: 45, borderBottomWidth: i < FEATURES.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
               >
                 <View className="flex-1">
-                  <Text className="text-sm leading-5 text-[#1F2A33]">{f.label}</Text>
+                  <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>{f.label}</Text>
                 </View>
                 <View className="w-[72px] items-center">
-                  {f.free && <MaterialCommunityIcons name="check" size={20} color="rgba(0, 0, 0, 0.7)" />}
+                  {f.free && <MaterialCommunityIcons name="check" size={20} color={colors.iconColor} />}
                 </View>
                 <View className="w-[72px] items-center">
                   {f.gold && <MaterialCommunityIcons name="check" size={20} color={accentColor} />}
@@ -240,7 +275,8 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
                 plan={plan}
                 isActive={i === activePlanIndex}
                 recommended={plan.label === 'MONTHLY'}
-                cardHeight={cardsMinHeight}
+                cardHeight={getCardHeight(i)}
+                cardMarginTop={getCardMarginTop(i)}
                 onPress={() => navigation.navigate('ConfirmSubscription', { planIndex: i })}
               />
             ))}

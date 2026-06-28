@@ -17,6 +17,7 @@ import { AppBottomNav } from "../../components";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useTheme } from "../../context/ThemeContext";
 import { stat } from "node:fs";
 
 const mapImage = require("../../../assets/RawMap.png");
@@ -38,6 +39,7 @@ const TRICYCLES: { top: number; left: number; rotate: string }[] = [
 export function ScanningScreen({
   navigation,
 }: RootStackScreenProps<"Scanning">) {
+  const { colors } = useTheme();
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,10 +102,10 @@ export function ScanningScreen({
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
       <ImageBackground
         source={mapImage}
-        className="flex-1 w-full h-full"
+        style={{ flex: 1, width: '100%', height: '100%' }}
         resizeMode="cover"
       >
         <CustomAppBar title={appBarText} navigation={navigation} />
@@ -115,35 +117,35 @@ export function ScanningScreen({
             height: SCAN_SIZE,
             top: SCAN_TOP,
             left: SCAN_LEFT,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-          className="items-center justify-center"
         >
           <View
             style={{
               width: SCAN_SIZE,
               height: SCAN_SIZE,
               borderRadius: SCAN_SIZE / 2,
+              position: 'absolute',
+              backgroundColor: 'rgba(52,168,83,0.12)',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            className="absolute bg-[#34A853]/[0.12] items-center justify-center"
           >
             <View
-              style={{ width: 270, height: 270, borderRadius: 135 }}
-              className="absolute border-[0.5px] border-white/65"
+              style={{ width: 270, height: 270, borderRadius: 135, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
             />
             <View
-              style={{ width: 210, height: 210, borderRadius: 105 }}
-              className="absolute border-[0.5px] border-white/65"
+              style={{ width: 210, height: 210, borderRadius: 105, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
             />
             <View
-              style={{ width: 150, height: 150, borderRadius: 75 }}
-              className="absolute border-[0.5px] border-white/65"
+              style={{ width: 150, height: 150, borderRadius: 75, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
             />
             <View
-              style={{ width: 90, height: 90, borderRadius: 45 }}
-              className="absolute border-[0.5px] border-white/65"
+              style={{ width: 90, height: 90, borderRadius: 45, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
             />
-            <View className="absolute w-[210px] h-[0.5px] bg-white/50" />
-            <View className="absolute w-[0.5px] h-[210px] bg-white/50" />
+            <View style={{ position: 'absolute', width: 210, height: 0.5, backgroundColor: 'rgba(255,255,255,0.5)' }} />
+            <View style={{ position: 'absolute', width: 0.5, height: 210, backgroundColor: 'rgba(255,255,255,0.5)' }} />
           </View>
 
           <Animated.View
@@ -163,10 +165,10 @@ export function ScanningScreen({
             ]}
           />
 
-          <View className="absolute items-center">
+          <View style={{ position: 'absolute', alignItems: 'center' }}>
             <MaterialIcons name="location-on" size={28} color="#38A667" />
-            <View className="w-[34px] h-[34px] rounded-full bg-[#34A853]/50 items-center justify-center mt-0.5">
-              <View className="w-[17px] h-[17px] rounded-full bg-[#31973D]" />
+            <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(52,168,83,0.5)', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+              <View style={{ width: 17, height: 17, borderRadius: 8.5, backgroundColor: '#31973D' }} />
             </View>
           </View>
         </View>
@@ -181,7 +183,7 @@ export function ScanningScreen({
               transform: [{ rotate: t.rotate }],
             }}
           >
-            <Text className="text-[22px]">🛺</Text>
+            <Text style={{ fontSize: 22 }}>🛺</Text>
           </View>
         ))}
 
