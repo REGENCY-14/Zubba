@@ -18,7 +18,6 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
-import { stat } from "node:fs";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -195,13 +194,14 @@ export function ScanningScreen({
           }
           onSettingsPress={() => navigation.navigate("Settings")}
         />
-        {
-
-        }
         <PickupRequestModal
           visible={showModal}
           step={modalStep}
           avatar={avatar}
+          name="Marcus Chen"
+          rating={4.7}
+          code="ZB-0007"
+          cost="20.00"
           onProceed={() => setModalStep("assigned")}
           onCancel={() => {
             navigation.pop();

@@ -200,7 +200,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 className="h-12 bg-[#31973D] rounded-full items-center justify-center"
                 onPress={() => {
                   setShowSuccess(false);
-                  navigation.navigate('PremiumHome');
+                  navigation.navigate('Home');
                 }}
               >
                 <Text className="text-sm text-white leading-5">Proceed to Premium</Text>

@@ -37,7 +37,6 @@ import { ConfirmSubscriptionScreen } from '../screens/payments/ConfirmSubscripti
 import { AddCardScreen } from '../screens/payments/AddCardScreen';
 import { PremiumPaymentScreen } from '../screens/payments/PremiumPaymentScreen';
 import { WalletNumberScreen } from '../screens/payments/WalletNumberScreen';
-import { PremiumHomeScreen } from '../screens/payments/PremiumHomeScreen';
 import { DriversFoundScreen } from '../screens/payments/DriversFoundScreen';
 import { WalletCheckoutScreen } from '../screens/payments/WalletCheckoutScreen';
 import { PlanForLaterScreen } from '../screens/payments/PlanForLaterScreen';
@@ -52,7 +51,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Splash"
+      initialRouteName="PaymentSuccess"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'
@@ -98,7 +97,6 @@ export function RootNavigator() {
       <Stack.Screen name="AddCard" component={AddCardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PremiumPayment" component={PremiumPaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletNumber" component={WalletNumberScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="PremiumHome" component={PremiumHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriversFound" component={DriversFoundScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletCheckout" component={WalletCheckoutScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PlanForLater" component={PlanForLaterScreen} options={{ headerShown: false }} />
