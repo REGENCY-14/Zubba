@@ -44,7 +44,7 @@ export function ScanningScreen({
   const [isLoading, setIsLoading] = useState(true);
   const [appBarText, setAppBarText] = useState("Scanning...");
   const customer = useAppSelector((state) => state.customer.is_premium)
-  const isPremium = true
+  const isPremium = false
   const [modalStep, setModalStep] = useState<"request" | "assigned">("request");
   const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
