@@ -1,80 +1,93 @@
-import React from 'react';
-import { ActivityIndicator, Animated, ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React from "react";
 import {
-  Image,
+  ActivityIndicator,
+  Animated,
   ImageBackground,
   Pressable,
   ScrollView,
   Text,
   View,
-} from 'react-native';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppBottomNav } from '../../components';
-import type { RootStackScreenProps } from '../../navigation/types';
-import { useTheme } from '../../context/ThemeContext';
+import { AppBottomNav } from "../../components";
+import type { RootStackScreenProps } from "../../navigation/types";
 
-const mapImage = require('../../../assets/RawMap.png');
+const mapImage = require("../../../assets/RawMap.png");
 
 const NEARBY_DRIVERS = [
-  { name: 'Marcus Chen', initials: 'MC', rating: '4.9', code: 'ZB-0248', distance: '0.5km away', time: '3 mins', premium: true },
-  { name: 'Sarah J.', initials: 'SJ', rating: '4.9', code: 'ZB-1248', distance: '0.8km away', time: '5 mins', premium: false },
-  { name: 'Kwame B.', initials: 'KB', rating: '4.8', code: 'ZB-0748', distance: '1.2km away', time: '7 mins', premium: true },
+  { name: "Marcus Chen", initials: "MC", rating: "4.9", code: "ZB-0248", distance: "0.5km away", time: "3 mins", premium: true },
+  { name: "Sarah J.", initials: "SJ", rating: "4.9", code: "ZB-1248", distance: "0.8km away", time: "5 mins", premium: false },
+  { name: "Kwame B.", initials: "KB", rating: "4.8", code: "ZB-0748", distance: "1.2km away", time: "7 mins", premium: true },
 ];
 
 type DriverInfo = (typeof NEARBY_DRIVERS)[number];
 
-function DriverCard({ driver, selected, onPress, colors }: { driver: DriverInfo; selected: boolean; onPress: () => void; colors: ReturnType<typeof useTheme>['colors'] }) {
+function DriverCard({
+  driver,
+  selected,
+  onPress,
+}: {
+  driver: DriverInfo;
+  selected: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        width: 248,
-        borderWidth: 1,
-        borderColor: selected ? '#31973D' : colors.border,
-        borderRadius: 24,
-        padding: 16,
-        gap: 16,
-        backgroundColor: colors.card,
-      }}
+      className="w-[248px] rounded-3xl p-4 gap-4 bg-white"
+      style={{ borderWidth: 1, borderColor: selected ? "#31973D" : "#E2E8F0" }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 16 }}>
-        <View style={{ width: 64, height: 64, backgroundColor: colors.iconBg, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ width: 54, height: 54, borderRadius: 999, borderWidth: 2, borderColor: '#90FA96', backgroundColor: '#C7E0C9', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontSize: 14, color: '#1A1C1E' }}>{driver.initials}</Text>
+      <View className="flex-row items-start gap-4">
+        <View className="w-16 h-16 rounded-xl bg-[#F1F5F9] items-center justify-center">
+          <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] bg-[#C7E0C9] items-center justify-center">
+            <Text className="text-sm font-bold text-[#1A1C1E] font-['Inter']">
+              {driver.initials}
+            </Text>
           </View>
-          <View style={{ position: 'absolute', bottom: -2, right: -2, width: 22, height: 22, borderRadius: 999, backgroundColor: '#006B23', borderWidth: 2, borderColor: colors.card, alignItems: 'center', justifyContent: 'center' }}>
+          <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
             <MaterialCommunityIcons name="check" size={10} color="#FFFFFF" />
           </View>
         </View>
 
-        <View style={{ flex: 1, gap: 4 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: colors.text }}>{driver.name}</Text>
+        <View className="flex-1 gap-1">
+          <View className="flex-row items-center gap-1.5 flex-wrap">
+            <Text className="text-sm font-bold text-[#1A1C1E] font-['Nexa_Text-Trial']">
+              {driver.name}
+            </Text>
             {driver.premium && (
-              <View style={{ backgroundColor: '#FFE088', borderRadius: 16, paddingHorizontal: 6, paddingVertical: 2 }}>
-                <Text style={{ fontFamily: 'Poppins', fontSize: 10, color: '#574500', letterSpacing: 0.48 }}>Premium</Text>
+              <View className="bg-[#FFE088] rounded-2xl px-1.5 py-0.5">
+                <Text className="text-[10px] text-[#574500] tracking-[0.48px]">
+                  Premium
+                </Text>
               </View>
             )}
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <View className="flex-row items-center gap-1">
             <MaterialCommunityIcons name="star" size={11} color="#735C00" />
-            <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontSize: 12, color: colors.text, letterSpacing: 0.48 }}>{driver.rating}</Text>
-            <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontSize: 12, color: colors.textMuted }}>·</Text>
-            <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: '#0D631B', textTransform: 'uppercase' }}>{driver.code}</Text>
+            <Text className="text-xs font-bold text-[#1A1C1E] tracking-[0.48px] font-['Inter']">
+              {driver.rating}
+            </Text>
+            <Text className="text-xs font-bold text-[#BECAB9] font-['Inter']"> · </Text>
+            <Text className="text-sm font-bold text-[#0D631B] uppercase font-['Nexa_Text-Trial']">
+              {driver.code}
+            </Text>
           </View>
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.borderLight }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View className="flex-row justify-between items-center pt-3 border-t border-t-[#F1F5F9]">
+        <View className="flex-row items-center gap-2">
           <MaterialCommunityIcons name="map-marker-outline" size={14} color="#006B23" />
-          <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: colors.text, letterSpacing: 0.28 }}>{driver.distance}</Text>
+          <Text className="text-sm font-bold text-[#1A1C1E] tracking-[0.28px] font-['Nexa_Text-Trial']">
+            {driver.distance}
+          </Text>
         </View>
-        <View style={{ backgroundColor: 'rgba(0,107,35,0.05)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
-          <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontSize: 12, color: '#006B23', letterSpacing: 0.48 }}>{driver.time}</Text>
+        <View className="bg-[rgba(0,107,35,0.05)] rounded-lg px-2 py-0.5">
+          <Text className="text-xs font-bold text-[#006B23] tracking-[0.48px] font-['Inter']">
+            {driver.time}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -83,8 +96,7 @@ function DriverCard({ driver, selected, onPress, colors }: { driver: DriverInfo;
 
 export function DriversFoundScreen({
   navigation,
-}: RootStackScreenProps<'DriversFound'>) {
-  const { colors } = useTheme();
+}: RootStackScreenProps<"DriversFound">) {
   const insets = useSafeAreaInsets();
   const [selectedDriver, setSelectedDriver] = React.useState(0);
   const [isScanning, setIsScanning] = React.useState(true);
@@ -94,250 +106,186 @@ export function DriversFoundScreen({
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setIsScanning(false);
-      Animated.spring(panelTranslateY, { toValue: 0, useNativeDriver: true, bounciness: 4 }).start();
+      Animated.spring(panelTranslateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        bounciness: 4,
+      }).start();
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
   React.useEffect(() => {
     if (!confirmed) return;
-    const timer = setTimeout(() => navigation.navigate('DriverArrives'), 5000);
+    const timer = setTimeout(() => navigation.navigate("DriverArrives"), 5000);
     return () => clearTimeout(timer);
   }, [confirmed]);
 
   const navHeight = 52 + Math.max(insets.bottom, 14) + 20;
-  const panelBottom =
-    NAV_BOTTOM + Math.max(insets.bottom, 14) + NAV_HEIGHT + PANEL_GAP;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-      <ImageBackground source={mapImage} style={{ flex: 1 }} resizeMode="cover" imageStyle={{ opacity: 0.8 }}>
-
-        {/* Header */}
-        <View
-          style={{ height: 48, backgroundColor: colors.card, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, justifyContent: 'space-between', borderBottomWidth: 0.5, borderBottomColor: colors.border }}
-        >
-          <Pressable style={{ width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="chevron-left" size={26} color={colors.text} />
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      <ImageBackground
+        source={mapImage}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+        imageStyle={{ opacity: 0.8 }}
+      >
+        <View className="h-12 bg-white flex-row items-center justify-between px-4 border-b border-b-[#E2E8F0]">
           <Pressable
             className="w-7 h-7 items-center justify-center"
             onPress={() => navigation.goBack()}
           >
             <MaterialCommunityIcons name="chevron-left" size={24} color="#1F2A33" />
           </Pressable>
-          <Text className="text-base font-bold text-[#1F2A33]">Drivers found</Text>
+          <Text className="text-base font-bold text-[#1F2A33] font-['Nexa_Text-Trial']">
+            Drivers found
+          </Text>
           <View className="w-7" />
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text, fontFamily: 'Nexa Text-Trial' }}>Drivers found</Text>
-          <View style={{ width: 28 }} />
         </View>
 
-        {/* Map overlay elements */}
         <View style={{ flex: 1 }}>
-          {/* 5mins ETA + pin */}
-          <View style={{ position: 'absolute', left: '13%', top: '12%', alignItems: 'center', gap: 4 }}>
-            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#1F2A33', fontFamily: 'Nexa Text-Trial' }}>5mins</Text>
+          <View className="absolute items-center gap-1" style={{ left: "13%", top: "12%" }}>
+            <Text className="text-sm font-bold text-[#1F2A33] font-['Nexa_Text-Trial']">
+              5mins
+            </Text>
             <MaterialCommunityIcons name="map-marker" size={32} color="#31973D" />
           </View>
 
-          {/* User location dot */}
-          <View style={{ position: 'absolute', left: '14%', top: '42%', width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(49,151,61,0.25)' }}>
-            <View style={{ width: 17, height: 17, borderRadius: 8.5, backgroundColor: '#31973D', borderWidth: 2, borderColor: '#FFFFFF' }} />
+          <View
+            className="absolute w-[34px] h-[34px] rounded-full items-center justify-center bg-[rgba(49,151,61,0.25)]"
+            style={{ left: "14%", top: "42%" }}
+          >
+            <View className="w-[17px] h-[17px] rounded-full bg-[#31973D] border-2 border-white" />
           </View>
 
-          {/* Dashed route — approximated with a rotated view */}
           <View
             style={{
-              position: 'absolute',
-              left: '18%',
-              top: '48%',
+              position: "absolute",
+              left: "18%",
+              top: "48%",
               width: 160,
               borderTopWidth: 2,
-              borderColor: '#31973D',
-              borderStyle: 'dashed',
-              transform: [{ rotate: '18deg' }],
+              borderColor: "#31973D",
+              borderStyle: "dashed",
+              transform: [{ rotate: "18deg" }],
             }}
           />
           <View
             style={{
-              position: 'absolute',
-              left: '52%',
-              top: '46%',
+              position: "absolute",
+              left: "52%",
+              top: "46%",
               width: 110,
               borderTopWidth: 2,
-              borderColor: '#31973D',
-              borderStyle: 'dashed',
-              transform: [{ rotate: '-20deg' }],
+              borderColor: "#31973D",
+              borderStyle: "dashed",
+              transform: [{ rotate: "-20deg" }],
             }}
           />
 
-          {/* Tricycle at destination */}
-          <View style={{ position: 'absolute', right: '8%', top: '52%' }}>
+          <View className="absolute" style={{ right: "8%", top: "52%" }}>
             <Text style={{ fontSize: 30 }}>🛺</Text>
           </View>
         </View>
 
-        {/* Scanning overlay */}
         {isScanning && (
-          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: 'rgba(255,255,255,0.55)' }}>
+          <View className="absolute inset-0 items-center justify-center gap-4 bg-white/55">
             <ActivityIndicator size="large" color="#31973D" />
-            <Text style={{ fontFamily: 'Poppins', fontSize: 14, color: '#3F4A3D' }}>Finding nearby drivers...</Text>
+            <Text className="text-sm text-[#3F4A3D] font-['Poppins']">
+              Finding nearby drivers...
+            </Text>
           </View>
         )}
 
-        {/* Bottom panel */}
         <Animated.View
           style={{
-            position: 'absolute',
+            position: "absolute",
             left: 0,
             right: 0,
             bottom: navHeight,
             transform: [{ translateY: panelTranslateY }],
-            backgroundColor: colors.card,
             borderRadius: 22,
             marginHorizontal: 8,
+            backgroundColor: "#FFFFFF",
             paddingTop: 12,
             paddingBottom: 16,
             gap: 16,
-            shadowColor: '#000',
+            shadowColor: "#000",
             shadowOpacity: 0.1,
             shadowRadius: 20,
             shadowOffset: { width: 0, height: -4 },
             elevation: 12,
           }}
         >
-          {/* Scrollable driver cards */}
-          <View className="border border-[#E2E8F0] rounded-2xl p-6 gap-6 bg-white w-full">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-lg font-bold text-[#1F2A33]">Nearby Drivers</Text>
-              <View className="flex-row items-center gap-2 bg-[rgba(0,107,35,0.10)] border border-[#E2E8F0] rounded-2xl px-3 py-1.5">
-                <View className="w-2 h-2 rounded-full bg-[#31973D]" />
-                <Text className="text-[13px] text-[#31973D] font-bold">Live view</Text>
-              </View>
-            </View>
-          {/* Handle */}
-          <View style={{ width: 40, height: 4, borderRadius: 999, backgroundColor: colors.border, alignSelf: 'center' }} />
+          <View className="w-10 h-1 rounded-full bg-[#E2E8F0] self-center" />
 
           {confirmed ? (
-            /* ── Driver detail card ── */
-            <View style={{ paddingHorizontal: 12, gap: 20, alignSelf: 'stretch' }}>
-              {/* Bordered card — centered column */}
-              <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 24, alignItems: 'center', gap: 24 }}>
-
-                {/* Avatar centered */}
-                <View style={{ width: 64, height: 64, backgroundColor: colors.iconBg, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 54, height: 54, borderRadius: 999, borderWidth: 2, borderColor: '#90FA96', backgroundColor: '#C7E0C9', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontSize: 14, color: '#1A1C1E' }}>{NEARBY_DRIVERS[selectedDriver].initials}</Text>
+            <View className="px-3 gap-5">
+              <View className="border border-[#E2E8F0] rounded-3xl p-6 items-center gap-6">
+                <View className="w-16 h-16 rounded-xl bg-[#F1F5F9] items-center justify-center">
+                  <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] bg-[#C7E0C9] items-center justify-center">
+                    <Text className="text-sm font-bold text-[#1A1C1E] font-['Inter']">
+                      {NEARBY_DRIVERS[selectedDriver].initials}
+                    </Text>
                   </View>
-                  <View style={{ position: 'absolute', bottom: -4, right: -4, width: 24, height: 24, borderRadius: 999, backgroundColor: '#006B23', borderWidth: 2, borderColor: colors.card, alignItems: 'center', justifyContent: 'center' }}>
+                  <View className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
                     <MaterialCommunityIcons name="check" size={10} color="#FFFFFF" />
                   </View>
                 </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={280 + 16}
-              decelerationRate="fast"
-              className="h-[149px]"
-              contentContainerStyle={{ gap: 16 }}
-            >
-              {DRIVERS.map((d) => (
-                <View
-                  key={d.id}
-                  className="w-[280px] border rounded-3xl p-4 bg-white gap-4"
-                  style={{ borderColor: d.border }}
-                >
-                  <View className="flex-row items-start gap-4">
-                    <View className="w-16 h-16 rounded-xl bg-[#F4F4F5] items-center justify-center">
-                      <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden">
-                        <Image
-                          source={avatar}
-                          style={{ width: 54, height: 54 }}
-                          resizeMode="cover"
-                        />
-                      </View>
-                      <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
-                        <MaterialCommunityIcons name="check" size={9} color="#FFF" />
-                      </View>
-                    </View>
-                    <View className="flex-1 justify-center gap-1.5">
-                      <View className="flex-row items-center gap-1.5 flex-wrap">
-                        <Text className="text-sm font-bold text-[#1A1C1E]">{d.name}</Text>
-                        {d.premium && (
-                          <View className="bg-[#FFE088] rounded-2xl px-1.5 py-0.5">
-                            <Text className="text-[10px] font-normal text-[#574500] tracking-[0.48px]">
-                              Premium
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                      <View className="flex-row items-center">
-                        <MaterialCommunityIcons name="star" size={11} color="#735C00" />
-                        <Text className="text-xs text-[#1A1C1E] font-bold tracking-[0.48px]">
-                          {' '}{d.rating}
-                        </Text>
-                        <Text className="text-xs text-[#BECAB9] font-bold"> · </Text>
-                        <Text
-                          className={`text-sm font-bold ${d.premium ? 'text-[#0D631B]' : 'text-[#64748A]'}`}
-                        >
-                          {d.code}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-                {/* Name + rating + Call/Message */}
-                <View style={{ alignItems: 'center', gap: 4, alignSelf: 'stretch' }}>
-                  <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 16, color: colors.text, textTransform: 'uppercase', letterSpacing: 1.6, textAlign: 'center' }}>
+                <View className="items-center gap-1 self-stretch">
+                  <Text className="text-base font-bold text-[#1F2A33] uppercase tracking-[1.6px] text-center font-['Nexa_Text-Trial']">
                     {NEARBY_DRIVERS[selectedDriver].name}
                   </Text>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  <View className="flex-row items-center justify-center gap-1">
                     <MaterialCommunityIcons name="star" size={13} color="#0D631B" />
-                    <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: '#0D631B' }}>
+                    <Text className="text-sm font-bold text-[#0D631B] font-['Nexa_Text-Trial']">
                       {NEARBY_DRIVERS[selectedDriver].rating} • ZB-Expert
                     </Text>
                   </View>
 
-                  {/* Call + Message */}
-                  <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center', paddingTop: 24 }}>
-                    <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface, borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
-                      <MaterialCommunityIcons name="phone-outline" size={14} color={colors.text} />
-                      <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: colors.text }}>Call</Text>
+                  <View className="flex-row gap-2 justify-center pt-6">
+                    <Pressable className="flex-row items-center gap-2 bg-[#F8FAFC] rounded-full px-4 py-2">
+                      <MaterialCommunityIcons name="phone-outline" size={14} color="#1F2A33" />
+                      <Text className="text-sm font-bold text-[#1F2A33] font-['Nexa_Text-Trial']">
+                        Call
+                      </Text>
                     </Pressable>
-                    <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface, borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
-                      <MaterialCommunityIcons name="message-outline" size={14} color={colors.text} />
-                      <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: colors.text }}>Message</Text>
+                    <Pressable className="flex-row items-center gap-2 bg-[#F8FAFC] rounded-full px-4 py-2">
+                      <MaterialCommunityIcons name="message-outline" size={14} color="#1F2A33" />
+                      <Text className="text-sm font-bold text-[#1F2A33] font-['Nexa_Text-Trial']">
+                        Message
+                      </Text>
                     </Pressable>
                   </View>
                 </View>
               </View>
 
-              {/* Cancel pickup */}
               <Pressable
-                style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 40, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-                onPress={() => navigation.navigate('PremiumHome')}
+                className="border border-[#E2E8F0] rounded-full py-3.5 flex-row items-center justify-center gap-2 bg-white"
+                onPress={() => navigation.navigate("PremiumHome")}
               >
                 <MaterialCommunityIcons name="close-circle" size={16} color="#EF4444" />
-                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '700', fontSize: 14, color: '#EF4444' }}>Cancel pickup</Text>
+                <Text className="text-sm font-bold text-[#EF4444] font-['Plus_Jakarta_Sans']">
+                  Cancel pickup
+                </Text>
               </Pressable>
             </View>
           ) : (
-            /* ── Carousel + action buttons ── */
             <>
-              {/* Section header */}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16 }}>
-                <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 18, color: colors.text }}>Nearby Drivers</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(0,107,35,0.1)', borderWidth: 1, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 }}>
-                  <View style={{ width: 8, height: 8, borderRadius: 999, backgroundColor: '#31973D' }} />
-                  <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 13, color: '#31973D' }}>Live view</Text>
+              <View className="flex-row justify-between items-center px-4">
+                <Text className="text-lg font-bold text-[#1F2A33] font-['Nexa_Text-Trial']">
+                  Nearby Drivers
+                </Text>
+                <View className="flex-row items-center gap-2 bg-[rgba(0,107,35,0.1)] border border-[#E2E8F0] rounded-2xl px-3 py-1.5">
+                  <View className="w-2 h-2 rounded-full bg-[#31973D]" />
+                  <Text className="text-[13px] font-bold text-[#31973D] font-['Nexa_Text-Trial']">
+                    Live view
+                  </Text>
                 </View>
               </View>
 
-              {/* Driver cards carousel */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -349,43 +297,27 @@ export function DriversFoundScreen({
                     driver={driver}
                     selected={selectedDriver === i}
                     onPress={() => setSelectedDriver(i)}
-                    colors={colors}
                   />
                 ))}
               </ScrollView>
 
-          {/* Action buttons */}
-          <View className="w-full gap-3">
-            <Pressable
-              className="h-12 bg-[#31973D] rounded-full items-center justify-center"
-              onPress={() => navigation.navigate('DriverArrives')}
-            >
-              <Text className="text-sm font-bold text-white">Proceed to request</Text>
-            </Pressable>
-
-            <Pressable
-              className="h-12 rounded-full border border-[#E2E8F0] flex-row items-center justify-center gap-2 bg-white"
-              onPress={() => navigation.navigate('Home')}
-            >
-              <MaterialCommunityIcons name="close-circle" size={16} color="#EF4444" />
-              <Text className="text-sm text-[#EF4444] font-bold">Cancel pickup</Text>
-            </Pressable>
-          </View>
-        </View>
-              {/* Action buttons */}
-              <View style={{ gap: 12, paddingHorizontal: 16 }}>
+              <View className="gap-3 px-4">
                 <Pressable
-                  style={{ backgroundColor: '#31973D', borderRadius: 40, paddingVertical: 14, alignItems: 'center' }}
+                  className="h-12 bg-[#31973D] rounded-full items-center justify-center"
                   onPress={() => setConfirmed(true)}
                 >
-                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '700', fontSize: 14, color: '#FFFFFF' }}>Proceed to request</Text>
+                  <Text className="text-sm font-bold text-white font-['Plus_Jakarta_Sans']">
+                    Proceed to request
+                  </Text>
                 </Pressable>
                 <Pressable
-                  style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 40, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-                  onPress={() => navigation.navigate('PremiumHome')}
+                  className="h-12 rounded-full border border-[#E2E8F0] flex-row items-center justify-center gap-2 bg-white"
+                  onPress={() => navigation.navigate("PremiumHome")}
                 >
                   <MaterialCommunityIcons name="close-circle" size={16} color="#EF4444" />
-                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '700', fontSize: 14, color: '#EF4444' }}>Cancel pickup</Text>
+                  <Text className="text-sm font-bold text-[#EF4444] font-['Plus_Jakarta_Sans']">
+                    Cancel pickup
+                  </Text>
                 </Pressable>
               </View>
             </>
@@ -396,10 +328,14 @@ export function DriversFoundScreen({
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
-          onHomePress={() => navigation.navigate('PremiumHome')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+          onHomePress={() => navigation.navigate("PremiumHome")}
+          onSavedPress={() =>
+            navigation.navigate("Details", { itemId: "saved", title: "Saved" })
+          }
+          onSettingsPress={() => navigation.navigate("Settings")}
+          onCalendarPress={() =>
+            navigation.navigate("Details", { itemId: "calendar", title: "Calendar" })
+          }
         />
       </ImageBackground>
     </SafeAreaView>
