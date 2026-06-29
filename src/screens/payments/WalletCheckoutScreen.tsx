@@ -1,238 +1,121 @@
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
-import { useTheme } from "../../context/ThemeContext";
-import CustomAppBar from "../../components/common/CustomAppBar";
+import React from 'react';
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import type { RootStackScreenProps } from '../../navigation/types';
+import { AppBottomNav } from '../../components';
 
-export function WalletCheckoutScreen({
-  navigation,
-}: RootStackScreenProps<"WalletCheckout">) {
-  const { colors } = useTheme();
-
+export function WalletCheckoutScreen({ navigation }: RootStackScreenProps<'WalletCheckout'>) {
   return (
-    <SafeAreaView
-      style={{ backgroundColor: colors.bg }}
-      className="flex-1"
-      edges={["top", "left", "right"]}
-    >
-      <View style={{ backgroundColor: colors.surface }} className="flex-1">
-        <View
-          style={{
-            backgroundColor: colors.card,
-            borderColor: colors.border,
-          }}
-          className="border border-t-0 rounded-b-[32px] pb-6"
-        >
-          <CustomAppBar
-            title="Payment"
-            navigation={() => navigation.goBack()}
-          />
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-[#F8FAFC]">
+        <View className="bg-white border border-[#E2E8F0] border-t-0 rounded-bl-[32px] rounded-br-[32px] pb-6">
+          <View className="h-12 flex-row items-center justify-between px-4">
+            <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
+              <Text className="text-[28px] text-[#1F2A33] leading-[30px]">‹</Text>
+            </Pressable>
+            <Text className="text-base font-semibold text-[#1F2A33]">Payment</Text>
+            <View className="w-6 h-6" />
+          </View>
 
-          <View className="items-center gap-2.5">
-            <View className="flex-row items-center gap-1.5 rounded-full px-2 py-1 bg-white/70">
-              <View
-                style={{ borderColor: colors.border }}
-                className="rounded-full px-3 py-1 border bg-[#006B231A]"
-              >
-                <Text className="text-[13px] text-[#31973D] leading-5">
-                  Total to pay
-                </Text>
+          <View className="items-center gap-[10px]">
+            <View className="flex-row items-center gap-[6px] rounded-full px-2 py-1" style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
+              <View className="rounded-full px-3 py-[6px] border border-[#E2E8F0]" style={{ backgroundColor: 'rgba(0,107,35,0.10)' }}>
+                <Text className="text-[13px] text-[#31973D] leading-5">Total to pay</Text>
               </View>
-
-              <Text
-                style={{ color: colors.text }}
-                className="text-[10px] font-bold tracking-wide"
-              >
-                GHS
-              </Text>
+              <Text className="text-[10px] font-bold tracking-[0.5px] text-[#1F2A33]">GHS</Text>
             </View>
 
-            <Text
-              style={{ color: colors.text }}
-              className="text-[48px] font-bold leading-[56px] tracking-[-1.2px]"
-            >
-              GHS 45.00
-            </Text>
+            <Text className="text-[48px] font-bold text-[#1F2A33] leading-[56px]" style={{ letterSpacing: -1.2 }}>GHS 45.00</Text>
 
             <View className="flex-row items-center gap-1 bg-[#31973D] rounded-full border-2 border-white px-3 py-1">
-              <MaterialCommunityIcons
-                name="trending-up"
-                size={12}
-                color="#fff"
-              />
-              <Text className="text-white text-xs font-bold">
-                2X Eco-Points
-              </Text>
+              <MaterialCommunityIcons name="trending-up" size={12} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white leading-4">2X Eco-Points</Text>
             </View>
           </View>
         </View>
 
-        <View
-          style={{ backgroundColor: colors.surface }}
-          className="flex-row items-center px-6 py-4 gap-2.5"
-        >
+        <View className="flex-row items-center px-6 py-4 gap-[10px] bg-[#F8FAFC]">
           <Pressable
-            onPress={() => navigation.navigate("Home")}
-            className="w-8 h-8 bg-red-100 rounded-xl items-center justify-center"
+            className="w-8 h-8 bg-[#FFE2E2] rounded-xl items-center justify-center"
+            onPress={() => navigation.navigate('PremiumHome')}
           >
             <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
           </Pressable>
-
           <Pressable
-            onPress={() => navigation.navigate("PaymentSuccess")}
             className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
+            onPress={() => navigation.navigate('PaymentSuccess')}
           >
-            <Text className="text-white text-sm">Pay</Text>
+            <Text className="text-sm text-white leading-5">Pay</Text>
           </Pressable>
         </View>
 
-        <View
-          style={{
-            backgroundColor: colors.card,
-            borderColor: colors.border,
-          }}
-          className="border border-b-0 rounded-t-[32px] py-4 flex-1"
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 4, paddingBottom: 120, gap: 12 }}
+          showsVerticalScrollIndicator={false}
         >
-          <ScrollView
-            className="flex-1"
-            contentContainerClassName="px-3 gap-3 rounded-t-[32px]"
-            showsVerticalScrollIndicator={false}
-          >
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderColor: colors.border,
-              }}
-              className="border rounded-3xl px-4"
-            >
-              {[
-                ["Estimated Cost", "GHS 45.00"],
-                ["Pickup - Organic Waste", "GHS 35.00"],
-                ["Service Fee", "GHS 10.00"],
-              ].map(([label, value], i) => (
-                <View
-                  key={label}
-                  style={{
-                    borderBottomColor:
-                      i !== 2 ? colors.borderLight : "transparent",
-                  }}
-                  className="flex-row justify-between items-center py-3"
-                >
-                  <Text style={{ color: colors.textSub }} className="text-base">
-                    {label}
-                  </Text>
-                  <Text
-                    style={{ color: colors.text }}
-                    className="text-base font-bold"
-                  >
-                    {value}
-                  </Text>
-                </View>
-              ))}
+          <View className="border border-[#E2E8F0] rounded-3xl px-4 bg-white">
+            <View className="flex-row justify-between items-center py-[14px] border-b border-b-[#F1F5F9]">
+              <Text className="text-base text-[#64748A] leading-6">EStimated Cost</Text>
+              <Text className="text-base text-[#1F2A33] font-bold leading-6">GHS 45.00</Text>
             </View>
+            <View className="flex-row justify-between items-center py-[14px] border-b border-b-[#F1F5F9]">
+              <Text className="text-base text-[#64748A] leading-6">Pickup - Organic Waste</Text>
+              <Text className="text-base text-[#1F2A33] font-bold leading-6">GHS 35.00</Text>
+            </View>
+            <View className="flex-row justify-between items-center py-[14px]">
+              <Text className="text-base text-[#64748A] leading-6">Service Fee</Text>
+              <Text className="text-base text-[#1F2A33] font-bold leading-6">GHS 10.00</Text>
+            </View>
+          </View>
 
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderColor: colors.border,
-              }}
-              className="border rounded-3xl p-4 gap-4"
-            >
-              <View
-                style={{
-                  borderColor: colors.border,
-                  backgroundColor: colors.card,
-                }}
-                className="border rounded-3xl p-5 flex-row justify-between items-center"
-              >
-                <View className="gap-1">
-                  <Text
-                    style={{ color: colors.text }}
-                    className="text-base font-medium"
-                  >
-                    Zubba Wallet Balance
-                  </Text>
-                  <Text style={{ color: colors.textSub }} className="text-base">
-                    GHS 124.50
-                  </Text>
-                </View>
-
-                <View className="flex-row items-center gap-2">
-                  <Text className="text-[#31973D] font-bold">READY</Text>
-                  <View className="w-2 h-2 rounded-full bg-[#31973D]" />
-                </View>
+          <View className="border border-[#E2E8F0] rounded-3xl p-4 gap-4 bg-white">
+            <View className="border border-[#E2E8F0] rounded-3xl p-5 flex-row justify-between items-center bg-white">
+              <View className="gap-1">
+                <Text className="text-base font-medium text-[#1F2A33] leading-6">Zubba Wallet Balance</Text>
+                <Text className="text-base font-medium text-[#64748A] leading-6">GHS 124.50</Text>
               </View>
-
-              <View
-                style={{
-                  borderColor: colors.border,
-                  backgroundColor: colors.card,
-                }}
-                className="border rounded-3xl p-5 gap-3"
-              >
-                <View className="flex-row justify-between">
-                  <Text style={{ color: colors.textSub }} className="text-base">
-                    Base Points
-                  </Text>
-                  <Text style={{ color: colors.text }} className="text-base">
-                    45 XP
-                  </Text>
-                </View>
-
-                <View className="flex-row justify-between items-center">
-                  <View className="flex-row items-center gap-1">
-                    <Text
-                      style={{ color: colors.textSub }}
-                      className="text-base"
-                    >
-                      Premium Multiplier
-                    </Text>
-                    <MaterialCommunityIcons
-                      name="lightning-bolt"
-                      size={10}
-                      color={colors.text}
-                    />
-                  </View>
-                  <Text style={{ color: colors.text }} className="text-base">
-                    x 2
-                  </Text>
-                </View>
-
-                <View className="flex-row justify-between">
-                  <Text style={{ color: colors.text }} className="text-base">
-                    Total Reward
-                  </Text>
-                  <Text className="text-[#31973D] text-base">
-                    90 Eco-Points
-                  </Text>
-                </View>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-base font-bold text-[#31973D] leading-6">READY</Text>
+                <View className="w-2 h-2 rounded-full bg-[#31973D]" />
               </View>
             </View>
-          </ScrollView>
-        </View>
 
-        {/* <AppBottomNav
+            <View className="border border-[#E2E8F0] rounded-3xl p-5 gap-3 bg-white">
+              <View className="flex-row justify-between items-center">
+                <Text className="text-base text-[#64748A] leading-6">Base Points</Text>
+                <Text className="text-base text-[#1F2A33] leading-6">45 XP</Text>
+              </View>
+              <View className="flex-row justify-between items-center">
+                <View className="flex-row items-center gap-1">
+                  <Text className="text-base text-[#64748A] leading-6">Premium Multiplier</Text>
+                  <MaterialCommunityIcons name="lightning-bolt" size={10} color="#1F2A33" />
+                </View>
+                <Text className="text-base text-[#1F2A33] leading-6">x 2</Text>
+              </View>
+              <View className="flex-row justify-between items-center">
+                <Text className="text-base text-[#1F2A33] leading-6">Total Reward</Text>
+                <Text className="text-base text-[#31973D] leading-6">90 Eco-Points</Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+
+        <AppBottomNav
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", {
-              itemId: "saved",
-              title: "Saved",
-            })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={() =>
-            navigation.navigate("Details", {
-              itemId: "calendar",
-              title: "Calendar",
-            })
-          }
-        /> */}
+          onHomePress={() => navigation.navigate('PremiumHome')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+        />
       </View>
     </SafeAreaView>
   );
