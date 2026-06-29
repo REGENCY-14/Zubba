@@ -15,25 +15,19 @@ export function DriverArrivesScreen({
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
-      <View className="flex-1" style={{ backgroundColor: colors.surface }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <View style={{ flex: 1, backgroundColor: colors.surface }}>
         <CustomAppBar title="Driver Arrives" navigation={navigation} />
 
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ padding: 16, paddingTop: 0, gap: 16 }}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 16 }}
           showsVerticalScrollIndicator={false}
         >
-          <View
-            className="w-full h-56 gap-6 border rounded-3xl items-center justify-center p-6"
-            style={{ borderColor: colors.border, backgroundColor: colors.card }}
-          >
+          <View style={{ width: '100%', height: 224, gap: 24, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card, padding: 24, alignItems: 'center', justifyContent: 'center' }}>
             <View>
-              <View
-                className="w-16 h-16 rounded-xl items-center justify-center"
-                style={{ backgroundColor: colors.iconBg }}
-              >
-                <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden">
+              <View style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: colors.iconBg, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', overflow: 'hidden' }}>
                   <Image
                     source={avatar}
                     style={{ width: 54, height: 54 }}
@@ -43,98 +37,83 @@ export function DriverArrivesScreen({
               </View>
             </View>
 
-            <View className="gap-2 items-center">
-              <Text className="mt-3 text-sm font-bold text-center uppercase" style={{ color: colors.text }}>
+            <View style={{ gap: 8, alignItems: 'center' }}>
+              <Text style={{ marginTop: 12, fontSize: 14, fontWeight: 'bold', color: colors.text, textTransform: 'uppercase' }}>
                 MARCUS CHEN
               </Text>
-
-              <View className="flex-row items-center">
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <MaterialCommunityIcons name="star" size={14} color="#0D631B" />
-                <Text className="ml-1 text-sm text-[#0D631B]">
+                <Text style={{ fontSize: 14, color: '#0D631B', marginLeft: 4 }}>
                   4.9 • ZB-0248
                 </Text>
               </View>
-
-              <View className="flex-row items-center gap-6">
-                <View className="flex-row items-center gap-2">
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <MaterialCommunityIcons
                     name="phone-outline"
                     size={16}
                     color={colors.text}
                   />
-                  <Text className="ml-1 text-sm" style={{ color: colors.text }}>
-                    Call
-                  </Text>
+                  <Text style={{ marginLeft: 4, color: colors.text, fontSize: 14 }}>Call</Text>
                 </View>
-
-                <View className="flex-row items-center gap-2">
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <MaterialCommunityIcons
                     name="message-outline"
                     size={16}
                     color={colors.text}
                   />
-                  <Text className="ml-1 text-sm" style={{ color: colors.text }}>
-                    Message
-                  </Text>
+                  <Text style={{ marginLeft: 4, color: colors.text, fontSize: 14 }}>Message</Text>
                 </View>
               </View>
             </View>
           </View>
 
-          <View className="bg-[#31973D] rounded-3xl p-6 items-center gap-4">
-            <Text className="text-[10px] text-white tracking-[4px] uppercase">
+          <View style={{ backgroundColor: '#31973D', borderRadius: 24, padding: 24, alignItems: 'center', gap: 16 }}>
+            <Text style={{ fontSize: 10, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 4 }}>
               COLLECTION CODE
             </Text>
 
-            <View className="flex-row justify-center gap-2 w-full">
+            <View style={{ flexDirection: 'row', gap: 8, width: '100%', justifyContent: 'center' }}>
               {["8", "2", "4", "9"].map((d, i) => (
                 <View
                   key={i}
-                  className="w-14 h-14 items-center justify-center rounded-xl bg-white/20"
+                  style={{ width: 56, height: 56, paddingBottom: 4, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderRadius: 12 }}
                 >
-                  <Text className="text-white font-bold text-4xl">
+                  <Text
+                    style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 36 }}
+                  >
                     {d}
                   </Text>
                 </View>
               ))}
             </View>
 
-            <Text className="text-white text-xs text-center opacity-90">
+            <Text style={{ color: '#FFFFFF', fontSize: 12, textAlign: 'center', opacity: 0.9 }}>
               Show this to Marcus to verify
             </Text>
           </View>
 
-          <View
-            className="flex-row items-center justify-between p-4 rounded-3xl border"
-            style={{ borderColor: colors.border, backgroundColor: colors.card }}
-          >
-            <View className="flex-1">
-              <Text className="text-sm font-semibold" style={{ color: colors.text }}>
+          <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
                 Confirm Collection
               </Text>
-              <Text className="text-xs mt-1" style={{ color: colors.textSub }}>
+              <Text style={{ fontSize: 12, color: colors.textSub, marginTop: 4 }}>
                 Please verify the materials are loaded
               </Text>
             </View>
-
-            <View className="flex-row items-center px-3 py-1 rounded-full bg-[#31973D]/10 border"
-              style={{ borderColor: colors.border }}
-            >
-              <View className="w-2 h-2 rounded-full bg-[#2E7D32] mr-2" />
-              <Text className="text-[#31973D] text-[13px]">
-                Driver Ready
-              </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#2E7D32', marginRight: 8 }} />
+              <Text style={{ fontSize: 13, color: '#31973D' }}>Driver Ready</Text>
             </View>
           </View>
 
-          <View className="gap-4">
+          <View style={{ gap: 16 }}>
             <Pressable
               onPress={() => navigation.navigate("Payment")}
-              className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+              style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Text className="text-white text-sm">
-                Proceed to payment
-              </Text>
+              <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Proceed to payment</Text>
             </Pressable>
 
             <Pressable
@@ -144,30 +123,21 @@ export function DriverArrivesScreen({
                   title: "Issue",
                 })
               }
-              className="h-12 items-center justify-center rounded-full"
+              style={{ height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 999 }}
             >
-              <Text style={{ color: colors.text }} className="text-sm">
-                Report an Issue
-              </Text>
+              <Text style={{ color: colors.text, fontSize: 14 }}>Report an Issue</Text>
             </Pressable>
           </View>
         </ScrollView>
 
-        {/* <AppBottomNav
+        <AppBottomNav
           activeTab="home"
           paddingBottom={14}
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "saved", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={() =>
-            navigation.navigate("Details", {
-              itemId: "calendar",
-              title: "Calendar",
-            })
-          }
-        /> */}
+          onHomePress={() => navigation.navigate('Home')}
+          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+        />
       </View>
     </SafeAreaView>
   );

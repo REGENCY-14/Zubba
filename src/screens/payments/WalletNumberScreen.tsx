@@ -100,7 +100,7 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
               style={{ width: '100%', height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center', marginTop: 8 }}
               onPress={() => {
                 setShowSuccess(false);
-                navigation.navigate('Home');
+                navigation.navigate('PremiumHome');
               }}
             >
               <Text style={{ fontSize: 14, fontWeight: '500', color: '#FFFFFF' }}>Proceed to Premium</Text>
