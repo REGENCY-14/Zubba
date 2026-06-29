@@ -59,9 +59,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
       <ImageBackground source={mapImage} className="flex-1 w-full h-full p-10">
+        {/* Top bar */}
         <View
           style={{
             position: "absolute",
+            width: "100%",
             top: 0,
             left: 0,
             right: 0,
@@ -171,6 +173,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 </Pressable>
               </View>
 
+              {/* Search bar */}
               <View
                 style={{
                   height: 54,
@@ -248,7 +251,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   </Text>
                 </View>
                 <View className="rounded-full bg-[#148732] py-0.5 px-2">
-                  <Text className="text-sm text-white relative">New</Text>
+                  <Text className="text-sm text-white">New</Text>
                 </View>
               </View>
               <StatCardsRow
@@ -257,6 +260,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               />
             </View>
           ) : (
+            /* Non-premium search bar */
             <View
               style={{
                 height: 54,
@@ -268,7 +272,6 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 8,
-                marginBottom: 12
               }}
             >
               <Pressable
@@ -311,8 +314,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           )}
         </View>
 
+        {/* Bottom action cards */}
         <View className="absolute bottom-[102px] left-2 right-2 p-4">
-          <View className="space-y-3 gap-3">
+          <View className="space-y-3">
+            {/* Tricycle row */}
             <View
               style={{
                 flexDirection: "row",
@@ -349,6 +354,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               />
             </View>
 
+            {/* Premium / future pickup row */}
             <View
               style={{
                 flexDirection: "row",
@@ -361,7 +367,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 padding: 12,
               }}
             >
-              <View className="w-10 h-10 bg-[#EFF5FF] rounded-full items-center justify-center">
+              <View className="w-10 h-10 bg-[##EFF5FF] rounded-full items-center justify-center">
                 <Image
                   source={isPremium ? futurePlan : premium}
                   style={{ width: 20, height: 20, transform: [{ scaleX: -1 }] }}
