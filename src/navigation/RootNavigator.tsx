@@ -5,6 +5,11 @@ import { SplashScreen } from '../screens/onboarding/SplashScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { EmailSignUpScreen } from '../screens/auth/EmailSignUpScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
+import { PremiumHomeScreen } from '../screens/home/PremiumHomeScreen';
+import { ZubbaWalletScreen } from '../screens/wallet/ZubbaWalletScreen';
+import { TransactionsScreen } from '../screens/wallet/TransactionsScreen';
+import { CreditAccountScreen } from '../screens/wallet/CreditAccountScreen';
+import { WithdrawScreen } from '../screens/wallet/WithdrawScreen';
 import { ScanningScreen } from '../screens/pickup/ScanningScreen';
 import { DriverArrivesScreen } from '../screens/pickup/DriverArrivesScreen';
 import { PaymentScreen } from '../screens/payments/PaymentScreen';
@@ -72,6 +77,11 @@ export function RootNavigator() {
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ExistingUserNotification" component={ExistingUserNotificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PremiumHome" component={PremiumHomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ZubbaWallet" component={ZubbaWalletScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="CreditAccount" component={CreditAccountScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Withdraw" component={WithdrawScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Scanning" component={ScanningScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriverArrives" component={DriverArrivesScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />

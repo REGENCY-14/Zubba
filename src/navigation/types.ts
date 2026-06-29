@@ -13,6 +13,11 @@ export type RootStackParamList = {
   KycCollection: { phone?: string; email?: string } | undefined;
   TermsAcceptance: { phone?: string; email?: string; firstName?: string; lastName?: string } | undefined;
   Home: undefined;
+  PremiumHome: undefined;
+  ZubbaWallet: { credited?: boolean; debited?: boolean } | undefined;
+  Withdraw: undefined;
+  Transactions: undefined;
+  CreditAccount: undefined;
   Scanning: undefined;
   DriverArrives: undefined;
   Payment: undefined;

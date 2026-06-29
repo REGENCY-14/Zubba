@@ -11,6 +11,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { upgradeToPremium } from '../../slices/customer/customerSlice';
 
 const PLAN_TOTALS = ['800/year', '50/month', '550/year'] as const;
 
@@ -41,6 +43,7 @@ function Toggle({ value, onValueChange }: ToggleProps) {
 
 export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCard'>) {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
   const planIndex = route.params?.planIndex ?? 1;
   const [cardName, setCardName] = React.useState('');
   const [cardNumber, setCardNumber] = React.useState('');
@@ -199,8 +202,9 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
               <Pressable
                 className="h-12 bg-[#31973D] rounded-full items-center justify-center"
                 onPress={() => {
+                  dispatch(upgradeToPremium());
                   setShowSuccess(false);
-                  navigation.navigate('Home');
+                  navigation.navigate('PremiumHome');
                 }}
               >
                 <Text className="text-sm text-white leading-5">Proceed to Premium</Text>
@@ -208,8 +212,9 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
               <Pressable
                 style={{ height: 48, backgroundColor: colors.surface, borderRadius: 24, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
+                  dispatch(upgradeToPremium());
                   setShowSuccess(false);
-                  navigation.navigate('Home');
+                  navigation.navigate('PremiumHome');
                 }}
               >
                 <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, lineHeight: 20 }}>Set Package expiry alert</Text>
