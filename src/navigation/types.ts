@@ -15,6 +15,7 @@ export type RootStackParamList = {
   Home: undefined;
   Profile: { updatedAt?: number; newPhone?: string; newEmail?: string; newFullName?: string } | undefined;
   UpdateName: undefined;
+  Schedule: undefined;
   PremiumHome: undefined;
   ZubbaWallet: { credited?: boolean; debited?: boolean } | undefined;
   Withdraw: undefined;

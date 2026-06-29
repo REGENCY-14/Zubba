@@ -311,9 +311,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
             navigation.navigate("Details", { itemId: "save", title: "Saved" })
           }
           onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={() =>
-            navigation.navigate("Details", { itemId: "calendar", title: "Calendar" })
-          }
+          onCalendarPress={() => navigation.navigate("Schedule")}
         />
 
         <PremiumSidebar
