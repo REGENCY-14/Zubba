@@ -3,7 +3,6 @@ import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { AppBottomNav } from '../../components';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -61,7 +60,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           <View style={{ width: 24, height: 24 }} />
         </View>
 
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 128, gap: 24 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40, gap: 24 }} showsVerticalScrollIndicator={false}>
           <View style={{ alignItems: 'center', backgroundColor: colors.card, borderRadius: 16, borderWidth: 1, borderColor: colors.borderLight, paddingHorizontal: 18, paddingVertical: 24, gap: 16 }}>
             <View
               style={{ width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(65, 158, 106, 0.1)' }}
@@ -155,13 +154,6 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           ) : null}
         </ScrollView>
 
-        <AppBottomNav
-          activeTab="settings"
-          paddingBottom={0}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-        />
       </View>
     </SafeAreaView>
   );

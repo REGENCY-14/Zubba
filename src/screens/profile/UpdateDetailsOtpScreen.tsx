@@ -93,7 +93,11 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
                     phone: kind === 'phone' ? contact : undefined,
                     email: kind === 'email' ? email : undefined,
                   })
-                : navigation.navigate('UpdateDetailsSuccess')
+                : navigation.navigate('Profile', {
+                    updatedAt: Date.now(),
+                    newPhone: kind === 'phone' ? contact : undefined,
+                    newEmail: kind === 'email' ? email : undefined,
+                  })
             }
           >
             <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20 }}>Verify</Text>

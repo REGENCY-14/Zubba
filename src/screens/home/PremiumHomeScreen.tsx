@@ -321,7 +321,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
           onClose={() => setSidebarOpen(false)}
           activeKey="profile"
           menuItems={[
-            { key: "profile",      label: "Profile",       icon: "account-outline",  onPress: () => navigation.navigate("Settings") },
+            { key: "profile",      label: "Profile",       icon: "account-outline",  onPress: () => navigation.navigate("Profile") },
             { key: "wallet",       label: "Zubba Wallet",  icon: "wallet-outline",   onPress: () => navigation.navigate("ZubbaWallet") },
             { key: "subscription", label: "Subscription",  icon: "crown-outline",    onPress: () => navigation.navigate("ChoosePlan") },
             { key: "settings",     label: "Settings",      icon: "cog-outline",      onPress: () => navigation.navigate("Settings") },
