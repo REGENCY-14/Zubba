@@ -18,12 +18,14 @@ import { PaymentVerificationScreen } from '../screens/payments/PaymentVerificati
 import { AuthorizePaymentScreen } from '../screens/payments/AuthorizePaymentScreen';
 import { PaymentSuccessScreen } from '../screens/payments/PaymentSuccessScreen';
 import { SettingsScreen } from '../screens/profile/SettingsScreen';
+import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { TermsAndConditionsScreen } from '../screens/onboarding/TermsAndConditionsScreen';
 import { AboutUsScreen } from '../screens/support/AboutUsScreen';
 import { NotificationsScreen } from '../screens/support/NotificationsScreen';
 import { HelpCenterScreen } from '../screens/support/HelpCenterScreen';
 import { ActiveSessionScreen } from '../screens/pickup/ActiveSessionScreen';
 import { UpdateDetailsScreen } from '../screens/profile/UpdateDetailsScreen';
+import { UpdateNameScreen } from '../screens/profile/UpdateNameScreen';
 import { UpdateDetailsOtpScreen } from '../screens/profile/UpdateDetailsOtpScreen';
 import { UpdateDetailsSuccessScreen } from '../screens/profile/UpdateDetailsSuccessScreen';
 import { DetailsScreen } from '../screens/home/DetailsScreen';
@@ -92,12 +94,14 @@ export function RootNavigator() {
       <Stack.Screen name="ThankYou" component={ThankYouScreen} options={{ headerShown: false }} />
       <Stack.Screen name="RateRide" component={RateRideScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ActiveSession" component={ActiveSessionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UpdateName" component={UpdateNameScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetailsOtp" component={UpdateDetailsOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetailsSuccess" component={UpdateDetailsSuccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Verify" component={VerifyOtpScreen} options={{ headerShown: false }} />
