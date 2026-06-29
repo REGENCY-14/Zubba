@@ -23,9 +23,12 @@ const customerSlice = createSlice({
         },
         clearCustomer: (state) => {
             state = initialState
-        }
+        },
+        upgradeToPremium: (state) => {
+            state.is_premium = true;
+        },
     }
 })
 
-export const {} = customerSlice.actions
+export const { upgradeToPremium } = customerSlice.actions
 export const customerReducer = customerSlice.reducer
