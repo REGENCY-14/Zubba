@@ -116,7 +116,7 @@ export function AppBottomNav({
               <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.textSub} />
             )
           }
-          label="Calendar"
+          label="Schedule"
         />
 
         <NavItem
