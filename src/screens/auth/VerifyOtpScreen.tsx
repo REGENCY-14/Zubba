@@ -1,12 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-  Modal,
+  KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,16 +10,15 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
 import { authStorage } from "../../utils/authStorage";
 import { OTPInput } from "../../components/common/OTPInput";
+import { useTheme } from "../../context/ThemeContext";
 
-export function VerifyOtpScreen({
-  route,
-  navigation,
-}: RootStackScreenProps<"Verify">) {
+export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";
   const email = route.params?.email ?? "";
   const verifyOtpMutation = useVerifyOtp();
   const resendOtpMutation = useResendOtp();
   const dispatch = useAppDispatch();
+  const { colors } = useTheme();
 
   const contact = email || phone;
   const deliveryLabel = email ? "email" : "SMS";
@@ -36,46 +29,28 @@ export function VerifyOtpScreen({
   const [showResendModal, setShowResendModal] = useState(false);
 
   useEffect(() => {
-    if (resendTimer === 0) {
-      setCanResend(true);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setResendTimer((prev) => prev - 1);
-    }, 1000);
-
+    if (resendTimer === 0) { setCanResend(true); return; }
+    const interval = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  const isValid = useMemo(
-    () => codeDigits.every((d) => d.length === 1),
-    [codeDigits],
-  );
-
-  const contactValue = contact;
+  const isValid = useMemo(() => codeDigits.every((d) => d.length === 1), [codeDigits]);
 
   const handleVerify = async (otp: string) => {
     try {
       const res = await verifyOtpMutation.mutateAsync({
         authKey: email ? "email" : "phone",
-        authValue: contactValue,
+        authValue: contact,
         otp,
         purpose: "login",
       });
-
       const { user, accessToken, refreshToken } = res.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
-
       if (!user.email || !user.phone) {
-        navigation.replace("NewUserOnboarding", {
-          ...(email ? { email: contactValue } : { phone: contactValue }),
-        });
+        navigation.replace("NewUserOnboarding", { ...(email ? { email: contact } : { phone: contact }) });
       } else {
-        navigation.replace("ExistingUserNotification", {
-          ...(email ? { email: contactValue } : { phone: contactValue }),
-        });
+        navigation.replace("ExistingUserNotification", { ...(email ? { email: contact } : { phone: contact }) });
       }
     } catch (err) {
       console.log("OTP verify failed:", err);
@@ -85,12 +60,7 @@ export function VerifyOtpScreen({
 
   const handleResend = async () => {
     try {
-      await resendOtpMutation.mutateAsync({
-        authKey: email ? "email" : "phone",
-        authValue: contactValue,
-        purpose: "email_verification",
-      });
-
+      await resendOtpMutation.mutateAsync({ authKey: email ? "email" : "phone", authValue: contact, purpose: "email_verification" });
       setShowResendModal(false);
       setCodeDigits(["", "", "", ""]);
       setResendTimer(60);
@@ -101,112 +71,83 @@ export function VerifyOtpScreen({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
-      >
-        <ScrollView
-          className="flex-1 p-5"
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1, padding: 20 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {email ? (
-            <View className="gap-2 mb-3">
-              <Text className="text-[18px] text-[#1F2A33]">
-                Enter the 4-digits code sent to you at:
-              </Text>
-              <Text className="text-base text-[#1F2A33]">{contact}</Text>
+            <View style={{ gap: 8, marginBottom: 12 }}>
+              <Text style={{ fontSize: 18, color: colors.text }}>Enter the 4-digits code sent to you at:</Text>
+              <Text style={{ fontSize: 16, color: colors.text }}>{contact}</Text>
             </View>
           ) : (
-            <View className="gap-1">
-              <Text className="text-[18px] text-[#1F2A33]">
+            <View style={{ gap: 4 }}>
+              <Text style={{ fontSize: 18, color: colors.text }}>
                 Enter the 4-digits code sent via {deliveryLabel} at {contact}
               </Text>
-
               <Pressable onPress={() => navigation.navigate("SignUp")}>
-                <Text className="text-[13px] underline text-[#1F2A33]">
-                  changed my mobile number?
-                </Text>
+                <Text style={{ fontSize: 13, textDecorationLine: "underline", color: colors.text }}>changed my mobile number?</Text>
               </Pressable>
             </View>
           )}
 
-          <View className="mt-5">
-            <OTPInput
-              value={codeDigits}
-              onChange={setCodeDigits}
-              length={4}
-              onComplete={(otp) => {
-                handleVerify(otp);
-              }}
-            />
+          <View style={{ marginTop: 20 }}>
+            <OTPInput value={codeDigits} onChange={setCodeDigits} length={4} onComplete={handleVerify} />
           </View>
 
           {email && (
-            <Text className="text-xs underline text-[#1F2A33] mt-4">
+            <Text style={{ fontSize: 12, textDecorationLine: "underline", color: colors.text, marginTop: 16 }}>
               Tip: Be sure to check your inbox and spam folders
             </Text>
           )}
 
           <Pressable
             disabled={!isValid}
-            className={[
-              "h-12 rounded-full items-center justify-center mt-5",
-              isValid ? "bg-[#34A853]" : "bg-[#34A85380]",
-            ].join(" ")}
+            style={{ height: 48, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginTop: 20, backgroundColor: isValid ? "#34A853" : "rgba(52,168,83,0.5)" }}
             onPress={() => handleVerify(codeDigits.join(""))}
           >
-            <Text className="text-white text-sm">Verify</Text>
+            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Verify</Text>
           </Pressable>
 
-          <Text className="text-xs text-[#1F2A33] mt-2">
-            {canResend
-              ? `You can resend OTP now via ${deliveryLabel}`
-              : `Resend OTP in ${resendTimer}s via ${deliveryLabel}`}
+          <Text style={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
+            {canResend ? `You can resend OTP now via ${deliveryLabel}` : `Resend OTP in ${resendTimer}s via ${deliveryLabel}`}
           </Text>
 
-          <View className="gap-2 mt-3">
+          <View style={{ gap: 8, marginTop: 12 }}>
             <Pressable
               disabled={!canResend}
               onPress={() => setShowResendModal(true)}
-              className={[
-                "border border-[#E2E8F0] rounded-full px-7 py-2 self-start",
-                !canResend ? "opacity-40" : "",
-              ].join(" ")}
+              style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 28, paddingVertical: 8, alignSelf: "flex-start", opacity: canResend ? 1 : 0.4 }}
             >
-              <Text className="text-xs font-medium text-[#1F2A33]">Resend</Text>
+              <Text style={{ fontSize: 12, fontWeight: "500", color: colors.text }}>Resend</Text>
             </Pressable>
 
-            <Pressable className="border border-[#E2E8F0] rounded-full px-7 py-2 self-start">
-              <Text className="text-xs font-medium text-[#1F2A33]">
-                {email
-                  ? "Send code to another email"
-                  : "Send code via WhatsApp"}
+            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 28, paddingVertical: 8, alignSelf: "flex-start" }}>
+              <Text style={{ fontSize: 12, fontWeight: "500", color: colors.text }}>
+                {email ? "Send code to another email" : "Send code via WhatsApp"}
               </Text>
             </Pressable>
           </View>
 
           <Modal visible={showResendModal} transparent animationType="fade">
-            <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
-              <View className="w-[94%] bg-white rounded-2xl p-6 mb-10 items-center">
-                <Text className="text-center text-[18px] font-medium mb-3">
+            <View style={{ flex: 1, backgroundColor: "rgba(31,42,51,0.3)", justifyContent: "flex-end", alignItems: "center" }}>
+              <View style={{ width: "94%", backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: "center" }}>
+                <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "500", marginBottom: 12, color: colors.text }}>
                   Resend code to: {contact}
                 </Text>
 
-                <View className="w-full gap-3">
+                <View style={{ width: "100%", gap: 12 }}>
                   <Pressable
                     onPress={handleResend}
-                    className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+                    style={{ height: 48, backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
                   >
-                    <Text className="text-white text-sm">Resend</Text>
+                    <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Resend</Text>
                   </Pressable>
 
                   <Pressable
                     onPress={() => setShowResendModal(false)}
-                    className="h-12 border border-[#E2E8F0] rounded-full items-center justify-center"
+                    style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
                   >
-                    <Text className="text-[#1F2A33] text-sm">Cancel</Text>
+                    <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
                   </Pressable>
                 </View>
               </View>

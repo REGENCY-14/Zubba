@@ -177,8 +177,8 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
             </View>
           </View>
 
-          {/* Support line */}
-          <View style={{ backgroundColor: 'rgba(255,224,136,0.29)', borderRadius: 24, borderWidth: 1, borderColor: '#FFE088', padding: 16 }}>
+          {/* Support line — premium only */}
+          {isPremium && <View style={{ backgroundColor: 'rgba(255,224,136,0.29)', borderRadius: 24, borderWidth: 1, borderColor: '#FFE088', padding: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
                 <View style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
@@ -193,7 +193,7 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
                 <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: 14, lineHeight: 20, color: '#1F2A33' }}>Call now</Text>
               </Pressable>
             </View>
-          </View>
+          </View>}
 
           {/* Support & Legal */}
           <SectionCard title="Support & Legal">

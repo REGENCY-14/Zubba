@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
+import { useTheme } from "../../context/ThemeContext";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
@@ -22,6 +23,7 @@ export function FindAccountScreen({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { colors } = useTheme();
 
   const isPhoneValid = useMemo(
     () => phoneNumber.trim().length > 0,
@@ -61,15 +63,15 @@ export function FindAccountScreen({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <View className="flex-1 p-5 pt-10 pb-6 justify-between">
         <View className="gap-4">
-          <Text className="text-[15px] text-[#1F2A33]">
+          <Text style={{ fontSize: 15, color: colors.text }}>
             What's your phone number
           </Text>
 
           <View className="flex-row items-center gap-2 h-12">
-            <View className="flex-row rounded-full items-center justify-between gap-4 h-12 p-[10px] bg-white border border-[#F2F2F2]">
+            <View style={{ flexDirection: 'row', borderRadius: 9999, alignItems: 'center', justifyContent: 'space-between', gap: 16, height: 48, padding: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
               <View className="rounded-full overflow-hidden">
                 <Image
                   source={ghanaFlag}
@@ -77,20 +79,14 @@ export function FindAccountScreen({
                   resizeMode="contain"
                 />
               </View>
-              <MaterialCommunityIcons name="chevron-down" size={24} color="#000000" />
+              <MaterialCommunityIcons name="chevron-down" size={24} color={colors.iconColor} />
             </View>
 
             <View
-              className={[
-                "flex-1 h-12 justify-center px-4 rounded-full border",
-                isFocused || isPhoneValid ? "border-black" : "border-black/5",
-              ].join(" ")}
+              style={{ flex: 1, height: 48, justifyContent: 'center', paddingHorizontal: 16, borderRadius: 9999, borderWidth: 1, backgroundColor: colors.card, borderColor: isFocused || isPhoneValid ? colors.text : colors.border }}
             >
               <TextInput
-                className={[
-                  "text-[15px] outline-none",
-                  isPhoneValid ? "text-[#1F2A33]" : "text-[#707579]",
-                ].join(" ")}
+                style={{ fontSize: 15, color: isPhoneValid ? colors.text : colors.textMuted }}
                 placeholder="phone number"
                 placeholderTextColor="#707579"
                 keyboardType="phone-pad"
@@ -103,10 +99,10 @@ export function FindAccountScreen({
           </View>
 
           <Pressable
-            className="self-start px-5 h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
+            style={{ alignSelf: 'flex-start', paddingHorizontal: 20, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
             onPress={() => navigation.navigate("FindAccountEmail")}
           >
-            <Text className="text-xs font-medium text-[#1F2A33]">
+            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
               Find account with email
             </Text>
           </Pressable>
@@ -117,7 +113,7 @@ export function FindAccountScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <MaterialCommunityIcons color="#000000" name="arrow-left" size={24} />
+            <MaterialCommunityIcons color={colors.text} name="arrow-left" size={24} />
           </Pressable>
 
           <Pressable

@@ -1,18 +1,13 @@
 import { useState } from "react";
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
+  Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useRegister } from "../../slices/auth/auth.hooks";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "../../context/ThemeContext";
 
 const googleIcon = require("../../../assets/Google icon.png");
 const ghanaFlag = require("../../../assets/ghana-flag.png");
@@ -20,6 +15,7 @@ const ghanaFlag = require("../../../assets/ghana-flag.png");
 export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const registerMutation = useRegister();
+  const { colors } = useTheme();
 
   const digitsOnly = phoneNumber.replace(/\D/g, "");
   const canContinue = digitsOnly.length >= 6;
@@ -31,139 +27,96 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
         authValue: phoneNumber,
         role: "customer",
       });
-      console.log(res);
       const isExisting = res.message.includes("Welcome back");
-      navigation.navigate("Verify", {
-        phone: phoneNumber,
-        userExists: isExisting,
-      });
-
-      console.log("Register success:", res);
+      navigation.navigate("Verify", { phone: phoneNumber, userExists: isExisting });
     } catch (err) {
       console.log("Register error:", err);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
-      >
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View className="flex-1 px-[20px] py-[20px]">
-            <View className="flex-1">
-              <Text className="text-[15px] font-normal text-[#1F2A33] mb-2">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <View style={{ flex: 1, paddingHorizontal: 20, paddingVertical: 20 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, fontWeight: "400", color: colors.text, marginBottom: 8 }}>
                 What's your phone number
               </Text>
 
-              <View className="flex-row items-center gap-2 mb-4">
-                <View className="flex-row rounded-full items-center justify-between gap-4 h-12 p-[10px] bg-white border border-[#F2F2F2]">
-                  <View className="rounded-full overflow-hidden">
-                    <Image
-                      source={ghanaFlag}
-                      style={{ width: 28, height: 20 }}
-                      resizeMode="contain"
-                    />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                <View style={{ flexDirection: "row", borderRadius: 9999, alignItems: "center", justifyContent: "space-between", gap: 16, height: 48, padding: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
+                  <View style={{ borderRadius: 9999, overflow: "hidden" }}>
+                    <Image source={ghanaFlag} style={{ width: 28, height: 20 }} resizeMode="contain" />
                   </View>
-                  <MaterialCommunityIcons name="chevron-down" size={24} color="#000000" />
+                  <MaterialCommunityIcons name="chevron-down" size={24} color={colors.iconColor} />
                 </View>
 
                 <TextInput
-                  className="flex-1 h-12 px-4 border border-[#F2F2F2] rounded-full bg-white text-[15px] text-[#707579]"
+                  style={{ flex: 1, height: 48, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, backgroundColor: colors.card, fontSize: 15, color: colors.text }}
                   placeholder="phone number"
-                  placeholderTextColor="#A8A8A8"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="phone-pad"
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
                 />
               </View>
 
-              {!canContinue && phoneNumber.length > 0 ? (
-                <Text className="text-red-600 text-xs mb-2 px-1">
+              {!canContinue && phoneNumber.length > 0 && (
+                <Text style={{ color: "#DC2626", fontSize: 12, marginBottom: 8, paddingHorizontal: 4 }}>
                   Enter a valid phone number
                 </Text>
-              ) : null}
+              )}
 
               <Pressable
-                className={[
-                  "h-12 rounded-full items-center justify-center mb-4",
-                  canContinue ? "bg-[#34A853]" : "bg-[#34A853] opacity-60",
-                ].join(" ")}
+                style={{ height: 48, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginBottom: 16, backgroundColor: "#34A853", opacity: canContinue ? 1 : 0.6 }}
                 onPress={handleRegister}
                 disabled={!canContinue || registerMutation.isPending}
               >
-                <Text className="text-white text-sm">
+                <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
                   {registerMutation.isPending ? "Please wait..." : "Continue"}
                 </Text>
               </Pressable>
 
-              <View className="flex-row items-center my-4">
-                <View className="flex-1 h-px bg-[#E8EEF3]" />
-                <Text className="mx-4 text-xs text-[#656F77]">or</Text>
-                <View className="flex-1 h-px bg-[#E8EEF3]" />
+              <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+                <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+                <Text style={{ marginHorizontal: 16, fontSize: 12, color: colors.textSub }}>or</Text>
+                <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
               </View>
 
-              <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 bg-white mb-3">
-                <Image
-                  source={googleIcon}
-                  style={{ width: 16, height: 16 }}
-                  resizeMode="contain"
-                />
-                <Text className="text-sm text-[#262D3A] font-medium">
-                  Continue with Google
-                </Text>
+              <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 9999, height: 48, backgroundColor: colors.card, marginBottom: 12 }}>
+                <Image source={googleIcon} style={{ width: 16, height: 16 }} resizeMode="contain" />
+                <Text style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}>Continue with Google</Text>
               </Pressable>
 
-              <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 mb-3">
-                <MaterialCommunityIcons name="apple" size={18} color="#000000" />
-                <Text className="text-[#1F2A33] text-sm font-medium">
-                  Continue with Apple
-                </Text>
+              <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 9999, height: 48, backgroundColor: colors.card, marginBottom: 12 }}>
+                <MaterialCommunityIcons name="apple" size={18} color={colors.text} />
+                <Text style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}>Continue with Apple</Text>
               </Pressable>
 
               <Pressable
-                className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 bg-white mb-5"
+                style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 9999, height: 48, backgroundColor: colors.card, marginBottom: 20 }}
                 onPress={() => navigation.navigate("EmailSignUp")}
               >
-                <Text className="text-lg mr-2">
-                  <MaterialCommunityIcons name="email" size={16} color="#000000" />
-                </Text>
-                <Text className="text-sm text-[#262D3A] font-medium">
-                  Continue with Email
-                </Text>
+                <MaterialCommunityIcons name="email" size={16} color={colors.text} />
+                <Text style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}>Continue with Email</Text>
               </Pressable>
 
-              <View className="flex-row items-center my-4">
-                <View className="flex-1 h-px bg-[#E8EEF3]" />
-                <Text className="mx-4 text-xs text-[#656F77]">or</Text>
-                <View className="flex-1 h-px bg-[#E8EEF3]" />
+              <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+                <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+                <Text style={{ marginHorizontal: 16, fontSize: 12, color: colors.textSub }}>or</Text>
+                <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
               </View>
 
-              <View className="flex-row items-center justify-center gap-2">
-                <MaterialCommunityIcons name="magnify" size={14} color="#000000" />
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("FindAccount", {
-                      itemId: "find-account",
-                      title: "Find my account",
-                    })
-                  }
-                >
-                  <Text className="text-center text-xs text-[#1F2A33]">
-                    Find my account
-                  </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <MaterialCommunityIcons name="magnify" size={14} color={colors.iconColor} />
+                <Pressable onPress={() => navigation.navigate("FindAccount", { itemId: "find-account", title: "Find my account" })}>
+                  <Text style={{ textAlign: "center", fontSize: 12, color: colors.text }}>Find my account</Text>
                 </Pressable>
               </View>
 
-              <Text className="text-[11px] text-[#707579] mt-4 text-left">
-                By continuing, you agree to calls including autodialler,
-                WhatsApp or texts from Zubba and its affiliates.
+              <Text style={{ fontSize: 11, color: colors.textSub, marginTop: 16 }}>
+                By continuing, you agree to calls including autodialler, WhatsApp or texts from Zubba and its affiliates.
               </Text>
             </View>
           </View>
