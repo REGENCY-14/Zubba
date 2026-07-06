@@ -58,7 +58,7 @@ function NumberRow({
             >
               <Text
                 style={{
-                  fontFamily: "Manrope",
+                  fontFamily: "Poppins",
                   fontWeight: "600",
                   fontSize: 16,
                   color: selected ? "#FFFFFF" : "#31973D",
@@ -70,7 +70,7 @@ function NumberRow({
             {showLabels && (
               <Text
                 style={{
-                  fontFamily: "Manrope",
+                  fontFamily: "Poppins",
                   fontWeight: "700",
                   fontSize: 10,
                   color: "#9CA3AF",
@@ -154,7 +154,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
           >
             {/* Service experience */}
             <View style={{ gap: 6 }}>
-              <Text style={{ fontFamily: "Manrope", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#94A3B7" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#94A3B7" }}>
                 Service experience
               </Text>
               <StarRow value={serviceRating} onChange={setServiceRating} />
@@ -164,7 +164,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
 
             {/* Professionalism */}
             <View style={{ gap: 6 }}>
-              <Text style={{ fontFamily: "Manrope", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#94A3B7" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#94A3B7" }}>
                 Professionalism
               </Text>
               <NumberRow value={professionalism} onChange={setProfessionalism} showLabels />
@@ -174,7 +174,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
 
             {/* Eco-friendly */}
             <View style={{ gap: 6 }}>
-              <Text style={{ fontFamily: "Manrope", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#94A3B7" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#94A3B7" }}>
                 Eco-friendly
               </Text>
               <NumberRow value={ecoFriendly} onChange={setEcoFriendly} />
@@ -183,7 +183,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
 
           {/* Additional Note */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "600", fontSize: 14, color: "#000000" }}>
+            <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 14, color: "#000000" }}>
               Additional Note
             </Text>
             <TextInput
@@ -198,7 +198,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                 borderRadius: 24,
                 padding: 14,
                 minHeight: 108,
-                fontFamily: "Plus Jakarta Sans",
+                fontFamily: "Poppins",
                 fontSize: 14,
                 color: "#000000",
                 textAlignVertical: "top",
@@ -244,7 +244,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>
+            <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>
               Submit
             </Text>
           </Pressable>

@@ -10,10 +10,10 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 function Row({ label, value, large }: { label: string; value: string; large?: boolean }) {
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-      <Text style={{ fontFamily: "Manrope", fontWeight: "500", fontSize: 14, color: "#9CA3AF" }}>
+      <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 14, color: "#9CA3AF" }}>
         {label}
       </Text>
-      <Text style={{ fontFamily: "Manrope", fontWeight: "700", fontSize: large ? 18 : 14, color: "#1F2937" }}>
+      <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: large ? 18 : 14, color: "#1F2937" }}>
         {value}
       </Text>
     </View>
@@ -45,7 +45,7 @@ export function PaymentSuccessScreen({
           <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
             <MaterialCommunityIcons name="chevron-left" size={28} color={colors.text} />
           </Pressable>
-          <Text style={{ fontFamily: "Inter", fontWeight: "600", fontSize: 16, color: "#1F2A33" }}>
+          <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 16, color: "#1F2A33" }}>
             Payment status
           </Text>
           <View style={{ width: 28 }} />
@@ -69,7 +69,7 @@ export function PaymentSuccessScreen({
 
             {/* Heading */}
             <View style={{ alignItems: "center", paddingBottom: 8 }}>
-              <Text style={{ fontFamily: "Manrope", fontWeight: "800", fontSize: 20, lineHeight: 28, color: "#111827", textAlign: "center" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "800", fontSize: 20, lineHeight: 28, color: "#111827", textAlign: "center" }}>
                 Transaction successful
               </Text>
             </View>
@@ -91,7 +91,7 @@ export function PaymentSuccessScreen({
             {/* Download receipt */}
             <View style={{ alignItems: "center", paddingTop: 16 }}>
               <Pressable>
-                <Text style={{ fontFamily: "Manrope", fontWeight: "700", fontSize: 16, color: "#3B82F6" }}>
+                <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 16, color: "#3B82F6" }}>
                   Download receipt
                 </Text>
               </Pressable>
@@ -103,7 +103,7 @@ export function PaymentSuccessScreen({
             onPress={() => navigation.navigate("RateRide")}
             style={{ height: 48, backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
           >
-            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>
+            <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>
               Done
             </Text>
           </Pressable>

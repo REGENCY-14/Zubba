@@ -60,7 +60,7 @@ export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCente
           <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons name="chevron-left" size={28} color={colors.text} />
           </Pressable>
-          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, fontFamily: 'Inter' }}>Help Center</Text>
+          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, fontFamily: 'Poppins' }}>Help Center</Text>
           <View style={{ width: 24, height: 24 }} />
         </View>
 
@@ -69,7 +69,7 @@ export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCente
             style={{ height: 50, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, gap: 10 }}
           >
             <MaterialCommunityIcons name="magnify" size={24} color={colors.iconColor} />
-            <Text style={{ fontSize: 14, lineHeight: 21, fontWeight: '700', color: colors.text, fontFamily: 'Nexa Text-Trial' }}>Search for help</Text>
+            <Text style={{ fontSize: 14, lineHeight: 21, fontWeight: '700', color: colors.text, fontFamily: 'Poppins' }}>Search for help</Text>
           </View>
 
           <Section title="Getting Started" defaultOpen colors={colors}>
@@ -144,7 +144,7 @@ export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCente
               style={{ alignSelf: 'flex-start', minWidth: 198, height: 48, paddingHorizontal: 16, borderRadius: 12, backgroundColor: '#31973D', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}
               onPress={() => {}}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Plus Jakarta Sans' }}>Visit Zubba website</Text>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Poppins' }}>Visit Zubba website</Text>
               <MaterialCommunityIcons name="open-in-new" size={18} color="#FFFFFF" />
             </Pressable>
           </View>
@@ -157,7 +157,7 @@ export function HelpCenterScreen({ navigation }: RootStackScreenProps<'HelpCente
               >
                 OUR COMMITMENT
               </Text>
-              <Text style={{ fontSize: 16, lineHeight: 28, color: '#FFFFFF', fontWeight: '600', fontFamily: 'Manrope' }}>
+              <Text style={{ fontSize: 16, lineHeight: 28, color: '#FFFFFF', fontWeight: '600', fontFamily: 'Poppins' }}>
                 We&apos;re here to make sustainability simple.
               </Text>
             </View>

@@ -93,7 +93,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           {true ? (
             <View style={{ backgroundColor: colors.card, borderTopWidth: 1, borderTopColor: colors.border, padding: 16, borderRadius: 12 }}>
               <View style={{ gap: 16 }}>
-                <Text style={{ fontSize: 15, lineHeight: 22, color: colors.text, fontFamily: 'Nexa Text-Trial' }}>{contactLabel}</Text>
+                <Text style={{ fontSize: 15, lineHeight: 22, color: colors.text, fontFamily: 'Poppins' }}>{contactLabel}</Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   {!isEmailMode ? (
@@ -127,15 +127,15 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                     })
                   }
                 >
-                  <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Plus Jakarta Sans' }}>{contactActionLabel}</Text>
+                  <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Poppins' }}>{contactActionLabel}</Text>
                 </Pressable>
 
                 <View style={{ gap: 8 }}>
                   <Pressable style={{ width: 99, height: 32, borderRadius: 22, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }} onPress={() => {}}>
-                    <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500', fontFamily: 'Plus Jakarta Sans' }}>Resend</Text>
+                    <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500', fontFamily: 'Poppins' }}>Resend</Text>
                   </Pressable>
                   <Pressable style={{ width: 178, height: 32, borderRadius: 22, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }} onPress={() => {}}>
-                    <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500', fontFamily: 'Plus Jakarta Sans' }}>{isEmailMode ? 'Send code via email' : 'Send code via WhatsApp'}</Text>
+                    <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500', fontFamily: 'Poppins' }}>{isEmailMode ? 'Send code via email' : 'Send code via WhatsApp'}</Text>
                   </Pressable>
                 </View>
 

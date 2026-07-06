@@ -1,22 +1,27 @@
 import React from 'react';
 import {
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { upgradeToPremium } from '../../slices/customer/customerSlice';
 
 export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletNumber'>) {
   const [phone, setPhone] = React.useState('');
   const [showSuccess, setShowSuccess] = React.useState(false);
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -43,19 +48,19 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
             <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 32, backgroundColor: colors.card }}>
               <View style={{ gap: 24 }}>
                 <View style={{ gap: 16 }}>
-                  <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, lineHeight: 32 }}>Wallet Number</Text>
-                  <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 26 }}>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 24, lineHeight: 32, color: colors.text }}>Wallet Number</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 26, color: colors.textSub }}>
                     Enter your wallet number to proceed with the transaction.
                   </Text>
                 </View>
 
                 <View style={{ gap: 7 }}>
-                  <Text style={{ fontSize: 16, color: colors.text, lineHeight: 16 }}>Wallet Phone Number</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 16, color: colors.text }}>Wallet Phone Number</Text>
                   <TextInput
                     style={{
                       height: 48,
                       borderWidth: 1,
-                      borderColor: colors.border,
+                      borderColor: '#CBD5E0',
                       borderRadius: 999,
                       paddingHorizontal: 12,
                       fontSize: 16,
@@ -70,7 +75,9 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
                     autoFocus
                     returnKeyType="done"
                   />
-                  <Text style={{ fontSize: 12, color: colors.textSub, lineHeight: 16 }}>Enter your mobile money number</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub }}>
+                    Enter your mobile money number
+                  </Text>
                 </View>
               </View>
 
@@ -78,45 +85,60 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
                 style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => setShowSuccess(true)}
               >
-                <Text style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 20 }}>Continue</Text>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: '#FFFFFF' }}>
+                  Continue
+                </Text>
               </Pressable>
             </View>
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
 
-      <Modal visible={showSuccess} transparent animationType="fade">
-        <View
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, backgroundColor: 'rgba(0,0,0,0.5)' }}
-        >
-          <View
-            style={{ width: '100%', backgroundColor: colors.card, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 32, alignItems: 'center', gap: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 6 }}
-          >
-            <Text style={{ fontSize: 36, fontWeight: '500', color: colors.text, textAlign: 'center' }}>Successful</Text>
-            <Text style={{ fontSize: 14, color: colors.textSub, textAlign: 'center', lineHeight: 22 }}>
-              Enjoy double Eco-Points, priority support,{'\n'}and a cleaner tomorrow.
-            </Text>
-            <Pressable
-              style={{ width: '100%', height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center', marginTop: 8 }}
-              onPress={() => {
-                setShowSuccess(false);
-                navigation.navigate('PremiumHome');
-              }}
-            >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#FFFFFF' }}>Proceed to Premium</Text>
-            </Pressable>
-            <Pressable
-              style={{ width: '100%', height: 48, borderRadius: 999, borderWidth: 1, borderColor: '#31973D', alignItems: 'center', justifyContent: 'center' }}
-              onPress={() => {
-                setShowSuccess(false);
-                navigation.navigate('Home');
-              }}
-            >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#31973D' }}>Set Package expiry alert</Text>
-            </Pressable>
+      {showSuccess && (
+        <View style={StyleSheet.absoluteFillObject}>
+          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFillObject} />
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
+
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 32 }}>
+            <View style={{ alignItems: 'center', gap: 12 }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 36, lineHeight: 44, letterSpacing: -1.08, textAlign: 'center', color: '#0F1621' }}>
+                Successful
+              </Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 20, letterSpacing: -0.32, textAlign: 'center', color: '#1F2A33' }}>
+                Enjoy double Eco-Points, priority support, and a cleaner tomorrow.
+              </Text>
+            </View>
+
+            <View style={{ width: '100%', gap: 12 }}>
+              <Pressable
+                style={{ height: 48, backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => {
+                  dispatch(upgradeToPremium());
+                  setShowSuccess(false);
+                  navigation.navigate('PremiumHome');
+                }}
+              >
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: '#FFFFFF' }}>
+                  Proceed to Premium
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={{ height: 48, backgroundColor: '#FFFFFF', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => {
+                  dispatch(upgradeToPremium());
+                  setShowSuccess(false);
+                  navigation.navigate('PremiumHome');
+                }}
+              >
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, color: '#1F2A33' }}>
+                  Set Package expiry alert
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
-      </Modal>
+      )}
     </SafeAreaView>
   );
 }

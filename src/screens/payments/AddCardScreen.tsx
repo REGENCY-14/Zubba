@@ -172,7 +172,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
               </View>
               <Pressable
                 className="flex-row items-center justify-center gap-2 h-12 flex-1 max-w-[210px] bg-[#31973D] rounded-full px-4"
-                onPress={() => setShowSuccess(true)}
+                onPress={() => saveCard ? navigation.navigate('SavedCards') : setShowSuccess(true)}
               >
                 <LockIcon />
                 <Text className="text-sm text-white leading-5">Proceed to pay</Text>
@@ -211,7 +211,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                   navigation.navigate('PremiumHome');
                 }}
               >
-                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, color: '#FFFFFF' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: '#FFFFFF' }}>
                   Proceed to Premium
                 </Text>
               </Pressable>
@@ -224,7 +224,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                   navigation.navigate('PremiumHome');
                 }}
               >
-                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: 14, color: '#1F2A33' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, color: '#1F2A33' }}>
                   Set Package expiry alert
                 </Text>
               </Pressable>

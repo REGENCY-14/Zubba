@@ -95,7 +95,7 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
             <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: 28, color: '#31973D', letterSpacing: 1 }}>ZUBBA·</Text>
             <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub, textAlign: 'center' }}>Waste Pickup and Recycling Control</Text>
             <View style={{ backgroundColor: '#E3F2F7', borderRadius: 9999, paddingHorizontal: 10, paddingVertical: 4 }}>
-              <Text style={{ fontFamily: 'Inter', fontWeight: '400', fontSize: 8, lineHeight: 11, color: '#000000' }}>Version 1.0.0</Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 8, lineHeight: 11, color: '#000000' }}>Version 1.0.0</Text>
             </View>
           </View>
 
@@ -105,11 +105,11 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
             <View style={{ flexDirection: 'row', gap: 5 }}>
               <View style={{ flex: 1, minHeight: 72, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(144,250,150,0.2)', backgroundColor: 'rgba(20,135,50,0.4)', padding: 12, gap: 8 }}>
                 <MaterialCommunityIcons name="flash-outline" size={20} color="#90FA96" />
-                <Text style={{ fontFamily: 'Inter', fontWeight: '400', fontSize: 13, lineHeight: 20, color: '#FFFFFF' }}>Double Eco-Points</Text>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 13, lineHeight: 20, color: '#FFFFFF' }}>Double Eco-Points</Text>
               </View>
               <View style={{ flex: 1, minHeight: 72, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(144,250,150,0.2)', backgroundColor: 'rgba(20,135,50,0.4)', padding: 12, gap: 8 }}>
                 <MaterialCommunityIcons name="headset" size={20} color="#90FA96" />
-                <Text style={{ fontFamily: 'Inter', fontWeight: '400', fontSize: 13, lineHeight: 20, color: '#FFFFFF' }}>Priority Support</Text>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 13, lineHeight: 20, color: '#FFFFFF' }}>Priority Support</Text>
               </View>
             </View>
           </View>
@@ -186,11 +186,11 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
                 </View>
                 <View style={{ flex: 1, gap: 4 }}>
                   <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 20, color: '#1F2A33' }}>Support line</Text>
-                  <Text style={{ fontFamily: 'Inter', fontWeight: '400', fontSize: 12, lineHeight: 18, color: '#64748A' }}>Average response: &lt; 2 mins</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 18, color: '#64748A' }}>Average response: &lt; 2 mins</Text>
                 </View>
               </View>
               <Pressable style={{ backgroundColor: '#FFE088', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 10, height: 40, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '700', fontSize: 14, lineHeight: 20, color: '#1F2A33' }}>Call now</Text>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: 14, lineHeight: 20, color: '#1F2A33' }}>Call now</Text>
               </Pressable>
             </View>
           </View>

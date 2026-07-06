@@ -94,7 +94,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                   elevation: activeTab === tab ? 2 : 0,
                 }}
               >
-                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: activeTab === tab ? '500' : '400', fontSize: 12, color: activeTab === tab ? '#FFFFFF' : colors.textSub }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: activeTab === tab ? '500' : '400', fontSize: 12, color: activeTab === tab ? '#FFFFFF' : colors.textSub }}>
                   {tab === 'plan' ? 'Plan for later' : 'Schedules'}
                 </Text>
               </Pressable>
@@ -130,7 +130,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                           onPress={() => { setFrequency(opt); setShowDropdown(false); }}
                           style={{ paddingHorizontal: 8, paddingVertical: 6, borderRadius: 16, backgroundColor: frequency === opt ? 'rgba(52,168,83,0.5)' : 'transparent' }}
                         >
-                          <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, color: colors.text }}>{opt}</Text>
+                          <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.text }}>{opt}</Text>
                         </Pressable>
                       ))}
                     </View>
@@ -188,9 +188,9 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                 {/* Start / End time */}
                 <View style={{ gap: 4 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={{ flex: 1, fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, color: colors.text }}>Start Time</Text>
+                    <Text style={{ flex: 1, fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.text }}>Start Time</Text>
                     <View style={{ width: 40 }} />
-                    <Text style={{ flex: 1, fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, color: colors.text }}>End Time</Text>
+                    <Text style={{ flex: 1, fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.text }}>End Time</Text>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                     <View style={{ flex: 1, minWidth: 0 }}>
@@ -199,7 +199,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                         onChangeText={setStartTime}
                         placeholder="00:00"
                         placeholderTextColor={colors.textMuted}
-                        style={{ height: 48, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 16, fontFamily: 'Plus Jakarta Sans', fontSize: 14, color: colors.text, backgroundColor: colors.card }}
+                        style={{ height: 48, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 16, fontFamily: 'Poppins', fontSize: 14, color: colors.text, backgroundColor: colors.card }}
                       />
                     </View>
                     <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#31973D', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -211,7 +211,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                         onChangeText={setEndTime}
                         placeholder="00:00"
                         placeholderTextColor={colors.textMuted}
-                        style={{ height: 48, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 16, fontFamily: 'Plus Jakarta Sans', fontSize: 14, color: colors.text, backgroundColor: colors.card }}
+                        style={{ height: 48, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 16, fontFamily: 'Poppins', fontSize: 14, color: colors.text, backgroundColor: colors.card }}
                       />
                     </View>
                   </View>
@@ -222,7 +222,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: '#8DE9FF' }} />
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: '#ADFF70' }} />
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: '#FF70C1' }} />
-                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 12, color: colors.textSub }}>Scheduled dates</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, color: colors.textSub }}>Scheduled dates</Text>
                 </View>
               </View>
 
@@ -232,8 +232,8 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
           {/* Recommended drivers */}
           <View style={{ gap: 12 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '600', fontSize: 16, color: colors.text }}>Recommended  drivers</Text>
-              <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '600', fontSize: 14, color: '#31973D' }}>See all</Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, color: colors.text }}>Recommended  drivers</Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: '#31973D' }}>See all</Text>
             </View>
 
             {/* Search */}
@@ -244,7 +244,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                 onChangeText={setSearchQuery}
                 placeholder="search driver by name, unique...."
                 placeholderTextColor={colors.textMuted}
-                style={{ flex: 1, fontFamily: 'Plus Jakarta Sans', fontSize: 14, color: colors.text }}
+                style={{ flex: 1, fontFamily: 'Poppins', fontSize: 14, color: colors.text }}
               />
             </View>
 
@@ -256,7 +256,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
               >
                 <View style={{ position: 'relative' }}>
                   <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#C7E0C9', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontSize: 14, color: '#1F2A33' }}>KM</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: 14, color: '#1F2A33' }}>KM</Text>
                   </View>
                   <View style={{ position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: 9, backgroundColor: '#006B23', borderWidth: 2, borderColor: colors.card, alignItems: 'center', justifyContent: 'center' }}>
                     <MaterialCommunityIcons name="check" size={9} color="#FFFFFF" />
@@ -267,7 +267,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                   <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, color: colors.text }}>{driver.name}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                     <MaterialCommunityIcons name="star-outline" size={12} color={colors.textSub} />
-                    <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 12, color: colors.textSub }}>{driver.rating}</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, color: colors.textSub }}>{driver.rating}</Text>
                   </View>
                 </View>
 

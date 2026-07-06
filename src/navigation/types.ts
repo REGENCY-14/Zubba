@@ -44,6 +44,7 @@ export type RootStackParamList = {
   AddCard: { planIndex?: number } | undefined;
   PremiumPayment: undefined;
   WalletNumber: undefined;
+  SavedCards: undefined;
   DriversFound: undefined;
   WalletCheckout: undefined;
   PlanForLater: undefined;

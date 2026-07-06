@@ -92,28 +92,6 @@ export function PaymentMethodScreen({
               </Text>
             </View>
 
-            <View style={{ flexDirection: "row", gap: 16, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card }}>
-
-              <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
-                <MaterialCommunityIcons
-                  name="information-outline"
-                  size={18}
-                  color="#31973D"
-                />
-              </View>
-
-              <View className="flex-1 gap-1">
-                <Text style={{ fontSize: 16, color: colors.text }}>
-                  How it works
-                </Text>
-
-                <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 24 }}>
-                  You will receive a secure payment prompt on your mobile phone.
-                  Enter your MM PIN to authorize the transaction instantly.
-                </Text>
-              </View>
-            </View>
-
             <Pressable
               onPress={() => navigation.navigate("PaymentVerification", { method, phone: phoneNumber })}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"

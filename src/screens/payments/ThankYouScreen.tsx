@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    fontFamily: "Plus Jakarta Sans",
+    fontFamily: "Poppins",
     fontWeight: "400",
     fontSize: 14,
     color: "#FFFFFF",

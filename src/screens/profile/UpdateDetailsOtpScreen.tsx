@@ -41,7 +41,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
         <View style={{ flex: 1, paddingHorizontal: 22, paddingTop: 18, gap: 18 }}>
           <View style={{ gap: 4 }}>
             <Text
-              style={{ fontSize: 18, fontWeight: 'bold', lineHeight: 25, letterSpacing: 0.15, color: colors.text, fontFamily: 'Nexa Text-Trial' }}
+              style={{ fontSize: 18, fontWeight: 'bold', lineHeight: 25, letterSpacing: 0.15, color: colors.text, fontFamily: 'Poppins' }}
             >
               {kind === 'email'
                 ? step === 'old'

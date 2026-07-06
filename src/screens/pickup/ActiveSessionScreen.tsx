@@ -48,7 +48,7 @@ function DeviceCard({ iconName, title, location, status, actionLabel, actionTone
           }}
         >
           <Text
-            style={{ fontSize: 13, lineHeight: 20, fontWeight: 'bold', color: actionTone === 'current' ? '#31973D' : '#FF383C', fontFamily: 'Nexa Text-Trial' }}
+            style={{ fontSize: 13, lineHeight: 20, fontWeight: 'bold', color: actionTone === 'current' ? '#31973D' : '#FF383C', fontFamily: 'Poppins' }}
           >
             {actionLabel}
           </Text>
@@ -83,7 +83,7 @@ export function ActiveSessionScreen({ navigation }: RootStackScreenProps<'Active
           <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons name="chevron-left" size={28} color={colors.text} />
           </Pressable>
-          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, fontFamily: 'Inter' }}>Active Session</Text>
+          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, fontFamily: 'Poppins' }}>Active Session</Text>
           <View style={{ width: 24, height: 24 }} />
         </View>
 
@@ -144,7 +144,7 @@ export function ActiveSessionScreen({ navigation }: RootStackScreenProps<'Active
               style={{ height: 48, borderRadius: 12, backgroundColor: '#31973D', alignItems: 'center', justifyContent: 'center' }}
               onPress={() => navigation.navigate('Settings')}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Plus Jakarta Sans' }}>Back to Settings</Text>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Poppins' }}>Back to Settings</Text>
             </Pressable>
           </View>
 

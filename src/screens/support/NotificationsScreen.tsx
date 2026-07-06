@@ -31,10 +31,10 @@ function NotificationRow({ item, iconSize, colors }: { item: NotificationItem; i
         <MaterialCommunityIcons name="bell-outline" size={16} color="#31973D" />
       </View>
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-        <Text style={{ flex: 1, fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.text }}>
+        <Text style={{ flex: 1, fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.text }}>
           {item.message}
         </Text>
-        <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub, paddingTop: 5, flexShrink: 0 }}>
+        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub, paddingTop: 5, flexShrink: 0 }}>
           {item.time}
         </Text>
       </View>
@@ -96,7 +96,7 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
 
                 {/* Today */}
                 <View>
-                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub, marginBottom: 0 }}>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub, marginBottom: 0 }}>
                     Today
                   </Text>
                   {TODAY.map(item => (
@@ -106,7 +106,7 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
 
                 {/* 7 Days Ago */}
                 <View>
-                  <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub }}>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub }}>
                     7 Days Ago
                   </Text>
                   {WEEK_AGO.map(item => (
@@ -139,7 +139,7 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
                     <MaterialCommunityIcons name="lightbulb-outline" size={16} color="#7C3AED" />
                   </View>
                   <View style={{ flex: 1, gap: 4 }}>
-                    <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '600', fontSize: 14, lineHeight: 20, color: '#0F1621' }}>Quick Tip</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 20, color: '#0F1621' }}>Quick Tip</Text>
                     <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 18, color: '#1F2A33' }}>
                       Customize your notification preferences in settings.
                     </Text>

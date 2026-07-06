@@ -210,7 +210,7 @@ export function TermsAndConditionsScreen({
                 color="#FFFFFF"
               />
 
-              <Text className="font-['Plus Jakarta Sans'] text-sm font-normal leading-5 text-white">
+              <Text className="font-['Poppins'] text-sm font-normal leading-5 text-white">
                 Download PDF Version
               </Text>
             </Pressable>

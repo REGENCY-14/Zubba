@@ -87,8 +87,15 @@ export function AppBottomNav({
       style={{ bottom: bottomOffset, paddingBottom: bottomPadding }}
     >
       <View
-        className="w-full max-w-[402px] py-3 flex-row items-center justify-between px-4 rounded-full shadow-sm"
         style={{
+          width: '100%',
+          maxWidth: showCalendar ? 402 : 300,
+          paddingVertical: 12,
+          paddingHorizontal: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderRadius: 9999,
           backgroundColor: colors.card,
           borderWidth: 1,
           borderColor: colors.border,

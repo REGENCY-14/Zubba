@@ -18,7 +18,7 @@ export function StatCardsRow({ mass_recycled, points, onSearchPress, noCard }: S
           onPress={onSearchPress}
         >
           <MaterialCommunityIcons name="magnify" size={24} color="#000000" />
-          <Text style={{ fontSize: 14, color: '#333333', fontFamily: 'Inter' }}>Where is your waste?</Text>
+          <Text style={{ fontSize: 14, color: '#333333', fontFamily: 'Poppins' }}>Where is your waste?</Text>
         </Pressable>
       )}
       <View style={{ flexDirection: 'row', gap: 16 }}>
