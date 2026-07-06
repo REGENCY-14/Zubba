@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
+import { useTheme } from "../../context/ThemeContext";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -20,6 +21,7 @@ export function FindAccountEmailScreen({
 }: RootStackScreenProps<"FindAccountEmail">) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const { colors } = useTheme();
 
   const isEmailValid = useMemo(() => EMAIL_REGEX.test(email.trim()), [email]);
 
@@ -54,21 +56,16 @@ export function FindAccountEmailScreen({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <View className="flex-1 p-5 pb-6 justify-between">
         <View className="gap-4">
-          <Text className="text-[15px] text-[#1F2A33] mb-2">
+          <Text style={{ fontSize: 15, color: colors.text, marginBottom: 8 }}>
             What's your email address
           </Text>
 
-          <View
-            className={[
-              "min-h-12 justify-center px-4 bg-white rounded-full border-[1.8px]",
-              isEmailValid ? "border-[#34A85333]" : "border-black/[0.05]",
-            ].join(" ")}
-          >
+          <View style={{ minHeight: 48, justifyContent: 'center', paddingHorizontal: 16, backgroundColor: colors.card, borderRadius: 9999, borderWidth: 1.8, borderColor: isEmailValid ? 'rgba(52,168,83,0.2)' : colors.border }}>
             <TextInput
-              className="text-[13px] text-[#1F2A33] py-2 outline-none"
+              style={{ fontSize: 13, color: colors.text, paddingVertical: 8 }}
               placeholder="Enter your email"
               placeholderTextColor="#707579"
               keyboardType="email-address"
@@ -80,10 +77,10 @@ export function FindAccountEmailScreen({
           </View>
 
           <Pressable
-            className="self-start px-5 h-8 border border-[#E2E8F0] rounded-full items-center justify-center bg-white"
+            style={{ alignSelf: 'flex-start', paddingHorizontal: 20, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card }}
             onPress={() => navigation.navigate("FindAccount")}
           >
-            <Text className="text-xs font-medium text-[#1F2A33]">
+            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
               Find account with phone number
             </Text>
           </Pressable>
@@ -94,7 +91,7 @@ export function FindAccountEmailScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <MaterialCommunityIcons name="arrow-left" color="#000000" size={24} />
+            <MaterialCommunityIcons name="arrow-left" color={colors.text} size={24} />
           </Pressable>
 
           <Pressable

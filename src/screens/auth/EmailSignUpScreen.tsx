@@ -1,74 +1,47 @@
 import { useMemo, useState } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-  Image,
+  Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useRegister } from "../../slices/auth/auth.hooks";
+import { useTheme } from "../../context/ThemeContext";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const googleIcon = require("../../../assets/Google icon.png");
 
-export function EmailSignUpScreen({
-  navigation,
-}: RootStackScreenProps<"EmailSignUp">) {
+export function EmailSignUpScreen({ navigation }: RootStackScreenProps<"EmailSignUp">) {
   const [email, setEmail] = useState("");
-
   const registerMutation = useRegister();
+  const { colors } = useTheme();
 
   const isEmailValid = useMemo(() => EMAIL_REGEX.test(email.trim()), [email]);
 
   const handleContinue = async () => {
     try {
-      await registerMutation.mutateAsync({
-        authKey: "email",
-        authValue: email.trim().toLowerCase(),
-        role: "customer",
-      });
-
-      navigation.navigate("Verify", {
-        email: email.trim().toLowerCase(),
-        userExists: false,
-      });
+      await registerMutation.mutateAsync({ authKey: "email", authValue: email.trim().toLowerCase(), role: "customer" });
+      navigation.navigate("Verify", { email: email.trim().toLowerCase(), userExists: false });
     } catch (err) {
       console.log(err);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View className="flex-1 p-5 pb-6">
-            <Text className="text-[15px] text-[#1F2A33] mb-3">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <View style={{ flex: 1, padding: 20, paddingBottom: 24 }}>
+            <Text style={{ fontSize: 15, color: colors.text, marginBottom: 12 }}>
               What's your email address
             </Text>
 
-            <View
-              className={`border rounded-full px-4 h-12 justify-center bg-white mb-4 ${
-                isEmailValid ? "border-[#34A85333]" : "border-[#0000000D]"
-              }`}
-            >
+            <View style={{ borderWidth: 1, borderRadius: 9999, paddingHorizontal: 16, height: 48, justifyContent: "center", backgroundColor: colors.card, marginBottom: 16, borderColor: isEmailValid ? "rgba(52,168,83,0.2)" : colors.border }}>
               <TextInput
-                className="text-[#1F2A33] text-[13px] outline-none"
+                style={{ color: colors.text, fontSize: 13 }}
                 placeholder="Enter your email"
-                placeholderTextColor="#707579"
+                placeholderTextColor={colors.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -78,75 +51,54 @@ export function EmailSignUpScreen({
             </View>
 
             <Pressable
-              className={`h-12 rounded-full items-center justify-center mb-4 ${
-                isEmailValid && !registerMutation.isPending
-                  ? "bg-[#34A853]"
-                  : "bg-[#34A85380]"
-              }`}
+              style={{ height: 48, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginBottom: 16, backgroundColor: "#34A853", opacity: isEmailValid && !registerMutation.isPending ? 1 : 0.5 }}
               disabled={!isEmailValid || registerMutation.isPending}
               onPress={handleContinue}
             >
-              <Text className="text-white text-sm">
+              <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
                 {registerMutation.isPending ? "Please wait..." : "Continue"}
               </Text>
             </Pressable>
 
-            <View className="flex-row items-center my-4">
-              <View className="flex-1 h-px bg-[#E8EEF3]" />
-              <Text className="mx-4 text-xs text-[#656F77]">or</Text>
-              <View className="flex-1 h-px bg-[#E8EEF3]" />
+            <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+              <Text style={{ marginHorizontal: 16, fontSize: 12, color: colors.textSub }}>or</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
             </View>
 
-            <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 bg-white mb-3">
-              <Image
-                source={googleIcon}
-                style={{ width: 16, height: 16 }}
-                resizeMode="contain"
-              />
-              <Text className="text-sm text-[#262D3A] font-medium">
-                Continue with Google
-              </Text>
+            <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 9999, height: 48, backgroundColor: colors.card, marginBottom: 12 }}>
+              <Image source={googleIcon} style={{ width: 16, height: 16 }} resizeMode="contain" />
+              <Text style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}>Continue with Google</Text>
             </Pressable>
 
-            <Pressable className="flex-row items-center gap-2 justify-center border border-[#E2E8F0] rounded-full h-12 mb-5">
-              <MaterialCommunityIcons name="apple" size={16} color="#000000" />
-              <Text className="text-[#1F2A33] text-sm font-medium">
-                Continue with Apple
-              </Text>
+            <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 9999, height: 48, backgroundColor: colors.card, marginBottom: 20 }}>
+              <MaterialCommunityIcons name="apple" size={16} color={colors.text} />
+              <Text style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}>Continue with Apple</Text>
             </Pressable>
 
             <Pressable
-              className="flex-row items-center justify-center border border-[#E2E8F0] rounded-full h-12 mb-5"
+              style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 9999, height: 48, backgroundColor: colors.card, marginBottom: 20 }}
               onPress={() => navigation.navigate("SignUp")}
             >
-              <MaterialCommunityIcons name="phone" size={16} color="#000000" />
-              <Text className="ml-2 text-[#262D3A] text-sm font-medium">
-                Continue with Phone
-              </Text>
+              <MaterialCommunityIcons name="phone" size={16} color={colors.text} />
+              <Text style={{ marginLeft: 8, color: colors.text, fontSize: 14, fontWeight: "500" }}>Continue with Phone</Text>
             </Pressable>
 
-            <View className="flex-row items-center my-4">
-              <View className="flex-1 h-px bg-[#E8EEF3]" />
-              <Text className="mx-4 text-xs text-[#656F77]">or</Text>
-              <View className="flex-1 h-px bg-[#E8EEF3]" />
+            <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+              <Text style={{ marginHorizontal: 16, fontSize: 12, color: colors.textSub }}>or</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
             </View>
 
-            <View className="flex-row items-center justify-center gap-2">
-              <MaterialCommunityIcons name="magnify" size={14} color="#000000" />
-              <Pressable
-                onPress={() =>
-                  navigation.navigate("FindAccountEmail")
-                }
-              >
-                <Text className="text-center text-xs text-[#1F2A33]">
-                  Find my account
-                </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <MaterialCommunityIcons name="magnify" size={14} color={colors.iconColor} />
+              <Pressable onPress={() => navigation.navigate("FindAccountEmail")}>
+                <Text style={{ textAlign: "center", fontSize: 12, color: colors.text }}>Find my account</Text>
               </Pressable>
             </View>
 
-            <Text className="text-[11px] text-[#707579] mt-4 text-left">
-              By continuing, you agree to calls including autodialler, WhatsApp
-              or texts from Zubba and its affiliates.
+            <Text style={{ fontSize: 11, color: colors.textSub, marginTop: 16 }}>
+              By continuing, you agree to calls including autodialler, WhatsApp or texts from Zubba and its affiliates.
             </Text>
           </View>
         </ScrollView>

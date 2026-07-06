@@ -4,8 +4,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useTheme } from "../../context/ThemeContext";
+import { ThemeColors } from "../../context/ThemeContext";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
 
@@ -22,24 +23,18 @@ type RowProps = {
   badge: React.ReactNode;
   label: string;
   last?: boolean;
+  colors: ThemeColors;
 };
 
-function PaymentRow({ selected, onPress, badge, label, last }: RowProps) {
+function PaymentRow({ selected, onPress, badge, label, last, colors }: RowProps) {
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        borderBottomWidth: last ? 0 : 1,
-        borderBottomColor: "#E2E8F0",
-      }}
+      style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, borderBottomWidth: last ? 0 : 1, borderBottomColor: colors.border }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
         {badge}
-        <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#1C1B1B" }}>
+        <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 24, color: colors.text }}>
           {label}
         </Text>
       </View>
@@ -49,7 +44,7 @@ function PaymentRow({ selected, onPress, badge, label, last }: RowProps) {
           <MaterialCommunityIcons name="check" size={13} color="#FFFFFF" />
         </View>
       ) : (
-        <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#8E7164" }} />
+        <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }} />
       )}
     </Pressable>
   );
@@ -81,9 +76,9 @@ function WalletBadge() {
 
 const airtelTigo = require("../../../assets/airtelTigo.png");
 
-function AirtelBadge() {
+function AirtelBadge({ colors }: { colors: ThemeColors }) {
   return (
-    <View style={{ width: 42, height: 26, backgroundColor: "#FFFFFF", borderRadius: 8, borderWidth: 1, borderColor: "#E2E8F0", alignItems: "center", justifyContent: "center" }}>
+    <View style={{ width: 42, height: 26, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}>
       <Image source={airtelTigo} style={{ width: 22, height: 14 }} resizeMode="contain" />
     </View>
   );
@@ -91,78 +86,71 @@ function AirtelBadge() {
 
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
   const isPremium = useAppSelector((state) => state.customer.is_premium);
+  const { colors } = useTheme();
   const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
 
   const rows: { id: PaymentMethodId; badge: React.ReactNode; label: string }[] = [
     ...(isPremium ? [{ id: "wallet" as PaymentMethodId, badge: <WalletBadge />, label: "Zubba Wallet" }] : []),
     { id: "momo", badge: <MtnBadge />, label: "MTN MoMo" },
     { id: "telecel", badge: <TelecelBadge />, label: "Telecel cash" },
-    { id: "airtel", badge: <AirtelBadge />, label: "Airtel money" },
+    { id: "airtel", badge: <AirtelBadge colors={colors} />, label: "Airtel money" },
   ];
 
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
-      {/* Dimmed overlay — tap to dismiss */}
-      <Pressable
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.65)" }}
-        onPress={() => navigation.goBack()}
-      />
+      <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.65)" }} onPress={() => navigation.goBack()} />
 
-      {/* Bottom sheet */}
-      <View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 32, borderTopRightRadius: 32 }}>
+      <View style={{ backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32 }}>
         <SafeAreaView edges={["bottom"]} style={{ backgroundColor: "transparent" }}>
-        <View style={{ paddingTop: 16, paddingBottom: 24, gap: 16 }}>
+          <View style={{ paddingTop: 16, paddingBottom: 24, gap: 16 }}>
 
-          {/* Handle */}
-          <View style={{ alignItems: "center" }}>
-            <View style={{ width: 152, height: 3, backgroundColor: "#334154", borderRadius: 20 }} />
-          </View>
+            <View style={{ alignItems: "center" }}>
+              <View style={{ width: 152, height: 3, backgroundColor: colors.textMuted, borderRadius: 20 }} />
+            </View>
 
-          {/* Title */}
-          <View style={{ paddingHorizontal: 24 }}>
-            <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 16, lineHeight: 28, letterSpacing: -0.48, color: "#000000" }}>
-              Select  a payment method
-            </Text>
-          </View>
-
-          {/* Payment rows */}
-          <View style={{ paddingHorizontal: 20 }}>
-            {rows.map((row, i) => (
-              <PaymentRow
-                key={row.id}
-                selected={selectedMethod === row.id}
-                onPress={() => setSelectedMethod(row.id)}
-                badge={row.badge}
-                label={row.label}
-                last={i === rows.length - 1}
-              />
-            ))}
-          </View>
-
-          {/* Actions */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, gap: 10 }}>
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={{ width: 32, height: 32, borderRadius: 12, backgroundColor: "#FFE2E2", alignItems: "center", justifyContent: "center" }}
-            >
-              <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
-            </Pressable>
-
-            <Pressable
-              onPress={() =>
-                selectedMethod === "wallet"
-                  ? navigation.navigate("WalletCheckout")
-                  : navigation.navigate("PaymentMethod", { method: METHOD_LABELS[selectedMethod] })
-              }
-              style={{ flex: 1, height: 40, backgroundColor: "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
-            >
-              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#FFFFFF" }}>
-                Continue
+            <View style={{ paddingHorizontal: 24 }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 16, lineHeight: 28, letterSpacing: -0.48, color: colors.text }}>
+                Select a payment method
               </Text>
-            </Pressable>
-          </View>
+            </View>
 
-        </View>
+            <View style={{ paddingHorizontal: 20 }}>
+              {rows.map((row, i) => (
+                <PaymentRow
+                  key={row.id}
+                  selected={selectedMethod === row.id}
+                  onPress={() => setSelectedMethod(row.id)}
+                  badge={row.badge}
+                  label={row.label}
+                  last={i === rows.length - 1}
+                  colors={colors}
+                />
+              ))}
+            </View>
+
+            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, gap: 10 }}>
+              <Pressable
+                onPress={() => navigation.goBack()}
+                style={{ width: 32, height: 32, borderRadius: 12, backgroundColor: "#FFE2E2", alignItems: "center", justifyContent: "center" }}
+              >
+                <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
+              </Pressable>
+
+              <Pressable
+                onPress={() =>
+                  selectedMethod === "wallet"
+                    ? navigation.navigate("WalletCheckout")
+                    : navigation.navigate("PaymentMethod", { method: METHOD_LABELS[selectedMethod] })
+                }
+                style={{ flex: 1, height: 40, backgroundColor: "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+              >
+                <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#FFFFFF" }}>
+                  Continue
+                </Text>
+              </Pressable>
+            </View>
+
+          </View>
         </SafeAreaView>
       </View>
     </View>

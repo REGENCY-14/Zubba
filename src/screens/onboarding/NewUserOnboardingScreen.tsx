@@ -15,6 +15,7 @@ import { RootState } from "../../store";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { userService } from "../../api/userService";
+import { useTheme } from "../../context/ThemeContext";
 
 export function NewUserOnboardingScreen({
   route,
@@ -33,6 +34,7 @@ export function NewUserOnboardingScreen({
   const isPhoneValid = phoneDigits.length >= 6;
 
   const isValid = shouldCollectPhone ? isPhoneValid : isEmailValid;
+  const { colors } = useTheme();
 
   const handleNext = () => {
     navigation.navigate("KycCollection", {
@@ -42,7 +44,7 @@ export function NewUserOnboardingScreen({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -55,21 +57,21 @@ export function NewUserOnboardingScreen({
         >
           <View className="flex-1 p-5">
             <View className="mt-6 gap-3 items-start">
-              <Text className="text-[20px] font-bold text-[#1F2A33]">
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}>
                 {shouldCollectPhone
                   ? "What's your phone number"
                   : "What's your email address"}
               </Text>
 
-              <Text className="text-xs text-[#1F2A33] underline mt-2 mb-3">
+              <Text style={{ fontSize: 12, color: colors.text, textDecorationLine: 'underline', marginTop: 8, marginBottom: 12 }}>
                 {shouldCollectPhone
                   ? "Tip: This helps secure your account and makes sign-in easier."
                   : "Tip: This helps us find your account if you change your phone or lose your number."}
               </Text>
 
-              <View className="w-full h-12 border border-black/5 rounded-full px-4 justify-center">
+              <View style={{ width: '100%', height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: colors.card }}>
                 <TextInput
-                  className="text-[13px] text-[#1F2A33] outline-none focus:outline-none border-0"
+                  style={{ fontSize: 13, color: colors.text }}
                   placeholder={
                     shouldCollectPhone
                       ? "Enter your phone number"
@@ -93,7 +95,7 @@ export function NewUserOnboardingScreen({
               <Text className="text-2xl text-black">
                 <MaterialCommunityIcons
                   name="arrow-left"
-                  color="#000000"
+                  color={colors.text}
                   size={24}
                 />
               </Text>

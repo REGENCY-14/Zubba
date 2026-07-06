@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { OTPInput } from "../../components/common/OTPInput";
 import { useResendOtp } from "../../slices/auth/auth.hooks";
+import { useTheme } from "../../context/ThemeContext";
 
 export function FindAccountOtpScreen({
   route,
@@ -25,6 +26,7 @@ export function FindAccountOtpScreen({
 
   const resendOtpMutation = useResendOtp();
   const isResending = resendOtpMutation.isPending;
+  const { colors } = useTheme();
 
   const isCodeComplete = useMemo(
     () => codeDigits.every((d) => d !== ""),
@@ -58,10 +60,10 @@ export function FindAccountOtpScreen({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-5 pb-6">
-          <Text className="text-[18px] font-bold text-[#1F2A33] mb-8">
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.text, marginBottom: 32 }}>
             Enter the 4-digits code sent via SMS at {phone}
           </Text>
 
@@ -75,7 +77,7 @@ export function FindAccountOtpScreen({
           </View>
 
           <Pressable className="mb-6">
-            <Text className="text-[13px] underline text-[#1F2A33]">
+            <Text style={{ fontSize: 13, textDecorationLine: 'underline', color: colors.text }}>
               changed my mobile number?
             </Text>
           </Pressable>
@@ -94,18 +96,18 @@ export function FindAccountOtpScreen({
           <Pressable
             disabled={isResending}
             onPress={() => setShowResendModal(true)}
-            className="w-[99px] h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
+            style={{ width: 99, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text className="text-xs font-medium text-[#1F2A33]">
+            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
               Resend code
             </Text>
           </Pressable>
 
           <Pressable
             disabled={isResending}
-            className="mt-2 w-[178px] h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
+            style={{ marginTop: 8, width: 178, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text className="text-xs font-medium text-[#1F2A33]">
+            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
               Resend code via WhatsApp
             </Text>
           </Pressable>
@@ -122,8 +124,8 @@ export function FindAccountOtpScreen({
           }}
         >
           <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
-            <View className="w-[94%] bg-white rounded-2xl p-6 mb-10 items-center">
-              <Text className="text-center text-[18px] font-medium mb-3">
+            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: 'center' }}>
+              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', marginBottom: 12, color: colors.text }}>
                 Resend code to: {phone}
               </Text>
 
@@ -143,9 +145,9 @@ export function FindAccountOtpScreen({
                 <Pressable
                   disabled={isResending}
                   onPress={() => setShowResendModal(false)}
-                  className="h-12 border border-[#E2E8F0] rounded-xl items-center justify-center"
+                  style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Text className="text-[#1F2A33] text-sm">Cancel</Text>
+                  <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
                 </Pressable>
               </View>
             </View>

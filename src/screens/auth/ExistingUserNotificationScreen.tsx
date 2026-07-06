@@ -5,42 +5,39 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { RootState } from "../../store";
+import { useTheme } from "../../context/ThemeContext";
 
-export function ExistingUserNotificationScreen({
-  route,
-  navigation,
-}: RootStackScreenProps<"ExistingUserNotification">) {
+export function ExistingUserNotificationScreen({ route, navigation }: RootStackScreenProps<"ExistingUserNotification">) {
   const { user } = useAppSelector((state: RootState) => state.auth);
   const contact = route.params?.phone ?? route.params?.email ?? "+233241122310";
+  const { colors } = useTheme();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 flex items-center w-full p-5">
-        <View className="items-center flex-1 justify-center w-full">
-          <View className="h-[110px] w-[110px] mb-4 rounded-full bg-gray-200 flex items-center justify-center">
-            <MaterialCommunityIcons name="account-circle-outline" color="#000000" size={50}/>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <View style={{ flex: 1, alignItems: "center", width: "100%", padding: 20 }}>
+        <View style={{ alignItems: "center", flex: 1, justifyContent: "center", width: "100%" }}>
+          <View style={{ height: 110, width: 110, marginBottom: 16, borderRadius: 55, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}>
+            <MaterialCommunityIcons name="account-circle-outline" color={colors.iconColor} size={50} />
           </View>
-          <Text className="text-[24px] leading-7 font-[500] text-gray-900 text-center">
+          <Text style={{ fontSize: 24, lineHeight: 28, fontWeight: "500", color: colors.text, textAlign: "center" }}>
             Welcome, {user?.firstname}
           </Text>
-          <Text className="text-[14px] leading-6 font-light text-[#707579] text-center mt-2 max-w-[366px]">
+          <Text style={{ fontSize: 14, lineHeight: 24, fontWeight: "300", color: colors.textSub, textAlign: "center", marginTop: 8, maxWidth: 366 }}>
             You previously signed in to one of our apps using {contact}
           </Text>
         </View>
-        <View className="w-full mt-6">
+        <View style={{ width: "100%", marginTop: 24, gap: 12 }}>
           <Pressable
-            className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center"
+            style={{ width: "100%", height: 48, backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
             onPress={() => navigation.replace("Home")}
           >
-            <Text className="text-white text-sm font-normal">Continue</Text>
+            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Continue</Text>
           </Pressable>
           <Pressable
-            className="w-full h-12 mt-3 bg-white rounded-full border border-[#E2E8F0] items-center justify-center"
+            style={{ width: "100%", height: 48, backgroundColor: colors.card, borderRadius: 9999, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}
             onPress={() => navigation.navigate("SignIn")}
           >
-            <Text className="text-[#1F2A33] text-sm font-medium">
-              Use another account
-            </Text>
+            <Text style={{ color: colors.text, fontSize: 14, fontWeight: "500" }}>Use another account</Text>
           </Pressable>
         </View>
       </View>

@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { OTPInput } from "../../components/common/OTPInput";
 import { useVerifyOtp, useResendOtp } from "../../slices/auth/auth.hooks";
+import { useTheme } from "../../context/ThemeContext";
 
 export function FindAccountEmailOtpScreen({
   route,
@@ -32,6 +33,7 @@ export function FindAccountEmailOtpScreen({
   );
 
   const isResending = resendOtpMutation.isPending;
+  const { colors } = useTheme();
 
   const handleVerify = async (otp: string) => {
     try {
@@ -70,10 +72,10 @@ export function FindAccountEmailOtpScreen({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-5 pb-6">
-          <Text className="text-[15px] text-[#1F2A33] mb-2">
+          <Text style={{ fontSize: 15, color: colors.text, marginBottom: 8 }}>
             Enter the 4-digits code sent to you at: {email}
           </Text>
 
@@ -87,7 +89,7 @@ export function FindAccountEmailOtpScreen({
           </View>
 
           <Pressable className="mb-6">
-            <Text className="text-[13px] underline text-[#1F2A33]">
+            <Text style={{ fontSize: 13, textDecorationLine: 'underline', color: colors.text }}>
               changed my email address?
             </Text>
           </Pressable>
@@ -106,9 +108,9 @@ export function FindAccountEmailOtpScreen({
           <Pressable
             disabled={isResending}
             onPress={() => setShowResendModal(true)}
-            className="self-start px-5 h-8 border border-[#E2E8F0] rounded-full items-center justify-center"
+            style={{ alignSelf: 'flex-start', paddingHorizontal: 20, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text className="text-xs font-medium text-[#1F2A33]">
+            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
               Resend code
             </Text>
           </Pressable>
@@ -125,8 +127,8 @@ export function FindAccountEmailOtpScreen({
           }}
         >
           <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
-            <View className="w-[94%] bg-white rounded-2xl p-6 mb-10 items-center">
-              <Text className="text-center text-[18px] font-medium mb-3">
+            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: 'center' }}>
+              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', marginBottom: 12, color: colors.text }}>
                 Resend code to: {email}
               </Text>
 
@@ -146,9 +148,9 @@ export function FindAccountEmailOtpScreen({
                 <Pressable
                   disabled={isResending}
                   onPress={() => setShowResendModal(false)}
-                  className="h-12 border border-[#E2E8F0] rounded-xl items-center justify-center"
+                  style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Text className="text-[#1F2A33] text-sm">Cancel</Text>
+                  <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
                 </Pressable>
               </View>
             </View>
