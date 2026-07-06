@@ -261,9 +261,9 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               />
             </View>
           ) : (
-            <View style={{ backgroundColor: 'rgba(255,255,255,0.95)', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 34, padding: 20, gap: 12 }}>
-              <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(0,0,0,0.11)', borderRadius: 24, height: 54, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 10 }}>
-                <MaterialCommunityIcons name="magnify" size={24} color="#000000" />
+            <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 34, padding: 20, gap: 12 }}>
+              <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24, height: 54, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 10 }}>
+                <MaterialCommunityIcons name="magnify" size={24} color={colors.iconColor} />
                 <TextInput
                   style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0 }}
                   placeholder="Where is your waste?"
