@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppBottomNav } from '../../components';
 import { useTheme } from '../../context/ThemeContext';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 function SettingsRow({
   icon,
@@ -70,6 +71,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
 
 export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>) {
   const { isDark, colors, toggle } = useTheme();
+  const isPremium = useAppSelector((state) => state.customer.is_premium);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -213,9 +215,11 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
         <AppBottomNav
           activeTab="settings"
           paddingBottom={0}
+          showCalendar={isPremium}
           onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
+          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
         />
       </View>
     </SafeAreaView>

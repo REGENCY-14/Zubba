@@ -1,167 +1,256 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { useTheme } from "../../context/ThemeContext";
 
-const TAGS = ["Professional", "Punctual", "Eco-friendly", "Efficient"];
+const PROFESSIONALISM_LABELS: Record<number, string> = {
+  1: "Bad",
+  2: "Good",
+  3: "Very good",
+  4: "Great",
+  5: "Amazing",
+};
 
-export function RateRideScreen({
-  navigation,
-}: RootStackScreenProps<"RateRide">) {
-  const { colors } = useTheme();
-  const [rating, setRating] = useState<number>(0);
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
-  const [comment, setComment] = useState<string>("");
+function StarRow({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <View style={{ flexDirection: "row", gap: 8 }}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Pressable key={n} onPress={() => onChange(n)} hitSlop={6}>
+          <MaterialCommunityIcons
+            name={n <= value ? "star" : "star-outline"}
+            size={30}
+            color={n <= value ? "#31973D" : "#BECAB9"}
+          />
+        </Pressable>
+      ))}
+    </View>
+  );
+}
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => {
-      const next = new Set(prev);
-      if (next.has(tag)) next.delete(tag);
-      else next.add(tag);
-      return next;
-    });
-  };
+function NumberRow({
+  value,
+  onChange,
+  showLabels,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  showLabels?: boolean;
+}) {
+  return (
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {[1, 2, 3, 4, 5].map((n) => {
+        const selected = n === value;
+        return (
+          <View key={n} style={{ alignItems: "center", gap: 10 }}>
+            <Pressable
+              onPress={() => onChange(n)}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                borderWidth: 1,
+                borderColor: selected ? "#31973D" : "#E5E7EB",
+                backgroundColor: selected ? "#31973D" : "transparent",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "Manrope",
+                  fontWeight: "600",
+                  fontSize: 16,
+                  color: selected ? "#FFFFFF" : "#31973D",
+                }}
+              >
+                {n}
+              </Text>
+            </Pressable>
+            {showLabels && (
+              <Text
+                style={{
+                  fontFamily: "Manrope",
+                  fontWeight: "700",
+                  fontSize: 10,
+                  color: "#9CA3AF",
+                  textAlign: "center",
+                }}
+              >
+                {PROFESSIONALISM_LABELS[n]}
+              </Text>
+            )}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+function SectionDivider() {
+  return <View style={{ height: 1, backgroundColor: "#F8FAFC" }} />;
+}
+
+export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">) {
+  const [serviceRating, setServiceRating] = useState(4);
+  const [professionalism, setProfessionalism] = useState(4);
+  const [ecoFriendly, setEcoFriendly] = useState(4);
+  const [note, setNote] = useState("");
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, backgroundColor: colors.bg }}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}
-          >
-            <MaterialCommunityIcons name="chevron-left" color={colors.text} size={24} />
-          </Pressable>
+    <View style={{ flex: 1, backgroundColor: "#E5E5E5" }}>
+      {/* Gray map area */}
+      <View style={{ flex: 1 }} />
 
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
-            Success
-          </Text>
-
-          <View style={{ width: 24, height: 24 }} />
+      {/* Bottom sheet */}
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderTopLeftRadius: 32,
+          borderTopRightRadius: 32,
+          shadowColor: "#454745",
+          shadowOpacity: 0.15,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: -4 },
+          elevation: 12,
+        }}
+      >
+        {/* Handle */}
+        <View style={{ alignItems: "center", paddingTop: 16, paddingBottom: 4 }}>
+          <View style={{ width: 152, height: 3, backgroundColor: "#334154", borderRadius: 20 }} />
         </View>
 
-        <View style={{ flex: 1, alignItems: 'center', gap: 24, paddingTop: 112 }}>
-          <View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: '#16A34A', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialCommunityIcons name="check" size={40} color="#fff" />
+        {/* Title */}
+        <View style={{ paddingHorizontal: 24, paddingVertical: 8 }}>
+          <Text
+            style={{
+              fontFamily: "Poppins",
+              fontWeight: "500",
+              fontSize: 16,
+              lineHeight: 28,
+              letterSpacing: -0.48,
+              color: "#000000",
+            }}
+          >
+            How would you rate the following aspects?
+          </Text>
+        </View>
+
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 16, gap: 16 }}
+        >
+          {/* Ratings card */}
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: "#E2E8F0",
+              borderRadius: 24,
+              padding: 16,
+              gap: 16,
+              backgroundColor: "#FFFFFF",
+            }}
+          >
+            {/* Service experience */}
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: "Manrope", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#94A3B7" }}>
+                Service experience
+              </Text>
+              <StarRow value={serviceRating} onChange={setServiceRating} />
+            </View>
+
+            <SectionDivider />
+
+            {/* Professionalism */}
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: "Manrope", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#94A3B7" }}>
+                Professionalism
+              </Text>
+              <NumberRow value={professionalism} onChange={setProfessionalism} showLabels />
+            </View>
+
+            <SectionDivider />
+
+            {/* Eco-friendly */}
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: "Manrope", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#94A3B7" }}>
+                Eco-friendly
+              </Text>
+              <NumberRow value={ecoFriendly} onChange={setEcoFriendly} />
+            </View>
           </View>
 
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text, textAlign: 'center', lineHeight: 32 }}>
-            Your transaction is{"\n"}successful
-          </Text>
-        </View>
+          {/* Additional Note */}
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "600", fontSize: 14, color: "#000000" }}>
+              Additional Note
+            </Text>
+            <TextInput
+              value={note}
+              onChangeText={setNote}
+              placeholder="Thank you"
+              placeholderTextColor="#94A3B7"
+              multiline
+              style={{
+                borderWidth: 1,
+                borderColor: "#CBD5E0",
+                borderRadius: 24,
+                padding: 14,
+                minHeight: 108,
+                fontFamily: "Plus Jakarta Sans",
+                fontSize: 14,
+                color: "#000000",
+                textAlignVertical: "top",
+                backgroundColor: "#FFFFFF",
+              }}
+            />
+          </View>
+        </ScrollView>
 
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} pointerEvents="none" />
-
-        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.surface, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 16, paddingBottom: 24, paddingHorizontal: 16, gap: 16, maxHeight: '70%' }}>
-          <View style={{ width: 144, height: 3, backgroundColor: colors.border, borderRadius: 999, alignSelf: 'center' }} />
-
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ gap: 12, paddingBottom: 8 }}
+        {/* Bottom actions */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 24,
+            paddingBottom: 24,
+            paddingTop: 8,
+            gap: 10,
+          }}
+        >
+          <Pressable
+            onPress={() => navigation.navigate("Home")}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: "#FFE2E2",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <View style={{ alignItems: 'center', gap: 4 }}>
-              <Text style={{ fontSize: 18, fontWeight: '500', color: colors.text }}>
-                Rate your pickup experience
-              </Text>
-              <Text style={{ fontSize: 14, color: colors.textSub }}>
-                Your feedback helps us keep the city green.
-              </Text>
-            </View>
+            <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
+          </Pressable>
 
-            <View style={{ backgroundColor: colors.card, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 16, gap: 12 }}>
-              {/* Star rating */}
-              <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, paddingBottom: 24, gap: 16 }}>
-                <Text style={{ fontSize: 16, color: colors.text }}>Service experience</Text>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Pressable key={index} onPress={() => setRating(index + 1)} hitSlop={6}>
-                      <MaterialCommunityIcons
-                        name={index < rating ? "star" : "star-outline"}
-                        color={index < rating ? "#31973D" : "#BECAB9"}
-                        size={32}
-                      />
-                    </Pressable>
-                  ))}
-                </View>
-                {rating > 0 && (
-                  <Text style={{ fontSize: 14, color: '#31973D' }}>
-                    {["", "Poor", "Fair", "Good", "Great", "Excellent"][rating]}
-                  </Text>
-                )}
-              </View>
-
-              {/* Tags */}
-              <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, paddingBottom: 24, gap: 16 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>What did you like</Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                  {TAGS.map((tag) => {
-                    const active = selectedTags.has(tag);
-                    return (
-                      <Pressable
-                        key={tag}
-                        onPress={() => toggleTag(tag)}
-                        style={{
-                          borderRadius: 24,
-                          paddingHorizontal: 16,
-                          paddingVertical: 12,
-                          borderWidth: 1,
-                          borderColor: active ? '#31973D' : colors.border,
-                          backgroundColor: active ? 'rgba(49,151,61,0.1)' : colors.surface,
-                          minWidth: '45%',
-                          flexGrow: 1,
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Text style={{ fontSize: 14, color: active ? '#31973D' : colors.text, fontWeight: active ? '600' : '400' }}>
-                          {tag}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                  <Pressable style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, flexDirection: 'row', borderRadius: 24, paddingVertical: 12, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <Text style={{ fontSize: 14, color: colors.text }}>More options</Text>
-                    <MaterialCommunityIcons name="chevron-right" color={colors.text} size={20} />
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-
-            {/* Comment */}
-            <View style={{ backgroundColor: colors.card, borderTopWidth: 1, borderTopColor: colors.border, gap: 12, padding: 16 }}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}>Additional comment</Text>
-              <TextInput
-                style={{ height: 48, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 999, backgroundColor: colors.card, fontSize: 15, color: colors.text }}
-                placeholder="Tell us more..."
-                placeholderTextColor={colors.textMuted}
-                value={comment}
-                onChangeText={setComment}
-              />
-            </View>
-
-            {/* Actions */}
-            <View style={{ paddingHorizontal: 8, gap: 8 }}>
-              <Pressable
-                onPress={() => navigation.navigate("Home")}
-                style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Submit</Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => navigation.navigate("Home")}
-                style={{ height: 48, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Text style={{ color: colors.text, fontWeight: '600' }}>Not Now</Text>
-              </Pressable>
-            </View>
-          </ScrollView>
+          <Pressable
+            onPress={() => navigation.navigate("ThankYou")}
+            style={{
+              flex: 1,
+              height: 40,
+              backgroundColor: "#31973D",
+              borderRadius: 999,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>
+              Submit
+            </Text>
+          </Pressable>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

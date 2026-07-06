@@ -24,10 +24,10 @@ export type RootStackParamList = {
   Scanning: undefined;
   DriverArrives: undefined;
   Payment: undefined;
-  PaymentMethod: undefined;
-  PaymentVerification: undefined;
-  AuthorizePayment: undefined;
-  PaymentSuccess: undefined;
+  PaymentMethod: { method: string };
+  PaymentVerification: { method: string; phone: string };
+  AuthorizePayment: { method: string; phone: string };
+  PaymentSuccess: { method: string; phone: string };
   ThankYou: undefined;
   RateRide: undefined;
   Settings: undefined;

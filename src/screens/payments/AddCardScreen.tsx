@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  Modal,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
@@ -26,7 +27,6 @@ function LockIcon() {
 }
 
 type ToggleProps = { value: boolean; onValueChange: (v: boolean) => void };
-
 function Toggle({ value, onValueChange }: ToggleProps) {
   return (
     <Pressable
@@ -34,12 +34,11 @@ function Toggle({ value, onValueChange }: ToggleProps) {
       className={`w-9 h-5 rounded-full ${value ? 'bg-[#31973D]' : 'bg-[#D1D5DB]'}`}
       style={value ? { borderWidth: 1, borderColor: 'rgba(52, 168, 83, 0.5)' } : undefined}
     >
-      <View
-        className={`absolute w-4 h-4 rounded-full bg-white top-[2px] ${value ? 'left-[18px]' : 'left-[2px]'}`}
-      />
+      <View className={`absolute w-4 h-4 rounded-full bg-white top-[2px] ${value ? 'left-[18px]' : 'left-[2px]'}`} />
     </Pressable>
   );
 }
+
 
 export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCard'>) {
   const { colors } = useTheme();
@@ -73,6 +72,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
           keyboardShouldPersistTaps="handled"
         >
           <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 16, backgroundColor: colors.card }}>
+            {/* Card preview */}
             <View className="min-h-[200px] rounded-3xl p-6 bg-[#31973D] overflow-hidden justify-between">
               <View className="absolute w-[150px] h-[150px] -right-[30px] -top-[50px] rounded-[75px]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
               <View className="absolute w-[104px] h-[100px] rounded-[50px] -bottom-5" style={{ left: '20%', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
@@ -104,6 +104,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
               </View>
             </View>
 
+            {/* Form */}
             <View className="gap-4">
               <View className="gap-2">
                 <Text style={{ fontSize: 16, color: colors.text, paddingHorizontal: 8, lineHeight: 24 }}>Card Name</Text>
@@ -163,6 +164,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
               </View>
             </View>
 
+            {/* Total + Pay */}
             <View className="flex-row justify-between items-center gap-[10px]">
               <View>
                 <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text, lineHeight: 24 }}>Total</Text>
@@ -180,51 +182,60 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
         </ScrollView>
       </View>
 
-      <Modal
-        visible={showSuccess}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowSuccess(false)}
-      >
-        <View
-          className="flex-1 justify-center items-center px-6"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
-        >
-          <View style={{ width: '100%', gap: 32, alignItems: 'center', backgroundColor: colors.card, borderRadius: 24, padding: 32 }}>
-            <View className="items-center gap-3">
-              <Text style={{ fontSize: 36, fontWeight: '500', color: colors.text, textAlign: 'center', lineHeight: 44, letterSpacing: -1.08 }}>Successful</Text>
-              <Text style={{ fontSize: 16, color: colors.text, textAlign: 'center', lineHeight: 20, letterSpacing: -0.32 }}>
-                {'Enjoy double Eco-Points,priority support,\nand a cleaner tomorrow.'}
+      {/* ── Celebration overlay ── replaces the old Modal ── */}
+      {showSuccess && (
+        <View style={StyleSheet.absoluteFillObject}>
+          {/* Layer 1: blur the screen behind */}
+          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFillObject} />
+
+          {/* Layer 2: frosted white tint (rgba(255,255,255,0.3) from Figma) */}
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
+
+          {/* Layer 3: content */}
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 32 }}>
+            <View style={{ alignItems: 'center', gap: 12 }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 36, lineHeight: 44, letterSpacing: -1.08, textAlign: 'center', color: '#0F1621' }}>
+                Successful
+              </Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 20, letterSpacing: -0.32, textAlign: 'center', color: '#1F2A33' }}>
+                Enjoy double Eco-Points, priority support, and a cleaner tomorrow.
               </Text>
             </View>
 
-            <View className="w-full gap-3">
+            <View style={{ width: '100%', gap: 12 }}>
               <Pressable
-                className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+                style={{ height: 48, backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
                   navigation.navigate('PremiumHome');
                 }}
               >
-                <Text className="text-sm text-white leading-5">Proceed to Premium</Text>
+                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '400', fontSize: 14, color: '#FFFFFF' }}>
+                  Proceed to Premium
+                </Text>
               </Pressable>
+
               <Pressable
-                style={{ height: 48, backgroundColor: colors.surface, borderRadius: 24, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: 48, backgroundColor: '#FFFFFF', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
                   navigation.navigate('PremiumHome');
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, lineHeight: 20 }}>Set Package expiry alert</Text>
+                <Text style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: '500', fontSize: 14, color: '#1F2A33' }}>
+                  Set Package expiry alert
+                </Text>
               </Pressable>
             </View>
           </View>
         </View>
-      </Modal>
+      )}
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({});
 
 export default AddCardScreen;

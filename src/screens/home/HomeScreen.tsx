@@ -260,57 +260,24 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               />
             </View>
           ) : (
-            /* Non-premium search bar */
-            <View
-              style={{
-                height: 54,
-                backgroundColor: colors.card,
-                borderRadius: 999,
-                borderWidth: 1,
-                borderColor: colors.border,
-                paddingHorizontal: 12,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Pressable
-                onPress={() =>
-                  navigation.navigate("Details", {
-                    itemId: "search",
-                    title: "Search",
-                  })
-                }
-              >
-                <MaterialCommunityIcons name="magnify" size={24} color={colors.iconColor} />
-              </Pressable>
-              <TextInput
-                style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0 }}
-                placeholder="Where is your waste?"
-                placeholderTextColor={colors.textMuted}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              {searchQuery.length > 0 && (
-                <Pressable
-                  onPress={() => setSearchQuery("")}
-                  className="w-8 h-8 items-center justify-center"
-                >
-                  <MaterialCommunityIcons
-                    name="close-circle"
-                    size={22}
-                    color="#EF4444"
-                  />
-                </Pressable>
-              )}
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.95)', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 34, padding: 20, gap: 12 }}>
+              <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(0,0,0,0.11)', borderRadius: 24, height: 54, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 10 }}>
+                <MaterialCommunityIcons name="magnify" size={24} color="#000000" />
+                <TextInput
+                  style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0 }}
+                  placeholder="Where is your waste?"
+                  placeholderTextColor={colors.textMuted}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+                {searchQuery.length > 0 && (
+                  <Pressable onPress={() => setSearchQuery('')} style={{ width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialCommunityIcons name="close-circle" size={20} color="#EF4444" />
+                  </Pressable>
+                )}
+              </View>
+              <StatCardsRow mass_recycled={customer.mass_recycled} points={customer.points} noCard />
             </View>
-          )}
-
-          {!isPremium && (
-            <StatCardsRow
-              mass_recycled={customer.mass_recycled}
-              points={customer.points}
-            />
           )}
         </View>
 
@@ -421,6 +388,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             navigation.navigate("Details", { itemId: "save", title: "Saved" })
           }
           onSettingsPress={() => navigation.navigate("Settings")}
+          showCalendar={isPremium}
+          onCalendarPress={isPremium ? () => navigation.navigate("Schedule") : undefined}
         />
       </ImageBackground>
     </SafeAreaView>

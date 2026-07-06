@@ -8,35 +8,24 @@ type StatCardProps = {
   labelColor?: string;
 };
 
-export function StatCard({
-  icon,
-  label,
-  value,
-  description,
-  labelColor = "#31973D",
-}: StatCardProps) {
+export function StatCard({ icon, label, value, description, labelColor = "#31973D" }: StatCardProps) {
   return (
-    <View
-      className="flex-1 bg-white border border-[#E2E8F0] p-3"
-      style={{ borderRadius: 24 }}
-    >
-      <View className="flex-row justify-between items-center">
-        <Image
-          source={icon}
-          className="w-[20px] h-[20px]"
-          resizeMode="contain"
-        />
-
-        <Text
-          className="text-xs font-semibold uppercase"
-          style={{ color: labelColor }}
-        >
+    <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.95)', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 24, padding: 16, gap: 8 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Image source={icon} style={{ width: 21, height: 21 }} resizeMode="contain" />
+        <Text style={{ fontSize: 12, fontWeight: '600', color: labelColor, fontFamily: 'Poppins', letterSpacing: 1.2, textTransform: 'uppercase' }}>
           {label}
         </Text>
       </View>
 
-      <Text className="text-xl font-bold text-[#1F2A33] mt-2">{value}</Text>
-      <Text className="text-sm text-[#6F7A6C] mt-1 font-medium">{description}</Text>
+      <View>
+        <Text style={{ fontSize: 20, fontWeight: '600', color: '#1F2A33', fontFamily: 'Poppins', lineHeight: 28 }}>
+          {typeof value === 'number' ? value.toLocaleString() : value}
+        </Text>
+        <Text style={{ fontSize: 14, fontWeight: '500', color: '#6F7A6C', fontFamily: 'Poppins', lineHeight: 21 }}>
+          {description}
+        </Text>
+      </View>
     </View>
   );
 }

@@ -13,12 +13,16 @@ import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentMethodScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"PaymentMethod">) {
+  const { method } = route.params;
   const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
   const { colors } = useTheme();
+  const isPremium = useAppSelector((state) => state.customer.is_premium);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
@@ -62,7 +66,7 @@ export function PaymentMethodScreen({
             <View className="gap-2">
 
               <Text style={{ fontSize: 16, color: colors.text }}>
-                Wallet Phone Number
+                {method} Number
               </Text>
 
               <TextInput
@@ -111,7 +115,7 @@ export function PaymentMethodScreen({
             </View>
 
             <Pressable
-              onPress={() => navigation.navigate("PaymentVerification")}
+              onPress={() => navigation.navigate("PaymentVerification", { method, phone: phoneNumber })}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">
@@ -129,10 +133,11 @@ export function PaymentMethodScreen({
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
+          showCalendar={isPremium}
           onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
         />
       </View>
     </SafeAreaView>

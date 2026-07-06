@@ -44,8 +44,7 @@ export function ScanningScreen({
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [appBarText, setAppBarText] = useState("Scanning...");
-  const customer = useAppSelector((state) => state.customer.is_premium)
-  const isPremium = true
+  const isPremium = useAppSelector((state) => state.customer.is_premium)
   const [modalStep, setModalStep] = useState<"request" | "assigned">("request");
   const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -194,14 +193,16 @@ export function ScanningScreen({
             navigation.navigate("Details", { itemId: "save", title: "Saved" })
           }
           onSettingsPress={() => navigation.navigate("Settings")}
+          showCalendar={isPremium}
         />
-        {
-
-        }
         <PickupRequestModal
           visible={showModal}
           step={modalStep}
           avatar={avatar}
+          name="Marcus Chen"
+          rating={4.9}
+          code="ZB-Expert"
+          cost="20.00"
           onProceed={() => setModalStep("assigned")}
           onCancel={() => {
             navigation.pop();
