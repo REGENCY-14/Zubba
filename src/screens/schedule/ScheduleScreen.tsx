@@ -542,6 +542,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
       <AppBottomNav
         activeTab="calendar"
         paddingBottom={0}
+        showCalendar
         onHomePress={() => navigation.navigate('PremiumHome')}
         onCalendarPress={() => {}}
         onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}

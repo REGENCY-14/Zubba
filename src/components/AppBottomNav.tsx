@@ -18,6 +18,7 @@ type Props = {
   activeTab: Tab;
   paddingBottom?: number;
   bottomOffset?: number;
+  showCalendar?: boolean;
 };
 
 function NavItem({
@@ -72,6 +73,7 @@ export function AppBottomNav({
   activeTab,
   paddingBottom = 8,
   bottomOffset = 20,
+  showCalendar = false,
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -106,18 +108,20 @@ export function AppBottomNav({
           label="Home"
         />
 
-        <NavItem
-          active={isActive('calendar')}
-          onPress={onCalendarPress ?? (() => {})}
-          icon={
-            isActive('calendar') ? (
-              <MaterialCommunityIcons size={20} name="calendar" color="#fff" />
-            ) : (
-              <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.textSub} />
-            )
-          }
-          label="Schedule"
-        />
+        {showCalendar && (
+          <NavItem
+            active={isActive('calendar')}
+            onPress={onCalendarPress ?? (() => {})}
+            icon={
+              isActive('calendar') ? (
+                <MaterialCommunityIcons size={20} name="calendar" color="#fff" />
+              ) : (
+                <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.textSub} />
+              )
+            }
+            label="Schedule"
+          />
+        )}
 
         <NavItem
           active={isActive('saved')}

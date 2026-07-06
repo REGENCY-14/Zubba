@@ -12,11 +12,15 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import { useTheme } from "../../context/ThemeContext";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentVerificationScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"PaymentVerification">) {
+  const { method, phone } = route.params;
   const { colors } = useTheme();
+  const isPremium = useAppSelector((state) => state.customer.is_premium);
   const [code, setCode] = React.useState("");
   const [resendTimer, setResendTimer] = React.useState(60);
   const inputRef = React.useRef<TextInput | null>(null);
@@ -62,8 +66,9 @@ export function PaymentVerificationScreen({
           </Text>
 
           <Text style={{ fontSize: 16, lineHeight: 24, color: colors.textSub, marginBottom: 32 }}>
-            We've sent a 4-digit code to{" "}
-            <Text style={{ color: colors.text, fontWeight: '600' }}>+233 55 123 4567</Text>. Please
+            We've sent a 4-digit code to your{" "}
+            <Text style={{ color: colors.text, fontWeight: '600' }}>{method}</Text> number{" "}
+            <Text style={{ color: colors.text, fontWeight: '600' }}>{phone}</Text>. Please
             enter it below to authorize your{" "}
             <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS 45.00</Text> payment.
           </Text>
@@ -120,7 +125,7 @@ export function PaymentVerificationScreen({
 
           <Pressable
             onPress={() =>
-              code.length === 4 && navigation.navigate("AuthorizePayment")
+              code.length === 4 && navigation.navigate("AuthorizePayment", { method, phone })
             }
             className="h-12 bg-[#31973D] rounded-full items-center justify-center"
           >
@@ -132,10 +137,11 @@ export function PaymentVerificationScreen({
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
+          showCalendar={isPremium}
           onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
         />
       </View>
     </SafeAreaView>

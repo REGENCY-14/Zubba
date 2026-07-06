@@ -7,8 +7,16 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
+
+const METHOD_LABELS: Record<PaymentMethodId, string> = {
+  wallet: "Zubba Wallet",
+  momo: "MTN MoMo",
+  telecel: "Telecel Cash",
+  airtel: "Airtel Money",
+};
 
 type PaymentOptionProps = {
   selected: boolean;
@@ -88,8 +96,9 @@ function PaymentOption({
 
 const airtelTigo = require("../../../assets/airtelTigo.png");
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
+  const isPremium = useAppSelector((state) => state.customer.is_premium);
   const [selectedMethod, setSelectedMethod] =
-    React.useState<PaymentMethodId>("wallet");
+    React.useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
   const { colors } = useTheme();
 
   return (
@@ -137,16 +146,18 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
               Select Payment Method
             </Text>
 
-            <PaymentOption
-              selected={selectedMethod === "wallet"}
-              title="Zubba Wallet"
-              iconName="wallet"
-              badgeBg="bg-[#31973D]"
-              onPress={() => setSelectedMethod("wallet")}
-              cardBg={colors.card}
-              cardBorder={colors.border}
-              textColor={colors.text}
-            />
+            {isPremium && (
+              <PaymentOption
+                selected={selectedMethod === "wallet"}
+                title="Zubba Wallet"
+                iconName="wallet"
+                badgeBg="bg-[#31973D]"
+                onPress={() => setSelectedMethod("wallet")}
+                cardBg={colors.card}
+                cardBorder={colors.border}
+                textColor={colors.text}
+              />
+            )}
 
             <PaymentOption
               selected={selectedMethod === "momo"}
@@ -189,7 +200,7 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
             onPress={() =>
               selectedMethod === "wallet"
                 ? navigation.navigate("WalletCheckout")
-                : navigation.navigate("PaymentMethod")
+                : navigation.navigate("PaymentMethod", { method: METHOD_LABELS[selectedMethod] })
             }
             className="h-12 bg-[#31973D] rounded-full items-center justify-center"
           >
@@ -204,7 +215,8 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
           onHomePress={() => navigation.navigate('Home')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+          showCalendar={isPremium}
+          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
         />
       </View>
     </SafeAreaView>

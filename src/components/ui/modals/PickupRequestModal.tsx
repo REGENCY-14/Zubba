@@ -1,5 +1,5 @@
 import { Modal, View, Text, Pressable, Image } from "react-native";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = {
   visible: boolean;
@@ -12,7 +12,6 @@ type Props = {
   onProceed: () => void;
   onCancel: () => void;
   onAssignedCancel: () => void;
-  isPremium?: boolean;
   animationType?: "fade" | "none" | "slide";
 };
 
@@ -27,172 +26,95 @@ export default function PickupRequestModal({
   onProceed,
   onCancel,
   onAssignedCancel,
-  isPremium,
-  animationType,
+  animationType = "fade",
 }: Props) {
+  const isAssigned = step === "assigned";
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType={animationType ? animationType : "fade"}
-    >
-      <View className="flex-1 justify-end items-center pb-[130px] px-4">
-        <View
-          className={`bg-white rounded-[22px] items-center px-3 py-4 w-full`}
-          style={{ gap: 20 }}
-        >
-          {step == "request" ? (
-            <View className="w-full items-center" style={{ gap: 20 }}>
-              <View className="w-full gap-4 border border-[#E2E8F0] rounded-3xl bg-white p-6 items-center justify-center">
-                <View
-                  className="w-16 h-16 rounded-xl bg-[#F4F4F5] items-center justify-center"
-                  style={{
-                    boxShadow: [
-                      {
-                        offsetX: 0,
-                        offsetY: 0,
-                        blurRadius: 0,
-                        spreadDistance: 2,
-                        color: "#FAFAFA",
-                      },
-                    ],
-                  }}
-                >
-                  <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden items-center justify-center bg-[#C7E0C9]">
-                    {avatar ? (
-                      <Image
-                        source={avatar}
-                        style={{ width: 54, height: 54 }}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <Text className="text-sm font-bold text-[#1A1C1E] uppercase">
-                        {name
-                          .split(" ")
-                          .map((part) => part.charAt(0))
-                          .join("")}
-                      </Text>
-                    )}
-                  </View>
-                  {isPremium && (
-                    <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
-                      <MaterialCommunityIcons
-                        name="check-decagram"
-                        size={13}
-                        color="#FFFFFF"
-                      />
-                    </View>
-                  )}
-                </View>
+    <Modal visible={visible} transparent animationType={animationType}>
+      <View style={{ flex: 1, justifyContent: "flex-end", alignItems: "center", paddingBottom: 130, paddingHorizontal: 16 }}>
+        <View style={{ width: "100%", backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 20, padding: 24, gap: 16 }}>
 
-                <View className="flex-col items-center gap-1">
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    className="mt-3 text-base font-bold text-[#1F2A33] uppercase"
-                  >
-                    {name}
+          {/* Header */}
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "500", fontSize: 16, color: "#000000" }}>
+              Driver selected
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(0,107,35,0.10)", borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#31973D" }} />
+              <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 13, color: "#31973D" }}>Live view</Text>
+            </View>
+          </View>
+
+          {/* Divider */}
+          <View style={{ height: 1, backgroundColor: "#E2E8F0" }} />
+
+          {/* Driver info */}
+          <View style={{ alignItems: "center", gap: 12 }}>
+            {/* Avatar */}
+            <View style={{ width: 40, height: 40, borderRadius: 12, overflow: "hidden" }}>
+              {avatar ? (
+                <Image source={avatar} style={{ width: 40, height: 40 }} resizeMode="cover" />
+              ) : (
+                <View style={{ width: 40, height: 40, backgroundColor: "#7C3AED", alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "700", fontSize: 12, color: "#fff" }}>
+                    {name.split(" ").map(p => p.charAt(0)).join("")}
                   </Text>
-
-                  <Text className="text-[#31973D] text-base">
-                    GHS {cost} / distance
-                  </Text>
-
-                  <View className="flex-row items-center">
-                    <MaterialCommunityIcons
-                      name="star"
-                      size={14}
-                      color="#0D631B"
-                    />
-                    <Text className="text-sm text-[#0D631B] ml-1">
-                      {rating} • {code}
-                    </Text>
-                  </View>
                 </View>
-              </View>
+              )}
+            </View>
 
-              <View className="flex gap-3 w-full context-stretch">
-                <Pressable
-                  className="h-12 bg-[#31973D] rounded-full items-center justify-center w-full"
-                  onPress={onProceed}
-                >
-                  <Text className="text-white">Proceed to request</Text>
+            {/* Name */}
+            <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 16, color: "#1F2A33", letterSpacing: 1.6, textTransform: "uppercase", textAlign: "center" }}>
+              {name}
+            </Text>
+
+            {/* Price — only on request step */}
+            {!isAssigned && (
+              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: "#31973D", textAlign: "center" }}>
+                GHS {cost} / distance
+              </Text>
+            )}
+
+            {/* Rating */}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <MaterialCommunityIcons name="star" size={12} color="#0D631B" />
+              <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 14, color: "#0D631B" }}>
+                {rating} • {code}
+              </Text>
+            </View>
+
+            {/* Call / Message — only on assigned step */}
+            {isAssigned && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
+                  <MaterialCommunityIcons name="phone-outline" size={16} color="#171D14" />
+                  <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 14, color: "#171D14" }}>Call</Text>
                 </Pressable>
-
-                <Pressable
-                  className="h-12 rounded-full border border-[#E2E8F0] items-center justify-center w-full flex-row"
-                  onPress={onCancel}
-                >
-                  <View className="w-4 h-4 rounded-full bg-[#EF4444] items-center justify-center mr-2">
-                    <MaterialIcons name="close" size={10} color="#fff" />
-                  </View>
-                  <Text className="text-[#EF4444]">Cancel pickup</Text>
+                <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
+                  <MaterialCommunityIcons name="message-outline" size={16} color="#171D14" />
+                  <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 14, color: "#171D14" }}>Message</Text>
                 </Pressable>
               </View>
-            </View>
-          ) : (
-            <View className="w-full items-center" style={{ gap: 20 }}>
-              <View className="w-full border border-[#E2E8F0] rounded-2xl bg-white p-6 gap-4 items-center justify-center">
-                <View className="w-16 h-16 rounded-xl bg-[#F4F4F5] items-center justify-center">
-                  <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden">
-                    <Image
-                      source={avatar}
-                      style={{ width: 54, height: 54 }}
-                      resizeMode="cover"
-                    />
-                  </View>
-                </View>
+            )}
+          </View>
 
-                <View className="flex-col gap-1 items-center">
-                  <Text className="mt-3 text-base font-bold uppercase">
-                    {name}
-                  </Text>
+          {/* Actions */}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Pressable
+              onPress={isAssigned ? onAssignedCancel : onCancel}
+              style={{ width: 40, height: 40, backgroundColor: "#FFE2E2", borderRadius: 12, alignItems: "center", justifyContent: "center" }}
+            >
+              <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
+            </Pressable>
+            <Pressable
+              onPress={isAssigned ? undefined : onProceed}
+              style={{ flex: 1, height: 40, backgroundColor: isAssigned ? "rgba(52,168,83,0.5)" : "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>Proceed</Text>
+            </Pressable>
+          </View>
 
-                  <View className="flex-row items-center">
-                    <MaterialCommunityIcons
-                      name="star"
-                      size={14}
-                      color="#0D631B"
-                    />
-                    <Text className="text-sm text-[#0D631B] ml-1">
-                      {rating} • {code}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row mt-3 items-center gap-6">
-                    <View className="flex-row items-center gap-2">
-                      <MaterialCommunityIcons
-                        name="phone-outline"
-                        size={16}
-                        color="#1F2A33"
-                      />
-                      <Text className="ml-1 text-[#1F2A33] text-sm">Call</Text>
-                    </View>
-                    <View className="flex-row items-center gap-2">
-                      <MaterialCommunityIcons
-                        name="message-outline"
-                        size={16}
-                        color="#1F2A33"
-                      />
-                      <Text className="ml-1 text-[#1F2A33] text-sm">
-                        Message
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              <Pressable
-                className="h-12 border border-[#E2E8F0] rounded-full items-center justify-center w-full flex-row"
-                onPress={onAssignedCancel}
-              >
-                <View className="w-4 h-4 rounded-full bg-[#EF4444] items-center justify-center mr-2">
-                  <MaterialIcons name="close" size={10} color="#fff" />
-                </View>
-                <Text className="text-[#EF4444]">Cancel pickup</Text>
-              </Pressable>
-            </View>
-          )}
         </View>
       </View>
     </Modal>

@@ -2,61 +2,44 @@ import { View, Text, Pressable, StatusBar, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackScreenProps } from "../../navigation/types";
-import { useTheme } from "../../context/ThemeContext";
 
 export function ThankYouScreen({
   navigation,
 }: RootStackScreenProps<"ThankYou">) {
-  const { colors } = useTheme();
-
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#e8f0e8" }}
-      edges={["top", "left", "right"]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#d6ebd6" }} edges={["top", "left", "right"]}>
       <StatusBar barStyle="dark-content" />
 
-      {/* ── Blob layer ──
-          Each blob is a soft-green circle wrapped in a BlurView so both
-          the fill AND its edges are blurred — no sharp outlines. */}
+      {/* Layer 1 — background blobs (will be blurred by BlurView above) */}
+      <View style={[styles.blob, styles.blobTopRight]} />
+      <View style={[styles.blob, styles.blobMidLeft]} />
+      <View style={[styles.blob, styles.blobBottomCenter]} />
 
-      {/* Top-left blob */}
-      <BlurView intensity={60} tint="default" style={[styles.blobWrap, styles.blobTopLeft]}>
-        <View style={styles.blobInner} />
-      </BlurView>
-
-      {/* Bottom-right blob */}
-      <BlurView intensity={60} tint="default" style={[styles.blobWrap, styles.blobBottomRight]}>
-        <View style={[styles.blobInner, styles.blobInnerDark]} />
-      </BlurView>
-
-      {/* ── Frosted overlay ── sits between blobs and content */}
-      <View style={styles.frostOverlay} />
-
-      {/* ── Content ── */}
-      <View
-        className="flex-1 items-center justify-center px-6"
+      {/* Layer 2 — BlurView blurs everything behind it (the blobs) */}
+      <BlurView
+        intensity={55}
+        tint="light"
         style={StyleSheet.absoluteFillObject}
-      >
-        <View className="w-full py-10 items-center gap-8">
-          <View className="flex">
-            <Text className="text-2xl font-medium tracking-tight mb-3 text-center">
-              Thank you
-            </Text>
+      />
 
-            <Text className="text-[#3a3a3a] w-full text-sm text-center leading-relaxed mb-8">
-              You help fellow customers find what's good out there in discovering
-              the best experiences..
+      {/* Layer 3 — frosted white tint (rgba(255,255,255,0.3) from Figma) */}
+      <View style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(255,255,255,0.25)" }]} />
+
+      {/* Layer 4 — content */}
+      <View style={[StyleSheet.absoluteFillObject, styles.content]}>
+        <View style={styles.inner}>
+          <View style={styles.textBlock}>
+            <Text style={styles.heading}>Thank you</Text>
+            <Text style={styles.subtitle}>
+              You help fellow customers find what's good out there in discovering the best experiences..
             </Text>
           </View>
 
           <Pressable
             onPress={() => navigation.navigate("Home")}
-            className="w-full bg-[#31973D] rounded-full py-[14px] items-center"
+            style={styles.button}
           >
-            <Text className="text-white text-sm font-medium tracking-wide">
-              Proceed to Home
-            </Text>
+            <Text style={styles.buttonText}>Proceed to Home</Text>
           </Pressable>
         </View>
       </View>
@@ -64,46 +47,78 @@ export function ThankYouScreen({
   );
 }
 
-const BLOB_SIZE = 340;
-
 const styles = StyleSheet.create({
-  // BlurView wrapper — same size/position as the blob
-  blobWrap: {
+  blob: {
     position: "absolute",
-    width: BLOB_SIZE,
-    height: BLOB_SIZE,
-    borderRadius: BLOB_SIZE / 2,
-    overflow: "hidden", // clips the blur to the circle shape
+    borderRadius: 9999,
+    backgroundColor: "rgba(49, 151, 61, 0.45)",
   },
-
-  blobTopLeft: {
-    top: -100,
-    left: -80,
+  blobTopRight: {
+    width: 380,
+    height: 380,
+    top: -120,
+    right: -100,
   },
-
-  blobBottomRight: {
-    width: BLOB_SIZE * 1.15,
-    height: BLOB_SIZE * 1.15,
-    borderRadius: (BLOB_SIZE * 1.15) / 2,
-    bottom: -110,
-    right: -90,
+  blobMidLeft: {
+    width: 280,
+    height: 280,
+    top: "30%",
+    left: -100,
+    backgroundColor: "rgba(49, 151, 61, 0.30)",
   },
-
-  // The actual coloured fill inside the BlurView
-  blobInner: {
-    flex: 1,
-    borderRadius: BLOB_SIZE / 2,
-    // Muted sage-green matching the screenshot — not a saturated green
-    backgroundColor: "rgba(130, 190, 130, 0.55)",
+  blobBottomCenter: {
+    width: 420,
+    height: 420,
+    bottom: -150,
+    left: -60,
+    backgroundColor: "rgba(49, 151, 61, 0.40)",
   },
-
-  blobInnerDark: {
-    // Slightly richer for the bottom-right blob
-    backgroundColor: "rgba(100, 170, 100, 0.60)",
+  content: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
   },
-
-  frostOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(240, 245, 240, 0.40)",
+  inner: {
+    width: "100%",
+    alignItems: "center",
+    gap: 32,
+  },
+  textBlock: {
+    alignItems: "center",
+    gap: 12,
+  },
+  heading: {
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: 36,
+    lineHeight: 44,
+    letterSpacing: -1.08,
+    textAlign: "center",
+    color: "#1F2A33",
+  },
+  subtitle: {
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 22,
+    letterSpacing: -0.32,
+    textAlign: "center",
+    color: "#1F2A33",
+  },
+  button: {
+    width: "100%",
+    height: 48,
+    backgroundColor: "#31973D",
+    borderRadius: 9999,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontFamily: "Plus Jakarta Sans",
+    fontWeight: "400",
+    fontSize: 14,
+    color: "#FFFFFF",
   },
 });
+
+export default ThankYouScreen;

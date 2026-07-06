@@ -293,10 +293,11 @@ export function DriversFoundScreen({ navigation }: RootStackScreenProps<'Drivers
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
+          showCalendar
           onHomePress={() => navigation.navigate('PremiumHome')}
           onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
           onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+          onCalendarPress={() => navigation.navigate('Schedule')}
         />
       </ImageBackground>
     </SafeAreaView>
