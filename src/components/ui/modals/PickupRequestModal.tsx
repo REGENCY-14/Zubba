@@ -37,12 +37,12 @@ export default function PickupRequestModal({
 
           {/* Header */}
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "500", fontSize: 16, color: "#000000" }}>
+            <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 16, color: "#000000" }}>
               Driver selected
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(0,107,35,0.10)", borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
               <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#31973D" }} />
-              <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 13, color: "#31973D" }}>Live view</Text>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 13, color: "#31973D" }}>Live view</Text>
             </View>
           </View>
 
@@ -57,7 +57,7 @@ export default function PickupRequestModal({
                 <Image source={avatar} style={{ width: 40, height: 40 }} resizeMode="cover" />
               ) : (
                 <View style={{ width: 40, height: 40, backgroundColor: "#7C3AED", alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "700", fontSize: 12, color: "#fff" }}>
+                  <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 12, color: "#fff" }}>
                     {name.split(" ").map(p => p.charAt(0)).join("")}
                   </Text>
                 </View>
@@ -65,7 +65,7 @@ export default function PickupRequestModal({
             </View>
 
             {/* Name */}
-            <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 16, color: "#1F2A33", letterSpacing: 1.6, textTransform: "uppercase", textAlign: "center" }}>
+            <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 16, color: "#1F2A33", letterSpacing: 1.6, textTransform: "uppercase", textAlign: "center" }}>
               {name}
             </Text>
 
@@ -79,7 +79,7 @@ export default function PickupRequestModal({
             {/* Rating */}
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <MaterialCommunityIcons name="star" size={12} color="#0D631B" />
-              <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 14, color: "#0D631B" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: "#0D631B" }}>
                 {rating} • {code}
               </Text>
             </View>
@@ -89,11 +89,11 @@ export default function PickupRequestModal({
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
                   <MaterialCommunityIcons name="phone-outline" size={16} color="#171D14" />
-                  <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 14, color: "#171D14" }}>Call</Text>
+                  <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: "#171D14" }}>Call</Text>
                 </Pressable>
                 <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
                   <MaterialCommunityIcons name="message-outline" size={16} color="#171D14" />
-                  <Text style={{ fontFamily: "Nexa Text-Trial", fontWeight: "700", fontSize: 14, color: "#171D14" }}>Message</Text>
+                  <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: "#171D14" }}>Message</Text>
                 </Pressable>
               </View>
             )}
@@ -111,7 +111,7 @@ export default function PickupRequestModal({
               onPress={isAssigned ? undefined : onProceed}
               style={{ flex: 1, height: 40, backgroundColor: isAssigned ? "rgba(52,168,83,0.5)" : "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
             >
-              <Text style={{ fontFamily: "Plus Jakarta Sans", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>Proceed</Text>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>Proceed</Text>
             </Pressable>
           </View>
 

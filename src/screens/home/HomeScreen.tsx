@@ -99,6 +99,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 alignItems: "center",
                 justifyContent: "center",
               }}
+              onPress={() => navigation.navigate("Notifications")}
             >
               <MaterialCommunityIcons
                 name="bell-outline"
@@ -361,7 +362,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <RoundedButton
                   title="Premium Tier"
                   variant="premium"
-                  onPress={() => {}}
+                  onPress={() => navigation.navigate("ChoosePlan")}
                 />
               )}
             </View>

@@ -1,12 +1,10 @@
 import React from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
-import CustomAppBar from "../../components/common/CustomAppBar";
-import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
@@ -18,208 +16,156 @@ const METHOD_LABELS: Record<PaymentMethodId, string> = {
   airtel: "Airtel Money",
 };
 
-type PaymentOptionProps = {
+type RowProps = {
   selected: boolean;
-  title: string;
-  badge?: string;
-  image?: any;
-  iconName?: string;
-  badgeBg?: string;
-  badgeTextColor?: string;
   onPress: () => void;
-  cardBg: string;
-  cardBorder: string;
-  textColor: string;
+  badge: React.ReactNode;
+  label: string;
+  last?: boolean;
 };
 
-function PaymentOption({
-  selected,
-  title,
-  badge,
-  image,
-  iconName,
-  badgeBg = "bg-gray-200",
-  badgeTextColor = "text-black",
-  onPress,
-  cardBg,
-  cardBorder,
-  textColor,
-}: PaymentOptionProps) {
+function PaymentRow({ selected, onPress, badge, label, last }: RowProps) {
   return (
     <Pressable
       onPress={onPress}
       style={{
         flexDirection: "row",
-        alignItems: "center",
         justifyContent: "space-between",
+        alignItems: "center",
         padding: 16,
-        borderRadius: 24,
-        borderWidth: 1,
-        minHeight: 82,
-        backgroundColor: selected ? "rgba(49,151,61,0.10)" : cardBg,
-        borderColor: selected ? "#31973D" : cardBorder,
+        borderBottomWidth: last ? 0 : 1,
+        borderBottomColor: "#E2E8F0",
       }}
     >
-      <View className="flex-row items-center flex-1 gap-4">
-        <View className={`w-12 h-12 rounded-xl items-center justify-center overflow-hidden ${badgeBg}`}>
-          {iconName ? (
-            <MaterialCommunityIcons name={iconName as any} size={22} color="#FFFFFF" />
-          ) : image ? (
-            <Image source={image} style={{ width: 28, height: 28 }} resizeMode="contain" />
-          ) : (
-            <Text className={`text-xs font-bold ${badgeTextColor}`}>{badge}</Text>
-          )}
-        </View>
-
-        <View className="flex-1">
-          <Text style={{ fontSize: 16, fontWeight: "500", color: textColor }}>{title}</Text>
-        </View>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+        {badge}
+        <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 24, color: "#1C1B1B" }}>
+          {label}
+        </Text>
       </View>
 
-      <View
-        style={{
-          width: 24,
-          height: 24,
-          borderRadius: 12,
-          borderWidth: 2,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: selected ? "#31973D" : cardBg,
-          borderColor: selected ? "#31973D" : "#8E7164",
-        }}
-      >
-        {selected && <View className="w-2 h-2 rounded-full bg-white" />}
-      </View>
+      {selected ? (
+        <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: "#31973D", alignItems: "center", justifyContent: "center" }}>
+          <MaterialCommunityIcons name="check" size={13} color="#FFFFFF" />
+        </View>
+      ) : (
+        <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#8E7164" }} />
+      )}
     </Pressable>
   );
 }
 
+function MtnBadge() {
+  return (
+    <View style={{ width: 42, height: 26, backgroundColor: "#FFCC00", borderRadius: 8, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 12, color: "#000000" }}>MTN</Text>
+    </View>
+  );
+}
+
+function TelecelBadge() {
+  return (
+    <View style={{ width: 42, height: 26, backgroundColor: "#DC2626", borderRadius: 8, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 12, color: "#FFFFFF" }}>T.cash</Text>
+    </View>
+  );
+}
+
+function WalletBadge() {
+  return (
+    <View style={{ width: 42, height: 26, backgroundColor: "#31973D", borderRadius: 8, alignItems: "center", justifyContent: "center" }}>
+      <MaterialCommunityIcons name="wallet" size={14} color="#FFFFFF" />
+    </View>
+  );
+}
+
 const airtelTigo = require("../../../assets/airtelTigo.png");
+
+function AirtelBadge() {
+  return (
+    <View style={{ width: 42, height: 26, backgroundColor: "#FFFFFF", borderRadius: 8, borderWidth: 1, borderColor: "#E2E8F0", alignItems: "center", justifyContent: "center" }}>
+      <Image source={airtelTigo} style={{ width: 22, height: 14 }} resizeMode="contain" />
+    </View>
+  );
+}
+
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
   const isPremium = useAppSelector((state) => state.customer.is_premium);
-  const [selectedMethod, setSelectedMethod] =
-    React.useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
-  const { colors } = useTheme();
+  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
+
+  const rows: { id: PaymentMethodId; badge: React.ReactNode; label: string }[] = [
+    ...(isPremium ? [{ id: "wallet" as PaymentMethodId, badge: <WalletBadge />, label: "Zubba Wallet" }] : []),
+    { id: "momo", badge: <MtnBadge />, label: "MTN MoMo" },
+    { id: "telecel", badge: <TelecelBadge />, label: "Telecel cash" },
+    { id: "airtel", badge: <AirtelBadge />, label: "Airtel money" },
+  ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <CustomAppBar navigation={navigation} title="Payment" />
+    <View style={{ flex: 1, backgroundColor: "transparent" }}>
+      {/* Dimmed overlay — tap to dismiss */}
+      <Pressable
+        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.65)" }}
+        onPress={() => navigation.goBack()}
+      />
 
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 24 }}
-        >
-          <View style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, borderRadius: 24, padding: 24, gap: 16 }}>
-            <View className="flex-row justify-between items-start">
-              <View className="gap-1">
-                <Text style={{ fontSize: 16, textTransform: "uppercase", letterSpacing: 2, color: colors.text }}>
-                  Estimated Cost
-                </Text>
-                <Text className="text-[#006B23] text-sm">GHS 45.00</Text>
-              </View>
+      {/* Bottom sheet */}
+      <View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 32, borderTopRightRadius: 32 }}>
+        <SafeAreaView edges={["bottom"]} style={{ backgroundColor: "transparent" }}>
+        <View style={{ paddingTop: 16, paddingBottom: 24, gap: 16 }}>
 
-              <View style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: 'rgba(0,107,35,0.1)' }}>
-                <Text className="text-[#31973D] text-[13px]">Premium</Text>
-              </View>
-            </View>
-
-            <View className="gap-2">
-              <View className="border-t border-black/10" style={{ borderStyle: "dashed" }} />
-
-              <View className="flex-row justify-between">
-                <Text style={{ fontSize: 15, color: colors.text }}>
-                  Pickup - Organic Waste
-                </Text>
-                <Text style={{ fontSize: 15, color: colors.textSub }}>GHS 35.00</Text>
-              </View>
-
-              <View className="flex-row justify-between">
-                <Text style={{ fontSize: 15, color: colors.text }}>Service Fee</Text>
-                <Text style={{ fontSize: 15, color: colors.textSub }}>GHS 10.00</Text>
-              </View>
-            </View>
+          {/* Handle */}
+          <View style={{ alignItems: "center" }}>
+            <View style={{ width: 152, height: 3, backgroundColor: "#334154", borderRadius: 20 }} />
           </View>
 
-          <View className="gap-4">
-            <Text style={{ fontSize: 16, fontWeight: "700", color: colors.text }}>
-              Select Payment Method
+          {/* Title */}
+          <View style={{ paddingHorizontal: 24 }}>
+            <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 16, lineHeight: 28, letterSpacing: -0.48, color: "#000000" }}>
+              Select  a payment method
             </Text>
-
-            {isPremium && (
-              <PaymentOption
-                selected={selectedMethod === "wallet"}
-                title="Zubba Wallet"
-                iconName="wallet"
-                badgeBg="bg-[#31973D]"
-                onPress={() => setSelectedMethod("wallet")}
-                cardBg={colors.card}
-                cardBorder={colors.border}
-                textColor={colors.text}
-              />
-            )}
-
-            <PaymentOption
-              selected={selectedMethod === "momo"}
-              title="MTN MoMo"
-              badge="MTN"
-              badgeBg="bg-[#FFCC00]"
-              badgeTextColor="text-black"
-              onPress={() => setSelectedMethod("momo")}
-              cardBg={colors.card}
-              cardBorder={colors.border}
-              textColor={colors.text}
-            />
-
-            <PaymentOption
-              selected={selectedMethod === "telecel"}
-              title="Telecel Cash"
-              badge="Telecel"
-              badgeBg="bg-[#DC2626]"
-              badgeTextColor="text-white"
-              onPress={() => setSelectedMethod("telecel")}
-              cardBg={colors.card}
-              cardBorder={colors.border}
-              textColor={colors.text}
-            />
-
-            <PaymentOption
-              selected={selectedMethod === "airtel"}
-              title="Airtel Money"
-              image={airtelTigo}
-              badgeBg="bg-white"
-              badgeTextColor="text-[#1E3A8A]"
-              onPress={() => setSelectedMethod("airtel")}
-              cardBg={colors.card}
-              cardBorder={colors.border}
-              textColor={colors.text}
-            />
           </View>
 
-          <Pressable
-            onPress={() =>
-              selectedMethod === "wallet"
-                ? navigation.navigate("WalletCheckout")
-                : navigation.navigate("PaymentMethod", { method: METHOD_LABELS[selectedMethod] })
-            }
-            className="h-12 bg-[#31973D] rounded-full items-center justify-center"
-          >
-            <Text className="text-white text-sm">Continue</Text>
-          </Pressable>
-        </ScrollView>
+          {/* Payment rows */}
+          <View style={{ paddingHorizontal: 20 }}>
+            {rows.map((row, i) => (
+              <PaymentRow
+                key={row.id}
+                selected={selectedMethod === row.id}
+                onPress={() => setSelectedMethod(row.id)}
+                badge={row.badge}
+                label={row.label}
+                last={i === rows.length - 1}
+              />
+            ))}
+          </View>
 
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          showCalendar={isPremium}
-          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
-        />
+          {/* Actions */}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, gap: 10 }}>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={{ width: 32, height: 32, borderRadius: 12, backgroundColor: "#FFE2E2", alignItems: "center", justifyContent: "center" }}
+            >
+              <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
+            </Pressable>
+
+            <Pressable
+              onPress={() =>
+                selectedMethod === "wallet"
+                  ? navigation.navigate("WalletCheckout")
+                  : navigation.navigate("PaymentMethod", { method: METHOD_LABELS[selectedMethod] })
+              }
+              style={{ flex: 1, height: 40, backgroundColor: "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#FFFFFF" }}>
+                Continue
+              </Text>
+            </Pressable>
+          </View>
+
+        </View>
+        </SafeAreaView>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

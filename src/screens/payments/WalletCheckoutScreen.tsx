@@ -52,7 +52,7 @@ export function WalletCheckoutScreen({ navigation }: RootStackScreenProps<'Walle
           </Pressable>
           <Pressable
             style={{ flex: 1, height: 40, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
-            onPress={() => navigation.navigate('PaymentSuccess')}
+            onPress={() => navigation.navigate('PaymentSuccess', { method: 'Zubba Wallet', phone: '' })}
           >
             <Text style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 20 }}>Pay</Text>
           </Pressable>

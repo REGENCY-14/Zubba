@@ -47,6 +47,7 @@ import { PremiumPaymentScreen } from '../screens/payments/PremiumPaymentScreen';
 import { WalletNumberScreen } from '../screens/payments/WalletNumberScreen';
 import { DriversFoundScreen } from '../screens/payments/DriversFoundScreen';
 import { WalletCheckoutScreen } from '../screens/payments/WalletCheckoutScreen';
+import { SavedCardsScreen } from '../screens/payments/SavedCardsScreen';
 import { PlanForLaterScreen } from '../screens/payments/PlanForLaterScreen';
 import type { RootStackParamList } from './types';
 
@@ -117,6 +118,7 @@ export function RootNavigator() {
       <Stack.Screen name="WalletNumber" component={WalletNumberScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriversFound" component={DriversFoundScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletCheckout" component={WalletCheckoutScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SavedCards" component={SavedCardsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PlanForLater" component={PlanForLaterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Details" component={DetailsScreen} options={{ title: 'Details' }} />
       <Stack.Screen name="FindAccount" component={FindAccountScreen} options={{ headerShown: false }} />

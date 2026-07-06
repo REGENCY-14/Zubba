@@ -35,14 +35,14 @@ export function UpdateDetailsSuccessScreen({ navigation }: RootStackScreenProps<
             style={{ width: '100%', height: 48, backgroundColor: '#31973D', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginTop: 16 }}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Plus Jakarta Sans' }}>Back to Settings</Text>
+            <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Poppins' }}>Back to Settings</Text>
           </Pressable>
 
           <Pressable
             style={{ width: '100%', height: 48, backgroundColor: colors.surface, borderRadius: 8, borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' }}
             onPress={() => navigation.navigate('Home')}
           >
-            <Text style={{ color: colors.text, fontSize: 14, lineHeight: 20, fontFamily: 'Manrope' }}>Back to Home</Text>
+            <Text style={{ color: colors.text, fontSize: 14, lineHeight: 20, fontFamily: 'Poppins' }}>Back to Home</Text>
           </Pressable>
         </View>
       </View>

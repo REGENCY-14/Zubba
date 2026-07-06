@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
@@ -42,14 +43,14 @@ function PaymentBadge({ id }: { id: string }) {
   if (id === 'mtn') {
     return (
       <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-[#FFCC00]">
-        <Text className="text-xs font-semibold text-black" style={{ fontFamily: 'Inter' }}>MTN</Text>
+        <Text className="text-xs font-semibold text-black" style={{ fontFamily: 'Poppins' }}>MTN</Text>
       </View>
     );
   }
   if (id === 'telecel') {
     return (
       <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-[#DC2626]">
-        <Text className="text-xs font-bold text-white" style={{ fontFamily: 'Inter' }}>T.cash</Text>
+        <Text className="text-xs font-bold text-white" style={{ fontFamily: 'Poppins' }}>T.cash</Text>
       </View>
     );
   }
@@ -104,14 +105,22 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
               {" You won't be charged until your trial ends. Confirm the amount and continue."}
             </Text>
 
-            <View style={{ height: 196, borderWidth: 1, borderColor: colors.border, borderRadius: 32, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', gap: 8 }}>
-              <View className="absolute w-[140px] h-[120px] rounded-[70px] -left-10 -top-[30px]" style={{ backgroundColor: 'rgba(89, 247, 138, 0.45)' }} />
-              <View className="absolute w-[140px] h-[120px] rounded-[70px] -right-[10px] -bottom-[10px]" style={{ backgroundColor: 'rgba(89, 247, 138, 0.45)' }} />
-              <Text style={{ fontSize: 32, fontWeight: '600', color: colors.text, letterSpacing: -2, zIndex: 10 }}>
+            <View style={{ height: 196, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 32, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              {/* Green circle blobs rendered first — BlurView above will blur them */}
+              <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, right: -20, bottom: -20, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
+              <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, left: -40, top: -40, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
+
+              {/* Blur the blobs into the white background */}
+              <BlurView intensity={28} tint="light" style={StyleSheet.absoluteFillObject} />
+
+              {/* Text sits sharp above the blur */}
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 32, lineHeight: 32, letterSpacing: -2, color: '#1F2A33', zIndex: 10 }}>
                 {selected.price}
-                <Text style={{ fontSize: 18, fontWeight: '500', letterSpacing: 0 }}>{selected.pricePer}</Text>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 18, letterSpacing: 0 }}>{selected.pricePer}</Text>
               </Text>
-              <Text style={{ fontSize: 10, fontWeight: '600', color: colors.textSub, textAlign: 'center', zIndex: 10 }}>Enjoy a 7-day free trial and pay afterward.</Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 13, color: '#64748A', textAlign: 'center', zIndex: 10, marginTop: 12 }}>
+                Enjoy a 7-day free trial and pay afterward.
+              </Text>
             </View>
 
             <View className="gap-[6px]">
@@ -199,7 +208,11 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center"
                 onPress={() => {
                   setShowPaymentSheet(false);
-                  navigation.navigate('AddCard', { planIndex: selectedIndex });
+                  if (selectedPayment === 'credit') {
+                    navigation.navigate('AddCard', { planIndex: selectedIndex });
+                  } else {
+                    navigation.navigate('WalletNumber');
+                  }
                 }}
               >
                 <Text className="text-sm text-white leading-5">Continue</Text>
