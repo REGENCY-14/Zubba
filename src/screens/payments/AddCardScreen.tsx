@@ -204,7 +204,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
-                  navigation.navigate('PremiumHome');
+                  navigation.navigate('Home');
                 }}
               >
                 <Text className="text-sm text-white leading-5">Proceed to Premium</Text>
@@ -214,7 +214,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
-                  navigation.navigate('PremiumHome');
+                  navigation.navigate('Home');
                 }}
               >
                 <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, lineHeight: 20 }}>Set Package expiry alert</Text>

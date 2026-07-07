@@ -3,7 +3,6 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
-import { useTheme } from '../../context/ThemeContext';
 
 const PLANS = [
   {
@@ -73,7 +72,6 @@ function PaymentBadge({ id }: { id: string }) {
 }
 
 export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreenProps<'ConfirmSubscription'>) {
-  const { colors } = useTheme();
   const [selectedIndex, setSelectedIndex] = React.useState(route.params?.planIndex ?? 1);
   const [showPaymentSheet, setShowPaymentSheet] = React.useState(false);
   const [selectedPayment, setSelectedPayment] = React.useState('credit');
@@ -82,36 +80,36 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
   const alternates = PLANS.filter((_, i) => i !== selectedIndex);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-white">
+        <View className="h-12 bg-white flex-row items-center justify-between px-4">
           <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
+            <Text className="text-[28px] text-[#1F2A33] leading-7 -mt-[2px]">‹</Text>
           </Pressable>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Payment</Text>
+          <Text className="text-base font-semibold text-[#1F2A33]">Payment</Text>
           <View className="w-6 h-6" />
         </View>
 
         <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 24, backgroundColor: colors.card }}>
-            <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, lineHeight: 32 }}>Confirm Subscription</Text>
+          <View className="border border-[#E2E8F0] rounded-3xl p-4 gap-6 bg-white">
+            <Text className="text-2xl font-medium text-[#1F2A33] leading-8">Confirm Subscription</Text>
 
-            <Text style={{ fontSize: 14, lineHeight: 26, color: colors.textSub }}>
+            <Text className="text-sm leading-[26px] text-[#64748A]">
               {'You selected the '}
-              <Text style={{ fontWeight: '700', color: colors.text }}>{selected.displayName} Subscription</Text>
+              <Text className="font-bold text-[#1F2A33]">{selected.displayName} Subscription</Text>
               {'. Enjoy a '}
-              <Text style={{ fontWeight: '700', color: colors.text }}>free 7-day trial.</Text>
+              <Text className="font-bold text-[#1F2A33]">free 7-day trial.</Text>
               {" You won't be charged until your trial ends. Confirm the amount and continue."}
             </Text>
 
-            <View style={{ height: 196, borderWidth: 1, borderColor: colors.border, borderRadius: 32, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', gap: 8 }}>
+            <View className="h-[196px] border border-[#E2E8F0] rounded-[32px] bg-white items-center justify-center overflow-hidden gap-2">
               <View className="absolute w-[140px] h-[120px] rounded-[70px] -left-10 -top-[30px]" style={{ backgroundColor: 'rgba(89, 247, 138, 0.45)' }} />
               <View className="absolute w-[140px] h-[120px] rounded-[70px] -right-[10px] -bottom-[10px]" style={{ backgroundColor: 'rgba(89, 247, 138, 0.45)' }} />
-              <Text style={{ fontSize: 32, fontWeight: '600', color: colors.text, letterSpacing: -2, zIndex: 10 }}>
+              <Text className="text-[32px] font-semibold text-[#1F2A33] tracking-[-2px] z-10">
                 {selected.price}
-                <Text style={{ fontSize: 18, fontWeight: '500', letterSpacing: 0 }}>{selected.pricePer}</Text>
+                <Text className="text-[18px] font-medium tracking-normal">{selected.pricePer}</Text>
               </Text>
-              <Text style={{ fontSize: 10, fontWeight: '600', color: colors.textSub, textAlign: 'center', zIndex: 10 }}>Enjoy a 7-day free trial and pay afterward.</Text>
+              <Text className="text-[10px] font-semibold text-[#64748A] text-center z-10">Enjoy a 7-day free trial and pay afterward.</Text>
             </View>
 
             <View className="gap-[6px]">
@@ -120,10 +118,10 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 {alternates.map((plan) => (
                   <Pressable
                     key={plan.label}
-                    style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 53, paddingHorizontal: 10, paddingVertical: 4, height: 48, justifyContent: 'center' }}
+                    className="border border-[#E2E8F0] rounded-[53px] px-[10px] py-1 h-12 justify-center"
                     onPress={() => setSelectedIndex(PLANS.findIndex((p) => p.label === plan.label))}
                   >
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, letterSpacing: -1 }}>{plan.pillText}</Text>
+                    <Text className="text-base font-semibold text-[#1F2A33] tracking-[-1px]">{plan.pillText}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -156,11 +154,11 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
         onRequestClose={() => setShowPaymentSheet(false)}
       >
         <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }} onPress={() => setShowPaymentSheet(false)}>
-          <Pressable style={{ backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingBottom: 32, paddingTop: 16, gap: 16 }} onPress={() => {}}>
-            <View style={{ width: 152, height: 3, backgroundColor: colors.border, borderRadius: 20, alignSelf: 'center' }} />
+          <Pressable className="bg-white rounded-tl-[32px] rounded-tr-[32px] pb-8 pt-4 gap-4" onPress={() => {}}>
+            <View className="w-[152px] h-[3px] bg-[#334154] rounded-[20px] self-center" />
 
             <View className="px-6">
-              <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, lineHeight: 28, letterSpacing: -0.48 }}>Select  a transfer method</Text>
+              <Text className="text-base font-medium text-black leading-7" style={{ letterSpacing: -0.48 }}>Select  a transfer method</Text>
             </View>
 
             <View className="px-5">
@@ -169,17 +167,15 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 return (
                   <Pressable
                     key={method.id}
-                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border }}
+                    className="flex-row items-center justify-between py-4 border-b border-b-[#E2E8F0]"
                     onPress={() => setSelectedPayment(method.id)}
                   >
                     <View className="flex-row items-center gap-4">
                       <PaymentBadge id={method.id} />
-                      <Text style={{ fontSize: 14, color: colors.text, lineHeight: 24 }}>{method.name}</Text>
+                      <Text className="text-sm text-[#1C1B1B] leading-6">{method.name}</Text>
                     </View>
                     <View
-                      style={isSelected
-                        ? { width: 22, height: 22, borderRadius: 11, backgroundColor: '#31973D', borderWidth: 1, borderColor: '#31973D', alignItems: 'center', justifyContent: 'center' }
-                        : { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: '#8E7164', alignItems: 'center', justifyContent: 'center' }}
+                      className={`items-center justify-center ${isSelected ? 'w-[22px] h-[22px] rounded-[11px] bg-[#31973D] border border-[#31973D]' : 'w-5 h-5 rounded-[10px] bg-white border border-[#8E7164]'}`}
                     >
                       {isSelected && <View className="w-2 h-2 rounded-full bg-white" />}
                     </View>
