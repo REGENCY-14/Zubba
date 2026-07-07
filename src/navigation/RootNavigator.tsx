@@ -5,7 +5,6 @@ import { SplashScreen } from '../screens/onboarding/SplashScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { EmailSignUpScreen } from '../screens/auth/EmailSignUpScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
-import { PremiumHomeScreen } from '../screens/home/PremiumHomeScreen';
 import { ZubbaWalletScreen } from '../screens/wallet/ZubbaWalletScreen';
 import { TransactionsScreen } from '../screens/wallet/TransactionsScreen';
 import { CreditAccountScreen } from '../screens/wallet/CreditAccountScreen';
@@ -80,7 +79,6 @@ export function RootNavigator() {
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ExistingUserNotification" component={ExistingUserNotificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="PremiumHome" component={PremiumHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ZubbaWallet" component={ZubbaWalletScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="CreditAccount" component={CreditAccountScreen} options={{ headerShown: false }} />

@@ -33,7 +33,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
-  const isPremium = useAppSelector((state) => state.customer.is_premium);
+  const isPremium = false;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { colors } = useTheme();
 
