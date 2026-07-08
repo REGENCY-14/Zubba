@@ -18,6 +18,8 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
 import { driverService } from "../../api/driverService";
+import { customerService } from "../../api/customerService";
+import { RequestTakeout } from "../../types/customer.types";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -100,10 +102,28 @@ export function ScanningScreen({
     };
   }, [coords]);
 
+  const customer_requests = async () => {
+    if (!coords || !driver) return;
+    setModalStep("customer_requests")
+    const requestTakeout: RequestTakeout = {
+      pickup_location: [coords.latitude, coords.longitude],
+      pickup_address: "string",
+      customer_id: customer.id,
+      mass_kg: "0",
+      status: "pending",
+      driver_id: driver.id,
+      distance_m: driver.distanceM,
+      pickup_price: driver.cost,
+      service_price: 5,
+    }
+    const result = await customerService.requestTakeout(
+      requestTakeout
+    )
+    // have web socket confirm if driver accepts
+  }
+
   useEffect(() => {
     if (modalStep !== "driver_accepts") return;
-    // create request here
-    
     assignedTimerRef.current = setTimeout(() => {
       assignedTimerRef.current = null;
       setShowModal(false);
@@ -269,11 +289,7 @@ export function ScanningScreen({
 
         <AppBottomNav
           activeTab="home"
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "save", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
+          navigation={navigation}
         />
         {driver && (
           <PickupRequestModal
@@ -285,7 +301,7 @@ export function ScanningScreen({
             rating={driver.rating}
             code={driver.code ?? "—"}
             cost={driver.cost.toFixed(2)}
-            onProceed={() => setModalStep("customer_requests")}
+            onProceed={customer_requests}
             onCancel={() => {
               navigation.pop();
               setShowModal(false);

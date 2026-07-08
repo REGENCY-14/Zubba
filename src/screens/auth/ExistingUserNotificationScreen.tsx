@@ -21,7 +21,7 @@ export function ExistingUserNotificationScreen({
             <MaterialCommunityIcons name="account-circle-outline" color="#000000" size={50}/>
           </View>
           <Text className="text-[24px] leading-7 font-[500] text-gray-900 text-center">
-            Welcome, {user?.firstname}
+            Welcome, {user?.firstname}!
           </Text>
           <Text className="text-[14px] leading-6 font-light text-[#707579] text-center mt-2 max-w-[366px]">
             You previously signed in to one of our apps using {contact}

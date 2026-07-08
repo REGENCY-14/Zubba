@@ -8,7 +8,7 @@ type StatCardsRowProps = {
 
 export function StatCardsRow({ mass_recycled, points }: StatCardsRowProps) {
   return (
-    <View className="flex-row gap-5 px-4">
+    <View className="flex-row gap-5">
       <StatCard
         icon={require("../../../assets/recycle.png")}
         label="Active"

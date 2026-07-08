@@ -1,6 +1,7 @@
 import { api } from "./axios";
 import { ApiResponse } from "../types/api.types";
 import { Customer } from "../slices/customer/customer.types";
+import { RequestTakeout } from "../types/customer.types";
 
 export const customerService = {
   getCustomerById: async (id: string) => {
@@ -8,9 +9,11 @@ export const customerService = {
     return data;
   },
 
-  requestTakeout: async (params: NearbyDriversParams) => {
+  requestTakeout: async (payload: RequestTakeout) => {
     const { data } = await api.post<ApiResponse<any>>(
-      '/customers/requests'
+      '/customers/requests',
+      payload
     )
+    return data
   }
 };

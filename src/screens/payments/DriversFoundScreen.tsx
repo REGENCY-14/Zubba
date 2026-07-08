@@ -121,7 +121,7 @@ export function DriversFoundScreen({
   const drivers: NearbyDriver[] = route.params?.drivers ?? [];
   const insets = useSafeAreaInsets();
   const [selectedDriver, setSelectedDriver] = useState(0);
-  const [modalStep, setModalStep] = useState<"" | "found_drivers" | "customer_requests" | "driver_accepts">("");
+  const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts">("found_drivers");
   const [showModal, setShowModal] = useState(false);
   const assignedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -130,7 +130,7 @@ export function DriversFoundScreen({
 
   const closeModal = () => {
     setShowModal(false);
-    setModalStep("");
+    setModalStep("found_drivers");
   };
 
   useEffect(() => {
@@ -315,7 +315,7 @@ export function DriversFoundScreen({
           </Animated.View>
         )}
 
-        {showModal && modalStep !== "" && activeDriver && (
+        {showModal && modalStep !== "found_drivers" && activeDriver && (
           <PickupRequestModal
             visible={showModal}
             step={modalStep}
@@ -337,17 +337,7 @@ export function DriversFoundScreen({
           activeTab="home"
           paddingBottom={14}
           bottomOffset={8}
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "saved", title: "Saved" })
-          }
-          onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={() =>
-            navigation.navigate("Details", {
-              itemId: "calendar",
-              title: "Calendar",
-            })
-          }
+          navigation={navigation}
         />
       </ImageBackground>
     </SafeAreaView>
