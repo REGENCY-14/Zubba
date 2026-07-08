@@ -145,14 +145,14 @@ export function RateRideScreen({
             {/* Actions */}
             <View style={{ paddingHorizontal: 8, gap: 8 }}>
               <Pressable
-                onPress={() => navigation.navigate("Home")}
+                onPress={() => navigation.navigate("ThankYou")}
                 style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
               >
                 <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Submit</Text>
               </Pressable>
 
               <Pressable
-                onPress={() => navigation.navigate("Home")}
+                onPress={() => navigation.navigate("ThankYou")}
                 style={{ height: 48, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
               >
                 <Text style={{ color: colors.text, fontWeight: '600' }}>Not Now</Text>
