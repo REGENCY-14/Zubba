@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppBottomNav } from "../../components";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from '../../context/ThemeContext';
 
 type SettingsRowProps = {
   icon: React.ReactNode;
@@ -25,6 +26,7 @@ function SettingsRow({
   showChevron = true,
 }: SettingsRowProps) {
   const Container = onPress ? Pressable : View;
+  const { colors } = useTheme();
 
   return (
     <Container
@@ -36,11 +38,11 @@ function SettingsRow({
           {icon}
         </View>
         <View className="flex-1 gap-1">
-          <Text className="text-sm leading-5 font-medium text-[#101828]">
+          <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
             {title}
           </Text>
           {subtitle ? (
-            <Text className="text-xs leading-4 text-[#64748A]">{subtitle}</Text>
+            <Text style={{color: colors.textMuted}} className="text-xs leading-4">{subtitle}</Text>
           ) : null}
         </View>
       </View>
@@ -65,9 +67,11 @@ function SectionCard({
   title: string;
   children: React.ReactNode;
 }) {
+  const { colors } = useTheme();
+
   return (
-    <View className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden">
-      <Text className="text-base leading-6 font-semibold text-[#111827] p-4">
+    <View style={{backgroundColor: colors.bg, borderColor: colors.border}} className="rounded-2xl border overflow-hidden">
+      <Text style={{color: colors.text}} className="text-base leading-6 font-semibold p-4">
         {title}
       </Text>
       <View className="h-px bg-[#F1F5F9]" />
@@ -79,23 +83,23 @@ function SectionCard({
 export function SettingsScreen({
   navigation,
 }: RootStackScreenProps<"Settings">) {
-  const [isLightMode, setIsLightMode] = useState<boolean>(true);
+  const { isDark, colors, toggle } = useTheme();
 
   const zubbaText = require("../../../assets/zubbaText.png");
   const tricycleImage = require("../../../assets/tricycle image.png");
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      <View className="flex-1 bg-white">
+    <SafeAreaView style={{ backgroundColor: colors.bg }} className="flex-1" edges={["top", "left", "right"]}>
+      <View style={{ backgroundColor: colors.bg }} className="flex-1">
 
-        <View className="h-12 px-4 flex-row items-center justify-between bg-white">
+        <View style={{ backgroundColor: colors.bg }} className="h-12 px-4 flex-row items-center justify-between">
           <Pressable
             className="w-6 h-6 items-center justify-center"
             onPress={() => navigation.goBack()}
           >
-            <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
+            <MaterialCommunityIcons name="chevron-left" size={24} color={colors.text} />
           </Pressable>
-          <Text className="text-base leading-6 font-semibold text-[#1F2A33]">
+          <Text style={{color: colors.text }} className="text-base leading-6 font-semibold">
             Settings
           </Text>
           <View className="w-6 h-6" />
@@ -110,9 +114,9 @@ export function SettingsScreen({
             gap: 24,
           }}
         >
-          <View className="bg-[#F8FAFC] border border-black/10 rounded-3xl p-3 gap-6">
+          <View style={{backgroundColor: colors.card, borderColor: colors.borderLight }} className="border rounded-3xl p-3 gap-6">
 
-            <View className="items-center bg-white rounded-2xl border border-black/10 py-6 px-4 gap-2">
+            <View  style={{backgroundColor: colors.bg, borderColor: colors.borderLight }} className="items-center rounded-2xl border py-6 px-4 gap-2">
               <Image
                 resizeMode="contain"
                 style={{ height: 30 }}
@@ -176,10 +180,10 @@ export function SettingsScreen({
                   <MaterialCommunityIcons name="web" size={22} color="#111827" />
                 </View>
                 <View className="flex-1 gap-1">
-                  <Text className="text-sm leading-5 font-medium text-[#101828]">
+                  <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
                     Language
                   </Text>
-                  <Text className="text-xs leading-4 text-[#64748A]">
+                  <Text style={{color: colors.textMuted}} className="text-xs leading-4">
                     App display language
                   </Text>
                 </View>
@@ -225,11 +229,11 @@ export function SettingsScreen({
                     Appearance
                   </Text>
                   <Text className="text-xs leading-4 text-[#64748A]">
-                    {isLightMode ? "Light mode" : "Dark mode"}
+                    {isDark ? 'Dark mode' : 'Light mode'}
                   </Text>
                 </View>
               </View>
-              <AnimatedSwitch value={isLightMode} onChange={setIsLightMode} />
+              <AnimatedSwitch value={isDark} onChange={toggle} />
             </View>
           </SectionCard>
 
