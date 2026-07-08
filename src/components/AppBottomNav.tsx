@@ -10,14 +10,10 @@ import { useTheme } from '../context/ThemeContext';
 type Tab = 'home' | 'calendar' | 'saved' | 'settings';
 
 type Props = {
-  onHomePress: () => void;
-  onSavedPress: () => void;
-  onSettingsPress?: () => void;
-  onAccountPress?: () => void;
-  onCalendarPress?: () => void;
   activeTab: Tab;
   paddingBottom?: number;
   bottomOffset?: number;
+  navigation: any
 };
 
 function NavItem({
@@ -64,20 +60,15 @@ function NavItem({
 }
 
 export function AppBottomNav({
-  onHomePress,
-  onSavedPress,
-  onSettingsPress,
-  onAccountPress,
-  onCalendarPress,
   activeTab,
   paddingBottom = 8,
   bottomOffset = 20,
+  navigation
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const bottomPadding = Math.max(insets.bottom, paddingBottom);
   const isActive = (tab: Tab) => activeTab === tab;
-  const iconColor = (tab: Tab) => isActive(tab) ? '#fff' : colors.textSub;
 
   return (
     <View
@@ -95,7 +86,7 @@ export function AppBottomNav({
 
         <NavItem
           active={isActive('home')}
-          onPress={onHomePress}
+          onPress={() => navigation.navigate("Home")}
           icon={
             isActive('home') ? (
               <MaterialCommunityIcons size={20} name="home" color="#fff" />
@@ -108,7 +99,7 @@ export function AppBottomNav({
 
         <NavItem
           active={isActive('calendar')}
-          onPress={onCalendarPress ?? (() => {})}
+          onPress={() => navigation.navigate("Schedule")}
           icon={
             isActive('calendar') ? (
               <MaterialCommunityIcons size={20} name="calendar" color="#fff" />
@@ -121,7 +112,7 @@ export function AppBottomNav({
 
         <NavItem
           active={isActive('saved')}
-          onPress={onSavedPress}
+          onPress={() => {navigation.navigate("Details", { itemId: "save", title: "Saved" })}}
           icon={
             isActive('saved') ? (
               <MaterialCommunityIcons size={20} name="bookmark" color="#fff" />
@@ -134,7 +125,7 @@ export function AppBottomNav({
 
         <NavItem
           active={isActive('settings')}
-          onPress={onSettingsPress ?? onAccountPress ?? (() => {})}
+          onPress={() => {navigation.navigate("Settings")}}
           icon={
             isActive('settings') ? (
               <MaterialCommunityIcons size={20} name="cog" color="#fff" />

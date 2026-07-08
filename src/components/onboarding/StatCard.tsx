@@ -1,4 +1,5 @@
 import { Image, ImageSourcePropType, Text, View } from "react-native";
+import { useTheme } from "../../context/ThemeContext";
 
 type StatCardProps = {
   icon: ImageSourcePropType;
@@ -15,10 +16,12 @@ export function StatCard({
   description,
   labelColor = "#31973D",
 }: StatCardProps) {
+  const { isDark, colors } = useTheme();
+
   return (
     <View
-      className="flex-1 bg-white border border-[#E2E8F0] p-3"
-      style={{ borderRadius: 24 }}
+      style={{borderColor: colors.border, borderRadius: 24, backgroundColor: isDark ? colors.card : colors.bg}}
+      className="flex-1 border p-3"
     >
       <View className="flex-row justify-between items-center">
         <Image
@@ -35,8 +38,8 @@ export function StatCard({
         </Text>
       </View>
 
-      <Text className="text-xl font-bold text-[#1F2A33] mt-2">{value}</Text>
-      <Text className="text-sm text-[#6F7A6C] mt-1 font-medium">{description}</Text>
+      <Text style={{color: colors.textSub}} className="text-xl font-bold text-[#1F2A33] mt-2">{value}</Text>
+      <Text style={{color: colors.textMuted}} className="text-sm text-[#6F7A6C] mt-1 font-medium">{description}</Text>
     </View>
   );
 }

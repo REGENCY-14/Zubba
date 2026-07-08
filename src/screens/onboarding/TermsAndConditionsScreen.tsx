@@ -220,14 +220,7 @@ export function TermsAndConditionsScreen({
         <AppBottomNav
           activeTab="settings"
           paddingBottom={0}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() =>
-            navigation.navigate('Details', {
-              itemId: 'save',
-              title: 'Saved',
-            })
-          }
-          onSettingsPress={() => navigation.navigate('Settings')}
+          navigation={navigation}
         />
       </View>
     </SafeAreaView>

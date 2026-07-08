@@ -132,11 +132,7 @@ export function DriverArrivesScreen({
 
         <AppBottomNav
           activeTab="home"
-          paddingBottom={14}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Details', { itemId: 'calendar', title: 'Calendar' })}
+          navigation={navigation}
         />
       </View>
     </SafeAreaView>
