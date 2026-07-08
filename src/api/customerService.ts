@@ -4,7 +4,7 @@ import { Customer } from "../slices/customer/customer.types";
 
 export const customerService = {
   getCustomerById: async (id: string) => {
-    const { data } = await api.get<ApiResponse<{ user: Customer }>>(`/customers/${id}`);
+    const { data } = await api.get<ApiResponse<{ customer: Customer }>>(`/customers/${id}`);
     return data;
   },
 };

@@ -53,10 +53,33 @@ import { SignInScreen } from '../screens/auth/SignInScreen';
 import { ExistingUserNotificationScreen } from '../screens/auth/ExistingUserNotificationScreen';
 import RateRideScreen from '../screens/payments/RateRideScreen';
 import { ThankYouScreen } from '../screens/payments/ThankYouScreen';
+import { useEffect } from 'react';
+import { useAppSelector } from '../hooks/useAppSelector';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { customerService } from '../api/customerService';
+import { setCustomer } from '../slices/customer/customerSlice';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
+  const dispatch = useAppDispatch()
+  const customer = useAppSelector((state) => state.customer)
+  const user = useAppSelector((state) => state.auth.user)
+
+  useEffect( () => {
+    const getCustomer = async () => {
+      if(user && !customer){
+        const customerResponse = await customerService.getCustomerById(user.id)
+        if(customerResponse.success){
+          const customer = customerResponse.data.customer;
+          dispatch(setCustomer(customer))
+        }
+      }
+    }
+
+    getCustomer()
+  }, [])
+
   return (
     <Stack.Navigator
       initialRouteName="Home"

@@ -30,5 +30,5 @@ const customerSlice = createSlice({
     }
 })
 
-export const { upgradeToPremium } = customerSlice.actions
+export const { setCustomer, clearCustomer, upgradeToPremium } = customerSlice.actions
 export const customerReducer = customerSlice.reducer
