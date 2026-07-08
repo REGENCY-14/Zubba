@@ -1,4 +1,5 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NearbyDriver } from '../types/driver.types';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -43,7 +44,7 @@ export type RootStackParamList = {
   AddCard: { planIndex?: number } | undefined;
   PremiumPayment: undefined;
   WalletNumber: undefined;
-  DriversFound: undefined;
+  DriversFound: { drivers: Array<NearbyDriver> };
   WalletCheckout: undefined;
   PlanForLater: undefined;
   Details: { itemId: string; title: string } | undefined;

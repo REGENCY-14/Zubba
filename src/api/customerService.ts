@@ -7,4 +7,10 @@ export const customerService = {
     const { data } = await api.get<ApiResponse<{ customer: Customer }>>(`/customers/${id}`);
     return data;
   },
+
+  requestTakeout: async (params: NearbyDriversParams) => {
+    const { data } = await api.post<ApiResponse<any>>(
+      '/customers/requests'
+    )
+  }
 };

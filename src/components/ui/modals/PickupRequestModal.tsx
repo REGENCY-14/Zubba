@@ -3,8 +3,9 @@ import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 type Props = {
   visible: boolean;
-  step: "request" | "assigned";
+  step: "" | "found_drivers" | "customer_requests" | "driver_accepts";
   avatar: any;
+  avatarUrl?: string | null;
   name: string;
   rating: number;
   code: string;
@@ -20,6 +21,7 @@ export default function PickupRequestModal({
   visible,
   step,
   avatar,
+  avatarUrl,
   name,
   rating,
   code,
@@ -41,7 +43,7 @@ export default function PickupRequestModal({
           className={`bg-white rounded-[22px] items-center px-3 py-4 w-full`}
           style={{ gap: 20 }}
         >
-          {step == "request" ? (
+          {step == "found_drivers" ? (
             <View className="w-full items-center" style={{ gap: 20 }}>
               <View className="w-full gap-4 border border-[#E2E8F0] rounded-3xl bg-white p-6 items-center justify-center">
                 <View
@@ -61,7 +63,7 @@ export default function PickupRequestModal({
                   <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden items-center justify-center bg-[#C7E0C9]">
                     {avatar ? (
                       <Image
-                        source={avatar}
+                        source={avatarUrl ? { uri: avatarUrl } : avatar}
                         style={{ width: 54, height: 54 }}
                         resizeMode="cover"
                       />
@@ -130,7 +132,7 @@ export default function PickupRequestModal({
                 </Pressable>
               </View>
             </View>
-          ) : (
+          ) : step == "driver_accepts" && (
             <View className="w-full items-center" style={{ gap: 20 }}>
               <View className="w-full border border-[#E2E8F0] rounded-2xl bg-white p-6 gap-4 items-center justify-center">
                 <View className="w-16 h-16 rounded-xl bg-[#F4F4F5] items-center justify-center">
