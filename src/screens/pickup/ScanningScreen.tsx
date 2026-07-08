@@ -2,23 +2,22 @@ import React, { useEffect, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Image,
   ImageBackground,
-  Modal,
-  Pressable,
   Text,
   View,
 } from "react-native";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { AppBottomNav } from "../../components";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
-import { stat } from "node:fs";
+import { NearbyDriver } from "../../types/driver.types";
+import { driverService } from "../../api/driverService";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -42,14 +41,13 @@ export function ScanningScreen({
   const { colors } = useTheme();
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [appBarText, setAppBarText] = useState("Scanning...");
-  const customer = useAppSelector((state) => state.customer.is_premium)
-  const isPremium = true
-  const [modalStep, setModalStep] = useState<"request" | "assigned">("request");
-  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const customer = useAppSelector((state) => state.customer);
+  const [driver, setDriver] = useState<NearbyDriver | null>(null);
+  const isPremium = false;
+  const { coords } = useCurrentLocation();
+  const [modalStep, setModalStep] = useState<"" | "found_drivers" | "customer_requests" | "driver_accepts">("");
+  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -61,38 +59,58 @@ export function ScanningScreen({
     );
     animation.start();
 
-    const apiTimer = setTimeout(() => {
-      setIsLoading(false);
-      animation.stop();
-      setAppBarText("Driver Found");
-      if (isPremium) {
-        navigation.navigate("DriversFound");
-      } else {
-        setShowModal(true);
-        setModalStep("request");
+    let cancelled = false;
+
+    const scan = async () => {
+      if (!coords) return;
+      try {
+        const res = await driverService.getNearbyDrivers({
+          lat: coords.latitude,
+          lng: coords.longitude,
+          isPremium,
+        });
+        if (cancelled) return;
+
+        const drivers = res.data.drivers;
+        animation.stop();
+        setAppBarText(drivers.length ? "Driver Found" : "No drivers nearby");
+
+        if (isPremium) {
+          navigation.navigate("DriversFound", { drivers });
+        } else if (drivers.length > 0) {
+          setDriver(drivers[0]);
+          setModalStep("found_drivers");
+          setShowModal(true);
+        } else {
+          navigation.navigate("Home");
+        }
+      } catch (err) {
+        if (!cancelled) {
+          animation.stop();
+          navigation.navigate("Home");
+        }
       }
-    }, 3000);
+    };
+
+    scan();
 
     return () => {
-      clearTimeout(apiTimer);
+      cancelled = true;
       animation.stop();
     };
-  }, []);
+  }, [coords]);
 
   useEffect(() => {
-    if (modalStep !== "assigned") return;
-
+    if (modalStep !== "driver_accepts") return;
+    // create request here
+    
     assignedTimerRef.current = setTimeout(() => {
       assignedTimerRef.current = null;
       setShowModal(false);
       navigation.navigate("DriverArrives");
     }, 5000);
-
     return () => {
-      if (assignedTimerRef.current) {
-        clearTimeout(assignedTimerRef.current);
-        assignedTimerRef.current = null;
-      }
+      if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
     };
   }, [modalStep, navigation]);
 
@@ -102,10 +120,13 @@ export function ScanningScreen({
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      edges={["top", "left", "right"]}
+    >
       <ImageBackground
         source={mapImage}
-        style={{ flex: 1, width: '100%', height: '100%' }}
+        style={{ flex: 1, width: "100%", height: "100%" }}
         resizeMode="cover"
       >
         <CustomAppBar title={appBarText} navigation={navigation} />
@@ -117,8 +138,8 @@ export function ScanningScreen({
             height: SCAN_SIZE,
             top: SCAN_TOP,
             left: SCAN_LEFT,
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <View
@@ -126,26 +147,68 @@ export function ScanningScreen({
               width: SCAN_SIZE,
               height: SCAN_SIZE,
               borderRadius: SCAN_SIZE / 2,
-              position: 'absolute',
-              backgroundColor: 'rgba(52,168,83,0.12)',
-              alignItems: 'center',
-              justifyContent: 'center',
+              position: "absolute",
+              backgroundColor: "rgba(52,168,83,0.12)",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <View
-              style={{ width: 270, height: 270, borderRadius: 135, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
+              style={{
+                width: 270,
+                height: 270,
+                borderRadius: 135,
+                position: "absolute",
+                borderWidth: 0.5,
+                borderColor: "rgba(255,255,255,0.65)",
+              }}
             />
             <View
-              style={{ width: 210, height: 210, borderRadius: 105, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
+              style={{
+                width: 210,
+                height: 210,
+                borderRadius: 105,
+                position: "absolute",
+                borderWidth: 0.5,
+                borderColor: "rgba(255,255,255,0.65)",
+              }}
             />
             <View
-              style={{ width: 150, height: 150, borderRadius: 75, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
+              style={{
+                width: 150,
+                height: 150,
+                borderRadius: 75,
+                position: "absolute",
+                borderWidth: 0.5,
+                borderColor: "rgba(255,255,255,0.65)",
+              }}
             />
             <View
-              style={{ width: 90, height: 90, borderRadius: 45, position: 'absolute', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.65)' }}
+              style={{
+                width: 90,
+                height: 90,
+                borderRadius: 45,
+                position: "absolute",
+                borderWidth: 0.5,
+                borderColor: "rgba(255,255,255,0.65)",
+              }}
             />
-            <View style={{ position: 'absolute', width: 210, height: 0.5, backgroundColor: 'rgba(255,255,255,0.5)' }} />
-            <View style={{ position: 'absolute', width: 0.5, height: 210, backgroundColor: 'rgba(255,255,255,0.5)' }} />
+            <View
+              style={{
+                position: "absolute",
+                width: 210,
+                height: 0.5,
+                backgroundColor: "rgba(255,255,255,0.5)",
+              }}
+            />
+            <View
+              style={{
+                position: "absolute",
+                width: 0.5,
+                height: 210,
+                backgroundColor: "rgba(255,255,255,0.5)",
+              }}
+            />
           </View>
 
           <Animated.View
@@ -165,10 +228,27 @@ export function ScanningScreen({
             ]}
           />
 
-          <View style={{ position: 'absolute', alignItems: 'center' }}>
+          <View style={{ position: "absolute", alignItems: "center" }}>
             <MaterialIcons name="location-on" size={28} color="#38A667" />
-            <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(52,168,83,0.5)', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
-              <View style={{ width: 17, height: 17, borderRadius: 8.5, backgroundColor: '#31973D' }} />
+            <View
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 17,
+                backgroundColor: "rgba(52,168,83,0.5)",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 2,
+              }}
+            >
+              <View
+                style={{
+                  width: 17,
+                  height: 17,
+                  borderRadius: 8.5,
+                  backgroundColor: "#31973D",
+                }}
+              />
             </View>
           </View>
         </View>
@@ -195,27 +275,29 @@ export function ScanningScreen({
           }
           onSettingsPress={() => navigation.navigate("Settings")}
         />
-        {
-
-        }
-        <PickupRequestModal
-          visible={showModal}
-          step={modalStep}
-          avatar={avatar}
-          onProceed={() => setModalStep("assigned")}
-          onCancel={() => {
-            navigation.pop();
-            setShowModal(false);
-          }}
-          onAssignedCancel={() => {
-            if (assignedTimerRef.current) {
-              clearTimeout(assignedTimerRef.current);
-              assignedTimerRef.current = null;
-            }
-            setShowModal(false);
-            navigation.navigate("Home");
-          }}
-        />
+        {driver && (
+          <PickupRequestModal
+            visible={showModal}
+            step={modalStep}
+            avatar={require("../../../assets/avatar.jpg")}
+            avatarUrl={driver.profilePicture}
+            name={driver.name}
+            rating={driver.rating}
+            code={driver.code ?? "—"}
+            cost={driver.cost.toFixed(2)}
+            onProceed={() => setModalStep("customer_requests")}
+            onCancel={() => {
+              navigation.pop();
+              setShowModal(false);
+            }}
+            onAssignedCancel={() => {
+              if (assignedTimerRef.current)
+                clearTimeout(assignedTimerRef.current);
+              setShowModal(false);
+              navigation.navigate("Home");
+            }}
+          />
+        )}
       </ImageBackground>
     </SafeAreaView>
   );

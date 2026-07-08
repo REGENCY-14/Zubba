@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Easing,
   Image,
   ImageBackground,
-  ImageSourcePropType,
   Pressable,
-  Switch,
   Text,
   TextInput,
   View,
