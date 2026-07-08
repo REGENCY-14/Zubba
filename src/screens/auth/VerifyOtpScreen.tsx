@@ -14,8 +14,10 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useResendOtp, useVerifyOtp } from "../../slices/auth/auth.hooks";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
+import { setCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { OTPInput } from "../../components/common/OTPInput";
+import { customerService } from "../../api/customerService";
 
 export function VerifyOtpScreen({
   route,
@@ -67,6 +69,13 @@ export function VerifyOtpScreen({
       const { user, accessToken, refreshToken } = res.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
+      
+      const customerResponse = await customerService.getCustomerById(user.id)
+
+      if(customerResponse.success){
+        const customer = customerResponse.data.customer;
+        dispatch(setCustomer(customer))
+      }
 
       if (!user.email || !user.phone) {
         navigation.replace("NewUserOnboarding", {
