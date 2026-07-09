@@ -27,7 +27,7 @@ export function PaymentMethodScreen({
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 24 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 10, gap: 24 }}
         >
 
           <View className="gap-6">
@@ -124,13 +124,6 @@ export function PaymentMethodScreen({
             </Text>
           </View>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          navigation={navigation}
-        />
       </View>
     </SafeAreaView>
   );

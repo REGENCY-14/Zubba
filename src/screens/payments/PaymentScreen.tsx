@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { useTheme } from "../../context/ThemeContext";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
 
@@ -30,6 +31,8 @@ function PaymentOption({
   badgeTextColor = "text-black",
   onPress,
 }: PaymentOptionProps) {
+  const { colors } = useTheme()
+
   return (
     <Pressable
       onPress={onPress}
@@ -68,8 +71,8 @@ function PaymentOption({
 
 const airtelTigo = require("../../../assets/airtelTigo.png");
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
-  const [selectedMethod, setSelectedMethod] =
-    React.useState<PaymentMethodId>("wallet");
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>("wallet");
+  const { isDark, colors } = useTheme()
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
@@ -146,7 +149,7 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
               selected={selectedMethod === "airtel"}
               title="Airtel Money"
               image={airtelTigo}
-              badgeBg="bg-white"
+              badgeBg={`bg-[${colors.bg}]`}
               badgeTextColor="text-[#1E3A8A]"
               onPress={() => setSelectedMethod("airtel")}
             />
@@ -158,7 +161,7 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
                 ? navigation.navigate("WalletCheckout")
                 : navigation.navigate("PaymentMethod")
             }
-            className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+            className="h-12 rounded-full items-center justify-center"
           >
             <Text className="text-white text-sm">Continue</Text>
           </Pressable>
