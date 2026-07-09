@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Easing, Pressable, ViewStyle } from "react-native";
+import { useTheme } from "../../../context/ThemeContext";
 
 type AnimatedSwitchProps = {
   value: boolean;
@@ -18,17 +19,22 @@ type AnimatedSwitchProps = {
 export default function AnimatedSwitch({
   value,
   onChange,
-  trackColor = {
-    on: "#31973D",
-    off: "#FFFFFF",
-  },
-  thumbColor = {
-    on: "#FFFFFF",
-    off: "#31973D",
-  },
+  trackColor,
+  thumbColor,
   style,
 }: AnimatedSwitchProps) {
   const translateX = useRef(new Animated.Value(value ? 14 : 0)).current;
+  const { colors } = useTheme();
+
+  const resolvedTrackColor = trackColor ?? {
+    on: "#31973D",
+    off: colors.surface
+  };
+
+  const resolvedThumbColor = thumbColor ?? {
+    on: colors.surface,
+    off: "#31973D",
+  };
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -39,8 +45,13 @@ export default function AnimatedSwitch({
     }).start();
   }, [value, translateX]);
 
-  const backgroundColor = value ? trackColor.on : trackColor.off;
-  const thumbBg = value ? thumbColor.on : thumbColor.off;
+  const backgroundColor = value
+    ? resolvedTrackColor.on
+    : resolvedTrackColor.off;
+
+  const thumbBg = value
+    ? resolvedThumbColor.on
+    : resolvedThumbColor.off;
 
   return (
     <Pressable

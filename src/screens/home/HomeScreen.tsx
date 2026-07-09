@@ -479,7 +479,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <RoundedButton
                     title="Plan for later"
                     variant="premium"
-                    onPress={() => navigation.navigate("Scanning")}
+                    onPress={() => navigation.navigate("Schedule")}
                   />
                 ) : (
                   <RoundedButton

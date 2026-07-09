@@ -20,7 +20,7 @@ import { SettingsScreen } from '../screens/profile/SettingsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { TermsAndConditionsScreen } from '../screens/onboarding/TermsAndConditionsScreen';
 import { AboutUsScreen } from '../screens/support/AboutUsScreen';
-import { NotificationsScreen } from '../screens/support/NotificationsScreen';
+import { NotificationSettingsScreen } from '../screens/support/NotificationSettingsScreen';
 import { HelpCenterScreen } from '../screens/support/HelpCenterScreen';
 import { ActiveSessionScreen } from '../screens/pickup/ActiveSessionScreen';
 import { UpdateDetailsScreen } from '../screens/profile/UpdateDetailsScreen';
@@ -82,7 +82,7 @@ export function RootNavigator() {
 
   return (
     <Stack.Navigator
-      initialRouteName="ThankYou"
+      initialRouteName="Schedule"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'
@@ -119,7 +119,7 @@ export function RootNavigator() {
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ActiveSession" component={ActiveSessionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: false }} />
