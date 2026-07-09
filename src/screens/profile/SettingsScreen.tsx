@@ -176,16 +176,16 @@ export function SettingsScreen({
                   </Text>
                 </View>
               </View>
-              <View style={{borderColor: colors.borderLight, backgroundColor: colors.textMuted}} className="border rounded-full px-3 py-1.5">
+              <View style={{borderColor: colors.borderLight, backgroundColor: colors.surface}} className="border rounded-full px-3 py-1.5">
                 <Text style={{color: colors.text}} className="text-xs leading-4">English</Text>
               </View>
             </View>
 
             <SettingsRow
               icon={<MaterialCommunityIcons name="bell-outline" size={22} color={colors.textMuted} />}
-              title="Notifications"
+              title="NotificationSettings"
               subtitle="Manage your notifications and alerts."
-              onPress={() => navigation.navigate("Notifications")}
+              onPress={() => navigation.navigate("NotificationSettings")}
             />
             <SettingsRow
               icon={<MaterialCommunityIcons name="lock-outline" size={22} color={colors.textMuted} />}
@@ -244,7 +244,7 @@ export function SettingsScreen({
                   </Text>
                 </View>
               </View>
-              <Pressable style={{backgroundColor: colors.textMuted, borderColor: colors.borderLight}} className="flex-row items-center gap-2 border rounded-2xl px-4 py-2.5">
+              <Pressable style={{backgroundColor: colors.surface, borderColor: colors.borderLight}} className="flex-row items-center gap-2 border rounded-2xl px-4 py-2.5">
                 <MaterialCommunityIcons
                   name="tray-arrow-down"
                   size={16}

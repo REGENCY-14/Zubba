@@ -33,7 +33,7 @@ export type RootStackParamList = {
   Settings: undefined;
   TermsAndConditions: undefined;
   AboutUs: undefined;
-  Notifications: undefined;
+  NotificationSettings: undefined;
   HelpCenter: undefined;
   ActiveSession: undefined;
   UpdateDetails: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
