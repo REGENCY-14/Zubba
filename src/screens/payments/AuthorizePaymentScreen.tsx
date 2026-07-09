@@ -28,7 +28,7 @@ export function AuthorizePaymentScreen({
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 120, gap: 24 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 10, gap: 24 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <View className="w-8 h-8 rounded-lg bg-[#31973D] items-center justify-center">
@@ -102,13 +102,6 @@ export function AuthorizePaymentScreen({
             <Text className="text-white text-sm">Proceed to pay</Text>
           </Pressable>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          navigation={navigation}
-        />
       </View>
     </SafeAreaView>
   );

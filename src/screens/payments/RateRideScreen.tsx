@@ -12,150 +12,275 @@ export function RateRideScreen({
   navigation,
 }: RootStackScreenProps<"RateRide">) {
   const { colors } = useTheme();
-  const [rating, setRating] = useState<number>(0);
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+  const [serviceRating, setServiceRating] = useState<number>(0);
+  const [proRating, setProRating] = useState<number>(0);
+  const [ecoRating, setEcoRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => {
-      const next = new Set(prev);
-      if (next.has(tag)) next.delete(tag);
-      else next.add(tag);
-      return next;
-    });
-  };
+  const RATING_OPTIONS = [
+    { label: "Bad", value: 1 },
+    { label: "Good", value: 2 },
+    { label: "Very good", value: 3 },
+    { label: "Great", value: 4 },
+    { label: "Amazing", value: 5 },
+  ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, backgroundColor: colors.bg }}>
+    <SafeAreaView
+      style={{ backgroundColor: colors.bg }}
+      className="flex-1"
+      edges={["top", "left", "right", "bottom"]}
+    >
+      <View style={{ backgroundColor: colors.bg }} className="flex-1">
+        <View className="h-12 flex-row items-center justify-between px-4">
           <Pressable
             onPress={() => navigation.goBack()}
-            style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}
+            className="w-6 h-6 items-center justify-center"
           >
-            <MaterialCommunityIcons name="chevron-left" color={colors.text} size={24} />
+            <MaterialCommunityIcons
+              name="chevron-left"
+              color={colors.text}
+              size={24}
+            />
           </Pressable>
 
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
+          <Text
+            style={{ color: colors.text }}
+            className="text-base font-semibold"
+          >
             Success
           </Text>
 
-          <View style={{ width: 24, height: 24 }} />
+          <View className="w-6 h-6" />
         </View>
 
-        <View style={{ flex: 1, alignItems: 'center', gap: 24, paddingTop: 112 }}>
-          <View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: '#16A34A', alignItems: 'center', justifyContent: 'center' }}>
+        <View className="flex-1 items-center gap-6 pt-[66px]">
+          <View
+            style={{
+              boxShadow: [
+                {
+                  offsetX: 0,
+                  offsetY: 0,
+                  blurRadius: 0,
+                  spreadDistance: 14,
+                  color: "#DCFCE7",
+                },
+              ],
+            }}
+            className="w-[72px] h-[72px] rounded-full bg-green-600 items-center justify-center"
+          >
             <MaterialCommunityIcons name="check" size={40} color="#fff" />
           </View>
 
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text, textAlign: 'center', lineHeight: 32 }}>
-            Your transaction is{"\n"}successful
+          <Text
+            style={{ color: colors.text }}
+            className="text-2xl font-bold text-center leading-8"
+          >
+            Transaction successful
           </Text>
         </View>
 
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} pointerEvents="none" />
+        <View className="absolute inset-0 bg-black/40" pointerEvents="none" />
 
-        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.surface, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 16, paddingBottom: 24, paddingHorizontal: 16, gap: 16, maxHeight: '70%' }}>
-          <View style={{ width: 144, height: 3, backgroundColor: colors.border, borderRadius: 999, alignSelf: 'center' }} />
+        <View
+          style={{ backgroundColor: colors.bg }}
+          className="absolute bottom-0 left-0 right-0 rounded-t-[32px] pt-4 pb-6 px-4 gap-4 max-h-[70%]"
+        >
+          <View
+            style={{ backgroundColor: colors.border }}
+            className="w-36 h-1 rounded-full self-center"
+          />
 
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ gap: 12, paddingBottom: 8 }}
+            contentContainerClassName="gap-3 pb-2"
           >
-            <View style={{ alignItems: 'center', gap: 4 }}>
-              <Text style={{ fontSize: 18, fontWeight: '500', color: colors.text }}>
-                Rate your pickup experience
-              </Text>
-              <Text style={{ fontSize: 14, color: colors.textSub }}>
-                Your feedback helps us keep the city green.
+            <View className="items-center gap-1">
+              <Text
+                style={{ color: colors.text }}
+                className="text-lg font-medium"
+              >
+                How would you rate the following aspects?
               </Text>
             </View>
 
-            <View style={{ backgroundColor: colors.card, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 16, gap: 12 }}>
-              {/* Star rating */}
-              <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, paddingBottom: 24, gap: 16 }}>
-                <Text style={{ fontSize: 16, color: colors.text }}>Service experience</Text>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Pressable key={index} onPress={() => setRating(index + 1)} hitSlop={6}>
-                      <MaterialCommunityIcons
-                        name={index < rating ? "star" : "star-outline"}
-                        color={index < rating ? "#31973D" : "#BECAB9"}
-                        size={32}
-                      />
-                    </Pressable>
-                  ))}
+            <View
+              style={{ backgroundColor: colors.card }}
+              className="rounded-xl p-3 gap-3"
+            >
+              <View
+                style={{ borderColor: colors.border }}
+                className="border rounded-3xl p-4 gap-4"
+              >
+                <Text
+                  style={{ color: colors.text }}
+                  className="opacity-70 text-base"
+                >
+                  Service experience
+                </Text>
+
+                <View className="flex-row gap-2">
+                  {Array.from({ length: 5 }).map((_, index) => {
+                    const active = index < serviceRating;
+                    return (
+                      <Pressable
+                        key={index}
+                        onPress={() => setServiceRating(index + 1)}
+                        hitSlop={6}
+                      >
+                        <MaterialCommunityIcons
+                          name={active ? "star" : "star-outline"}
+                          color={active ? "#31973D" : "#BECAB9"}
+                          size={32}
+                        />
+                      </Pressable>
+                    );
+                  })}
                 </View>
-                {rating > 0 && (
-                  <Text style={{ fontSize: 14, color: '#31973D' }}>
-                    {["", "Poor", "Fair", "Good", "Great", "Excellent"][rating]}
+
+                {serviceRating > 0 && (
+                  <Text className="text-sm text-[#31973D]">
+                    {
+                      ["", "Poor", "Fair", "Good", "Great", "Excellent"][
+                        serviceRating
+                      ]
+                    }
                   </Text>
                 )}
               </View>
 
-              {/* Tags */}
-              <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, paddingBottom: 24, gap: 16 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>What did you like</Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                  {TAGS.map((tag) => {
-                    const active = selectedTags.has(tag);
-                    return (
-                      <Pressable
-                        key={tag}
-                        onPress={() => toggleTag(tag)}
-                        style={{
-                          borderRadius: 24,
-                          paddingHorizontal: 16,
-                          paddingVertical: 12,
-                          borderWidth: 1,
-                          borderColor: active ? '#31973D' : colors.border,
-                          backgroundColor: active ? 'rgba(49,151,61,0.1)' : colors.surface,
-                          minWidth: '45%',
-                          flexGrow: 1,
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Text style={{ fontSize: 14, color: active ? '#31973D' : colors.text, fontWeight: active ? '600' : '400' }}>
-                          {tag}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                  <Pressable style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, flexDirection: 'row', borderRadius: 24, paddingVertical: 12, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <Text style={{ fontSize: 14, color: colors.text }}>More options</Text>
-                    <MaterialCommunityIcons name="chevron-right" color={colors.text} size={20} />
-                  </Pressable>
+              <View className="gap-4">
+                <View className="p-4 gap-2">
+                  <Text style={{ color: colors.text }} className="opacity-70">
+                    Professional
+                  </Text>
+                  <View className="flex-row justify-between">
+                    {RATING_OPTIONS.map((item) => {
+                      const active = proRating === item.value;
+
+                      return (
+                        <Pressable
+                          key={item.value}
+                          onPress={() => setProRating(item.value)}
+                          className="items-center gap-2"
+                        >
+                          <View
+                            style={{
+                              borderColor: colors.border,
+                              backgroundColor: active
+                                ? "#31973D"
+                                : "transparent",
+                            }}
+                            className="w-12 h-12 rounded-full border items-center justify-center"
+                          >
+                            <Text
+                              style={{
+                                color: active ? "#fff" : colors.text,
+                              }}
+                              className="font-semibold"
+                            >
+                              {item.value}
+                            </Text>
+                          </View>
+
+                          <Text
+                            style={{ color: colors.textSub }}
+                            className="text-xs text-center"
+                          >
+                            {item.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+                <View className="p-4 gap-2">
+                  <Text style={{ color: colors.text }} className="opacity-70">
+                    Eco-friendly
+                  </Text>
+                  <View className="flex-row justify-between">
+                    {RATING_OPTIONS.map((item) => {
+                      const active = ecoRating === item.value;
+
+                      return (
+                        <Pressable
+                          key={item.value}
+                          onPress={() => setEcoRating(item.value)}
+                          className="items-center gap-2"
+                        >
+                          <View
+                            style={{
+                              borderColor: colors.border,
+                              backgroundColor: active
+                                ? "#31973D"
+                                : "transparent",
+                            }}
+                            className="w-12 h-12 rounded-full border items-center justify-center"
+                          >
+                            <Text
+                              style={{
+                                color: active ? "#fff" : colors.text,
+                              }}
+                              className="font-semibold"
+                            >
+                              {item.value}
+                            </Text>
+                          </View>
+
+                          <Text
+                            style={{ color: colors.textSub }}
+                            className="text-xs text-center"
+                          >
+                            {item.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
                 </View>
               </View>
             </View>
 
-            {/* Comment */}
-            <View style={{ backgroundColor: colors.card, borderTopWidth: 1, borderTopColor: colors.border, gap: 12, padding: 16 }}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}>Additional comment</Text>
+            <View className="gap-3 px-4">
+              <Text style={{ color: colors.text }} className="text-base">
+                Additional Note
+              </Text>
+
               <TextInput
-                style={{ height: 48, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 999, backgroundColor: colors.card, fontSize: 15, color: colors.text }}
-                placeholder="Tell us more..."
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.card,
+                  color: colors.text,
+                }}
+                className="min-h-24 px-4 py-3 border rounded-2xl text-[15px]"
+                placeholder="Thank you"
                 placeholderTextColor={colors.textMuted}
                 value={comment}
                 onChangeText={setComment}
               />
             </View>
 
-            {/* Actions */}
-            <View style={{ paddingHorizontal: 8, gap: 8 }}>
+            <View className="gap-2 px-2 flex-row items-center">
               <Pressable
-                onPress={() => navigation.navigate("ThankYou")}
-                style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => navigation.navigate("Home")}
+                className="w-[34px] h-[34px] bg-red-100 rounded-xl items-center justify-center"
               >
-                <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Submit</Text>
+                <MaterialCommunityIcons
+                  name="close"
+                  size={16}
+                  color="#EF4444"
+                />
               </Pressable>
 
               <Pressable
-                onPress={() => navigation.navigate("ThankYou")}
-                style={{ height: 48, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => navigation.navigate("Home")}
+                className="h-12 bg-[#31973D] flex-1 rounded-full items-center justify-center"
               >
-                <Text style={{ color: colors.text, fontWeight: '600' }}>Not Now</Text>
+                <Text className="text-white text-sm">Submit</Text>
               </Pressable>
             </View>
           </ScrollView>

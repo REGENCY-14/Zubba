@@ -55,7 +55,7 @@ export function PaymentVerificationScreen({
           <View className="w-6" />
         </View>
 
-        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 120 }}>
+        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 10 }}>
 
           <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, marginBottom: 16 }}>
             Verification Code
@@ -127,13 +127,6 @@ export function PaymentVerificationScreen({
             <Text className="text-white text-sm">Verify</Text>
           </Pressable>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          navigation={navigation}
-        />
       </View>
     </SafeAreaView>
   );

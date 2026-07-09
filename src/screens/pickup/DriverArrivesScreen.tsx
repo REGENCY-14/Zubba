@@ -6,6 +6,7 @@ import { AppBottomNav } from "../../components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
+import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -13,6 +14,7 @@ export function DriverArrivesScreen({
   navigation,
 }: RootStackScreenProps<"DriverArrives">) {
   const { colors } = useTheme();
+  const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
@@ -24,16 +26,14 @@ export function DriverArrivesScreen({
           contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 16 }}
           showsVerticalScrollIndicator={false}
         >
-          <View style={{ width: '100%', height: 224, gap: 24, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card, padding: 24, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: '100%', gap: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card, padding: 24, alignItems: 'center', justifyContent: 'center' }}>
             <View>
-              <View style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: colors.iconBg, alignItems: 'center', justifyContent: 'center' }}>
-                <View style={{ width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: '#90FA96', overflow: 'hidden' }}>
-                  <Image
-                    source={avatar}
-                    style={{ width: 54, height: 54 }}
-                    resizeMode="cover"
-                  />
-                </View>
+              <View style={{ width: 54, height: 54, borderRadius: 12, overflow: 'hidden' }}>
+                <Image
+                  source={avatar}
+                  style={{ width: 54, height: 54 }}
+                  resizeMode="cover"
+                />
               </View>
             </View>
 
@@ -110,7 +110,7 @@ export function DriverArrivesScreen({
 
           <View style={{ gap: 16 }}>
             <Pressable
-              onPress={() => navigation.navigate("Payment")}
+              onPress={() => setShowPaymentDrawer(true)}
               style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
             >
               <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Proceed to payment</Text>
@@ -133,6 +133,19 @@ export function DriverArrivesScreen({
         <AppBottomNav
           activeTab="home"
           navigation={navigation}
+        />
+
+        <PaymentMethodDrawer
+          visible={showPaymentDrawer}
+          onClose={() => setShowPaymentDrawer(false)}
+          onContinue={(method) => {
+            setShowPaymentDrawer(false);
+            if (method === "wallet") {
+              navigation.navigate("WalletCheckout");
+            } else {
+              navigation.navigate("PaymentMethod");
+            }
+          }}
         />
       </View>
     </SafeAreaView>
