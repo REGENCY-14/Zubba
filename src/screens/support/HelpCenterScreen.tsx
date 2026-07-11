@@ -14,86 +14,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { Paragraph, Section } from "../../components/common/CustomAccordion";
+import { AppBottomNav } from "../../components";
 
 const supportImage = require("../../../assets/help.png");
-
-type SectionProps = {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  compact?: boolean;
-  colors: ReturnType<typeof useTheme>["colors"];
-};
-
-function Section({
-  title,
-  children,
-  defaultOpen = false,
-  colors,
-}: SectionProps) {
-  const [open, setOpen] = React.useState(defaultOpen);
-
-  return (
-    <View
-      style={{
-        backgroundColor: colors.card,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: colors.borderLight,
-        overflow: "hidden",
-      }}
-    >
-      <Pressable
-        style={{
-          minHeight: 44,
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottomWidth: 1,
-          borderBottomColor: colors.borderLight,
-        }}
-        onPress={() => setOpen((value) => !value)}
-      >
-        <Text
-          style={{
-            fontSize: 14,
-            lineHeight: 20,
-            fontWeight: "600",
-            color: colors.text,
-          }}
-        >
-          {title}
-        </Text>
-        <MaterialCommunityIcons
-          name={open ? "chevron-up" : "chevron-down"}
-          size={18}
-          color={colors.textSub}
-        />
-      </Pressable>
-      {open ? (
-        <View style={{ paddingHorizontal: 16, paddingVertical: 8, gap: 12 }}>
-          {children}
-        </View>
-      ) : null}
-    </View>
-  );
-}
-
-function Paragraph({
-  children,
-  colors,
-}: {
-  children: React.ReactNode;
-  colors: ReturnType<typeof useTheme>["colors"];
-}) {
-  return (
-    <Text style={{ fontSize: 14, lineHeight: 20, color: colors.textSub }}>
-      {children}
-    </Text>
-  );
-}
 
 function BulletList({
   items,
@@ -151,7 +75,7 @@ export function HelpCenterScreen({
         <ScrollView
           contentContainerStyle={{
             padding: 16,
-            paddingBottom: 24,
+            paddingBottom: 100,
             gap: 14,
             backgroundColor: colors.surface,
           }}
@@ -365,6 +289,12 @@ export function HelpCenterScreen({
             </View>
           </View>
         </ScrollView>
+
+        <AppBottomNav
+          activeTab="settings"
+          paddingBottom={0}
+          navigation={navigation}
+        />
       </View>
     </SafeAreaView>
   );

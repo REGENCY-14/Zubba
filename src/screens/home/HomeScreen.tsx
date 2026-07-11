@@ -22,6 +22,7 @@ import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
+import Sidebar from "../../components/home/Sidebar";
 
 const mapImage = require("../../../assets/RawMap.png");
 const premium = require("../../../assets/premium.png");
@@ -30,6 +31,7 @@ const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
@@ -90,12 +92,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               zIndex: 10,
             }}
           >
-            <Pressable className="w-8 h-8 items-center justify-center">
-              <MaterialCommunityIcons
-                name="menu"
-                size={20}
-                color={colors.iconColor}
-              />
+            <Pressable
+              className="w-8 h-8 items-center justify-center"
+              onPress={() => setSidebarVisible(true)}
+            >
+              <MaterialCommunityIcons name="menu" size={20} color={colors.iconColor} />
             </Pressable>
 
             <View className="flex-row gap-2 items-center justify-center">
@@ -515,6 +516,12 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           />
         </View>
       </View>
+      <Sidebar
+        visible={sidebarVisible}
+        activeKey="home"
+        onClose={() => setSidebarVisible(false)}
+        navigation={navigation}
+      />
     </SafeAreaView>
   );
 }

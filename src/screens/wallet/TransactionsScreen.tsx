@@ -9,6 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useTheme } from '../../context/ThemeContext';
+import CustomAppBar from '../../components/common/CustomAppBar';
 
 type TxStatus = 'SUCCESS' | 'CREDITED' | 'PENDING' | 'FAILED';
 type FilterKey = 'All' | 'Incoming' | 'Expenses' | 'Success' | 'Failed';
@@ -133,6 +135,8 @@ function applyFilter(txs: Transaction[], filter: FilterKey): Transaction[] {
 }
 
 function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
+  const { colors } = useTheme()
+
   return (
     <View
       style={{
@@ -142,7 +146,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
         paddingVertical: 16,
         gap: 16,
         borderBottomWidth: isLast ? 0 : 1,
-        borderBottomColor: 'rgba(111, 122, 108, 0.05)',
+        borderBottomColor: colors.borderLight,
       }}
     >
       <View
@@ -159,10 +163,10 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
       </View>
 
       <View style={{ flex: 1, gap: 4 }}>
-        <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.28, color: '#1F2A33', lineHeight: 17 }}>
+        <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.28, color: colors.text, lineHeight: 17 }}>
           {tx.title}
         </Text>
-        <Text style={{ fontSize: 13, fontWeight: '400', color: '#ACB5BB', lineHeight: 21 }}>
+        <Text style={{ fontSize: 13, fontWeight: '400', color: colors.textSub, lineHeight: 21 }}>
           {tx.date}
         </Text>
       </View>
@@ -189,38 +193,17 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
 }
 
 export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transactions'>) {
+  const { colors } = useTheme()
+
   const [activeFilter, setActiveFilter] = useState<FilterKey>('All');
   const [showFilter, setShowFilter] = useState(false);
 
   const filtered = applyFilter(ALL_TRANSACTIONS, activeFilter);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
 
-      {/* Header */}
-      <View
-        style={{
-          height: 48,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          backgroundColor: '#FFFFFF',
-        }}
-      >
-        <Pressable
-          style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
-        </Pressable>
-
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#1F2A33', lineHeight: 24 }}>
-          Transactions
-        </Text>
-
-        <View style={{ width: 32 }} />
-      </View>
+      <CustomAppBar title="Transactions" navigation={navigation}/>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -229,9 +212,9 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
         {/* Main card */}
         <View
           style={{
-            backgroundColor: '#F8FAFC',
+            backgroundColor: colors.card,
             borderWidth: 1,
-            borderColor: '#E2E8F0',
+            borderColor: colors.border,
             borderRadius: 24,
             paddingVertical: 11,
             paddingHorizontal: 11,
@@ -240,23 +223,23 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
         >
           {/* Section header */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
-            <Text style={{ fontSize: 20, fontWeight: '500', color: '#1A1C1E', lineHeight: 28 }}>
+            <Text style={{ fontSize: 20, fontWeight: '500', color: colors.text, lineHeight: 28 }}>
               Recent Activity
             </Text>
             <Pressable
               onPress={() => setShowFilter((v) => !v)}
               style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}
             >
-              <MaterialCommunityIcons name="tune-variant" size={18} color="#ACB5BB" />
+              <MaterialCommunityIcons name="tune-variant" size={18} color={colors.iconColor} />
             </Pressable>
           </View>
 
           {/* Transactions list */}
           <View
             style={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: colors.surface,
               borderWidth: 1,
-              borderColor: '#E2E8F0',
+              borderColor: colors.border,
               borderRadius: 24,
               overflow: 'hidden',
             }}
@@ -267,7 +250,7 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
               ))
             ) : (
               <View style={{ padding: 32, alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, color: '#ACB5BB', textAlign: 'center' }}>
+                <Text style={{ fontSize: 14, color: colors.text, textAlign: 'center' }}>
                   No transactions found
                 </Text>
               </View>
@@ -292,9 +275,9 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
               top: 154,
               right: 16,
               width: 161,
-              backgroundColor: '#FFFFFF',
+              backgroundColor: colors.bg,
               borderWidth: 1,
-              borderColor: '#E2E8F0',
+              borderColor: colors.borderLight,
               borderRadius: 24,
               padding: 8,
               gap: 4,
@@ -320,14 +303,14 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
                     paddingHorizontal: 8,
                     height: 32,
                     borderRadius: 16,
-                    backgroundColor: isActive ? 'rgba(184, 184, 184, 0.2)' : 'transparent',
+                    backgroundColor: isActive ? colors.surface : 'transparent',
                   }}
                 >
                   <Text
                     style={{
                       fontSize: 14,
                       fontWeight: '400',
-                      color: isActive ? '#1F2A33' : '#64748A',
+                      color: isActive ? colors.text : colors.textMuted,
                       lineHeight: 20,
                     }}
                   >

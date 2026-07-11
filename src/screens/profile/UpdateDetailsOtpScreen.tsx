@@ -41,7 +41,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
         <View style={{ flex: 1, paddingHorizontal: 22, paddingTop: 18, gap: 18 }}>
           <View style={{ gap: 4 }}>
             <Text
-              style={{ fontSize: 18, fontWeight: 'bold', lineHeight: 25, letterSpacing: 0.15, color: colors.text, fontFamily: 'Nexa Text-Trial' }}
+              style={{ fontSize: 18, fontWeight: 'bold', lineHeight: 25, letterSpacing: 0.15, color: colors.text }}
             >
               {kind === 'email'
                 ? step === 'old'
@@ -83,7 +83,8 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
           </View>
 
           <Pressable
-            style={{ height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 10, backgroundColor: isCodeComplete ? '#34A853' : 'rgba(52,168,83,0.5)' }}
+            className="rounded-full"
+            style={{ height: 48, alignItems: 'center', justifyContent: 'center', marginTop: 10, backgroundColor: isCodeComplete ? '#34A853' : 'rgba(52,168,83,0.5)' }}
             disabled={!isCodeComplete}
             onPress={() =>
               step === 'old'
@@ -103,16 +104,16 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
             <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20 }}>Verify</Text>
           </Pressable>
 
-          <Text style={{ color: colors.text, fontSize: 11, lineHeight: 16, fontFamily: 'Poppins' }}>
+          <Text style={{ color: colors.text, fontSize: 11, lineHeight: 16 }}>
             {kind === 'email' ? 'Resend code by email (1:00)' : 'Resend code by SMS (1:00)'}
           </Text>
 
           <View style={{ gap: 8, alignItems: 'flex-start' }}>
             <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 22, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: colors.card }} onPress={() => {}}>
-              <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500' }}>Resend</Text>
+              <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500' }}>Resend</Text>
             </Pressable>
             <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 22, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: colors.card }} onPress={() => {}}>
-              <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500' }}>Send code via WhatsApp</Text>
+              <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500' }}>Send code via WhatsApp</Text>
             </Pressable>
           </View>
         </View>
