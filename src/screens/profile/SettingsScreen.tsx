@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppBottomNav } from "../../components";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import type { RootStackScreenProps } from "../../navigation/types";
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -36,15 +36,26 @@ function SettingsRow({
       onPress={onPress}
     >
       <View className="flex-1 flex-row items-center gap-4">
-        <View style={{backgroundColor: colors.iconBg}} className="w-10 h-10 rounded-[10px] items-center justify-center">
+        <View
+          style={{ backgroundColor: colors.iconBg }}
+          className="w-10 h-10 rounded-[10px] items-center justify-center"
+        >
           {icon}
         </View>
         <View className="flex-1 gap-1">
-          <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
+          <Text
+            style={{ color: colors.text }}
+            className="text-sm leading-5 font-medium"
+          >
             {title}
           </Text>
           {subtitle ? (
-            <Text style={{color: colors.textMuted}} className="text-xs leading-4">{subtitle}</Text>
+            <Text
+              style={{ color: colors.textMuted }}
+              className="text-xs leading-4"
+            >
+              {subtitle}
+            </Text>
           ) : null}
         </View>
       </View>
@@ -72,11 +83,17 @@ function SectionCard({
   const { colors } = useTheme();
 
   return (
-    <View style={{backgroundColor: colors.card, borderColor: colors.border}} className="rounded-2xl border overflow-hidden">
-      <Text style={{color: colors.text}} className="text-base leading-6 font-semibold p-4">
+    <View
+      style={{ backgroundColor: colors.card, borderColor: colors.border }}
+      className="rounded-2xl border overflow-hidden"
+    >
+      <Text
+        style={{ color: colors.text }}
+        className="text-base leading-6 font-semibold p-4"
+      >
         {title}
       </Text>
-      <View style={{backgroundColor: colors.borderLight}} className="h-px" />
+      <View style={{ backgroundColor: colors.borderLight }} className="h-px" />
       {children}
     </View>
   );
@@ -86,13 +103,18 @@ export function SettingsScreen({
   navigation,
 }: RootStackScreenProps<"Settings">) {
   const { isDark, colors, toggle } = useTheme();
+  const isPremium = true;
 
   const zubbaText = require("../../../assets/zubbaText.png");
   const tricycleImage = require("../../../assets/tricycle image.png");
 
   return (
-    <SafeAreaView style={{ backgroundColor: colors.bg }} className="flex-1" edges={["top", "left", "right"]}>
-      <CustomAppBar title="Settings" navigation={navigation}/>
+    <SafeAreaView
+      style={{ backgroundColor: colors.bg }}
+      className="flex-1"
+      edges={["top", "left", "right"]}
+    >
+      <CustomAppBar title="Settings" navigation={navigation} />
       <View style={{ backgroundColor: colors.bg }} className="flex-1">
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -102,9 +124,20 @@ export function SettingsScreen({
             gap: 24,
           }}
         >
-          <View style={{backgroundColor: colors.card, borderColor: colors.borderLight }} className="border rounded-3xl p-3 gap-6">
-
-            <View  style={{backgroundColor: colors.bg, borderColor: colors.borderLight }} className="items-center rounded-2xl border py-6 px-4 gap-2">
+          <View
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.borderLight,
+            }}
+            className="border rounded-3xl p-3 gap-6"
+          >
+            <View
+              style={{
+                backgroundColor: colors.bg,
+                borderColor: colors.borderLight,
+              }}
+              className="items-center rounded-2xl border py-6 px-4 gap-2"
+            >
               <Image
                 resizeMode="contain"
                 style={{ height: 30 }}
@@ -162,39 +195,84 @@ export function SettingsScreen({
           </View>
 
           <SectionCard title="Security and Configuration">
-            <View style={{borderColor: colors.borderLight}} className="min-h-[72px] flex-row items-center justify-between p-4 border-b gap-4">
+            <View
+              style={{ borderColor: colors.borderLight }}
+              className="min-h-[72px] flex-row items-center justify-between p-4 border-b gap-4"
+            >
               <View className="flex-1 flex-row items-center gap-4">
-                <View style={{backgroundColor: colors.iconBg}} className="w-10 h-10 rounded-[10px] items-center justify-center">
-                  <MaterialCommunityIcons name="web" size={22} color={colors.textMuted} />
+                <View
+                  style={{ backgroundColor: colors.iconBg }}
+                  className="w-10 h-10 rounded-[10px] items-center justify-center"
+                >
+                  <MaterialCommunityIcons
+                    name="web"
+                    size={22}
+                    color={colors.textMuted}
+                  />
                 </View>
                 <View className="flex-1 gap-1">
-                  <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-sm leading-5 font-medium"
+                  >
                     Language
                   </Text>
-                  <Text style={{color: colors.textMuted}} className="text-xs leading-4">
+                  <Text
+                    style={{ color: colors.textMuted }}
+                    className="text-xs leading-4"
+                  >
                     App display language
                   </Text>
                 </View>
               </View>
-              <View style={{borderColor: colors.borderLight, backgroundColor: colors.surface}} className="border rounded-full px-3 py-1.5">
-                <Text style={{color: colors.text}} className="text-xs leading-4">English</Text>
+              <View
+                style={{
+                  borderColor: colors.borderLight,
+                  backgroundColor: colors.surface,
+                }}
+                className="border rounded-full px-3 py-1.5"
+              >
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-xs leading-4"
+                >
+                  English
+                </Text>
               </View>
             </View>
 
             <SettingsRow
-              icon={<MaterialCommunityIcons name="bell-outline" size={22} color={colors.textMuted} />}
+              icon={
+                <MaterialCommunityIcons
+                  name="bell-outline"
+                  size={22}
+                  color={colors.textMuted}
+                />
+              }
               title="NotificationSettings"
               subtitle="Manage your notifications and alerts."
               onPress={() => navigation.navigate("NotificationSettings")}
             />
             <SettingsRow
-              icon={<MaterialCommunityIcons name="lock-outline" size={22} color={colors.textMuted} />}
+              icon={
+                <MaterialCommunityIcons
+                  name="lock-outline"
+                  size={22}
+                  color={colors.textMuted}
+                />
+              }
               title="Change phone number"
               subtitle="Update your security key"
               onPress={() => navigation.navigate("UpdateDetails")}
             />
             <SettingsRow
-              icon={<MaterialCommunityIcons name="timer-outline" size={22} color={colors.textMuted} />}
+              icon={
+                <MaterialCommunityIcons
+                  name="timer-outline"
+                  size={22}
+                  color={colors.textMuted}
+                />
+              }
               title="Active Session"
               subtitle="Manage devices currently logged in"
               onPress={() => navigation.navigate("ActiveSession")}
@@ -204,7 +282,10 @@ export function SettingsScreen({
           <SectionCard title="Preferences">
             <View className="min-h-[72px] flex-row items-center justify-between p-4 gap-4">
               <View className="flex-1 flex-row items-center gap-4">
-                <View style={{backgroundColor: colors.iconBg}} className="w-10 h-10 rounded-[10px] items-center justify-center">
+                <View
+                  style={{ backgroundColor: colors.iconBg }}
+                  className="w-10 h-10 rounded-[10px] items-center justify-center"
+                >
                   <MaterialCommunityIcons
                     name="brightness-4"
                     size={22}
@@ -213,11 +294,14 @@ export function SettingsScreen({
                   />
                 </View>
                 <View className="flex-1 gap-1">
-                  <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-sm leading-5 font-medium"
+                  >
                     Appearance
                   </Text>
                   <Text className="text-xs leading-4 text-[#64748A]">
-                    {isDark ? 'Dark mode' : 'Light mode'}
+                    {isDark ? "Dark mode" : "Light mode"}
                   </Text>
                 </View>
               </View>
@@ -225,10 +309,19 @@ export function SettingsScreen({
             </View>
           </SectionCard>
 
-          <View style={{borderColor: colors.borderLight, backgroundColor: colors.card}} className="bg-white rounded-2xl border p-4">
+          <View
+            style={{
+              borderColor: colors.borderLight,
+              backgroundColor: colors.card,
+            }}
+            className="bg-white rounded-2xl border p-4"
+          >
             <View className="flex-row items-center justify-between gap-4">
               <View className="flex-1 flex-row items-center gap-4">
-                <View style={{backgroundColor: colors.iconBg}} className="w-10 h-10 rounded-[10px] items-center justify-center">
+                <View
+                  style={{ backgroundColor: colors.iconBg }}
+                  className="w-10 h-10 rounded-[10px] items-center justify-center"
+                >
                   <MaterialCommunityIcons
                     name="text-box-outline"
                     size={22}
@@ -236,7 +329,10 @@ export function SettingsScreen({
                   />
                 </View>
                 <View className="flex-1 gap-1">
-                  <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-sm leading-5 font-medium"
+                  >
                     Eco-Impact Reports
                   </Text>
                   <Text className="text-xs leading-4 text-[#64748A]">
@@ -244,61 +340,96 @@ export function SettingsScreen({
                   </Text>
                 </View>
               </View>
-              <Pressable style={{backgroundColor: colors.surface, borderColor: colors.borderLight}} className="flex-row items-center gap-2 border rounded-2xl px-4 py-2.5">
+              <Pressable
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.borderLight,
+                }}
+                className="flex-row items-center gap-2 border rounded-2xl px-4 py-2.5"
+              >
                 <MaterialCommunityIcons
                   name="tray-arrow-down"
                   size={16}
                   color={colors.textSub}
                 />
-                <Text style={{color: colors.text}} className="text-sm leading-5">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-sm leading-5"
+                >
                   Export data
                 </Text>
               </Pressable>
             </View>
           </View>
 
-          <View className="bg-[#FFE088]/30 rounded-2xl border border-[#D4AF37] p-4">
-            <View className="flex-row items-center justify-between gap-4">
-              <View className="flex-1 flex-row items-center gap-4">
-                <View style={{backgroundColor: colors.iconBg}} className="w-10 h-10 rounded-[10px] items-center justify-center">
-                  <MaterialCommunityIcons
-                    name="phone"
-                    size={22}
-                    color={colors.textMuted}
-                  />
+          {isPremium && (
+            <View className="bg-[#FFE088]/30 rounded-2xl border border-[#D4AF37] p-4">
+              <View className="flex-row items-center justify-between gap-4">
+                <View className="flex-1 flex-row items-center gap-4">
+                  <View
+                    style={{ backgroundColor: colors.iconBg }}
+                    className="w-10 h-10 rounded-[10px] items-center justify-center"
+                  >
+                    <MaterialCommunityIcons
+                      name="phone"
+                      size={22}
+                      color={colors.textMuted}
+                    />
+                  </View>
+                  <View className="flex-1 gap-1">
+                    <Text
+                      style={{ color: colors.text }}
+                      className="text-sm leading-5 font-medium"
+                    >
+                      Support line
+                    </Text>
+                    <Text className="text-xs leading-4 text-[#64748A]">
+                      Average response: &lt;2 mins
+                    </Text>
+                  </View>
                 </View>
-                <View className="flex-1 gap-1">
-                  <Text style={{color: colors.text}} className="text-sm leading-5 font-medium">
-                    Support line
+                <Pressable className="flex-row items-center gap-2 border border-[#D4AF37] rounded-full bg-[#FFE088] px-4 py-2.5">
+                  <Text className="text-sm leading-5 text-[#1F2A33]">
+                    Call Now
                   </Text>
-                  <Text className="text-xs leading-4 text-[#64748A]">
-                    Average response: &lt;2 mins
-                  </Text>
-                </View>
+                </Pressable>
               </View>
-              <Pressable className="flex-row items-center gap-2 border border-[#D4AF37] rounded-full bg-[#FFE088] px-4 py-2.5">
-                <Text className="text-sm leading-5 text-[#1F2A33]">
-                  Call Now
-                </Text>
-              </Pressable>
             </View>
-          </View>
+          )}
 
           <SectionCard title="Support & Legal">
             <SettingsRow
-              icon={<MaterialCommunityIcons name="help-circle-outline" size={22} color={colors.textMuted} />}
+              icon={
+                <MaterialCommunityIcons
+                  name="help-circle-outline"
+                  size={22}
+                  color={colors.textMuted}
+                />
+              }
               title="Help Center"
               subtitle="FAQs and guides"
               onPress={() => navigation.navigate("HelpCenter")}
             />
             <SettingsRow
-              icon={<MaterialCommunityIcons name="message-text-outline" size={22} color={colors.textMuted} />}
+              icon={
+                <MaterialCommunityIcons
+                  name="message-text-outline"
+                  size={22}
+                  color={colors.textMuted}
+                />
+              }
               title="Terms and Conditions"
               subtitle="Review our legal terms"
               onPress={() => navigation.navigate("TermsAndConditions")}
             />
             <SettingsRow
-              icon={<MaterialCommunityIcons name="information-outline" size={22} color={colors.textMuted} />}
+              icon={
+                <MaterialCommunityIcons
+                  name="information-outline"
+                  size={22}
+                  color={colors.textMuted}
+                />
+              }
               title="About Zubba"
               subtitle="Version 1.0.0"
               onPress={() => navigation.navigate("AboutUs")}
@@ -306,7 +437,7 @@ export function SettingsScreen({
           </SectionCard>
 
           <Pressable
-            style={{backgroundColor: colors.card}}
+            style={{ backgroundColor: colors.card }}
             className="h-[42px] rounded-full border border-[#C10007] items-center justify-center flex-row gap-2"
             onPress={() => navigation.navigate("SignIn")}
           >

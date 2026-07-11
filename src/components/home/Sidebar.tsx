@@ -24,11 +24,36 @@ export type SidebarMenuItem = {
 
 export const DEFAULT_SIDEBAR_ITEMS: SidebarMenuItem[] = [
   { key: "home", label: "Home", icon: "home-outline", navigate: "Home" },
-  { key: "profile", label: "Profile", icon: "account-outline", navigate: "Profile" },
-  { key: "wallet", label: "Zubba Wallet", icon: "wallet-outline", navigate: "ZubbaWallet" },
-  { key: "subscription", label: "Subscription", icon: "clock-outline", navigate: "ConfirmSubscription" },
-  { key: "settings", label: "Settings", icon: "cog-outline", navigate: "Settings" },
-  { key: "support", label: "Support", icon: "face-agent", navigate: "HelpCenter" },
+  {
+    key: "profile",
+    label: "Profile",
+    icon: "account-outline",
+    navigate: "Profile",
+  },
+  {
+    key: "wallet",
+    label: "Zubba Wallet",
+    icon: "wallet-outline",
+    navigate: "ZubbaWallet",
+  },
+  {
+    key: "subscription",
+    label: "Subscription",
+    icon: "clock-outline",
+    navigate: "ConfirmSubscription",
+  },
+  {
+    key: "settings",
+    label: "Settings",
+    icon: "cog-outline",
+    navigate: "Settings",
+  },
+  {
+    key: "support",
+    label: "Support",
+    icon: "face-agent",
+    navigate: "HelpCenter",
+  },
 ];
 
 const avatarUrl = require("../../../assets/avatar.jpg");
@@ -50,14 +75,14 @@ export default function Sidebar({
   isVerified = true,
   menuItems = DEFAULT_SIDEBAR_ITEMS,
   navigation,
-  activeKey
+  activeKey,
 }: SidebarProps) {
   const { colors } = useTheme();
   const user = useAppSelector((state) => state.auth.user);
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const [mounted, setMounted] = useState(visible);
-  const [active, setActive] = useState<string>(activeKey ?? "")
+  const [active, setActive] = useState<string>(activeKey ?? "");
 
   useEffect(() => {
     if (visible) {
@@ -107,7 +132,13 @@ export default function Sidebar({
           }}
         >
           <Pressable
-            style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
             onPress={onClose}
           />
         </Animated.View>
@@ -134,49 +165,60 @@ export default function Sidebar({
               marginBottom: 28,
             }}
           >
-            <View style={{ width: 48, height: 48 }}>
-              {avatarUrl ? (
-                <Image
-                  source={avatarUrl}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 24,
-                    borderWidth: 2,
-                    borderColor: "#90FA96",
-                  }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <TextAvatar
-                  size={48}
-                  bgColor="#C7E0C9"
-                  name={`${user?.firstname} ${user?.lastname}`}
-                />
-              )}
-              {isVerified && (
-                <View
-                  style={{
-                    position: "absolute",
-                    bottom: -2,
-                    right: -2,
-                    width: 18,
-                    height: 18,
-                    borderRadius: 9,
-                    backgroundColor: "#006B23",
-                    borderWidth: 2,
-                    borderColor: "#FFFFFF",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="check-decagram"
-                    size={11}
-                    color="#FFFFFF"
+            <View
+              style={{
+                width: 64,
+                height: 64,
+                backgroundColor: "#F4F4F5",
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <View style={{ width: 54, height: 54 }}>
+                {avatarUrl ? (
+                  <Image
+                    source={avatarUrl}
+                    style={{
+                      width: 54,
+                      height: 54,
+                      borderRadius: 999,
+                      borderWidth: 2,
+                      borderColor: "#90FA96",
+                    }}
+                    resizeMode="cover"
                   />
-                </View>
-              )}
+                ) : (
+                  <TextAvatar
+                    size={48}
+                    bgColor="#C7E0C9"
+                    name={`${user?.firstname} ${user?.lastname}`}
+                  />
+                )}
+                {isVerified && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      bottom: -2,
+                      right: -2,
+                      width: 18,
+                      height: 18,
+                      borderRadius: 9,
+                      backgroundColor: "#006B23",
+                      borderWidth: 2,
+                      borderColor: "#FFFFFF",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="check-decagram"
+                      size={11}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                )}
+              </View>
             </View>
             <View style={{ flex: 1 }}>
               <Text
@@ -185,13 +227,18 @@ export default function Sidebar({
               >
                 {`${user?.firstname} ${user?.lastname}`}
               </Text>
-              <Text style={{ fontSize: 12, marginTop: 2, color: colors.textSub }}>
+              <Text
+                style={{ fontSize: 12, marginTop: 2, color: colors.textSub }}
+              >
                 {user?.phone}
               </Text>
             </View>
           </View>
 
-          <View className="w-full border mb-5" style={{borderColor: colors.border}}></View>
+          <View
+            className="w-full border mb-5"
+            style={{ borderColor: colors.border }}
+          ></View>
 
           {/* Menu items */}
           <View style={{ gap: 12 }}>
@@ -201,7 +248,7 @@ export default function Sidebar({
                 <Pressable
                   key={item.key}
                   onPress={() => {
-                    setActive(item.key)
+                    setActive(item.key);
                     navigation.navigate(item.navigate);
                   }}
                   style={{
@@ -211,7 +258,9 @@ export default function Sidebar({
                     paddingVertical: 8,
                     paddingHorizontal: 12,
                     borderRadius: 999,
-                    backgroundColor: currentScreen ? colors.surface : "transparent",
+                    backgroundColor: currentScreen
+                      ? colors.surface
+                      : "transparent",
                   }}
                 >
                   <View
@@ -230,7 +279,13 @@ export default function Sidebar({
                       color="#2F8F4E"
                     />
                   </View>
-                  <Text style={{ fontSize: 14, fontWeight: "500", color: colors.text }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: colors.text,
+                    }}
+                  >
                     {item.label}
                   </Text>
                 </Pressable>

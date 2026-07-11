@@ -136,15 +136,15 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                 </Pressable>
 
                 <View className="gap-2">
-                  <Pressable className="w-[99px] h-8 rounded-[22px] border border-[#E2E8F0] items-center justify-center px-3" onPress={() => {}}>
+                  <Pressable className="w-[99px] h-8 rounded-[22px] border items-center justify-center px-3" style={{ borderColor: colors.border }} onPress={() => {}}>
                     <Text className=" text-xs leading-5 font-medium" style={{ color: colors.text }}>Resend</Text>
                   </Pressable>
-                  <Pressable className="w-[178px] h-8 rounded-[22px] border border-[#E2E8F0] items-center justify-center px-3" onPress={() => {}}>
+                  <Pressable className="w-[178px] h-8 rounded-[22px] border items-center justify-center px-3" style={{ borderColor: colors.border }} onPress={() => {}}>
                     <Text className=" text-xs leading-5 font-medium" style={{ color: colors.text }}>{isEmailMode ? 'Send code via email' : 'Send code via WhatsApp'}</Text>
                   </Pressable>
                 </View>
 
-                <View className="flex-row items-start gap-4 p-4 rounded-2xl border border-[#E2E8F0]">
+                <View className="flex-row items-start gap-4 p-4 rounded-2xl border" style={{ borderColor: colors.border }}>
                   <View
                     className="w-8 h-8 rounded-full items-center justify-center"
                     style={{ backgroundColor: 'rgba(0, 107, 35, 0.1)' }}

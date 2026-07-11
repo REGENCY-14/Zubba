@@ -5,9 +5,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useTheme } from '../../context/ThemeContext';
+import CustomAppBar from '../../components/common/CustomAppBar';
 
 export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateName'>) {
   const user = useAppSelector((state) => state.auth.user);
+  const { colors, isDark } = useTheme()
 
   const [firstName, setFirstName] = useState(user?.firstname ?? 'Edwin');
   const [lastName, setLastName] = useState(user?.lastname ?? 'Adu Boateng');
@@ -15,32 +18,9 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
   const canSave = firstName.trim().length > 0 && lastName.trim().length > 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
 
-      {/* Header */}
-      <View
-        style={{
-          height: 48,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          backgroundColor: '#FFFFFF',
-        }}
-      >
-        <Pressable
-          style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
-        </Pressable>
-
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#1F2A33', lineHeight: 24 }}>
-          Update Details
-        </Text>
-
-        <View style={{ width: 24 }} />
-      </View>
+      <CustomAppBar title="Update Details" navigation={navigation}/>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -70,7 +50,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
             style={{
               fontSize: 14,
               fontWeight: '400',
-              color: '#64748A',
+              color: colors.textSub,
               lineHeight: 20,
               textAlign: 'center',
               width: 284,
@@ -84,16 +64,16 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
         <View
           style={{
             width: '100%',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: isDark ? colors.surface : colors.bg,
             borderWidth: 1,
-            borderColor: '#E2E8F0',
+            borderColor: colors.border,
             borderRadius: 24,
             padding: 16,
             gap: 16,
           }}
         >
           {/* Instruction */}
-          <Text style={{ fontSize: 14, lineHeight: 22, color: '#1F2A33', letterSpacing: 0.15 }}>
+          <Text style={{ fontSize: 14, lineHeight: 22, color: colors.textSub, letterSpacing: 0.15 }}>
             Enter your name as it appears on your ID or passport
           </Text>
 
@@ -101,32 +81,32 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
           <View
             style={{
               borderTopWidth: 1,
-              borderTopColor: '#E2E8F0',
+              borderTopColor: colors.borderLight,
               paddingTop: 8,
               gap: 8,
             }}
           >
-            <Text style={{ fontSize: 14, lineHeight: 22, color: '#1F2A33', letterSpacing: 0.15 }}>
+            <Text style={{ fontSize: 14, lineHeight: 22, color: colors.textSub, letterSpacing: 0.15 }}>
               First  Name
             </Text>
 
             <TextInput
               style={{
                 height: 48,
-                backgroundColor: '#FFFFFF',
+                backgroundColor: isDark ? colors.surface : colors.bg,
                 borderWidth: 1,
-                borderColor: '#CBD5E0',
+                borderColor: colors.border,
                 borderRadius: 9999,
                 paddingHorizontal: 12,
                 fontSize: 14,
                 lineHeight: 20,
-                color: '#1F2A33',
+                color: colors.textSub,
               }}
               value={firstName}
               onChangeText={setFirstName}
               autoCapitalize="words"
               placeholder="Enter your first name"
-              placeholderTextColor="#CBD5E0"
+              placeholderTextColor={colors.textMuted}
             />
           </View>
 
@@ -134,32 +114,32 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
           <View
             style={{
               borderTopWidth: 1,
-              borderTopColor: '#E2E8F0',
+              borderTopColor: colors.borderLight,
               paddingTop: 8,
               gap: 8,
             }}
           >
-            <Text style={{ fontSize: 14, lineHeight: 22, color: '#1F2A33', letterSpacing: 0.15 }}>
+            <Text style={{ fontSize: 14, lineHeight: 22, color: colors.textSub, letterSpacing: 0.15 }}>
               Last Name
             </Text>
 
             <TextInput
               style={{
                 height: 48,
-                backgroundColor: '#FFFFFF',
+                backgroundColor: isDark ? colors.surface : colors.bg,
                 borderWidth: 1,
-                borderColor: '#CBD5E0',
+                borderColor: colors.border,
                 borderRadius: 9999,
                 paddingHorizontal: 12,
                 fontSize: 14,
                 lineHeight: 20,
-                color: '#1F2A33',
+                color: colors.textSub,
               }}
               value={lastName}
               onChangeText={setLastName}
               autoCapitalize="words"
               placeholder="Enter your last name"
-              placeholderTextColor="#CBD5E0"
+              placeholderTextColor={colors.textMuted}
             />
           </View>
         </View>
