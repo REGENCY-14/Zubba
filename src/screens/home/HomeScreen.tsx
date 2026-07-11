@@ -23,6 +23,7 @@ import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
 import Sidebar from "../../components/home/Sidebar";
+import { toast } from "../../hooks/toast";
 
 const mapImage = require("../../../assets/RawMap.png");
 const premium = require("../../../assets/premium.png");
@@ -48,6 +49,9 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       easing: Easing.out(Easing.circle),
       useNativeDriver: true,
     }).start();
+    if(isBinFull){
+      toast.info("Bin signal sent. Driver will attend in no time")
+    }
   }, [isBinFull]);
 
   const changeActivePill = (value: number) => {
