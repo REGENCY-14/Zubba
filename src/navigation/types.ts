@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Splash: undefined;
   OnboardLocationAccess: undefined;
   OnboardNotificationsAccess: undefined;
+  NotificationsList: undefined;
   Landing: undefined;
   SignUp: undefined;
   EmailSignUp: undefined;

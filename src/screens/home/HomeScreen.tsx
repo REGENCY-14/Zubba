@@ -124,6 +124,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   alignItems: "center",
                   justifyContent: "center",
                 }}
+                onPress={() => {navigation.navigate("NotificationsList")}}
               >
                 <MaterialCommunityIcons
                   name="bell-outline"
