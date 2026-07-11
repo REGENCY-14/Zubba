@@ -305,7 +305,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   </View>
                 </View>
                 <StatCardsRow
-                  mass_recycled={customer.mass_recycled}
+                  bags={customer.bags}
                   points={customer.points}
                 />
               </View>
@@ -367,7 +367,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
 
             {!isPremium && (
               <StatCardsRow
-                mass_recycled={customer.mass_recycled}
+                bags={customer.bags}
                 points={customer.points}
               />
             )}

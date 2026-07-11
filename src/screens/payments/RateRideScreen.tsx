@@ -99,19 +99,18 @@ export function RateRideScreen({
             <View className="items-center gap-1">
               <Text
                 style={{ color: colors.text }}
-                className="text-lg font-medium"
+                className="text-lg font-medium text-left w-full"
               >
                 How would you rate the following aspects?
               </Text>
             </View>
 
             <View
-              style={{ backgroundColor: colors.card }}
-              className="rounded-xl p-3 gap-3"
+              style={{ backgroundColor: colors.bg, borderColor: colors.border }}
+              className="rounded-xl p-3 gap-3 border"
             >
               <View
-                style={{ borderColor: colors.border }}
-                className="border rounded-3xl p-4 gap-4"
+                className="rounded-3xl p-4 gap-4"
               >
                 <Text
                   style={{ color: colors.text }}
@@ -139,7 +138,7 @@ export function RateRideScreen({
                   })}
                 </View>
 
-                {serviceRating > 0 && (
+                {/* {serviceRating > 0 && (
                   <Text className="text-sm text-[#31973D]">
                     {
                       ["", "Poor", "Fair", "Good", "Great", "Excellent"][
@@ -147,8 +146,10 @@ export function RateRideScreen({
                       ]
                     }
                   </Text>
-                )}
+                )} */}
               </View>
+
+              <View style={{borderColor: colors.border}} className="w-full border"/>
 
               <View className="gap-4">
                 <View className="p-4 gap-2">

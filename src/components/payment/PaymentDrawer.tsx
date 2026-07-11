@@ -3,8 +3,7 @@ import { Modal, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PaymentOption } from "./PaymentOption";
 import { useTheme } from "../../context/ThemeContext";
-
-const airtelTigo = require("../../../assets/airtelTigo.png");
+import { paymentMethods } from "../../constants/paymentMethods";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
 
@@ -45,7 +44,11 @@ export function PaymentMethodDrawer({
         >
           <View className="items-center mb-4">
             <View
-              style={{ backgroundColor: colors.text, width: "30%", maxWidth: 200 }}
+              style={{
+                backgroundColor: colors.text,
+                width: "30%",
+                maxWidth: 200,
+              }}
               className="h-0.5 rounded-full bg-[#E2E8F0]"
             />
           </View>
@@ -58,40 +61,22 @@ export function PaymentMethodDrawer({
           </Text>
 
           <View className="gap-3">
-            <PaymentOption
-              selected={selectedMethod === "momo"}
-              title="MTN MoMo"
-              badge="MTN"
-              badgeBg="bg-[#FFCC00]"
-              badgeTextColor="text-black"
-              onPress={() => setSelectedMethod("momo")}
-            />
-
-            <PaymentOption
-              selected={selectedMethod === "telecel"}
-              title="Telecel cash"
-              badge="T.cash"
-              badgeBg="bg-[#DC2626]"
-              badgeTextColor="text-white"
-              onPress={() => setSelectedMethod("telecel")}
-            />
-
-            <PaymentOption
-              selected={selectedMethod === "airtel"}
-              title="Airtel money"
-              image={airtelTigo}
-              badgeBg="bg-white"
-              badgeTextColor="text-[#1E3A8A]"
-              onPress={() => setSelectedMethod("airtel")}
-            />
-
-            <PaymentOption
-              selected={selectedMethod === "wallet"}
-              title="Zubba wallet"
-              iconName="credit-card"
-              badgeBg=""
-              onPress={() => setSelectedMethod("wallet")}
-            />
+            <View className="gap-3">
+              {paymentMethods.map((method, index) => (
+                <PaymentOption
+                  key={method.id}
+                  selected={selectedMethod === method.id}
+                  title={method.title}
+                  badge={method.badge}
+                  image={method.image}
+                  iconName={method.iconName}
+                  badgeBg={method.badgeBg}
+                  badgeTextColor={method.badgeTextColor}
+                  showBorder={index !== paymentMethods.length - 1}
+                  onPress={() => setSelectedMethod(method.id)}
+                />
+              ))}
+            </View>
           </View>
 
           <View className="flex-row items-center gap-3 mt-6">

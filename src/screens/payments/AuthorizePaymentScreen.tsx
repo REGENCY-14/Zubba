@@ -13,6 +13,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function AuthorizePaymentScreen({
   navigation,
@@ -20,6 +21,7 @@ export function AuthorizePaymentScreen({
   const { colors } = useTheme();
   const [pin, setPin] = React.useState("");
   const inputRef = React.useRef<TextInput | null>(null);
+  const request = useAppSelector((state) => state.request)
 
   const digits = Array.from({ length: 4 }).map((_, i) => pin[i] || "");
 
@@ -47,7 +49,7 @@ export function AuthorizePaymentScreen({
 
           <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>
             Enter your 4-digit PIN to authorize the payment of{" "}
-            <Text style={{ fontWeight: '700', color: colors.text }}>GHS 45.00</Text> to{" "}
+            <Text style={{ fontWeight: '700', color: colors.text }}>GHS {request.pickup_price + request.service_price}</Text> to{" "}
             <Text style={{ fontWeight: '700', color: colors.text }}>Zubba</Text>.
           </Text>
 

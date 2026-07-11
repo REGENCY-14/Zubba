@@ -5,7 +5,7 @@ export interface RequestState {
   pickup_address: string;
   status: string;  
   payment_method: string;
-  mass_kg: number;
+  bags: number;
   distance_m: number;
   pickup_price: number;
   service_price: number;

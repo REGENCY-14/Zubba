@@ -12,18 +12,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { OTPInput } from "../../components/common/OTPInput";
-import { useResendOtp } from "../../slices/auth/auth.hooks";
+import { useResendOtp, useVerifyOtp } from "../../slices/auth/auth.hooks";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setCredentials } from "../../slices/auth/authSlice";
+import { customerService } from "../../api/customerService";
+import { setCustomer } from "../../slices/customer/customerSlice";
+import { authStorage } from "../../utils/authStorage";
 
 export function FindAccountOtpScreen({
   route,
   navigation,
 }: RootStackScreenProps<"FindAccountOtp">) {
   const phone = route.params?.phone || "";
+  const dispatch = useAppDispatch();
 
   const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
   const [showResendModal, setShowResendModal] = useState(false);
 
   const resendOtpMutation = useResendOtp();
+  const verifyOtpMutation = useVerifyOtp();
   const isResending = resendOtpMutation.isPending;
 
   const isCodeComplete = useMemo(
@@ -31,12 +38,36 @@ export function FindAccountOtpScreen({
     [codeDigits],
   );
 
-  const handleVerify = (otp: string) => {
+  const handleVerify = async (otp: string) => {
     if (otp.length !== 4) return;
 
-    navigation.replace("ExistingUserNotification", {
-      phone,
-    });
+    try {
+      const result = await verifyOtpMutation.mutateAsync({
+        authKey: "phone",
+        authValue: phone,
+        purpose: "login",
+        otp: otp,
+      });
+      if (!result.success)
+        Alert.alert("OTP incorrect, please verify and try again.");
+      const { user, accessToken, refreshToken } = result.data;
+      dispatch(setCredentials({ user, accessToken, refreshToken }));
+      await authStorage.save({ user, accessToken, refreshToken });
+
+      const customerResponse = await customerService.getCustomerById(user.id);
+
+      if (!customerResponse.success)
+        Alert.alert(
+          "Could not find your account, please verify and try again.",
+        );
+      const customer = customerResponse.data.customer;
+      dispatch(setCustomer(customer));
+      navigation.replace("ExistingUserNotification", {
+        phone,
+      });
+    } catch {
+      Alert.alert("OTP incorrect, please verify and try again.");
+    }
   };
 
   const handleResend = async () => {

@@ -15,10 +15,11 @@ export interface RequestState {
   pickup_address: string;
   status: string;
   payment_method: string;
-  mass_kg: number;
+  bags: number;
   distance_m: number;
   pickup_price: number;
   service_price: number;
+  date_created: Date;
   scheduleRequest: boolean;
 }
 
@@ -35,10 +36,11 @@ const initialState: RequestState = {
   pickup_address: "",
   status: "",
   payment_method: "",
-  mass_kg: 0,
+  bags: 0,
   distance_m: 0,
   pickup_price: 0,
   service_price: 0,
+  date_created: new Date(),
   scheduleRequest: false,
 };
 
@@ -54,7 +56,7 @@ const requestSlice = createSlice({
       state.customer_id = action.payload;
     },
 
-    setDriver(state, action: PayloadAction<DriverRequest>) {
+    setRequestDriver(state, action: PayloadAction<DriverRequest>) {
       state.driver = action.payload;
     },
 
@@ -79,7 +81,7 @@ const requestSlice = createSlice({
     },
 
     setMassKg(state, action: PayloadAction<number>) {
-      state.mass_kg = action.payload;
+      state.bags = action.payload;
     },
 
     setDistanceM(state, action: PayloadAction<number>) {
@@ -107,7 +109,7 @@ const requestSlice = createSlice({
 export const {
   setRequest,
   setCustomerId,
-  setDriver,
+  setRequestDriver,
   setDriverId,
   setPickupLocation,
   setPickupAddress,

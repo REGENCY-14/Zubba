@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
+import { authService } from "../../api/authService";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
@@ -38,9 +39,10 @@ export function FindAccountScreen({
 
       console.log(phone)
 
-      const res = await userService.findUser({
+      const res = await authService.register({
         authKey: "phone",
         authValue: phone,
+        role: "customer"
       });
 
       const user = res.data.user;

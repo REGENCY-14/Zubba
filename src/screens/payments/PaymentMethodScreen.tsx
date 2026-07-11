@@ -9,16 +9,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentMethodScreen({
   navigation,
 }: RootStackScreenProps<"PaymentMethod">) {
   const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
   const { colors } = useTheme();
+  const request = useAppSelector((state) => state.request)
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
@@ -47,7 +48,7 @@ export function PaymentMethodScreen({
               </Text>
 
               <Text style={{ fontSize: 32, fontWeight: "600", color: colors.text, textAlign: "center" }}>
-                GHS 45.00
+                GHS {request.pickup_price + request.service_price}
               </Text>
 
               <View style={{ width: "100%", borderTopWidth: 1, borderTopColor: colors.border }} />
@@ -111,7 +112,7 @@ export function PaymentMethodScreen({
             </View>
 
             <Pressable
-              onPress={() => navigation.navigate("PaymentVerification")}
+              onPress={() => navigation.navigate("PaymentVerification", { number: Number(phoneNumber) })}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">

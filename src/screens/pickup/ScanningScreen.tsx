@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Animated,
   Dimensions,
   ImageBackground,
@@ -20,6 +21,8 @@ import { NearbyDriver } from "../../types/driver.types";
 import { driverService } from "../../api/driverService";
 import { customerService } from "../../api/customerService";
 import { RequestTakeout } from "../../types/customer.types";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { resetRequest, setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -41,6 +44,7 @@ export function ScanningScreen({
   navigation,
 }: RootStackScreenProps<"Scanning">) {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
   const [appBarText, setAppBarText] = useState("Scanning...");
@@ -103,14 +107,13 @@ export function ScanningScreen({
   }, [coords]);
 
   const customer_requests = async () => {
+    try{
     if (!coords || !driver) return;
     setModalStep("customer_requests")
     const requestTakeout: RequestTakeout = {
       pickup_location: [coords.latitude, coords.longitude],
-      pickup_address: "string",
-      customer_id: customer.id,
-      mass_kg: "0",
-      status: "pending",
+      pickup_address: "Home",
+      // bags: 1,
       driver_id: driver.id,
       distance_m: driver.distanceM,
       pickup_price: driver.cost,
@@ -119,7 +122,39 @@ export function ScanningScreen({
     const result = await customerService.requestTakeout(
       requestTakeout
     )
+    if(!result.success) Alert.alert("Failed to request takeout, please try again later")
+    dispatch(
+      setRequest({
+        customer_id: customer.id,
+        pickup_location: requestTakeout.pickup_location.toString(),
+        pickup_address: requestTakeout.pickup_address,
+        payment_method: "",
+        bags: requestTakeout.bags,
+        distance_m: requestTakeout.distance_m,
+        pickup_price: requestTakeout.pickup_price,
+        service_price: requestTakeout.service_price,
+        scheduleRequest: false,
+        status: "pending",
+      })
+    );
     // have web socket confirm if driver accepts
+    setTimeout(() => {
+      dispatch(
+        setRequestDriver({
+          driver_id: driver.id,
+          name: driver.name,
+          avatar: driver.profilePicture ?? "",
+          code: driver.code ?? "N/A",
+          rating: driver.rating,
+        })
+      );
+      dispatch(setStatus("accepted"));
+      setModalStep("driver_accepts");
+    }, 5000)
+    }catch(err){
+      dispatch(resetRequest())
+      console.error(err);
+    }
   }
 
   useEffect(() => {

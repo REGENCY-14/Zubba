@@ -1,6 +1,6 @@
 export interface Customer {
     id: string;
     points: number;
-    mass_recycled: number;
+    bags: number;
     is_premium: boolean;
 }
