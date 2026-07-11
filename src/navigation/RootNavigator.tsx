@@ -58,6 +58,7 @@ import { useAppSelector } from '../hooks/useAppSelector';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { customerService } from '../api/customerService';
 import { setCustomer } from '../slices/customer/customerSlice';
+import NotificationsListScreen from '../screens/home/NotificationsListScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -82,7 +83,7 @@ export function RootNavigator() {
 
   return (
     <Stack.Navigator
-      initialRouteName="Profile"
+      initialRouteName="NotificationsList"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'
@@ -96,6 +97,7 @@ export function RootNavigator() {
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardLocationAccess" component={OnboardLocationAccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardNotificationsAccess" component={OnboardNotificationsAccessScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="NotificationsList" component={NotificationsListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="EmailSignUp" component={EmailSignUpScreen} options={{ headerShown: false }} />

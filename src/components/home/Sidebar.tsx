@@ -58,7 +58,7 @@ export const DEFAULT_SIDEBAR_ITEMS: SidebarMenuItem[] = [
 
 const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.72);
+const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.70);
 
 type SidebarProps = {
   visible: boolean;
@@ -169,7 +169,7 @@ export default function Sidebar({
               style={{
                 width: 64,
                 height: 64,
-                backgroundColor: "#F4F4F5",
+                backgroundColor: colors.surface,
                 borderRadius: 12,
                 alignItems: "center",
                 justifyContent: "center",
@@ -223,12 +223,14 @@ export default function Sidebar({
             <View style={{ flex: 1 }}>
               <Text
                 numberOfLines={1}
-                style={{ fontSize: 15, fontWeight: "700", color: colors.text }}
+                style={{ color: colors.text }}
+                className="text-lg text-[20px]"
               >
                 {`${user?.firstname} ${user?.lastname}`}
               </Text>
               <Text
-                style={{ fontSize: 12, marginTop: 2, color: colors.textSub }}
+                style={{ marginTop: 2, color: colors.textSub }}
+                className="text-sm"
               >
                 {user?.phone}
               </Text>

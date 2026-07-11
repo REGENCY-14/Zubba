@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import CustomAppBar from '../../components/common/CustomAppBar';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -203,14 +204,7 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
-        {/* Header */}
-        <View style={{ height: 48, backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-          <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
-          </Pressable>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Choose your plan</Text>
-          <View className="w-6 h-6" />
-        </View>
+        <CustomAppBar title="Choose your plan" navigation={navigation}/>
 
         <ScrollView showsVerticalScrollIndicator={false}>
 
