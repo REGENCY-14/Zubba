@@ -5,20 +5,23 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentSuccessScreen({
   navigation,
 }: RootStackScreenProps<"PaymentSuccess">) {
   const { colors } = useTheme();
+  const request = useAppSelector((state) => state.request)
+  const user = useAppSelector((state) => state.auth.user)
 
   const details = [
     { label: "Transaction Reference", value: "J243q5SHw43O" },
-    { label: "Payment Method", value: "MTN MoMo" },
-    { label: "Account Number", value: "2335432167890" },
-    { label: "Account Name", value: "Osman Zakaria" },
-    { label: "Bin Bags", value: "2 Bags" },
-    { label: "Date", value: "27/06/2026" },
-    { label: "Pickup time", value: "Today, 10:30 AM" },
+    { label: "Payment Method", value: request.payment_method },
+    { label: "Account Number", value: user?.phone },
+    { label: "Account Name", value: `${user?.firstname} ${user?.lastname}`},
+    { label: "Bin Bags", value: `${request.bags} Bag${request.bags != 1 ? "s" : ""}` },
+    { label: "Date", value: request.date_created.getDate() },
+    { label: "Pickup time", value: request.date_created.getTime() },
   ];
 
   return (

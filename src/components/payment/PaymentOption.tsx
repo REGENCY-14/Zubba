@@ -11,6 +11,7 @@ export type PaymentOptionProps = {
   iconName?: string;
   badgeBg?: string;
   badgeTextColor?: string;
+  showBorder?: boolean;
   onPress: () => void;
 };
 
@@ -22,14 +23,15 @@ export function PaymentOption({
   iconName,
   badgeBg = "bg-gray-200",
   badgeTextColor = "text-black",
+  showBorder = true,
   onPress,
 }: PaymentOptionProps) {
     const {colors} = useTheme()
   return (
     <Pressable
       onPress={onPress}
-      style={{borderColor: colors.border}}
-      className={`flex-row items-center justify-between p-4 border-b min-h-[82px]`}
+      style={{borderColor: colors.border, borderBottomWidth: showBorder ? 1 : 0,}}
+      className={`flex-row items-center justify-between p-4 min-h-[82px]`}
     >
       <View className="flex-row items-center flex-1 gap-4">
         <View className={`w-12 h-7 rounded-xl items-center justify-center overflow-hidden ${badgeBg}`}>

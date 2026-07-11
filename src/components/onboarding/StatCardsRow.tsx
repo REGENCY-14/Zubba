@@ -2,17 +2,17 @@ import { View } from "react-native";
 import { StatCard } from "./StatCard";
 
 type StatCardsRowProps = {
-  mass_recycled: number;
+  bags: number;
   points: number;
 };
 
-export function StatCardsRow({ mass_recycled, points }: StatCardsRowProps) {
+export function StatCardsRow({ bags, points }: StatCardsRowProps) {
   return (
     <View className="flex-row gap-5">
       <StatCard
         icon={require("../../../assets/recycle.png")}
         label="Active"
-        value={`${mass_recycled}kg`}
+        value={`${bags} bags`}
         description="Recycled this month"
         labelColor="#31973D"
       />

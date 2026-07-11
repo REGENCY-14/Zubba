@@ -10,16 +10,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
 import { useTheme } from "../../context/ThemeContext";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentVerificationScreen({
+  route,
   navigation,
 }: RootStackScreenProps<"PaymentVerification">) {
   const { colors } = useTheme();
   const [code, setCode] = React.useState("");
   const [resendTimer, setResendTimer] = React.useState(60);
   const inputRef = React.useRef<TextInput | null>(null);
+  const request = useAppSelector((state) => state.request)
 
   React.useEffect(() => {
     if (resendTimer > 0) {
@@ -63,13 +65,13 @@ export function PaymentVerificationScreen({
 
           <Text style={{ fontSize: 16, lineHeight: 24, color: colors.textSub, marginBottom: 32 }}>
             We've sent a 4-digit code to{" "}
-            <Text style={{ color: colors.text, fontWeight: '600' }}>+233 55 123 4567</Text>. Please
+            <Text style={{ color: colors.text, fontWeight: '600' }}>{route.params?.number}</Text>. Please
             enter it below to authorize your{" "}
-            <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS 45.00</Text> payment.
+            <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS {request.pickup_price + request.service_price}</Text> payment.
           </Text>
 
           <View className="flex-row gap-4 mb-6">
-            {codeDigits.map((digit, index) => {
+            {codeDigits.map((_, index) => {
               const isFilled = index < code.length;
 
               return (

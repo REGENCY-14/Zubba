@@ -52,17 +52,17 @@ export function DriverArrivesScreen({
                   <MaterialCommunityIcons
                     name="phone-outline"
                     size={16}
-                    color={colors.text}
+                    color={colors.textMuted}
                   />
-                  <Text style={{ marginLeft: 4, color: colors.text, fontSize: 14 }}>Call</Text>
+                  <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Call</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <MaterialCommunityIcons
                     name="message-outline"
                     size={16}
-                    color={colors.text}
+                    color={colors.textMuted}
                   />
-                  <Text style={{ marginLeft: 4, color: colors.text, fontSize: 14 }}>Message</Text>
+                  <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Message</Text>
                 </View>
               </View>
             </View>
