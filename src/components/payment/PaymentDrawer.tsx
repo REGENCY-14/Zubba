@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PaymentOption } from "./PaymentOption";
 import { useTheme } from "../../context/ThemeContext";
-import { paymentMethods } from "../../constants/paymentMethods";
+import { creditMethods, paymentMethods } from "../../constants/paymentMethods";
 
-type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
+type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel" | "credit_card";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   onContinue: (method: PaymentMethodId) => void;
   initialMethod?: PaymentMethodId;
+  isCreditPage?: boolean
 };
 
 export function PaymentMethodDrawer({
@@ -19,6 +20,7 @@ export function PaymentMethodDrawer({
   onClose,
   onContinue,
   initialMethod = "wallet",
+  isCreditPage = false
 }: Props) {
   const [selectedMethod, setSelectedMethod] =
     useState<PaymentMethodId>(initialMethod);
@@ -27,6 +29,7 @@ export function PaymentMethodDrawer({
   useEffect(() => {
     if (visible) setSelectedMethod(initialMethod);
   }, [visible, initialMethod]);
+  const itemList = isCreditPage ? paymentMethods : creditMethods
 
   return (
     <Modal
@@ -61,8 +64,8 @@ export function PaymentMethodDrawer({
           </Text>
 
           <View className="gap-3">
-            <View className="gap-3">
-              {paymentMethods.map((method, index) => (
+            <View>
+              {itemList.map((method, index) => (
                 <PaymentOption
                   key={method.id}
                   selected={selectedMethod === method.id}
@@ -72,14 +75,14 @@ export function PaymentMethodDrawer({
                   iconName={method.iconName}
                   badgeBg={method.badgeBg}
                   badgeTextColor={method.badgeTextColor}
-                  showBorder={index !== paymentMethods.length - 1}
+                  showBorder={index !== itemList.length - 1}
                   onPress={() => setSelectedMethod(method.id)}
                 />
               ))}
             </View>
           </View>
 
-          <View className="flex-row items-center gap-3 mt-6">
+          <View className="flex-row items-center gap-3">
             <Pressable
               onPress={onClose}
               className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"

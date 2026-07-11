@@ -31,7 +31,7 @@ export function PaymentOption({
     <Pressable
       onPress={onPress}
       style={{borderColor: colors.border, borderBottomWidth: showBorder ? 1 : 0,}}
-      className={`flex-row items-center justify-between p-4 min-h-[82px]`}
+      className={`flex-row items-center justify-between px-4 py-6`}
     >
       <View className="flex-row items-center flex-1 gap-4">
         <View className={`w-12 h-7 rounded-xl items-center justify-center overflow-hidden ${badgeBg}`}>

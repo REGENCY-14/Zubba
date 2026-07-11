@@ -82,7 +82,7 @@ export function RootNavigator() {
 
   return (
     <Stack.Navigator
-      initialRouteName="PaymentVerification"
+      initialRouteName="ZubbaWallet"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'

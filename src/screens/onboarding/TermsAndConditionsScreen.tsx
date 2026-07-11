@@ -87,7 +87,7 @@ export function TermsAndConditionsScreen({
           contentContainerStyle={{
             paddingHorizontal: 12,
             paddingTop: 16,
-            paddingBottom: 128,
+            paddingBottom: 100,
             gap: 24,
           }}
         >
