@@ -40,6 +40,7 @@ const PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 function PaymentBadge({ id }: { id: string }) {
+  const { colors } = useTheme();
   if (id === 'mtn') {
     return (
       <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-[#FFCC00]">
@@ -56,8 +57,8 @@ function PaymentBadge({ id }: { id: string }) {
   }
   if (id === 'airtel') {
     return (
-      <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-white border border-[#E2E8F0]">
-        <Text className="text-sm font-bold">
+      <View style={{ width: 42, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
+        <Text style={{ fontSize: 14, fontWeight: '700' }}>
           <Text style={{ color: '#0062A3' }}>a</Text>
           <Text style={{ color: '#EF4444' }}>t</Text>
         </Text>
@@ -74,7 +75,7 @@ function PaymentBadge({ id }: { id: string }) {
 }
 
 export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreenProps<'ConfirmSubscription'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [selectedIndex, setSelectedIndex] = React.useState(route.params?.planIndex ?? 1);
   const [showPaymentSheet, setShowPaymentSheet] = React.useState(false);
   const [selectedPayment, setSelectedPayment] = React.useState('credit');
@@ -105,20 +106,18 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
               {" You won't be charged until your trial ends. Confirm the amount and continue."}
             </Text>
 
-            <View style={{ height: 196, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 32, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <View style={{ height: 196, borderWidth: 1, borderColor: colors.border, borderRadius: 32, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
               {/* Green circle blobs rendered first — BlurView above will blur them */}
               <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, right: -20, bottom: -20, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
               <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, left: -40, top: -40, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
 
-              {/* Blur the blobs into the white background */}
-              <BlurView intensity={28} tint="light" style={StyleSheet.absoluteFillObject} />
+              <BlurView intensity={28} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
 
-              {/* Text sits sharp above the blur */}
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 32, lineHeight: 32, letterSpacing: -2, color: '#1F2A33', zIndex: 10 }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 32, lineHeight: 32, letterSpacing: -2, color: colors.text, zIndex: 10 }}>
                 {selected.price}
                 <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 18, letterSpacing: 0 }}>{selected.pricePer}</Text>
               </Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 13, color: '#64748A', textAlign: 'center', zIndex: 10, marginTop: 12 }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 13, color: colors.textSub, textAlign: 'center', zIndex: 10, marginTop: 12 }}>
                 Enjoy a 7-day free trial and pay afterward.
               </Text>
             </View>

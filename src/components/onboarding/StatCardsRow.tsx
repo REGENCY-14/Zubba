@@ -22,7 +22,7 @@ export function StatCardsRow({ mass_recycled, points, onSearchPress, noCard }: S
         </Pressable>
       )}
       <View style={{ flexDirection: 'row', gap: 16 }}>
-        <StatCard icon={require("../../../assets/recycle.png")} label="Active" value={`${mass_recycled}kg`} description="Recycled this month" labelColor="#31973D" />
+        <StatCard icon={require("../../../assets/recycle.png")} label="Active" value={`${mass_recycled} bags`} description="Recycled this month" labelColor="#31973D" />
         <StatCard icon={require("../../../assets/points.png")} label="Points" value={points} description="Eco Credits earned" labelColor="#735C00" />
       </View>
     </>

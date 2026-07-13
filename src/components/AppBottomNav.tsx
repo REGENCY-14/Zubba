@@ -135,12 +135,12 @@ export function AppBottomNav({
           onPress={onSavedPress}
           icon={
             isActive('saved') ? (
-              <MaterialCommunityIcons size={20} name="bookmark" color="#fff" />
+              <MaterialCommunityIcons size={20} name="truck" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="bookmark-outline" size={20} color={colors.textSub} />
+              <MaterialCommunityIcons name="truck-outline" size={20} color={colors.textSub} />
             )
           }
-          label="Saved"
+          label="Pickups"
         />
 
         <NavItem

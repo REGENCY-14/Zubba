@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { upgradeToPremium } from '../../slices/customer/customerSlice';
 
 type MethodId = 'mtn' | 'telecel' | 'airtel';
 
@@ -27,7 +29,8 @@ function MastercardIcon() {
 }
 
 export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCards'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+  const dispatch = useAppDispatch();
   const [selectedMethod, setSelectedMethod] = React.useState<MethodId>('mtn');
   const [menuVisible, setMenuVisible] = React.useState(false);
 
@@ -40,16 +43,16 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
           <Pressable onPress={() => navigation.goBack()}>
             <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
           </Pressable>
-          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, lineHeight: 24, color: '#1F2A33' }}>Payment</Text>
+          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, lineHeight: 24, color: colors.text }}>Payment</Text>
           <View style={{ width: 24 }} />
         </View>
 
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-          <View style={{ borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 24, padding: 16, gap: 16, backgroundColor: '#FFFFFF' }}>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 16, backgroundColor: colors.card }}>
 
             {/* ── Payment method tiles ── */}
             <View style={{ gap: 16 }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 24, color: '#1C1B1B' }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 24, color: colors.text }}>
                 Select your payment method.
               </Text>
 
@@ -79,7 +82,7 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                   onPress={() => setSelectedMethod('airtel')}
                   style={{ width: 102, height: 95, borderRadius: 11, borderWidth: 2, borderColor: selectedMethod === 'airtel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: 4 }}
                 >
-                  <View style={{ width: 84, height: 78, backgroundColor: '#FFFFFF', borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 84, height: 78, backgroundColor: colors.surface, borderRadius: 8, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}>
                     <Text>
                       <Text style={{ color: '#0062A3', fontSize: 16, fontWeight: '700' }}>a</Text>
                       <Text style={{ color: '#EF4444', fontSize: 16, fontWeight: '700' }}>t</Text>
@@ -91,7 +94,7 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
             {/* ── Saved cards ── */}
             <View style={{ gap: 8 }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 17, letterSpacing: 0.28, color: '#3F4A3D' }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 17, letterSpacing: 0.28, color: colors.text }}>
                 Select your card
               </Text>
 
@@ -133,33 +136,33 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                   </View>
 
                   {/* Secondary placeholder card */}
-                <View style={{ width: 280, height: 170, borderRadius: 24, backgroundColor: '#E2E2E5', opacity: 0.6, borderWidth: 1, borderColor: 'rgba(190,202,185,0.3)', padding: 24, justifyContent: 'space-between' }}>
+                <View style={{ width: 280, height: 170, borderRadius: 24, backgroundColor: colors.surface, opacity: 0.6, borderWidth: 1, borderColor: colors.border, padding: 24, justifyContent: 'space-between' }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <MastercardIcon />
-                    <Text style={{ fontFamily: 'Poppins', fontStyle: 'italic', fontWeight: '700', fontSize: 20, color: '#1F2A33' }}>VISA</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontStyle: 'italic', fontWeight: '700', fontSize: 20, color: colors.text }}>VISA</Text>
                   </View>
 
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: 'rgba(31,42,51,0.8)' }}>xxx</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: 'rgba(31,42,51,0.8)' }}>xxx</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: 'rgba(31,42,51,0.8)' }}>xxx</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 18, color: '#1F2A33', letterSpacing: 1.8 }}>0932</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.textSub }}>xxx</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.textSub }}>xxx</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.textSub }}>xxx</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 18, color: colors.text, letterSpacing: 1.8 }}>0932</Text>
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <View style={{ gap: 2 }}>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: 'rgba(31,42,51,0.6)', textTransform: 'uppercase' }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: colors.textMuted, textTransform: 'uppercase' }}>
                         Cardholder's Name
                       </Text>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: '#1F2A33', letterSpacing: 0.7, textTransform: 'uppercase' }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: colors.text, letterSpacing: 0.7, textTransform: 'uppercase' }}>
                         Isabella Steele
                       </Text>
                     </View>
                     <View style={{ gap: 2, alignItems: 'flex-end' }}>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: 'rgba(31,42,51,0.6)', textTransform: 'uppercase' }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: colors.textMuted, textTransform: 'uppercase' }}>
                         Valid Thru
                       </Text>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: '#1F2A33' }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: colors.text }}>
                         08/25
                       </Text>
                     </View>
@@ -170,16 +173,16 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
                 {/* Context menu — sibling of ScrollView, not inside overflow:hidden card */}
                 {menuVisible && (
-                  <View style={{ position: 'absolute', right: 0, top: 44, width: 105, height: 64, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#E2E8F0', zIndex: 10 }}>
-                    <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFillObject} />
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(250,250,250,0.3)' }]} />
+                  <View style={{ position: 'absolute', right: 0, top: 44, width: 105, height: 64, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, zIndex: 10 }}>
+                    <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
+                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: isDark ? 'rgba(20,29,43,0.7)' : 'rgba(250,250,250,0.3)' }]} />
 
                     <Pressable
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8, height: 32, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' }}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8, height: 32, borderBottomWidth: 0.5, borderBottomColor: colors.border }}
                       onPress={() => setMenuVisible(false)}
                     >
-                      <MaterialCommunityIcons name="pencil-outline" size={16} color="#334154" />
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: '#18181B' }}>Edit</Text>
+                      <MaterialCommunityIcons name="pencil-outline" size={16} color={colors.iconColor} />
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.text }}>Edit</Text>
                     </Pressable>
 
                     <Pressable
@@ -211,7 +214,10 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
             {/* Continue */}
             <Pressable
               style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
-              onPress={() => navigation.navigate('PremiumHome')}
+              onPress={() => {
+                dispatch(upgradeToPremium());
+                navigation.navigate('PremiumHome');
+              }}
             >
               <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: '#FFFFFF' }}>
                 Continue

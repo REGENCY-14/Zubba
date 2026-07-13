@@ -16,6 +16,8 @@ export type RootStackParamList = {
   Profile: { updatedAt?: number; newPhone?: string; newEmail?: string; newFullName?: string } | undefined;
   UpdateName: undefined;
   Schedule: undefined;
+  Pickups: undefined;
+  Promotions: undefined;
   PremiumHome: undefined;
   ZubbaWallet: { credited?: boolean; debited?: boolean } | undefined;
   Withdraw: undefined;
@@ -40,6 +42,7 @@ export type RootStackParamList = {
   UpdateDetailsOtp: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
   UpdateDetailsSuccess: undefined;
   ChoosePlan: undefined;
+  ManageSubscription: undefined;
   ConfirmSubscription: { planIndex?: number } | undefined;
   AddCard: { planIndex?: number } | undefined;
   PremiumPayment: undefined;

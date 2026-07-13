@@ -12,6 +12,8 @@ import { CreditAccountScreen } from '../screens/wallet/CreditAccountScreen';
 import { WithdrawScreen } from '../screens/wallet/WithdrawScreen';
 import { ScanningScreen } from '../screens/pickup/ScanningScreen';
 import { DriverArrivesScreen } from '../screens/pickup/DriverArrivesScreen';
+import { PickupsScreen } from '../screens/pickup/PickupsScreen';
+import { PromotionsScreen } from '../screens/promotions/PromotionsScreen';
 import { PaymentScreen } from '../screens/payments/PaymentScreen';
 import { PaymentMethodScreen } from '../screens/payments/PaymentMethodScreen';
 import { PaymentVerificationScreen } from '../screens/payments/PaymentVerificationScreen';
@@ -41,6 +43,7 @@ import { OnboardNotificationsAccessScreen } from '../screens/onboarding/OnboardN
 import { KycCollectionScreen } from '../screens/onboarding/KycCollectionScreen';
 import { TermsAcceptanceScreen } from '../screens/support/TermsAcceptanceScreen';
 import { ChoosePlanScreen } from '../screens/payments/ChoosePlanScreen';
+import { ManageSubscriptionScreen } from '../screens/payments/ManageSubscriptionScreen';
 import { ConfirmSubscriptionScreen } from '../screens/payments/ConfirmSubscriptionScreen';
 import { AddCardScreen } from '../screens/payments/AddCardScreen';
 import { PremiumPaymentScreen } from '../screens/payments/PremiumPaymentScreen';
@@ -88,6 +91,8 @@ export function RootNavigator() {
       <Stack.Screen name="Withdraw" component={WithdrawScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Scanning" component={ScanningScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriverArrives" component={DriverArrivesScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Pickups" component={PickupsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Promotions" component={PromotionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PaymentVerification" component={PaymentVerificationScreen} options={{ headerShown: false }} />
@@ -112,6 +117,7 @@ export function RootNavigator() {
       <Stack.Screen name="KycCollection" component={KycCollectionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsAcceptance" component={TermsAcceptanceScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ChoosePlan" component={ChoosePlanScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ManageSubscription" component={ManageSubscriptionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ConfirmSubscription" component={ConfirmSubscriptionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddCard" component={AddCardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PremiumPayment" component={PremiumPaymentScreen} options={{ headerShown: false }} />

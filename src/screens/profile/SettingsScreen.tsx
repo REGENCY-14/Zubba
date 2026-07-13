@@ -217,7 +217,7 @@ export function SettingsScreen({ navigation }: RootStackScreenProps<'Settings'>)
           paddingBottom={0}
           showCalendar={isPremium}
           onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          onSavedPress={() => navigation.navigate('Pickups')}
           onSettingsPress={() => navigation.navigate('Settings')}
           onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
         />
