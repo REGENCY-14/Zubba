@@ -155,7 +155,7 @@ export function ActiveSessionScreen({ navigation }: RootStackScreenProps<'Active
           activeTab="settings"
           paddingBottom={0}
           onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'save', title: 'Saved' })}
+          onSavedPress={() => navigation.navigate('Pickups')}
           onSettingsPress={() => navigation.navigate('Settings')}
         />
       </View>

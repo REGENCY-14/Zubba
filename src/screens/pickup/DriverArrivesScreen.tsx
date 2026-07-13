@@ -162,7 +162,7 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<"Driver
           paddingBottom={14}
           showCalendar={isPremium}
           onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() => navigation.navigate("Details", { itemId: "saved", title: "Saved" })}
+          onSavedPress={() => navigation.navigate("Pickups")}
           onSettingsPress={() => navigation.navigate("Settings")}
           onCalendarPress={isPremium ? () => navigation.navigate("Schedule") : undefined}
         />

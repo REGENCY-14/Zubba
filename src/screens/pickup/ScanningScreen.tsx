@@ -189,9 +189,7 @@ export function ScanningScreen({
         <AppBottomNav
           activeTab="home"
           onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "save", title: "Saved" })
-          }
+          onSavedPress={() => navigation.navigate("Pickups")}
           onSettingsPress={() => navigation.navigate("Settings")}
           showCalendar={isPremium}
         />

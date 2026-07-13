@@ -20,6 +20,7 @@ import RoundedButton from "../../components/common/RoundedButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
+import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -31,6 +32,7 @@ const tricycle = require("../../../assets/picktricycle.png");
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activePill, setActivePill] = useState<number>(0);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
   const isPremium = useAppSelector((state) => state.customer.is_premium);
@@ -57,8 +59,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
-      <ImageBackground source={mapImage} className="flex-1 w-full h-full p-10">
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={["top", "left", "right"]}>
+      <ImageBackground source={mapImage} style={{ flex: 1, width: '100%', height: '100%' }} resizeMode="cover">
         {/* Top bar */}
         <View
           style={{
@@ -76,7 +78,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             zIndex: 10,
           }}
         >
-          <Pressable className="w-8 h-8 items-center justify-center">
+          <Pressable
+            className="w-8 h-8 items-center justify-center"
+            onPress={() => setSidebarOpen(true)}
+          >
             <MaterialCommunityIcons name="menu" size={20} color={colors.iconColor} />
           </Pressable>
 
@@ -385,12 +390,23 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           activeTab="home"
           paddingBottom={0}
           onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() =>
-            navigation.navigate("Details", { itemId: "save", title: "Saved" })
-          }
+          onSavedPress={() => navigation.navigate("Pickups")}
           onSettingsPress={() => navigation.navigate("Settings")}
           showCalendar={isPremium}
           onCalendarPress={isPremium ? () => navigation.navigate("Schedule") : undefined}
+        />
+
+        <PremiumSidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          activeKey="profile"
+          menuItems={[
+            { key: "profile",      label: "Profile",       icon: "account-outline", onPress: () => navigation.navigate("Profile") },
+            { key: "subscription", label: "Subscription",  icon: "crown-outline",   onPress: () => navigation.navigate(isPremium ? "ManageSubscription" : "ChoosePlan") },
+            { key: "settings",     label: "Settings",      icon: "cog-outline",     onPress: () => navigation.navigate("Settings") },
+            { key: "support",      label: "Support",       icon: "headset",         onPress: () => navigation.navigate("HelpCenter") },
+            { key: "promotions",   label: "Promotions",    icon: "tag-outline",     onPress: () => navigation.navigate("Promotions") },
+          ]}
         />
       </ImageBackground>
     </SafeAreaView>

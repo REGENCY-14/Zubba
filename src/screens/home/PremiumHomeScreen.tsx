@@ -325,7 +325,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
           paddingBottom={0}
           showCalendar
           onHomePress={() => navigation.navigate("PremiumHome")}
-          onSavedPress={() => navigation.navigate("Details", { itemId: "save", title: "Saved" })}
+          onSavedPress={() => navigation.navigate("Pickups")}
           onSettingsPress={() => navigation.navigate("Settings")}
           onCalendarPress={() => navigation.navigate("Schedule")}
         />
@@ -337,10 +337,10 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
           menuItems={[
             { key: "profile",      label: "Profile",       icon: "account-outline", onPress: () => navigation.navigate("Profile") },
             { key: "wallet",       label: "Zubba Wallet",  icon: "wallet-outline",  onPress: () => navigation.navigate("ZubbaWallet") },
-            { key: "subscription", label: "Subscription",  icon: "crown-outline",   onPress: () => navigation.navigate("ChoosePlan") },
+            { key: "subscription", label: "Subscription",  icon: "crown-outline",   onPress: () => navigation.navigate("ManageSubscription") },
             { key: "settings",     label: "Settings",      icon: "cog-outline",     onPress: () => navigation.navigate("Settings") },
             { key: "support",      label: "Support",       icon: "headset",         onPress: () => navigation.navigate("HelpCenter") },
-            { key: "promotions",   label: "Promotions",    icon: "tag-outline",     onPress: () => navigation.navigate("Details", { itemId: "promotions", title: "Promotions" }) },
+            { key: "promotions",   label: "Promotions",    icon: "tag-outline",     onPress: () => navigation.navigate("Promotions") },
           ]}
         />
 

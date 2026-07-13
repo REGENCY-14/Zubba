@@ -139,7 +139,7 @@ export function PaymentVerificationScreen({
           bottomOffset={8}
           showCalendar={isPremium}
           onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSavedPress={() => navigation.navigate('Pickups')}
           onSettingsPress={() => navigation.navigate('Settings')}
           onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
         />

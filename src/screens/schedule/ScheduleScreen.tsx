@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav } from '../../components';
 import AnimatedSwitch from '../../components/ui/inputs/AnimatedSwitch';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme, ThemeColors } from '../../context/ThemeContext';
 
 /* ─── constants ─────────────────────────────────────────────── */
 
@@ -54,10 +54,12 @@ function TimePickerColumn({
   items,
   initialIndex,
   indexRef,
+  colors,
 }: {
   items: string[];
   initialIndex: number;
   indexRef: React.MutableRefObject<number>;
+  colors: ThemeColors;
 }) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const scrollRef = useRef<ScrollView>(null);
@@ -83,7 +85,7 @@ function TimePickerColumn({
     <View style={{ flex: 1, height: ITEM_H * 4 }}>
       <View
         pointerEvents="none"
-        style={{ position: 'absolute', top: ITEM_H, left: 2, right: 2, height: ITEM_H, backgroundColor: '#F1F5F9', borderRadius: 14 }}
+        style={{ position: 'absolute', top: ITEM_H, left: 2, right: 2, height: ITEM_H, backgroundColor: colors.surface, borderRadius: 14 }}
       />
       <ScrollView
         ref={scrollRef}
@@ -102,7 +104,7 @@ function TimePickerColumn({
             <Text style={{
               fontSize: 16,
               fontWeight: i === activeIndex ? '600' : '500',
-              color: i === activeIndex ? '#111826' : '#64748A',
+              color: i === activeIndex ? colors.text : colors.textSub,
               fontFamily: 'Poppins',
             }}>
               {item}
@@ -165,6 +167,7 @@ function ScheduleCard({
   onMenuClose,
   onEdit,
   onDelete,
+  colors,
 }: {
   item: ScheduleItem;
   menuOpen: boolean;
@@ -172,6 +175,7 @@ function ScheduleCard({
   onMenuClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  colors: ThemeColors;
 }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 12, height: 128 }}>
@@ -190,22 +194,22 @@ function ScheduleCard({
         {/* Date / time / location */}
         <View style={{ gap: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ paddingHorizontal: 4, paddingVertical: 4, borderRightWidth: 1, borderRightColor: '#D2CACA' }}>
-              <Text style={{ fontSize: 12, fontWeight: '500', fontFamily: 'Poppins' }}>{item.date}</Text>
+            <View style={{ paddingHorizontal: 4, paddingVertical: 4, borderRightWidth: 1, borderRightColor: colors.border }}>
+              <Text style={{ fontSize: 12, fontWeight: '500', fontFamily: 'Poppins', color: colors.text }}>{item.date}</Text>
             </View>
             <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-              <Text style={{ fontSize: 12, fontWeight: '500', fontFamily: 'Poppins' }}>{item.timeRange || '—'}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '500', fontFamily: 'Poppins', color: colors.text }}>{item.timeRange || '—'}</Text>
             </View>
           </View>
           <View style={{ paddingHorizontal: 4 }}>
-            <Text style={{ fontSize: 13, fontWeight: '500', fontFamily: 'Poppins' }} numberOfLines={1}>{item.location || 'No location set'}</Text>
+            <Text style={{ fontSize: 13, fontWeight: '500', fontFamily: 'Poppins', color: colors.text }} numberOfLines={1}>{item.location || 'No location set'}</Text>
           </View>
         </View>
 
         {/* Estimated cost */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 13, fontWeight: '500', color: '#64748A', fontFamily: 'Poppins' }}>Estimated cost</Text>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: '#1F2A33', fontFamily: 'Poppins' }}>GHS 15.00</Text>
+          <Text style={{ fontSize: 13, fontWeight: '500', color: colors.textSub, fontFamily: 'Poppins' }}>Estimated cost</Text>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, fontFamily: 'Poppins' }}>GHS 15.00</Text>
         </View>
 
       </View>
@@ -213,23 +217,23 @@ function ScheduleCard({
       {/* Three-dot menu column */}
       <View style={{ width: 35, alignItems: 'center', paddingTop: 8 }}>
         <Pressable
-          style={{ width: 32, height: 32, borderRadius: 1000, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 32, height: 32, borderRadius: 1000, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}
           onPress={menuOpen ? onMenuClose : onMenuOpen}
         >
-          <MaterialCommunityIcons name="dots-vertical" size={20} color="#000000" />
+          <MaterialCommunityIcons name="dots-vertical" size={20} color={colors.iconColor} />
         </Pressable>
 
         {/* Dropdown */}
         {menuOpen && (
-          <View style={{ position: 'absolute', top: 40, right: 0, width: 145, backgroundColor: 'rgba(250,250,250,0.96)', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 16, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 16, zIndex: 50 }}>
+          <View style={{ position: 'absolute', top: 40, right: 0, width: 145, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 16, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 16, zIndex: 50 }}>
             <Pressable
               style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 44 }}
               onPress={() => { onEdit(); onMenuClose(); }}
             >
-              <Text style={{ fontSize: 14, color: '#1F2A33', fontFamily: 'Poppins' }}>Edit</Text>
-              <MaterialCommunityIcons name="pencil-outline" size={18} color="#475568" />
+              <Text style={{ fontSize: 14, color: colors.text, fontFamily: 'Poppins' }}>Edit</Text>
+              <MaterialCommunityIcons name="pencil-outline" size={18} color={colors.iconColor} />
             </Pressable>
-            <View style={{ height: 1, backgroundColor: '#E2E8F0', marginHorizontal: 12 }} />
+            <View style={{ height: 1, backgroundColor: colors.border, marginHorizontal: 12 }} />
             <Pressable
               style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 44 }}
               onPress={() => { onDelete(); onMenuClose(); }}
@@ -248,7 +252,7 @@ function ScheduleCard({
 /* ─── ScheduleScreen ────────────────────────────────────────── */
 
 export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const todayDate = new Date();
 
   // Screen
@@ -456,21 +460,21 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
     : schedules;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
 
       {/* Top bar */}
-      <View style={{ height: 48, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+      <View style={{ height: 48, backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
         <Pressable style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
           <MaterialCommunityIcons name="menu" size={20} color={colors.iconColor} />
         </Pressable>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Text style={{ fontSize: 9, fontWeight: '600', color: '#3F4A3D', fontFamily: 'Poppins' }}>Bin Full?</Text>
+            <Text style={{ fontSize: 9, fontWeight: '600', color: colors.textSub, fontFamily: 'Poppins' }}>Bin Full?</Text>
             <AnimatedSwitch value={isBinFull} onChange={setIsBinFull} />
           </View>
           <View style={{ position: 'relative' }}>
-            <Pressable style={{ width: 40, height: 40, borderRadius: 12, borderWidth: 1, borderColor: '#F3F4F6', backgroundColor: '#F9FAFB', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialCommunityIcons name="bell-outline" size={20} color="#374151" />
+            <Pressable style={{ width: 40, height: 40, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.iconBg, alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialCommunityIcons name="bell-outline" size={20} color={colors.iconColor} />
             </Pressable>
             <View style={{ position: 'absolute', width: 8, height: 8, borderRadius: 99, backgroundColor: '#EF4444', right: 9, top: 9 }} />
           </View>
@@ -478,44 +482,44 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
       </View>
 
       {/* Lavender sub-header */}
-      <View style={{ height: 44, backgroundColor: '#EDE9FE', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20 }}>
+      <View style={{ height: 44, backgroundColor: isDark ? '#2D1B69' : '#EDE9FE', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#000000', fontFamily: 'Poppins' }}>{filterLabel}</Text>
+          <Text style={{ fontSize: 14, fontWeight: '500', color: isDark ? '#E2D9F3' : '#000000', fontFamily: 'Poppins' }}>{filterLabel}</Text>
           <Pressable
-            style={{ width: 28, height: 28, borderRadius: 12, backgroundColor: '#DDD6FE', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 28, height: 28, borderRadius: 12, backgroundColor: isDark ? '#3B1FAD' : '#DDD6FE', alignItems: 'center', justifyContent: 'center' }}
             onPress={openFilterSheet}
           >
-            <MaterialCommunityIcons name="calendar" size={16} color="#6D28D9" />
+            <MaterialCommunityIcons name="calendar" size={16} color={isDark ? '#C4B5FD' : '#6D28D9'} />
           </Pressable>
         </View>
         <Pressable onPress={() => setActiveFilter(null)}>
-          <MaterialCommunityIcons name="refresh" size={16} color="#64748A" />
+          <MaterialCommunityIcons name="refresh" size={16} color={colors.textSub} />
         </Pressable>
       </View>
 
       {/* Empty state / schedule list */}
       {visibleSchedules.length === 0 ? (
         <View style={{ flex: 1, padding: 20 }}>
-          <View style={{ borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 20, height: 360, alignItems: 'center', justifyContent: 'flex-end', paddingHorizontal: 24, paddingBottom: 40, gap: 20 }}>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 20, height: 360, alignItems: 'center', justifyContent: 'flex-end', paddingHorizontal: 24, paddingBottom: 40, gap: 20, backgroundColor: colors.card }}>
             <ScheduleIllustration />
             <View style={{ alignItems: 'center', gap: 5 }}>
-              <Text style={{ fontSize: 16, fontWeight: '500', color: '#0F1621', fontFamily: 'Poppins' }}>No Schedules</Text>
-              <Text style={{ fontSize: 14, fontWeight: '400', color: '#64748A', textAlign: 'center', fontFamily: 'Poppins' }}>Hit the plus icon to plan for later</Text>
+              <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, fontFamily: 'Poppins' }}>No Schedules</Text>
+              <Text style={{ fontSize: 14, fontWeight: '400', color: colors.textSub, textAlign: 'center', fontFamily: 'Poppins' }}>Hit the plus icon to plan for later</Text>
             </View>
           </View>
         </View>
       ) : (
         <Pressable style={{ flex: 1, padding: 20 }} onPress={() => setOpenMenuId(null)}>
-          <View style={{ borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 16, backgroundColor: '#FFFFFF', overflow: 'hidden', flex: 1 }}>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 16, backgroundColor: colors.card, overflow: 'hidden', flex: 1 }}>
             {/* Header */}
-            <View style={{ height: 48, backgroundColor: '#F1F5F9', justifyContent: 'center', paddingHorizontal: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: '500', fontFamily: 'Poppins', color: '#000000' }}>Schedules</Text>
+            <View style={{ height: 48, backgroundColor: colors.surface, justifyContent: 'center', paddingHorizontal: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '500', fontFamily: 'Poppins', color: colors.text }}>Schedules</Text>
             </View>
             {/* List */}
             <ScrollView showsVerticalScrollIndicator={false}>
               {visibleSchedules.map((item, index) => (
                 <React.Fragment key={item.id}>
-                  {index > 0 && <View style={{ height: 1, backgroundColor: '#E2E8F0', marginHorizontal: 12 }} />}
+                  {index > 0 && <View style={{ height: 1, backgroundColor: colors.border, marginHorizontal: 12 }} />}
                   <ScheduleCard
                     item={item}
                     menuOpen={openMenuId === item.id}
@@ -523,6 +527,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                     onMenuClose={() => setOpenMenuId(null)}
                     onEdit={() => { setOpenMenuId(null); openEditSheet(item); }}
                     onDelete={() => { setOpenMenuId(null); setDeleteTargetId(item.id); }}
+                    colors={colors}
                   />
                 </React.Fragment>
               ))}
@@ -546,7 +551,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
         showCalendar
         onHomePress={() => navigation.navigate('PremiumHome')}
         onCalendarPress={() => {}}
-        onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+        onSavedPress={() => navigation.navigate('Pickups')}
         onSettingsPress={() => navigation.navigate('Settings')}
       />
 
@@ -555,23 +560,23 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
         <View style={{ flex: 1, backgroundColor: 'rgba(69,71,69,0.15)', justifyContent: 'flex-end' }}>
           <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} onPress={() => setSheetOpen(false)} />
 
-          <View style={{ backgroundColor: '#FFFFFF', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 16, paddingBottom: 8, height: '86%', justifyContent: 'space-between' }}>
+          <View style={{ backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 16, paddingBottom: 8, height: '86%', justifyContent: 'space-between' }}>
 
             {/* Scrollable form */}
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 16, paddingBottom: 24 }} keyboardShouldPersistTaps="handled" scrollEnabled={timePickerFor === null}>
 
               {/* Handle */}
-              <View style={{ width: 152, height: 3, backgroundColor: '#334154', borderRadius: 20, alignSelf: 'center' }} />
+              <View style={{ width: 152, height: 3, backgroundColor: colors.textMuted, borderRadius: 20, alignSelf: 'center' }} />
 
               {/* Header */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24 }}>
-                <Text style={{ fontSize: 18, fontWeight: '500', color: '#000000', letterSpacing: -0.54, fontFamily: 'Poppins' }}>Schedule details</Text>
+                <Text style={{ fontSize: 18, fontWeight: '500', color: colors.text, letterSpacing: -0.54, fontFamily: 'Poppins' }}>Schedule details</Text>
                 <Pressable
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 9999 }}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: colors.border, borderRadius: 9999 }}
                   onPress={() => { setFrequencyOpen(v => !v); setCalendarOpen(false); setDriverListOpen(false); setTimePickerFor(null); }}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: '500', fontFamily: 'Poppins' }}>{selectedFrequency}</Text>
-                  <MaterialCommunityIcons name="chevron-down" size={12} color="#000" />
+                  <Text style={{ fontSize: 12, fontWeight: '500', fontFamily: 'Poppins', color: colors.text }}>{selectedFrequency}</Text>
+                  <MaterialCommunityIcons name="chevron-down" size={12} color={colors.iconColor} />
                 </Pressable>
               </View>
 
@@ -580,11 +585,11 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
                 {/* Driver pill / select button */}
                 {selectedDriver ? (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', height: 40, backgroundColor: '#F1F5F9', borderRadius: 12, paddingHorizontal: 12, gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', height: 40, backgroundColor: colors.surface, borderRadius: 12, paddingHorizontal: 12, gap: 8 }}>
                     <MaterialCommunityIcons name="star" size={16} color="#FEC002" />
-                    <Text style={{ fontSize: 12, color: '#939393', fontFamily: 'Poppins' }}>{DRIVERS.find(d => d.name === selectedDriver)?.rating}</Text>
+                    <Text style={{ fontSize: 12, color: colors.textMuted, fontFamily: 'Poppins' }}>{DRIVERS.find(d => d.name === selectedDriver)?.rating}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: '500', color: '#101010', fontFamily: 'Poppins' }}>{selectedDriver}</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, fontFamily: 'Poppins' }}>{selectedDriver}</Text>
                       <MaterialCommunityIcons name="medal" size={13} color="#D4AF37" />
                     </View>
                     <Pressable onPress={() => setSelectedDriver(null)}>
@@ -603,12 +608,12 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
                 {/* Driver dropdown */}
                 {driverListOpen && (
-                  <View style={{ position: 'absolute', left: 24, right: 24, top: 48, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 24, padding: 8, shadowColor: 'rgba(69,71,69,0.15)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 20, elevation: 12, zIndex: 20 }}>
+                  <View style={{ position: 'absolute', left: 24, right: 24, top: 48, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 8, shadowColor: 'rgba(69,71,69,0.15)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 20, elevation: 12, zIndex: 20 }}>
                     {searchMode ? (
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1, borderColor: 'rgba(0,0,0,0.11)', borderRadius: 999, paddingHorizontal: 10, height: 27, marginBottom: 6 }}>
-                        <MaterialCommunityIcons name="magnify" size={11} color="#000" />
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1, borderColor: colors.border, borderRadius: 999, paddingHorizontal: 10, height: 27, marginBottom: 6 }}>
+                        <MaterialCommunityIcons name="magnify" size={11} color={colors.iconColor} />
                         <TextInput
-                          style={{ flex: 1, fontSize: 13, color: '#333333', padding: 0, fontFamily: 'Poppins' }}
+                          style={{ flex: 1, fontSize: 13, color: colors.text, padding: 0, fontFamily: 'Poppins' }}
                           placeholder="search driver by name, unique...."
                           placeholderTextColor="#94A3B7"
                           value={searchQuery}
@@ -617,8 +622,8 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                         />
                       </View>
                     ) : (
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 3, paddingHorizontal: 4, marginBottom: 4, borderBottomWidth: 1, borderBottomColor: 'rgba(184,184,184,0.2)' }}>
-                        <Text style={{ fontSize: 14, fontWeight: '500', color: '#1F2A33', fontFamily: 'Poppins' }}>Recommended</Text>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 3, paddingHorizontal: 4, marginBottom: 4, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, fontFamily: 'Poppins' }}>Recommended</Text>
                         <Pressable onPress={() => setSearchMode(true)}>
                           <Text style={{ fontSize: 11, fontWeight: '500', color: 'rgba(14,90,142,0.7)', textDecorationLine: 'underline', fontFamily: 'Poppins' }}>Search</Text>
                         </Pressable>
@@ -628,16 +633,16 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                       {DRIVERS.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())).map((driver) => (
                         <Pressable
                           key={driver.name}
-                          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, height: 34, borderRadius: 16, backgroundColor: selectedDriver === driver.name ? '#F1F5F9' : 'transparent', marginBottom: 4 }}
+                          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, height: 34, borderRadius: 16, backgroundColor: selectedDriver === driver.name ? colors.surface : 'transparent', marginBottom: 4 }}
                           onPress={() => { setSelectedDriver(driver.name); setDriverListOpen(false); setSearchMode(false); setSearchQuery(''); }}
                         >
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <Text style={{ fontSize: 14, fontWeight: '500', color: '#101010', fontFamily: 'Poppins' }}>{driver.name}</Text>
+                            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, fontFamily: 'Poppins' }}>{driver.name}</Text>
                             {driver.premium && <MaterialCommunityIcons name="medal" size={13} color="#D4AF37" />}
                           </View>
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                             <MaterialCommunityIcons name="star" size={16} color="#FEC002" />
-                            <Text style={{ fontSize: 12, color: '#939393', fontFamily: 'Poppins' }}>{driver.rating}</Text>
+                            <Text style={{ fontSize: 12, color: colors.textMuted, fontFamily: 'Poppins' }}>{driver.rating}</Text>
                           </View>
                         </Pressable>
                       ))}
@@ -648,9 +653,9 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                 {/* Location */}
                 <View style={{ gap: 4 }}>
                   <Text style={{ fontSize: 14, color: '#94A3B7', fontFamily: 'Poppins' }}>Location</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', height: 48, backgroundColor: '#F1F5F9', borderRadius: 24, paddingHorizontal: 12, gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', height: 48, backgroundColor: colors.surface, borderRadius: 24, paddingHorizontal: 12, gap: 8 }}>
                     <TextInput
-                      style={{ flex: 1, fontSize: 14, color: '#1F2A33', padding: 0, fontFamily: 'Poppins' }}
+                      style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0, fontFamily: 'Poppins' }}
                       placeholder="Tarkwa, UMaT Campus, Hall 3"
                       placeholderTextColor="#94A3B7"
                       value={location}
@@ -668,9 +673,9 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                 {/* Phone Number */}
                 <View style={{ gap: 4 }}>
                   <Text style={{ fontSize: 14, color: '#94A3B7', fontFamily: 'Poppins' }}>Phone Number</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', height: 48, backgroundColor: '#F1F5F9', borderRadius: 24, paddingHorizontal: 12, gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', height: 48, backgroundColor: colors.surface, borderRadius: 24, paddingHorizontal: 12, gap: 8 }}>
                     <TextInput
-                      style={{ flex: 1, fontSize: 14, color: '#1F2A33', padding: 0, fontFamily: 'Poppins' }}
+                      style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0, fontFamily: 'Poppins' }}
                       placeholder="0243 50 8595"
                       placeholderTextColor="#94A3B7"
                       keyboardType="phone-pad"
@@ -688,9 +693,9 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
                 {/* Additional note */}
                 <View style={{ gap: 4 }}>
-                  <Text style={{ fontSize: 14, color: '#1F2A33', fontFamily: 'Poppins' }}>Additional note</Text>
+                  <Text style={{ fontSize: 14, color: colors.text, fontFamily: 'Poppins' }}>Additional note</Text>
                   <TextInput
-                    style={{ height: 108, borderWidth: 1, borderColor: '#CBD5E0', borderRadius: 24, paddingHorizontal: 12, paddingTop: 14, fontSize: 14, color: '#1F2A33', fontFamily: 'Poppins', textAlignVertical: 'top' }}
+                    style={{ height: 108, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingHorizontal: 12, paddingTop: 14, fontSize: 14, color: colors.text, fontFamily: 'Poppins', textAlignVertical: 'top', backgroundColor: colors.surface }}
                     placeholder="Call before arrival, waste is behind the gate etc.."
                     placeholderTextColor="#94A3B7"
                     multiline
@@ -702,11 +707,11 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
                 {/* Date row */}
                 <Pressable
-                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 48, borderRadius: 12, backgroundColor: selectedDate ? '#FFFFFF' : '#F1F5F9', borderWidth: selectedDate ? 1 : 0, borderColor: '#31973D' }}
+                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 48, borderRadius: 12, backgroundColor: selectedDate ? colors.card : colors.surface, borderWidth: selectedDate ? 1 : 0, borderColor: '#31973D' }}
                   onPress={() => { setCalendarOpen(v => !v); setFrequencyOpen(false); setDriverListOpen(false); setTimePickerFor(null); }}
                 >
                   <MaterialCommunityIcons name="calendar" size={16} color={selectedDate ? '#31973D' : '#94A3B7'} />
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: selectedDate ? '#1F2A33' : '#94A3B7', fontFamily: 'Poppins' }}>{dateLabel}</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: selectedDate ? colors.text : '#94A3B7', fontFamily: 'Poppins' }}>{dateLabel}</Text>
                   <MaterialCommunityIcons name="refresh" size={16} color={selectedDate ? '#31973D' : '#94A3B7'} />
                 </Pressable>
 
@@ -718,10 +723,10 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, width: '100%' }}>
                     <Pressable
-                      style={{ flex: 1, minWidth: 0, height: 48, borderWidth: 1, borderColor: '#CBD5E0', borderRadius: 24, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}
+                      style={{ flex: 1, minWidth: 0, height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface }}
                       onPress={() => openTimePicker('start')}
                     >
-                      <Text style={{ fontSize: 14, color: startTime ? '#1F2A33' : '#94A3B7', fontFamily: 'Poppins' }}>
+                      <Text style={{ fontSize: 14, color: startTime ? colors.text : '#94A3B7', fontFamily: 'Poppins' }}>
                         {startTime || '00:00'}
                       </Text>
                     </Pressable>
@@ -729,10 +734,10 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                       <MaterialCommunityIcons name="arrow-right" size={16} color="#FFFFFF" />
                     </View>
                     <Pressable
-                      style={{ flex: 1, minWidth: 0, height: 48, borderWidth: 1, borderColor: '#CBD5E0', borderRadius: 24, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}
+                      style={{ flex: 1, minWidth: 0, height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface }}
                       onPress={() => openTimePicker('end')}
                     >
-                      <Text style={{ fontSize: 14, color: endTime ? '#1F2A33' : '#94A3B7', fontFamily: 'Poppins' }}>
+                      <Text style={{ fontSize: 14, color: endTime ? colors.text : '#94A3B7', fontFamily: 'Poppins' }}>
                         {endTime || '00:00'}
                       </Text>
                     </Pressable>
@@ -744,14 +749,14 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
             {/* ── Frequency dropdown overlay ── */}
             {frequencyOpen && (
-              <View style={{ position: 'absolute', right: 24, top: 56, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 20, paddingVertical: 6, paddingHorizontal: 4, minWidth: 160, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 20, zIndex: 30 }}>
+              <View style={{ position: 'absolute', right: 24, top: 56, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 20, paddingVertical: 6, paddingHorizontal: 4, minWidth: 160, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 20, zIndex: 30 }}>
                 {FREQUENCIES.map(freq => (
                   <Pressable
                     key={freq}
-                    style={{ paddingHorizontal: 12, paddingVertical: 9, borderRadius: 14, backgroundColor: selectedFrequency === freq ? 'rgba(184,184,184,0.2)' : 'transparent' }}
+                    style={{ paddingHorizontal: 12, paddingVertical: 9, borderRadius: 14, backgroundColor: selectedFrequency === freq ? colors.surface : 'transparent' }}
                     onPress={() => { setSelectedFrequency(freq); setFrequencyOpen(false); }}
                   >
-                    <Text style={{ fontSize: 14, fontWeight: selectedFrequency === freq ? '500' : '400', color: selectedFrequency === freq ? '#1F2A33' : '#64748A', fontFamily: 'Poppins' }}>
+                    <Text style={{ fontSize: 14, fontWeight: selectedFrequency === freq ? '500' : '400', color: selectedFrequency === freq ? colors.text : colors.textSub, fontFamily: 'Poppins' }}>
                       {freq}
                     </Text>
                   </Pressable>
@@ -764,21 +769,21 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
               <Pressable style={{ position: 'absolute', inset: 0, zIndex: 24 }} onPress={() => setCalendarOpen(false)} />
             )}
             {calendarOpen && (
-              <View style={{ position: 'absolute', left: 24, right: 24, bottom: 200, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 24, padding: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 18, zIndex: 25 }}>
+              <View style={{ position: 'absolute', left: 24, right: 24, bottom: 200, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 18, zIndex: 25 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 6 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#111826', fontFamily: 'Poppins' }}>{MONTH_NAMES[calendarMonth]} {calendarYear}</Text>
-                    <MaterialCommunityIcons name="chevron-down" size={16} color="#475568" />
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, fontFamily: 'Poppins' }}>{MONTH_NAMES[calendarMonth]} {calendarYear}</Text>
+                    <MaterialCommunityIcons name="chevron-down" size={16} color={colors.iconColor} />
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Pressable onPress={prevMonth} style={{ padding: 4 }}><MaterialCommunityIcons name="chevron-left" size={16} color="#475568" /></Pressable>
-                    <Pressable onPress={nextMonth} style={{ padding: 4 }}><MaterialCommunityIcons name="chevron-right" size={16} color="#475568" /></Pressable>
+                    <Pressable onPress={prevMonth} style={{ padding: 4 }}><MaterialCommunityIcons name="chevron-left" size={16} color={colors.iconColor} /></Pressable>
+                    <Pressable onPress={nextMonth} style={{ padding: 4 }}><MaterialCommunityIcons name="chevron-right" size={16} color={colors.iconColor} /></Pressable>
                   </View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
                   {DAY_LABELS.map((lbl, i) => (
                     <View key={i} style={{ flex: 1, alignItems: 'center', paddingVertical: 4 }}>
-                      <Text style={{ fontSize: 11, color: '#475568', fontFamily: 'Poppins' }}>{lbl}</Text>
+                      <Text style={{ fontSize: 11, color: colors.textSub, fontFamily: 'Poppins' }}>{lbl}</Text>
                     </View>
                   ))}
                 </View>
@@ -788,7 +793,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                       const isToday    = cell.currentMonth && cell.day === todayDay && calendarMonth === todayMonth && calendarYear === todayYear;
                       const isSelected = cell.currentMonth && cell.day === selectedDate && !isToday;
                       const isFuture   = cell.currentMonth && (calendarYear > todayYear || (calendarYear === todayYear && calendarMonth > todayMonth) || (calendarYear === todayYear && calendarMonth === todayMonth && cell.day > todayDay));
-                      const textColor  = !cell.currentMonth ? '#E2E8F0' : isToday || isSelected ? '#FFFFFF' : isFuture ? '#111826' : '#475568';
+                      const textColor  = !cell.currentMonth ? colors.border : isToday || isSelected ? '#FFFFFF' : isFuture ? colors.text : colors.textSub;
                       return (
                         <Pressable
                           key={col}
@@ -808,18 +813,18 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
             {/* ── Time picker overlay ── */}
             {timePickerFor !== null && (
-              <View style={{ position: 'absolute', ...(timePickerFor === 'start' ? { left: 24 } : { right: 24 }), bottom: 56, width: 196, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 24, padding: 8, gap: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 20, elevation: 22, zIndex: 35 }}>
+              <View style={{ position: 'absolute', ...(timePickerFor === 'start' ? { left: 24 } : { right: 24 }), bottom: 56, width: 196, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 8, gap: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 20, elevation: 22, zIndex: 35 }}>
 
                 {/* Title */}
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#000000', letterSpacing: -0.42, fontFamily: 'Poppins', paddingHorizontal: 4 }}>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, letterSpacing: -0.42, fontFamily: 'Poppins', paddingHorizontal: 4 }}>
                   Select time
                 </Text>
 
                 {/* Scroll columns */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', height: ITEM_H * 4 }}>
-                  <TimePickerColumn items={HOURS}   initialIndex={hourRef.current}   indexRef={hourRef}   />
-                  <TimePickerColumn items={MINUTES} initialIndex={minuteRef.current} indexRef={minuteRef} />
-                  <TimePickerColumn items={PERIODS} initialIndex={periodRef.current} indexRef={periodRef} />
+                  <TimePickerColumn items={HOURS}   initialIndex={hourRef.current}   indexRef={hourRef}   colors={colors} />
+                  <TimePickerColumn items={MINUTES} initialIndex={minuteRef.current} indexRef={minuteRef} colors={colors} />
+                  <TimePickerColumn items={PERIODS} initialIndex={periodRef.current} indexRef={periodRef} colors={colors} />
                 </View>
 
                 {/* Done button */}
@@ -877,14 +882,14 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
             <View style={{ position: 'absolute', bottom: -60, left: -60,  width: 240, height: 240, borderRadius: 120, backgroundColor: '#BEEBF4' }} />
 
             {/* Blur the blobs */}
-            <BlurView intensity={55} tint="light" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+            <BlurView intensity={55} tint={isDark ? 'dark' : 'light'} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
 
-            {/* White content card */}
-            <View style={{ marginTop: 105, marginHorizontal: 24, marginBottom: 24, backgroundColor: '#FFFFFF', borderRadius: 40, padding: 20, gap: 16 }}>
+            {/* Content card */}
+            <View style={{ marginTop: 105, marginHorizontal: 24, marginBottom: 24, backgroundColor: colors.card, borderRadius: 40, padding: 20, gap: 16 }}>
 
               {/* Name + badges */}
               <View style={{ gap: 2 }}>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#000000', fontFamily: 'Poppins', letterSpacing: -0.6, lineHeight: 32 }}>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, fontFamily: 'Poppins', letterSpacing: -0.6, lineHeight: 32 }}>
                   {selectedDriver}
                 </Text>
                 <View style={{ flexDirection: 'row', gap: 4 }}>
@@ -913,8 +918,8 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
               {/* Action bar */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ gap: 2 }}>
-                  <Text style={{ fontSize: 10, fontWeight: '500', color: '#64748A', fontFamily: 'Poppins', lineHeight: 24 }}>Estimated cost</Text>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#1F2A33', fontFamily: 'Poppins', lineHeight: 24 }}>GHS 15.00</Text>
+                  <Text style={{ fontSize: 10, fontWeight: '500', color: colors.textSub, fontFamily: 'Poppins', lineHeight: 24 }}>Estimated cost</Text>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, fontFamily: 'Poppins', lineHeight: 24 }}>GHS 15.00</Text>
                 </View>
                 <Pressable
                   style={{ backgroundColor: '#31973D', borderRadius: 16, paddingHorizontal: 24, paddingVertical: 10 }}
@@ -958,7 +963,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
       {/* ══ Delete confirmation modal ══ */}
       <Modal visible={deleteTargetId !== null} transparent animationType="fade" onRequestClose={() => setDeleteTargetId(null)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 }}>
-          <View style={{ width: 296, backgroundColor: '#FFFFFF', borderRadius: 24, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', gap: 20 }}>
+          <View style={{ width: 296, backgroundColor: colors.card, borderRadius: 24, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', gap: 20 }}>
 
             {/* Trash illustration */}
             <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#FEE2E2', alignItems: 'center', justifyContent: 'center' }}>
@@ -967,10 +972,10 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
 
             {/* Text block */}
             <View style={{ gap: 8, alignItems: 'center', width: 256 }}>
-              <Text style={{ fontSize: 18, fontWeight: '500', color: '#0F1621', fontFamily: 'Poppins', letterSpacing: -0.54, lineHeight: 20, textAlign: 'center' }}>
+              <Text style={{ fontSize: 18, fontWeight: '500', color: colors.text, fontFamily: 'Poppins', letterSpacing: -0.54, lineHeight: 20, textAlign: 'center' }}>
                 Delete your Schedule
               </Text>
-              <Text style={{ fontSize: 14, fontWeight: '400', color: '#0F1621', fontFamily: 'Poppins', lineHeight: 24, textAlign: 'center' }}>
+              <Text style={{ fontSize: 14, fontWeight: '400', color: colors.text, fontFamily: 'Poppins', lineHeight: 24, textAlign: 'center' }}>
                 Are you sure you want to delete your timesheet?
               </Text>
             </View>
@@ -984,7 +989,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                 <Text style={{ fontSize: 14, fontWeight: '400', color: '#FFFFFF', fontFamily: 'Poppins' }}>Cancel</Text>
               </Pressable>
               <Pressable
-                style={{ flex: 1, height: 40, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#CBD5E0', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}
+                style={{ flex: 1, height: 40, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   setSchedules(prev => prev.filter(s => s.id !== deleteTargetId));
                   setDeleteTargetId(null);
@@ -1004,21 +1009,21 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
         <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' }}>
           <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} onPress={() => setFilterOpen(false)} />
 
-          <View style={{ backgroundColor: '#FFFFFF', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 16, paddingHorizontal: 20, paddingBottom: 32, gap: 24 }}>
+          <View style={{ backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 16, paddingHorizontal: 20, paddingBottom: 32, gap: 24 }}>
 
             {/* Handle */}
-            <View style={{ width: 152, height: 3, backgroundColor: '#334154', borderRadius: 20, alignSelf: 'center' }} />
+            <View style={{ width: 152, height: 3, backgroundColor: colors.textMuted, borderRadius: 20, alignSelf: 'center' }} />
 
             {/* Month navigation */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8 }}>
               <Pressable onPress={filterPrevMonth} style={{ padding: 8 }}>
-                <MaterialCommunityIcons name="chevron-left" size={20} color="#1A1C1E" />
+                <MaterialCommunityIcons name="chevron-left" size={20} color={colors.text} />
               </Pressable>
-              <Text style={{ fontSize: 20, fontWeight: '600', color: '#1A1C1E', fontFamily: 'Poppins' }}>
+              <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text, fontFamily: 'Poppins' }}>
                 {MONTH_NAMES[filterMonth]} {filterYear}
               </Text>
               <Pressable onPress={filterNextMonth} style={{ padding: 8 }}>
-                <MaterialCommunityIcons name="chevron-right" size={20} color="#1A1C1E" />
+                <MaterialCommunityIcons name="chevron-right" size={20} color={colors.text} />
               </Pressable>
             </View>
 
@@ -1028,7 +1033,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
               <View style={{ flexDirection: 'row' }}>
                 {['Su','Mo','Tu','We','Th','Fr','Sa'].map((lbl, i) => (
                   <View key={i} style={{ flex: 1, alignItems: 'center', paddingVertical: 7 }}>
-                    <Text style={{ fontSize: 12, fontWeight: '500', color: '#3F4A3D', fontFamily: 'Poppins', letterSpacing: 0.48 }}>{lbl}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: '500', color: colors.textSub, fontFamily: 'Poppins', letterSpacing: 0.48 }}>{lbl}</Text>
                   </View>
                 ))}
               </View>
@@ -1046,7 +1051,7 @@ export function ScheduleScreen({ navigation }: RootStackScreenProps<'Schedule'>)
                         onPress={() => { if (!cell.currentMonth) return; setFilterPickDate(cell.day); }}
                       >
                         <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: isSelected ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-                          <Text style={{ fontSize: 16, color: isSelected ? '#FFFFFF' : '#1A1C1E', fontFamily: 'Poppins' }}>
+                          <Text style={{ fontSize: 16, color: isSelected ? '#FFFFFF' : colors.text, fontFamily: 'Poppins' }}>
                             {cell.day}
                           </Text>
                         </View>

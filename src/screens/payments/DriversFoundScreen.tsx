@@ -308,7 +308,7 @@ export function DriversFoundScreen({ navigation }: RootStackScreenProps<'Drivers
           bottomOffset={8}
           showCalendar
           onHomePress={() => navigation.navigate('PremiumHome')}
-          onSavedPress={() => navigation.navigate('Details', { itemId: 'saved', title: 'Saved' })}
+          onSavedPress={() => navigation.navigate('Pickups')}
           onSettingsPress={() => navigation.navigate('Settings')}
           onCalendarPress={() => navigation.navigate('Schedule')}
         />
