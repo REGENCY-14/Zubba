@@ -132,7 +132,7 @@ function TimePickerColumn({
         {items.map((item, i) => (
           <View key={i} className="h-11 items-center justify-center">
             <Text
-              className={`text-base font-['Plus_Jakarta_Sans'] ${
+              className={`text-base  ${
                 i === activeIndex
                   ? "font-semibold text-[#111826]"
                   : "font-medium text-[#64748A]"
@@ -150,6 +150,7 @@ function TimePickerColumn({
 /* ─── ScheduleIllustration ──────────────────────────────────── */
 
 function ScheduleIllustration() {
+  const { colors } = useTheme();
   return (
     <View className="w-[222px] h-[152px]">
       <View className="absolute left-0 right-14 top-0 bottom-7 bg-[#64748A] rounded-md overflow-hidden">
@@ -165,14 +166,26 @@ function ScheduleIllustration() {
           <View className="h-2 bg-white/30 mx-1.5 rounded-sm" />
           {[0, 1].map((k) => (
             <View key={k} className="flex-row items-center gap-1.5 px-1.5">
-              <View className="w-3.5 h-3.5 rounded-full bg-white/50" />
+              <View className="w-3.5 h-3.5 rounded-full" />
               <View className="flex-1 h-[5px] bg-white/40 rounded-sm" />
             </View>
           ))}
         </View>
       </View>
-      <View className="absolute right-0 bottom-0 w-[52px] h-[52px] rounded-full bg-white border-[2.5px] border-[#31973D] items-center justify-center">
-        <MaterialCommunityIcons name="plus" size={26} color="#31973D" />
+      <View
+        style={{ backgroundColor: colors.bg }}
+        className="absolute right-0 bottom-0 w-[62px] h-[62px] p-2.5 rounded-full border-[2.5px] border-[#31973D] items-center justify-center"
+      >
+        <View
+          style={{ backgroundColor: colors.iconBg }}
+          className="w-10 h-10 rounded-full flex items-center justify-center"
+        >
+          <MaterialCommunityIcons
+            name="plus"
+            size={26}
+            color={colors.iconColor}
+          />
+        </View>
       </View>
     </View>
   );
@@ -211,6 +224,8 @@ function ScheduleCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const {colors} = useTheme()
+
   return (
     <View className="flex-row items-start px-3 h-32">
       {/* Main section */}
@@ -223,29 +238,29 @@ function ScheduleCard({
               size={14}
               color="#92400E"
             />
-            <Text className="text-xs text-[#92400E] font-['Plus_Jakarta_Sans']">
-              Scheduled
-            </Text>
+            <Text className="text-xs text-[#92400E]">Scheduled</Text>
           </View>
         </View>
 
         {/* Date / time / location */}
         <View className="gap-px">
           <View className="flex-row items-center">
-            <View className="px-1 py-1 border-r border-r-[#D2CACA]">
-              <Text className="text-xs font-medium font-['Poppins']">
+            <View className="px-1 py-1">
+              <Text style={{color: colors.text}} className="text-xs font-medium">
                 {item.date}
               </Text>
             </View>
+            <View style={{backgroundColor: colors.border}} className="w-px h-4"/>
             <View className="px-1 py-1">
-              <Text className="text-xs font-medium font-['Poppins']">
-                {item.timeRange || "—"}
+              <Text style={{color: colors.text}} className="text-xs font-medium">
+                {item.timeRange || "-"}
               </Text>
             </View>
           </View>
           <View className="px-1">
             <Text
-              className="text-[13px] font-medium font-['Poppins']"
+              style={{color: colors.text}}
+              className="text-[13px] font-medium"
               numberOfLines={1}
             >
               {item.location || "No location set"}
@@ -255,10 +270,10 @@ function ScheduleCard({
 
         {/* Estimated cost */}
         <View className="flex-row justify-between items-center">
-          <Text className="text-[13px] font-medium text-[#64748A] font-['Poppins']">
+          <Text style={{color: colors.textSub}} className="text-[13px] font-medium">
             Estimated cost
           </Text>
-          <Text className="text-xl font-bold text-[#1F2A33] font-['Poppins']">
+          <Text style={{color: colors.textMuted}} className="text-xl font-bold">
             GHS 15.00
           </Text>
         </View>
@@ -267,13 +282,14 @@ function ScheduleCard({
       {/* Three-dot menu column */}
       <View className="w-[35px] items-center pt-2">
         <Pressable
-          className="w-8 h-8 rounded-full bg-[#F1F5F9] items-center justify-center"
+          style={{backgroundColor: colors.iconBg}}
+          className="w-8 h-8 rounded-full items-center justify-center"
           onPress={menuOpen ? onMenuClose : onMenuOpen}
         >
           <MaterialCommunityIcons
-            name="dots-vertical"
+            name="dots-horizontal"
             size={20}
-            color="#000000"
+            color={colors.iconColor}
           />
         </Pressable>
 
@@ -296,9 +312,7 @@ function ScheduleCard({
                 onMenuClose();
               }}
             >
-              <Text className="text-sm text-[#1F2A33] font-['Plus_Jakarta_Sans']">
-                Edit
-              </Text>
+              <Text className="text-sm text-[#1F2A33] ">Edit</Text>
               <MaterialCommunityIcons
                 name="pencil-outline"
                 size={18}
@@ -313,9 +327,7 @@ function ScheduleCard({
                 onMenuClose();
               }}
             >
-              <Text className="text-sm text-[#EF4444] font-['Plus_Jakarta_Sans']">
-                Delete
-              </Text>
+              <Text className="text-sm text-[#EF4444] ">Delete</Text>
               <MaterialCommunityIcons
                 name="trash-can-outline"
                 size={18}
@@ -581,12 +593,13 @@ export function ScheduleScreen({
     : schedules;
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: colors.bg }}
+      edges={["top", "left", "right"]}
+    >
       {/* Top bar */}
-      <View
-        className="absolute w-full top-0 left-0 right-0 h-12 flex-row items-center justify-between px-4 z-10"
-        style={{ backgroundColor: colors.bg }}
-      >
+      <View className="w-full h-12 flex-row items-center justify-between px-4 z-10">
         <Pressable className="w-8 h-8 items-center justify-center">
           <MaterialCommunityIcons
             name="menu"
@@ -605,8 +618,14 @@ export function ScheduleScreen({
             </View>
           )}
           <Pressable
+            onPress={() => {
+              navigation.navigate("NotificationsList");
+            }}
             className="w-10 h-10 p-1 border rounded-lg items-center justify-center"
-            style={{ borderColor: colors.border, backgroundColor: colors.iconBg }}
+            style={{
+              borderColor: colors.border,
+              backgroundColor: colors.iconBg,
+            }}
           >
             <MaterialCommunityIcons
               name="bell-outline"
@@ -618,33 +637,54 @@ export function ScheduleScreen({
       </View>
 
       {/* Lavender sub-header */}
-      <View className="h-11 bg-[#EDE9FE] flex-row items-center justify-between px-5">
+      <View
+        className="h-11 flex-row items-center justify-between px-5"
+        style={{ backgroundColor: colors.surface }}
+      >
         <View className="flex-row items-center gap-2">
-          <Text className="text-sm font-medium text-black font-['Plus_Jakarta_Sans']">
+          <Text className="text-sm font-medium" style={{ color: colors.text }}>
             {filterLabel}
           </Text>
           <Pressable
-            className="w-7 h-7 rounded-xl bg-[#DDD6FE] items-center justify-center"
+            style={{ backgroundColor: colors.iconBg }}
+            className="w-7 h-7 rounded-xl items-center justify-center"
             onPress={openFilterSheet}
           >
-            <MaterialCommunityIcons name="calendar" size={16} color="#6D28D9" />
+            <MaterialCommunityIcons
+              name="calendar"
+              size={16}
+              color={"#31973D"}
+            />
+          </Pressable>
+          <Pressable onPress={() => setActiveFilter(null)}>
+            <MaterialCommunityIcons
+              name="refresh"
+              size={16}
+              color={colors.iconColor}
+            />
           </Pressable>
         </View>
-        <Pressable onPress={() => setActiveFilter(null)}>
-          <MaterialCommunityIcons name="refresh" size={16} color="#64748A" />
-        </Pressable>
       </View>
 
       {/* Empty state / schedule list */}
       {visibleSchedules.length === 0 ? (
         <View className="flex-1 p-5">
-          <View className="border border-[#E2E8F0] rounded-[20px] h-[360px] items-center justify-end px-6 pb-10 gap-5">
+          <View
+            style={{ borderColor: colors.border }}
+            className="border rounded-[20px] h-[360px] items-center justify-end px-6 pb-10 gap-5"
+          >
             <ScheduleIllustration />
             <View className="items-center gap-[5px]">
-              <Text className="text-base font-medium text-[#0F1621] font-['Plus_Jakarta_Sans']">
+              <Text
+                style={{ color: colors.text }}
+                className="text-base font-medium"
+              >
                 No Schedules
               </Text>
-              <Text className="text-sm font-normal text-[#64748A] text-center font-['Plus_Jakarta_Sans']">
+              <Text
+                style={{ color: colors.textMuted }}
+                className="text-sm font-normal text-center "
+              >
                 Hit the plus icon to plan for later
               </Text>
             </View>
@@ -652,10 +692,19 @@ export function ScheduleScreen({
         </View>
       ) : (
         <Pressable className="flex-1 p-5" onPress={() => setOpenMenuId(null)}>
-          <View className="border border-[#E2E8F0] rounded-2xl bg-white overflow-hidden flex-1">
+          <View
+            style={{ borderColor: colors.border, backgroundColor: colors.bg }}
+            className="border rounded-2xl overflow-hidden flex-1"
+          >
             {/* Header */}
-            <View className="h-12 bg-[#F1F5F9] justify-center px-3">
-              <Text className="text-base font-medium font-['Plus_Jakarta_Sans'] text-black">
+            <View
+              style={{ backgroundColor: colors.surface }}
+              className="h-12 justify-center px-3"
+            >
+              <Text
+                style={{ color: colors.text }}
+                className="text-base font-medium"
+              >
                 Schedules
               </Text>
             </View>
@@ -663,7 +712,7 @@ export function ScheduleScreen({
             <ScrollView showsVerticalScrollIndicator={false}>
               {visibleSchedules.map((item, index) => (
                 <React.Fragment key={item.id}>
-                  {index > 0 && <View className="h-px bg-[#E2E8F0] mx-3" />}
+                  {index > 0 && <View style={{borderColor: colors.border}} className="border mx-3 m-2" />}
                   <ScheduleCard
                     item={item}
                     menuOpen={openMenuId === item.id}
@@ -720,7 +769,10 @@ export function ScheduleScreen({
             onPress={() => setSheetOpen(false)}
           />
 
-          <View className="bg-white rounded-t-[32px] pt-4 pb-2 h-[82%] justify-between">
+          <View
+            style={{ backgroundColor: colors.bg }}
+            className="rounded-t-[32px] pt-4 pb-2 h-[82%] justify-between"
+          >
             {/* Scrollable form */}
             <ScrollView
               className="flex-1"
@@ -730,15 +782,22 @@ export function ScheduleScreen({
               scrollEnabled={timePickerFor === null}
             >
               {/* Handle */}
-              <View className="w-[152px] h-[3px] bg-[#334154] rounded-[20px] self-center" />
+              <View
+                style={{ backgroundColor: colors.textMuted }}
+                className="w-[152px] h-[3px] rounded-[20px] self-center"
+              />
 
               {/* Header */}
               <View className="flex-row justify-between items-center px-6">
-                <Text className="text-lg font-medium text-black tracking-[-0.54px] font-['Plus_Jakarta_Sans']">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-lg font-medium tracking-[-0.54px] "
+                >
                   Schedule details
                 </Text>
                 <Pressable
-                  className="flex-row items-center gap-2 px-3 py-1.5 border border-[#E2E8F0] rounded-full"
+                  style={{ borderColor: colors.border }}
+                  className="flex-row items-center gap-2 px-3 py-1.5 border rounded-full"
                   onPress={() => {
                     setFrequencyOpen((v) => !v);
                     setCalendarOpen(false);
@@ -746,13 +805,16 @@ export function ScheduleScreen({
                     setTimePickerFor(null);
                   }}
                 >
-                  <Text className="text-xs font-medium font-['Poppins']">
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-xs font-medium"
+                  >
                     {selectedFrequency}
                   </Text>
                   <MaterialCommunityIcons
                     name="chevron-down"
                     size={12}
-                    color="#000"
+                    color={colors.iconColor}
                   />
                 </Pressable>
               </View>
@@ -761,21 +823,30 @@ export function ScheduleScreen({
               <View className="px-6 gap-4 w-full">
                 {/* Driver pill / select button */}
                 {selectedDriver ? (
-                  <View className="flex-row items-center h-10 bg-[#F1F5F9] rounded-xl px-3 gap-2">
+                  <View
+                    style={{ backgroundColor: colors.surface }}
+                    className="flex-row items-center h-10 rounded-xl px-3 gap-2"
+                  >
                     <MaterialCommunityIcons
                       name="star"
                       size={16}
                       color="#FEC002"
                     />
-                    <Text className="text-xs text-[#939393] font-['Inter']">
+                    <Text
+                      style={{ color: colors.textMuted }}
+                      className="text-xs"
+                    >
                       {DRIVERS.find((d) => d.name === selectedDriver)?.rating}
                     </Text>
                     <View className="flex-row items-center gap-1 flex-1">
-                      <Text className="text-sm font-medium text-[#101010] font-['Inter']">
+                      <Text
+                        style={{ color: colors.text }}
+                        className="text-sm font-medium"
+                      >
                         {selectedDriver}
                       </Text>
                       <MaterialCommunityIcons
-                        name="medal"
+                        name="check-decagram"
                         size={13}
                         color="#D4AF37"
                       />
@@ -801,7 +872,7 @@ export function ScheduleScreen({
                       size={16}
                       color="#FFFFFF"
                     />
-                    <Text className="text-sm text-white font-['Plus_Jakarta_Sans']">
+                    <Text className="text-sm text-white ">
                       Select available driver
                     </Text>
                   </Pressable>
@@ -810,8 +881,10 @@ export function ScheduleScreen({
                 {/* Driver dropdown */}
                 {driverListOpen && (
                   <View
-                    className="absolute left-6 right-6 top-12 bg-white border border-[#E2E8F0] rounded-3xl p-2 z-20"
+                    className="absolute left-6 right-6 top-12 border rounded-3xl p-2 z-20"
                     style={{
+                      borderColor: colors.border,
+                      backgroundColor: colors.bg,
                       shadowColor: "rgba(69,71,69,0.15)",
                       shadowOffset: { width: 0, height: 0 },
                       shadowOpacity: 1,
@@ -820,14 +893,18 @@ export function ScheduleScreen({
                     }}
                   >
                     {searchMode ? (
-                      <View className="flex-row items-center gap-2 border border-[rgba(0,0,0,0.11)] rounded-full px-2.5 h-[27px] mb-1.5">
+                      <View
+                        style={{ borderColor: colors.borderLight }}
+                        className="flex-row items-center gap-2 border rounded-full px-2.5 h-[27px] mb-1.5"
+                      >
                         <MaterialCommunityIcons
                           name="magnify"
                           size={11}
-                          color="#000"
+                          color={colors.iconColor}
                         />
                         <TextInput
-                          className="flex-1 text-[13px] text-[#333333] p-0 font-['Plus_Jakarta_Sans']"
+                          style={{ color: colors.textSub }}
+                          className="flex-1 text-[13px] p-0 outline-none"
                           placeholder="search driver by name, unique...."
                           placeholderTextColor="#94A3B7"
                           value={searchQuery}
@@ -836,12 +913,18 @@ export function ScheduleScreen({
                         />
                       </View>
                     ) : (
-                      <View className="flex-row justify-between items-center py-[3px] px-1 mb-1 border-b border-b-[rgba(184,184,184,0.2)]">
-                        <Text className="text-sm font-medium text-[#1F2A33] font-['Poppins']">
+                      <View
+                        style={{ borderColor: colors.borderLight }}
+                        className="flex-row justify-between items-center py-[3px] px-1 mb-1 border-b"
+                      >
+                        <Text
+                          style={{ color: colors.textSub }}
+                          className="text-sm font-medium"
+                        >
                           Recommended
                         </Text>
                         <Pressable onPress={() => setSearchMode(true)}>
-                          <Text className="text-[11px] font-medium text-[rgba(14,90,142,0.7)] underline font-['Inter']">
+                          <Text className="text-[11px] font-medium text-[rgba(14,90,142,0.7)] underline">
                             Search
                           </Text>
                         </Pressable>
@@ -871,12 +954,15 @@ export function ScheduleScreen({
                           }}
                         >
                           <View className="flex-row items-center gap-1">
-                            <Text className="text-sm font-medium text-[#101010] font-['Inter']">
+                            <Text
+                              style={{ color: colors.text }}
+                              className="text-sm font-medium"
+                            >
                               {driver.name}
                             </Text>
                             {driver.premium && (
                               <MaterialCommunityIcons
-                                name="medal"
+                                name="check-decagram"
                                 size={13}
                                 color="#D4AF37"
                               />
@@ -888,7 +974,10 @@ export function ScheduleScreen({
                               size={16}
                               color="#FEC002"
                             />
-                            <Text className="text-xs text-[#939393] font-['Inter']">
+                            <Text
+                              style={{ color: colors.textSub }}
+                              className="text-xs"
+                            >
                               {driver.rating}
                             </Text>
                           </View>
@@ -900,12 +989,16 @@ export function ScheduleScreen({
 
                 {/* Location */}
                 <View className="gap-1">
-                  <Text className="text-sm text-[#94A3B7] font-['Plus_Jakarta_Sans']">
+                  <Text style={{ color: colors.textSub }} className="text-sm">
                     Location
                   </Text>
-                  <View className="flex-row items-center h-12 bg-[#F1F5F9] rounded-3xl px-3 gap-2">
+                  <View
+                    style={{ backgroundColor: colors.surface }}
+                    className="flex-row items-center h-12 rounded-3xl px-3 gap-2"
+                  >
                     <TextInput
-                      className="flex-1 text-sm text-[#1F2A33] p-0 font-['Plus_Jakarta_Sans']"
+                      style={{ color: colors.textSub }}
+                      className="flex-1 text-sm text-[#1F2A33] p-0  outline-none"
                       placeholder="Tarkwa, UMaT Campus, Hall 3"
                       placeholderTextColor="#94A3B7"
                       value={location}
@@ -926,12 +1019,16 @@ export function ScheduleScreen({
 
                 {/* Phone Number */}
                 <View className="gap-1">
-                  <Text className="text-sm text-[#94A3B7] font-['Plus_Jakarta_Sans']">
+                  <Text style={{ color: colors.textSub }} className="text-sm">
                     Phone Number
                   </Text>
-                  <View className="flex-row items-center h-12 bg-[#F1F5F9] rounded-3xl px-3 gap-2">
+                  <View
+                    style={{ backgroundColor: colors.surface }}
+                    className="flex-row items-center h-12 rounded-3xl px-3 gap-2"
+                  >
                     <TextInput
-                      className="flex-1 text-sm text-[#1F2A33] p-0 font-['Plus_Jakarta_Sans']"
+                      style={{ color: colors.textSub }}
+                      className="flex-1 text-sm p-0 outline-none"
                       placeholder="0243 50 8595"
                       placeholderTextColor="#94A3B7"
                       keyboardType="phone-pad"
@@ -953,11 +1050,16 @@ export function ScheduleScreen({
 
                 {/* Additional note */}
                 <View className="gap-1">
-                  <Text className="text-sm text-[#1F2A33] font-['Plus_Jakarta_Sans']">
+                  <Text style={{ color: colors.textSub }} className="text-sm">
                     Additional note
                   </Text>
                   <TextInput
-                    className="h-[108px] border border-[#CBD5E0] rounded-3xl px-3 pt-3.5 text-sm text-[#1F2A33] font-['Plus_Jakarta_Sans']"
+                    style={{
+                      color: colors.textSub,
+                      borderColor: colors.border,
+                      backgroundColor: colors.surface,
+                    }}
+                    className="h-[108px] border rounded-3xl px-3 pt-3.5 text-sm"
                     placeholder="Call before arrival, waste is behind the gate etc.."
                     placeholderTextColor="#94A3B7"
                     multiline
@@ -970,7 +1072,8 @@ export function ScheduleScreen({
 
                 {/* Date row */}
                 <Pressable
-                  className="flex-row items-center justify-center gap-2 h-12 bg-[#F1F5F9] rounded-xl"
+                  style={{ backgroundColor: colors.card }}
+                  className="flex-row items-center justify-center gap-2 h-12 rounded-xl"
                   onPress={() => {
                     setCalendarOpen((v) => !v);
                     setFrequencyOpen(false);
@@ -981,35 +1084,45 @@ export function ScheduleScreen({
                   <MaterialCommunityIcons
                     name="calendar"
                     size={16}
-                    color="#94A3B7"
+                    color={colors.iconColor}
                   />
-                  <Text className="text-base font-bold text-[#94A3B7] font-['Plus_Jakarta_Sans']">
+                  <Text
+                    style={{ color: colors.textSub }}
+                    className="text-base font-bold"
+                  >
                     {dateLabel}
                   </Text>
                   <MaterialCommunityIcons
                     name="refresh"
                     size={16}
-                    color="#94A3B7"
+                    color={colors.iconColor}
                   />
                 </Pressable>
 
                 {/* Start / End time — Pressable displays */}
                 <View className="gap-1">
                   <View className="flex-row">
-                    <Text className="flex-1 text-sm text-[#94A3B7] font-['Plus_Jakarta_Sans']">
+                    <Text
+                      style={{ color: colors.textSub }}
+                      className="flex-1 text-sm"
+                    >
                       Start Time
                     </Text>
-                    <Text className="flex-1 text-sm text-[#94A3B7] font-['Plus_Jakarta_Sans']">
+                    <Text
+                      style={{ color: colors.textSub }}
+                      className="flex-1 text-sm"
+                    >
                       End Time
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2 w-full">
                     <Pressable
-                      className="flex-1 min-w-0 h-12 border border-[#CBD5E0] rounded-3xl px-4 flex-row items-center"
+                      style={{ borderColor: colors.border }}
+                      className="flex-1 min-w-0 h-12 border rounded-3xl px-4 flex-row items-center"
                       onPress={() => openTimePicker("start")}
                     >
                       <Text
-                        className={`text-sm font-['Plus_Jakarta_Sans'] ${
+                        className={`text-sm  ${
                           startTime ? "text-[#1F2A33]" : "text-[#94A3B7]"
                         }`}
                       >
@@ -1024,11 +1137,12 @@ export function ScheduleScreen({
                       />
                     </View>
                     <Pressable
-                      className="flex-1 min-w-0 h-12 border border-[#CBD5E0] rounded-3xl px-4 flex-row items-center"
+                      style={{ borderColor: colors.border }}
+                      className="flex-1 min-w-0 h-12 border rounded-3xl px-4 flex-row items-center"
                       onPress={() => openTimePicker("end")}
                     >
                       <Text
-                        className={`text-sm font-['Plus_Jakarta_Sans'] ${
+                        className={`text-sm  ${
                           endTime ? "text-[#1F2A33]" : "text-[#94A3B7]"
                         }`}
                       >
@@ -1043,8 +1157,10 @@ export function ScheduleScreen({
             {/* ── Frequency dropdown overlay ── */}
             {frequencyOpen && (
               <View
-                className="absolute right-6 top-14 bg-white border border-[#E2E8F0] rounded-[20px] py-1.5 px-1 min-w-[160px] z-30"
+                className="absolute right-6 top-14 border rounded-[20px] py-1.5 px-1 min-w-[160px] z-30"
                 style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.08,
@@ -1055,21 +1171,27 @@ export function ScheduleScreen({
                 {FREQUENCIES.map((freq) => (
                   <Pressable
                     key={freq}
-                    className={`px-3 py-[9px] rounded-[14px] ${
-                      selectedFrequency === freq
-                        ? "bg-[rgba(184,184,184,0.2)]"
-                        : "bg-transparent"
-                    }`}
+                    style={{
+                      backgroundColor:
+                        selectedFrequency === freq ? colors.surface : "",
+                    }}
+                    className={`px-3 py-[9px] rounded-[14px]`}
                     onPress={() => {
                       setSelectedFrequency(freq);
                       setFrequencyOpen(false);
                     }}
                   >
                     <Text
-                      className={`text-sm font-['Plus_Jakarta_Sans'] ${
+                      style={{
+                        color:
+                          selectedFrequency === freq
+                            ? colors.text
+                            : colors.textMuted,
+                      }}
+                      className={`text-sm  ${
                         selectedFrequency === freq
-                          ? "font-medium text-[#1F2A33]"
-                          : "font-normal text-[#64748A]"
+                          ? "font-medium"
+                          : "font-normal"
                       }`}
                     >
                       {freq}
@@ -1082,8 +1204,10 @@ export function ScheduleScreen({
             {/* ── Calendar overlay ── */}
             {calendarOpen && (
               <View
-                className="absolute left-6 right-6 top-[62px] bg-white border border-[#E2E8F0] rounded-3xl p-3 z-[25]"
+                className="absolute left-6 right-6 top-[62px] border rounded-3xl p-3 z-[25]"
                 style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.08,
@@ -1093,13 +1217,16 @@ export function ScheduleScreen({
               >
                 <View className="flex-row justify-between items-center px-2 py-1.5">
                   <View className="flex-row items-center gap-1">
-                    <Text className="text-sm font-semibold text-[#111826] font-['Plus_Jakarta_Sans']">
+                    <Text
+                      style={{ color: colors.text }}
+                      className="text-sm font-semibold"
+                    >
                       {MONTH_NAMES[calendarMonth]} {calendarYear}
                     </Text>
                     <MaterialCommunityIcons
                       name="chevron-down"
                       size={16}
-                      color="#475568"
+                      color={colors.iconColor}
                     />
                   </View>
                   <View className="flex-row items-center gap-1">
@@ -1107,14 +1234,14 @@ export function ScheduleScreen({
                       <MaterialCommunityIcons
                         name="chevron-left"
                         size={16}
-                        color="#475568"
+                        color={colors.iconColor}
                       />
                     </Pressable>
                     <Pressable onPress={nextMonth} className="p-1">
                       <MaterialCommunityIcons
                         name="chevron-right"
                         size={16}
-                        color="#475568"
+                        color={colors.iconColor}
                       />
                     </Pressable>
                   </View>
@@ -1122,7 +1249,10 @@ export function ScheduleScreen({
                 <View className="flex-row justify-between mb-0.5">
                   {DAY_LABELS.map((lbl, i) => (
                     <View key={i} className="flex-1 items-center py-1">
-                      <Text className="text-[11px] text-[#475568] font-['Plus_Jakarta_Sans']">
+                      <Text
+                        style={{ color: colors.textMuted }}
+                        className="text-[11px]"
+                      >
                         {lbl}
                       </Text>
                     </View>
@@ -1165,15 +1295,16 @@ export function ScheduleScreen({
                             }}
                           >
                             <Text
-                              className={`text-xs font-['Plus_Jakarta_Sans'] ${
-                                !cell.currentMonth
-                                  ? "text-[#E2E8F0]"
+                              style={{
+                                color: !cell.currentMonth
+                                  ? colors.textMuted
                                   : isToday || isSelected
-                                    ? "text-white"
+                                    ? colors.text
                                     : isFuture
-                                      ? "text-[#111826]"
-                                      : "text-[#475568]"
-                              } ${
+                                      ? colors.card
+                                      : colors.textSub,
+                              }}
+                              className={`text-xs ${
                                 isFuture || isToday || isSelected
                                   ? "font-bold"
                                   : "font-normal"
@@ -1194,9 +1325,11 @@ export function ScheduleScreen({
               <View
                 className={`absolute ${
                   timePickerFor === "start" ? "left-6" : "right-6"
-                } bottom-14 w-[196px] bg-white border border-[#E2E8F0] rounded-3xl p-2 gap-1 z-[35]`}
+                } bottom-14 w-[196px] border rounded-3xl p-2 gap-1 z-[35]`}
                 style={{
                   shadowColor: "#000",
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
                   shadowOffset: { width: 0, height: 0 },
                   shadowOpacity: 0.15,
                   shadowRadius: 20,
@@ -1204,7 +1337,10 @@ export function ScheduleScreen({
                 }}
               >
                 {/* Title */}
-                <Text className="text-sm font-medium text-black tracking-[-0.42px] font-['Plus_Jakarta_Sans'] px-1">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-sm font-medium tracking-[-0.42px] px-1"
+                >
                   Select time
                 </Text>
 
@@ -1232,9 +1368,7 @@ export function ScheduleScreen({
                   className="h-10 bg-[#31973D] rounded-2xl items-center justify-center"
                   onPress={applyPickerTime}
                 >
-                  <Text className="text-sm text-white font-['Plus_Jakarta_Sans']">
-                    Done
-                  </Text>
+                  <Text className="text-sm text-white ">Done</Text>
                 </Pressable>
               </View>
             )}
@@ -1285,7 +1419,7 @@ export function ScheduleScreen({
                   }
                 }}
               >
-                <Text className="text-sm text-white font-['Plus_Jakarta_Sans']">
+                <Text className="text-sm text-white ">
                   {editTargetId ? "Save" : "Schedule"}
                 </Text>
               </Pressable>
@@ -1381,9 +1515,7 @@ export function ScheduleScreen({
                     setSheetOpen(false);
                   }}
                 >
-                  <Text className="text-sm text-white font-['Plus_Jakarta_Sans']">
-                    Schedule
-                  </Text>
+                  <Text className="text-sm text-white ">Schedule</Text>
                 </Pressable>
               </View>
             </View>
@@ -1423,9 +1555,7 @@ export function ScheduleScreen({
                 size={14}
                 color="#FFFFFF"
               />
-              <Text className="text-xs text-white font-['Plus_Jakarta_Sans']">
-                pending schedule
-              </Text>
+              <Text className="text-xs text-white ">pending schedule</Text>
             </View>
 
             {/* Close button */}
@@ -1459,10 +1589,10 @@ export function ScheduleScreen({
 
             {/* Text block */}
             <View className="gap-2 items-center w-64">
-              <Text className="text-lg font-medium text-[#0F1621] font-['Plus_Jakarta_Sans'] tracking-[-0.54px] leading-5 text-center">
+              <Text className="text-lg font-medium text-[#0F1621]  tracking-[-0.54px] leading-5 text-center">
                 Delete your Schedule
               </Text>
-              <Text className="text-sm font-normal text-[#0F1621] font-['Plus_Jakarta_Sans'] leading-6 text-center">
+              <Text className="text-sm font-normal text-[#0F1621]  leading-6 text-center">
                 Are you sure you want to delete your timesheet?
               </Text>
             </View>
@@ -1473,9 +1603,7 @@ export function ScheduleScreen({
                 className="flex-1 h-10 bg-[#EF4444] rounded-2xl items-center justify-center"
                 onPress={() => setDeleteTargetId(null)}
               >
-                <Text className="text-sm font-normal text-white font-['Plus_Jakarta_Sans']">
-                  Cancel
-                </Text>
+                <Text className="text-sm font-normal text-white ">Cancel</Text>
               </Pressable>
               <Pressable
                 className="flex-1 h-10 bg-white border border-[#CBD5E0] rounded-2xl items-center justify-center"
@@ -1487,7 +1615,7 @@ export function ScheduleScreen({
                   showToast("Schedule successfully deleted");
                 }}
               >
-                <Text className="text-sm font-medium text-[#EF4444] font-['Plus_Jakarta_Sans']">
+                <Text className="text-sm font-medium text-[#EF4444] ">
                   Delete
                 </Text>
               </Pressable>
@@ -1522,7 +1650,7 @@ export function ScheduleScreen({
                   color="#1A1C1E"
                 />
               </Pressable>
-              <Text className="text-xl font-semibold text-[#1A1C1E] font-['Plus_Jakarta_Sans']">
+              <Text className="text-xl font-semibold text-[#1A1C1E] ">
                 {MONTH_NAMES[filterMonth]} {filterYear}
               </Text>
               <Pressable onPress={filterNextMonth} className="p-2">
@@ -1540,7 +1668,7 @@ export function ScheduleScreen({
               <View className="flex-row">
                 {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((lbl, i) => (
                   <View key={i} className="flex-1 items-center py-[7px]">
-                    <Text className="text-xs font-medium text-[#3F4A3D] font-['Plus_Jakarta_Sans'] tracking-[0.48px]">
+                    <Text className="text-xs font-medium text-[#3F4A3D]  tracking-[0.48px]">
                       {lbl}
                     </Text>
                   </View>
@@ -1577,7 +1705,7 @@ export function ScheduleScreen({
                             }`}
                           >
                             <Text
-                              className={`text-base font-['Plus_Jakarta_Sans'] ${
+                              className={`text-base  ${
                                 isSelected ? "text-white" : "text-[#1A1C1E]"
                               }`}
                             >
@@ -1622,9 +1750,7 @@ export function ScheduleScreen({
                   setFilterOpen(false);
                 }}
               >
-                <Text className="text-sm text-white font-['Plus_Jakarta_Sans']">
-                  Apply change
-                </Text>
+                <Text className="text-sm text-white ">Apply change</Text>
               </Pressable>
             </View>
           </View>
@@ -1645,7 +1771,7 @@ export function ScheduleScreen({
                 size={24}
                 color="#14B8A6"
               />
-              <Text className="text-[13px] font-medium text-[#0F766E] font-['Plus_Jakarta_Sans'] leading-7">
+              <Text className="text-[13px] font-medium text-[#0F766E]  leading-7">
                 {toastMessage}
               </Text>
             </View>

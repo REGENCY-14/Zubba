@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -14,6 +15,7 @@ export function DriverArrivesScreen({
   navigation,
 }: RootStackScreenProps<"DriverArrives">) {
   const { colors } = useTheme();
+  const request = useAppSelector((state) => state.request)
   const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
 
   return (
@@ -39,12 +41,12 @@ export function DriverArrivesScreen({
 
             <View style={{ gap: 8, alignItems: 'center' }}>
               <Text style={{ marginTop: 12, fontSize: 14, fontWeight: 'bold', color: colors.text, textTransform: 'uppercase' }}>
-                MARCUS CHEN
+                {request.driver.name}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <MaterialCommunityIcons name="star" size={14} color="#0D631B" />
                 <Text style={{ fontSize: 14, color: '#0D631B', marginLeft: 4 }}>
-                  4.9 • ZB-0248
+                  {request.driver.rating <= 0 ? "First Request" : request.driver.rating} • {request.driver.code}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
@@ -74,7 +76,7 @@ export function DriverArrivesScreen({
             </Text>
 
             <View style={{ flexDirection: 'row', gap: 8, width: '100%', justifyContent: 'center' }}>
-              {["8", "2", "4", "9"].map((d, i) => (
+              {request.collection_code.toString().split("").map((d, i) => (
                 <View
                   key={i}
                   style={{ width: 56, height: 56, paddingBottom: 4, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderRadius: 12 }}
@@ -89,7 +91,7 @@ export function DriverArrivesScreen({
             </View>
 
             <Text style={{ color: '#FFFFFF', fontSize: 12, textAlign: 'center', opacity: 0.9 }}>
-              Show this to Marcus to verify
+              Show this to {request.driver.name} to verify
             </Text>
           </View>
 

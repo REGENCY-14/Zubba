@@ -22,7 +22,12 @@ import { driverService } from "../../api/driverService";
 import { customerService } from "../../api/customerService";
 import { RequestTakeout } from "../../types/customer.types";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { resetRequest, setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
+import {
+  resetRequest,
+  setRequest,
+  setRequestDriver,
+  setStatus,
+} from "../../slices/request/requestSlice";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -52,8 +57,12 @@ export function ScanningScreen({
   const [driver, setDriver] = useState<NearbyDriver | null>(null);
   const isPremium = false;
   const { coords } = useCurrentLocation();
-  const [modalStep, setModalStep] = useState<"" | "found_drivers" | "customer_requests" | "driver_accepts">("");
-  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [modalStep, setModalStep] = useState<
+    "" | "found_drivers" | "customer_requests" | "driver_accepts"
+  >("");
+  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -107,55 +116,56 @@ export function ScanningScreen({
   }, [coords]);
 
   const customer_requests = async () => {
-    try{
-    if (!coords || !driver) return;
-    setModalStep("customer_requests")
-    const requestTakeout: RequestTakeout = {
-      pickup_location: [coords.latitude, coords.longitude],
-      pickup_address: "Home",
-      // bags: 1,
-      driver_id: driver.id,
-      distance_m: driver.distanceM,
-      pickup_price: driver.cost,
-      service_price: 5,
-    }
-    const result = await customerService.requestTakeout(
-      requestTakeout
-    )
-    if(!result.success) Alert.alert("Failed to request takeout, please try again later")
-    dispatch(
-      setRequest({
-        customer_id: customer.id,
-        pickup_location: requestTakeout.pickup_location.toString(),
-        pickup_address: requestTakeout.pickup_address,
-        payment_method: "",
-        bags: requestTakeout.bags,
-        distance_m: requestTakeout.distance_m,
-        pickup_price: requestTakeout.pickup_price,
-        service_price: requestTakeout.service_price,
-        scheduleRequest: false,
-        status: "pending",
-      })
-    );
-    // have web socket confirm if driver accepts
-    setTimeout(() => {
+    try {
+      if (!coords || !driver) return;
+      setModalStep("customer_requests");
+      const requestTakeout: RequestTakeout = {
+        pickup_location: [coords.latitude, coords.longitude],
+        pickup_address: "Home",
+        // bags: 1,
+        driver_id: driver.id,
+        distance_m: driver.distanceM,
+        pickup_price: driver.cost,
+        service_price: 5,
+      };
+      const result = await customerService.requestTakeout(requestTakeout);
+      if (!result.success)
+        Alert.alert("Failed to request takeout, please try again later");
+
       dispatch(
-        setRequestDriver({
-          driver_id: driver.id,
-          name: driver.name,
-          avatar: driver.profilePicture ?? "",
-          code: driver.code ?? "N/A",
-          rating: driver.rating,
-        })
+        setRequest({
+          customer_id: customer.id,
+          pickup_location: requestTakeout.pickup_location.toString(),
+          pickup_address: requestTakeout.pickup_address,
+          payment_method: "",
+          bags: requestTakeout.bags,
+          distance_m: requestTakeout.distance_m,
+          pickup_price: requestTakeout.pickup_price,
+          service_price: requestTakeout.service_price,
+          collection_code: result.data.collection_code,
+          scheduleRequest: false,
+          status: "pending",
+        }),
       );
-      dispatch(setStatus("accepted"));
-      setModalStep("driver_accepts");
-    }, 5000)
-    }catch(err){
-      dispatch(resetRequest())
+      // have web socket confirm if driver accepts
+      setTimeout(() => {
+        dispatch(
+          setRequestDriver({
+            driver_id: driver.id,
+            name: driver.name,
+            avatar: driver.profilePicture ?? "",
+            code: driver.code ?? "N/A",
+            rating: driver.rating,
+          }),
+        );
+        dispatch(setStatus("accepted"));
+        setModalStep("driver_accepts");
+      }, 3000);
+    } catch (err) {
+      dispatch(resetRequest());
       console.error(err);
     }
-  }
+  };
 
   useEffect(() => {
     if (modalStep !== "driver_accepts") return;
@@ -322,10 +332,7 @@ export function ScanningScreen({
           </View>
         ))}
 
-        <AppBottomNav
-          activeTab="home"
-          navigation={navigation}
-        />
+        <AppBottomNav activeTab="home" navigation={navigation} />
         {driver && (
           <PickupRequestModal
             visible={showModal}
