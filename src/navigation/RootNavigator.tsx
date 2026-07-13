@@ -83,7 +83,7 @@ export function RootNavigator() {
 
   return (
     <Stack.Navigator
-      initialRouteName="NotificationsList"
+      initialRouteName="Schedule"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'

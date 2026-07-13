@@ -20,6 +20,7 @@ export interface RequestState {
   pickup_price: number;
   service_price: number;
   date_created: Date;
+  collection_code: number;
   scheduleRequest: boolean;
 }
 
@@ -41,6 +42,7 @@ const initialState: RequestState = {
   pickup_price: 0,
   service_price: 0,
   date_created: new Date(),
+  collection_code: 0,
   scheduleRequest: false,
 };
 

@@ -26,6 +26,7 @@ import Sidebar from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 
 const mapImage = require("../../../assets/RawMap.png");
+const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const premium = require("../../../assets/premium.png");
 const futurePlan = require("../../../assets/futurePlan.png");
 const tricycle = require("../../../assets/picktricycle.png");
@@ -49,8 +50,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       easing: Easing.out(Easing.circle),
       useNativeDriver: true,
     }).start();
-    if(isBinFull){
-      toast.info("Bin signal sent. Driver will attend in no time")
+    if (isBinFull) {
+      toast.info("Bin signal sent. Driver will attend in no time");
     }
   }, [isBinFull]);
 
@@ -68,18 +69,20 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       edges={["top", "left", "right"]}
     >
       <View style={{ flex: 1 }}>
-        {/* <Invert>
-          <Grayscale>
-            <Image
-              source={mapImage}
-              style={StyleSheet.absoluteFillObject}
-              resizeMode="cover"
-            />
-          </Grayscale>
-        </Invert> */}
-        <View
-          style={{flex: 1}}
-        >
+        {
+          isDark ? 
+          <Image
+            source={mapImage}
+            style={StyleSheet.absoluteFillObject}
+            resizeMode="cover"
+          /> :
+          <Image
+            source={mapDarkImage}
+            style={StyleSheet.absoluteFillObject}
+            resizeMode="cover"
+          />
+        }
+        <View style={{ flex: 1 }}>
           <View
             style={{
               position: "absolute",
@@ -100,7 +103,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               className="w-8 h-8 items-center justify-center"
               onPress={() => setSidebarVisible(true)}
             >
-              <MaterialCommunityIcons name="menu" size={20} color={colors.iconColor} />
+              <MaterialCommunityIcons
+                name="menu"
+                size={20}
+                color={colors.iconColor}
+              />
             </Pressable>
 
             <View className="flex-row gap-2 items-center justify-center">
@@ -124,7 +131,9 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   alignItems: "center",
                   justifyContent: "center",
                 }}
-                onPress={() => {navigation.navigate("NotificationsList")}}
+                onPress={() => {
+                  navigation.navigate("NotificationsList");
+                }}
               >
                 <MaterialCommunityIcons
                   name="bell-outline"
@@ -135,7 +144,13 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             </View>
           </View>
 
-          <View style={{backgroundColor: isDark ? colors.card : colors.bg, borderColor: colors.border}} className="absolute p-5 border rounded-3xl top-[58px] left-2.5 right-2.5 space-y-6">
+          <View
+            style={{
+              backgroundColor: isDark ? colors.card : colors.bg,
+              borderColor: colors.border,
+            }}
+            className="absolute p-5 border rounded-3xl top-[58px] left-2.5 right-2.5 space-y-6"
+          >
             {isPremium ? (
               <View
                 style={{
@@ -310,10 +325,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     <Text className="text-sm text-white">New</Text>
                   </View>
                 </View>
-                <StatCardsRow
-                  bags={customer.bags}
-                  points={customer.points}
-                />
+                <StatCardsRow bags={customer.bags} points={customer.points} />
               </View>
             ) : (
               /* Non-premium search bar */
@@ -372,10 +384,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             )}
 
             {!isPremium && (
-              <StatCardsRow
-                bags={customer.bags}
-                points={customer.points}
-              />
+              <StatCardsRow bags={customer.bags} points={customer.points} />
             )}
           </View>
 

@@ -106,7 +106,7 @@ export function PaymentMethodScreen({
 
                 <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 24 }}>
                   You will receive a secure payment prompt on your mobile phone.
-                  Enter your MM PIN to authorize the transaction instantly.
+                  Enter your Mobile Money PIN to authorize the transaction instantly.
                 </Text>
               </View>
             </View>
