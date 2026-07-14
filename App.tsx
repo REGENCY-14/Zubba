@@ -19,8 +19,6 @@ import { RootNavigator } from "./src/navigation/RootNavigator";
 import { ThemeProvider } from "./src/context/ThemeContext";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
 
-const queryClient = new QueryClient();
-
 // Apply Poppins as the global default for unstyled Text / TextInput
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
 (Text as any).defaultProps.style = { fontFamily: 'Poppins_400Regular' };

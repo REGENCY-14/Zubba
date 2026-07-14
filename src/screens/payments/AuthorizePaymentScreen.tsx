@@ -19,9 +19,8 @@ export function AuthorizePaymentScreen({
   navigation,
   route,
 }: RootStackScreenProps<"AuthorizePayment">) {
-  const { method, phone } = route.params;
+  const { phone } = route.params;
   const { colors } = useTheme();
-  const isPremium = useAppSelector((state) => state.customer.is_premium);
   const [pin, setPin] = React.useState("");
   const inputRef = React.useRef<TextInput | null>(null);
   const request = useAppSelector((state) => state.request)
@@ -45,7 +44,7 @@ export function AuthorizePaymentScreen({
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, backgroundColor: colors.iconBg }}>
               <View className="w-2 h-2 rounded-full bg-[#006B23]" />
               <Text style={{ fontSize: 12, fontWeight: '600', color: colors.text }}>
-                {method}
+                {request.payment_method}
               </Text>
             </View>
           </View>
@@ -99,7 +98,7 @@ export function AuthorizePaymentScreen({
 
           <Pressable
             onPress={() =>
-              pin.length === 4 && navigation.navigate("PaymentSuccess", { method, phone })
+              pin.length === 4 && navigation.navigate("PaymentSuccess", { phone })
             }
             className="h-12 rounded-full bg-[#31973D] flex-row items-center justify-center gap-2"
           >
