@@ -1,22 +1,42 @@
-import { useEffect } from "react";
+import { Asset } from "expo-asset";
+import { useEffect, useState } from "react";
 import { Image, View, useWindowDimensions } from "react-native";
-
-import type { RootStackScreenProps } from "../../navigation/types";
+import { RootStackScreenProps } from "../../navigation/types";
 
 const zubbaLogo = require("../../../assets/zubba icon.png");
 const splashScreenLayer = require("../../../assets/splash screen layer.png");
 
 export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
   const { width, height } = useWindowDimensions();
+  const [ready, setReady] = useState(false);
+
   const logoSize = Math.min(Math.max(width * 0.55, 180), 320);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      navigation.replace("OnboardLocationAccess");
-    }, 1800);
+    let mounted = true;
 
-    return () => clearTimeout(timeoutId);
+    const loadAssets = async () => {
+      await Asset.loadAsync([zubbaLogo, splashScreenLayer]);
+
+      if (!mounted) return;
+
+      setReady(true);
+
+      setTimeout(() => {
+        navigation.replace("OnboardLocationAccess");
+      }, 1800);
+    };
+
+    loadAssets();
+
+    return () => {
+      mounted = false;
+    };
   }, [navigation]);
+
+  if (!ready) {
+    return <View className="flex-1 bg-[#2EA043]" />;
+  }
 
   return (
     <View className="flex-1 items-center justify-center bg-[#2EA043]">

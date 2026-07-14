@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { CommonActions } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
@@ -29,22 +30,42 @@ export function TermsAcceptanceScreen({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1, padding: 20 }}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView keyboardShouldPersistTaps="handled">
           <View className="h-[42px]" />
 
           <View className="w-full gap-3 mb-6">
-            <Text style={{ fontSize: 20, fontWeight: '400', color: colors.text, lineHeight: 22 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "400",
+                color: colors.text,
+                lineHeight: 22,
+              }}
+            >
               Accept Zubba's Terms & Review Privacy Notice
             </Text>
 
-            <Text style={{ fontSize: 11, fontWeight: '400', color: colors.text, lineHeight: 16 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: "400",
+                color: colors.text,
+                lineHeight: 16,
+              }}
+            >
               By selecting 'I Agree' below, I have reviewed and agree to the{" "}
-              <Text style={{ color: '#3b82f6', textDecorationLine: 'underline' }}>Terms of Use</Text> and
-              acknowledged the{" "}
-              <Text style={{ color: '#3b82f6', textDecorationLine: 'underline' }}>Privacy Notice</Text>. I
-              am at least 18 years of age
+              <Text
+                style={{ color: "#3b82f6", textDecorationLine: "underline" }}
+              >
+                Terms of Use
+              </Text>{" "}
+              and acknowledged the{" "}
+              <Text
+                style={{ color: "#3b82f6", textDecorationLine: "underline" }}
+              >
+                Privacy Notice
+              </Text>
+              . I am at least 18 years of age
             </Text>
           </View>
         </ScrollView>
@@ -59,10 +80,20 @@ export function TermsAcceptanceScreen({
             <Pressable
               onPress={() => setAgreedToTerms(!agreedToTerms)}
               style={[
-                { width: 18, height: 18, borderWidth: 1, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
+                {
+                  width: 18,
+                  height: 18,
+                  borderWidth: 1,
+                  borderRadius: 2,
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
                 agreedToTerms
-                  ? { backgroundColor: '#34A853', borderColor: '#34A853' }
-                  : { backgroundColor: colors.surface, borderColor: colors.text },
+                  ? { backgroundColor: "#34A853", borderColor: "#34A853" }
+                  : {
+                      backgroundColor: colors.surface,
+                      borderColor: colors.text,
+                    },
               ]}
             >
               {agreedToTerms && (
@@ -75,17 +106,42 @@ export function TermsAcceptanceScreen({
         <View className="pt-6 flex-row justify-between items-center">
           <Pressable
             onPress={() => navigation.goBack()}
-            style={{ width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <MaterialCommunityIcons name="arrow-left" color={colors.text} size={24} />
+            <MaterialCommunityIcons
+              name="arrow-left"
+              color={colors.text}
+              size={24}
+            />
           </Pressable>
 
           <Pressable
             disabled={!agreedToTerms}
-            onPress={() => navigation.replace("Home")}
+            onPress={() =>
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: "Home" }],
+                }),
+              )
+            }
             style={[
-              { width: 96, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-              agreedToTerms ? { backgroundColor: '#34A853' } : { backgroundColor: 'rgba(52, 168, 83, 0.5)' },
+              {
+                width: 96,
+                height: 48,
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+              },
+              agreedToTerms
+                ? { backgroundColor: "#34A853" }
+                : { backgroundColor: "rgba(52, 168, 83, 0.5)" },
             ]}
           >
             <Text className="text-white text-sm">Continue</Text>

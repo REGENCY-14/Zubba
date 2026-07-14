@@ -7,22 +7,24 @@ import { AppBottomNav } from '../../components';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 const ghanaFlag = require('../../../assets/ghana-flag.png');
 
 export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<'UpdateDetails'>) {
-  const {colors} = useTheme()
+  const { isDark, colors } = useTheme()
+  const user = useAppSelector((state) => state.auth.user)
 
   const selectedKind = route.params?.kind ?? 'phone';
   const isNewNumberStep = route.params?.step === 'new';
-  const [phoneNumber, setPhoneNumber] = React.useState(isNewNumberStep ? '' : route.params?.phone ?? '233 24 11 22 310');
-  const [emailAddress, setEmailAddress] = React.useState(isNewNumberStep ? '' : route.params?.email ?? 'name@example.com');
+  const [phoneNumber, setPhoneNumber] = React.useState(isNewNumberStep ? '' : route.params?.phone ?? user?.phone ?? '');
+  const [emailAddress, setEmailAddress] = React.useState(isNewNumberStep ? '' : route.params?.email ?? user?.email ?? '');
   const [selectedTab, setSelectedTab] = React.useState<'number' | 'email'>(selectedKind === 'email' ? 'email' : 'number');
 
   React.useEffect(() => {
     setSelectedTab(selectedKind === 'email' ? 'email' : 'number');
-    setPhoneNumber(isNewNumberStep ? '' : route.params?.phone ?? '233 24 11 22 310');
-    setEmailAddress(isNewNumberStep ? '' : route.params?.email ?? 'name@example.com');
+    setPhoneNumber(isNewNumberStep ? '' : route.params?.phone ?? user?.phone ?? '');
+    setEmailAddress(isNewNumberStep ? '' : route.params?.email ?? user?.email ?? '');
   }, [isNewNumberStep, route.params?.email, route.params?.phone, selectedKind]);
 
   const isEmailMode = selectedTab === 'email';

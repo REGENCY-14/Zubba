@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   Animated,
   Dimensions,
   ImageBackground,
@@ -28,6 +27,7 @@ import {
   setRequestDriver,
   setStatus,
 } from "../../slices/request/requestSlice";
+import { toast } from "../../hooks/toast";
 
 const mapImage = require("../../../assets/RawMap.png");
 const avatar = require("../../../assets/avatar.jpg");
@@ -130,7 +130,7 @@ export function ScanningScreen({
       };
       const result = await customerService.requestTakeout(requestTakeout);
       if (!result.success)
-        Alert.alert("Failed to request takeout, please try again later");
+        toast.error("Failed to request takeout, please try again later");
 
       dispatch(
         setRequest({

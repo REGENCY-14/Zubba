@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -23,7 +23,12 @@ export type SidebarMenuItem = {
 };
 
 export const DEFAULT_SIDEBAR_ITEMS: SidebarMenuItem[] = [
-  { key: "home", label: "Home", icon: "home-outline", navigate: "Home" },
+  { 
+    key:"home",
+    label: "Home",
+    icon: "home-outline",
+    navigate: "Home"
+  },
   {
     key: "profile",
     label: "Profile",
@@ -37,16 +42,22 @@ export const DEFAULT_SIDEBAR_ITEMS: SidebarMenuItem[] = [
     navigate: "ZubbaWallet",
   },
   {
-    key: "subscription",
-    label: "Subscription",
-    icon: "clock-outline",
-    navigate: "ConfirmSubscription",
-  },
-  {
     key: "settings",
     label: "Settings",
     icon: "cog-outline",
     navigate: "Settings",
+  },
+  {
+    key: "subscription",
+    label: "Subscription",
+    icon: "clock-outline",
+    navigate: "ManageSubscription",
+  },
+  {
+    key: "chooseplan",
+    label: "Subscription",
+    icon: "crown-outline",
+    navigate: "ConfirmSubscription",
   },
   {
     key: "support",
@@ -54,11 +65,17 @@ export const DEFAULT_SIDEBAR_ITEMS: SidebarMenuItem[] = [
     icon: "face-agent",
     navigate: "HelpCenter",
   },
+  {
+    key: "promotions",
+    label: "Promotions",
+    icon: "tag-outline",
+    navigate: "Promotions",
+  },
 ];
 
 const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.70);
+const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.7);
 
 type SidebarProps = {
   visible: boolean;
@@ -210,12 +227,15 @@ export default function Sidebar({
                       alignItems: "center",
                       justifyContent: "center",
                     }}
+                    className="flex items-center justify-center"
                   >
-                    <MaterialCommunityIcons
-                      name="check-decagram"
-                      size={11}
-                      color="#FFFFFF"
-                    />
+                    <View>
+                      <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={11}
+                        color="#FFFFFF"
+                      />
+                    </View>
                   </View>
                 )}
               </View>

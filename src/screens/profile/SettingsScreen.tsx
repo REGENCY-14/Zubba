@@ -122,7 +122,7 @@ export function SettingsScreen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 12,
-            paddingBottom: 128,
+            paddingBottom: 148,
             gap: 24,
           }}
         >
@@ -343,9 +343,9 @@ export function SettingsScreen({
                 </View>
               </View>
               <Pressable
-                style={{
-                  backgroundColor: colors.surface,
-                  borderColor: colors.borderLight,
+              style={{
+                  backgroundColor: isDark ? colors.surface : colors.bg,
+                  borderColor: isDark ? colors.border : colors.borderLight,
                 }}
                 className="flex-row items-center gap-2 border rounded-2xl px-4 py-2.5"
               >

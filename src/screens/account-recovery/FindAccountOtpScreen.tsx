@@ -5,7 +5,6 @@ import {
   View,
   Modal,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +18,7 @@ import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { useTheme } from "../../context/ThemeContext";
+import { toast } from "../../hooks/toast";
 
 export function FindAccountOtpScreen({
   route,
@@ -51,7 +51,7 @@ export function FindAccountOtpScreen({
         otp: otp,
       });
       if (!result.success)
-        Alert.alert("OTP incorrect, please verify and try again.");
+        toast.error("OTP incorrect, please verify and try again.");
       const { user, accessToken, refreshToken } = result.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
@@ -59,7 +59,7 @@ export function FindAccountOtpScreen({
       const customerResponse = await customerService.getCustomerById(user.id);
 
       if (!customerResponse.success)
-        Alert.alert(
+        toast.error(
           "Could not find your account, please verify and try again.",
         );
       const customer = customerResponse.data.customer;
@@ -68,7 +68,7 @@ export function FindAccountOtpScreen({
         phone,
       });
     } catch {
-      Alert.alert("OTP incorrect, please verify and try again.");
+      toast.error("OTP incorrect, please verify and try again.");
     }
   };
 
@@ -85,7 +85,7 @@ export function FindAccountOtpScreen({
       setShowResendModal(false);
       setCodeDigits(["", "", "", ""]);
     } catch (err) {
-      Alert.alert("Failed to resend otp, please try again later");
+      toast.error("Failed to resend otp, please try again later");
       console.log("Resend OTP failed:", err);
     }
   };
