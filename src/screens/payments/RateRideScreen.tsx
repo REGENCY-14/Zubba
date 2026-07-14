@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
 
 import type { RootStackScreenProps } from "../../navigation/types";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PROFESSIONALISM_LABELS: Record<number, string> = {
   1: "Bad", 2: "Good", 3: "Very good", 4: "Great", 5: "Amazing",
@@ -63,7 +64,6 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
   const [ecoFriendly, setEcoFriendly] = useState(4);
   const [note, setNote] = useState("");
   const { colors } = useTheme();
-  const [serviceRating, setServiceRating] = useState<number>(0);
   const [proRating, setProRating] = useState<number>(0);
   const [ecoRating, setEcoRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
@@ -338,7 +338,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
           </ScrollView>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
