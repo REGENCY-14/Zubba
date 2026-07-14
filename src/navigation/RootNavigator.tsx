@@ -43,7 +43,7 @@ import { KycCollectionScreen } from '../screens/onboarding/KycCollectionScreen';
 import { TermsAcceptanceScreen } from '../screens/support/TermsAcceptanceScreen';
 import { ChoosePlanScreen } from '../screens/payments/ChoosePlanScreen';
 import { ManageSubscriptionScreen } from '../screens/payments/ManageSubscriptionScreen';
-// import { ConfirmSubscriptionScreen } from '../screens/payments/ConfirmSubscriptionScreen';
+import { ConfirmSubscriptionScreen } from '../screens/payments/ConfirmSubscriptionScreen';
 import { AddCardScreen } from '../screens/payments/AddCardScreen';
 import { PremiumPaymentScreen } from '../screens/payments/PremiumPaymentScreen';
 import { WalletNumberScreen } from '../screens/payments/WalletNumberScreen';
@@ -71,9 +71,10 @@ export function RootNavigator() {
   const customer = useAppSelector((state) => state.customer)
   const user = useAppSelector((state) => state.auth.user)
 
-  useEffect( () => {
+  useEffect(() => {
     const getCustomer = async () => {
       if(user && !customer){
+        console.log("getting logged in user customer details")
         const customerResponse = await customerService.getCustomerById(user.id)
         if(customerResponse.success){
           const customer = customerResponse.data.customer;
@@ -87,7 +88,7 @@ export function RootNavigator() {
 
   return (
     <Stack.Navigator
-      initialRouteName="Schedule"
+      initialRouteName="Splash"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'
@@ -141,7 +142,7 @@ export function RootNavigator() {
       <Stack.Screen name="TermsAcceptance" component={TermsAcceptanceScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ChoosePlan" component={ChoosePlanScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ManageSubscription" component={ManageSubscriptionScreen} options={{ headerShown: false }} />
-      {/* <Stack.Screen name="ConfirmSubscription" component={ConfirmSubscriptionScreen} options={{ headerShown: false }} /> */}
+      <Stack.Screen name="ConfirmSubscription" component={ConfirmSubscriptionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddCard" component={AddCardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PremiumPayment" component={PremiumPaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletNumber" component={WalletNumberScreen} options={{ headerShown: false }} />
