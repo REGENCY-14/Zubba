@@ -123,7 +123,7 @@ export function AppBottomNav({
 
         <NavItem
           active={isActive('saved')}
-          onPress={() => {navigation.navigate("Details", { itemId: "save", title: "Saved" })}}
+          onPress={() => {navigation.navigate("Pickups")}}
           icon={
             isActive('saved') ? (
               <MaterialCommunityIcons size={20} name="truck" color="#fff" />
