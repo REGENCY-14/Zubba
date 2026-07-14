@@ -94,7 +94,7 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
           <View className="w-6 h-6" />
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 148 }} showsVerticalScrollIndicator={false}>
           <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 24, backgroundColor: colors.card }}>
             <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, lineHeight: 32 }}>Confirm Subscription</Text>
 

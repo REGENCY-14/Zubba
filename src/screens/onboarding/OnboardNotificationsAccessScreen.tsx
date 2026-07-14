@@ -1,9 +1,10 @@
-import { View, Image, ScrollView, Text, Alert, Platform } from "react-native";
+import { View, Image, ScrollView, Text } from "react-native";
 import * as Notifications from "expo-notifications";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
+import { toast } from "../../hooks/toast";
 
 export const OnboardNotificationsAccessScreen = ({
   navigation,
@@ -21,7 +22,7 @@ export const OnboardNotificationsAccessScreen = ({
   //     }
 
   //     if (finalStatus !== "granted") {
-  //       Alert.alert(
+  //       toast.success(
   //         "Permission denied",
   //         "You can enable notifications later in settings.",
   //       );
@@ -31,7 +32,7 @@ export const OnboardNotificationsAccessScreen = ({
   //     return true;
   //   } catch (error) {
   //     console.log("Notification permission error:", error);
-  //     Alert.alert(
+  //     toast.error(
   //       "Error",
   //       "Unable to request notification permissions right now.",
   //     );
@@ -43,7 +44,7 @@ export const OnboardNotificationsAccessScreen = ({
     // const granted = await requestNotificationPermission();
     // if (!granted) return;
 
-    Alert.alert("Success", "Notifications enabled!");
+    toast.success("Success\nNotifications enabled!");
     navigation.navigate("SignUp");
   };
 

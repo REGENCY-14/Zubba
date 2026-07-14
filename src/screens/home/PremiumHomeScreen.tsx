@@ -197,7 +197,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
 
                 {/* Stat cards */}
                 <StatCardsRow
-                  bags={customer.bags}
+                  bags={customer.bags_recycled}
                   points={customer.points}
                   noCard
                 />

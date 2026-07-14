@@ -75,7 +75,7 @@ export function HelpCenterScreen({
         <ScrollView
           contentContainerStyle={{
             padding: 16,
-            paddingBottom: 100,
+            paddingBottom: 148,
             gap: 14,
             backgroundColor: colors.surface,
           }}

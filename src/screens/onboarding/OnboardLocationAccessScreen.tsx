@@ -1,10 +1,11 @@
-import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
+import { toast } from "../../hooks/toast";
 
 export const OnboardLocationAccessScreen = ({
   navigation,
@@ -15,9 +16,8 @@ export const OnboardLocationAccessScreen = ({
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
-      Alert.alert(
-        "Permission denied",
-        "Location permission is required to find nearby drivers."
+      toast.error(
+        "Permission denied\nLocation permission is required to find nearby drivers."
       );
       return;
     }

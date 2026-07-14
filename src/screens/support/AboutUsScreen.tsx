@@ -155,7 +155,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
           contentContainerStyle={{
             paddingHorizontal: 12,
             paddingTop: 14,
-            paddingBottom: 100,
+            paddingBottom: 148,
             gap: 24,
           }}
           showsVerticalScrollIndicator={false}
@@ -270,7 +270,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
               />
               <ResourceRow
                 title="Website"
-                subtitle="https://zubbaaste.com/"
+                subtitle="https://zubbawaste.com/"
                 alignItems="flex-start"
                 icon={
                   <MaterialCommunityIcons

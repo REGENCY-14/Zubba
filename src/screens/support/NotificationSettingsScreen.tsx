@@ -150,7 +150,7 @@ export function NotificationSettingsScreen({
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 100 }}
+          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 148 }}
           onScrollBeginDrag={closeFrequency}
         >
           <View
@@ -297,6 +297,7 @@ export function NotificationSettingsScreen({
                         : isDark
                           ? colors.card
                           : colors.bg,
+                    borderColor: colors.border
                   }}
                   className={`px-4 py-3 ${
                     i !== FREQUENCIES.length - 1 ? "border-b" : ""

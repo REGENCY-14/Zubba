@@ -5,7 +5,6 @@ import {
   Image,
   ImageBackground,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -69,20 +68,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       edges={["top", "left", "right"]}
     >
       <View style={{ flex: 1 }}>
-        {
-          isDark ? 
-          <Image
-            source={mapImage}
-            style={StyleSheet.absoluteFillObject}
-            resizeMode="cover"
-          /> :
-          <Image
-            source={mapDarkImage}
-            style={StyleSheet.absoluteFillObject}
-            resizeMode="cover"
-          />
-        }
-        <View style={{ flex: 1 }}>
+        <ImageBackground
+          source={isDark ? mapDarkImage : mapImage}
+          style={{ flex: 1 }}
+          resizeMode="cover"
+        >
           <View
             style={{
               position: "absolute",
@@ -148,6 +138,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             style={{
               backgroundColor: isDark ? colors.card : colors.bg,
               borderColor: colors.border,
+              gap: 20,
             }}
             className="absolute p-5 border rounded-3xl top-[58px] left-2.5 right-2.5 space-y-6"
           >
@@ -325,7 +316,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     <Text className="text-sm text-white">New</Text>
                   </View>
                 </View>
-                <StatCardsRow bags={customer.bags} points={customer.points} />
+                <StatCardsRow bags={customer.bags_recycled} points={customer.points} />
               </View>
             ) : (
               /* Non-premium search bar */
@@ -384,18 +375,19 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             )}
 
             {!isPremium && (
-              <StatCardsRow bags={customer.bags} points={customer.points} />
+              <StatCardsRow bags={customer.bags_recycled} points={customer.points} />
             )}
           </View>
 
           {/* Bottom action cards */}
-          <View className="absolute bottom-[102px] left-2 right-2 p-4">
+          <View className="absolute bottom-[102px] left-2 right-2 p-4 flex">
             <View className="space-y-3">
               {/* Tricycle row */}
               <View
                 style={{
                   flexDirection: "row",
                   gap: 8,
+                  marginBottom: 12,
                   alignItems: "center",
                   backgroundColor: colors.card,
                   borderWidth: 1,
@@ -528,7 +520,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             paddingBottom={0}
             navigation={navigation}
           />
-        </View>
+        </ImageBackground>
       </View>
       <Sidebar
         visible={sidebarVisible}

@@ -27,8 +27,8 @@ export function StatCard({
         </Text>
       </View>
 
-      <Text style={{color: colors.textSub}} className="text-xl font-bold text-[#1F2A33] mt-2">{value}</Text>
-      <Text style={{color: colors.textMuted}} className="text-sm text-[#6F7A6C] mt-1 font-medium">{description}</Text>
+      <Text style={{color: colors.textSub}} className="text-xl font-bold mt-2">{value}</Text>
+      <Text style={{color: colors.textMuted}} className="text-sm mt-1 font-medium">{description}</Text>
     </View>
   );
 }

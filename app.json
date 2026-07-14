@@ -17,7 +17,9 @@
     },
     "web": {},
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-splash-screen",
+      "expo-status-bar"
     ]
   }
 }

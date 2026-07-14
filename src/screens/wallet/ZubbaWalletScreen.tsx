@@ -265,7 +265,8 @@ export function ZubbaWalletScreen({
       >
         <Pressable
           onPress={() => setSidebarVisible(true)}
-          className="w-8 h-8 items-center justify-center">
+          className="w-8 h-8 items-center justify-center"
+        >
           <MaterialCommunityIcons
             name="menu"
             size={20}
@@ -296,8 +297,10 @@ export function ZubbaWalletScreen({
         <View style={{ width: 32 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 12, paddingBottom: 40 }}>
-
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 12, paddingBottom: 40 }}
+      >
         {/* Main card container */}
         <View
           style={{
@@ -373,32 +376,38 @@ export function ZubbaWalletScreen({
               </View>
 
               {/* Premium badge */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 4,
-                  backgroundColor: "#FFE088",
-                  borderRadius: 39,
-                  paddingHorizontal: 12,
-                  paddingVertical: 3,
-                  borderWidth: 1,
-                  borderColor: "#D4AF37",
-                }}
-              >
-                <MaterialCommunityIcons name="star" size={11} color="#574500" />
-                <Text
+              {customer.is_premium && (
+                <View
                   style={{
-                    fontSize: 10,
-                    fontWeight: "400",
-                    letterSpacing: 0.48,
-                    color: "#574500",
-                    lineHeight: 14,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                    backgroundColor: "#FFE088",
+                    borderRadius: 39,
+                    paddingHorizontal: 12,
+                    paddingVertical: 3,
+                    borderWidth: 1,
+                    borderColor: "#D4AF37",
                   }}
                 >
-                  Premium
-                </Text>
-              </View>
+                  <MaterialCommunityIcons
+                    name="star"
+                    size={11}
+                    color="#574500"
+                  />
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      fontWeight: "400",
+                      letterSpacing: 0.48,
+                      color: "#574500",
+                      lineHeight: 14,
+                    }}
+                  >
+                    Premium
+                  </Text>
+                </View>
+              )}
             </View>
 
             {/* Eco-Points row */}

@@ -69,7 +69,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               )}
 
               <Pressable
-                style={{ height: 48, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginBottom: 16, backgroundColor: "#34A853", opacity: canContinue ? 1 : 0.6 }}
+                style={{ height: 48, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginBottom: 16, backgroundColor: "#34A853", opacity: canContinue && !registerMutation.isPending ? 1 : 0.6 }}
                 onPress={handleRegister}
                 disabled={!canContinue || registerMutation.isPending}
               >
