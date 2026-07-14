@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../../context/ThemeContext";
-import { useAppSelector } from "../../../hooks/useAppSelector";
 
 type Props = {
   visible: boolean;
@@ -22,6 +21,7 @@ type Props = {
   onProceed: () => void;
   onCancel: () => void;
   onAssignedCancel: () => void;
+  isPremium?: boolean;
   animationType?: "fade" | "none" | "slide";
 };
 
@@ -37,10 +37,10 @@ export default function PickupRequestModal({
   onProceed,
   onCancel,
   onAssignedCancel,
+  isPremium,
   animationType,
 }: Props) {
-  const { colors } = useTheme();
-  const isPremium = useAppSelector((state) => state.customer.is_premium)
+  const { isDark, colors } = useTheme();
 
   return (
     <Modal

@@ -12,6 +12,7 @@ import { setCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { OTPInput } from "../../components/common/OTPInput";
 import { customerService } from "../../api/customerService";
+import { useTheme } from "../../context/ThemeContext";
 
 export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";

@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
 import { authService } from "../../api/authService";
+import { useTheme } from "../../context/ThemeContext";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
