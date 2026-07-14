@@ -9,8 +9,14 @@ type StatCardProps = {
   labelColor?: string;
 };
 
-export function StatCard({ icon, label, value, description, labelColor = "#31973D" }: StatCardProps) {
-  const { colors } = useTheme();
+export function StatCard({
+  icon,
+  label,
+  value,
+  description,
+  labelColor = "#31973D",
+}: StatCardProps) {
+  const { isDark, colors } = useTheme();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 8 }}>
@@ -21,14 +27,8 @@ export function StatCard({ icon, label, value, description, labelColor = "#31973
         </Text>
       </View>
 
-      <View>
-        <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text, fontFamily: 'Poppins', lineHeight: 28 }}>
-          {typeof value === 'number' ? value.toLocaleString() : value}
-        </Text>
-        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.textSub, fontFamily: 'Poppins', lineHeight: 21 }}>
-          {description}
-        </Text>
-      </View>
+      <Text style={{color: colors.textSub}} className="text-xl font-bold text-[#1F2A33] mt-2">{value}</Text>
+      <Text style={{color: colors.textMuted}} className="text-sm text-[#6F7A6C] mt-1 font-medium">{description}</Text>
     </View>
   );
 }

@@ -19,7 +19,7 @@ export type ThemeColors = {
 const LIGHT: ThemeColors = {
   bg: '#FFFFFF',
   surface: '#F8FAFC',
-  card: '#FFFFFF',
+  card: '#FAFAFA',
   border: '#E2E8F0',
   borderLight: '#F1F5F9',
   text: '#101828',

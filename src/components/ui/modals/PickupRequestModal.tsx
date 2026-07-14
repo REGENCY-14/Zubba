@@ -1,11 +1,19 @@
-import { Modal, View, Text, Pressable, Image } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Modal,
+  View,
+  Text,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../../context/ThemeContext";
 
 type Props = {
   visible: boolean;
-  step: "request" | "assigned";
+  step: "" | "found_drivers" | "customer_requests" | "driver_accepts";
   avatar: any;
+  avatarUrl?: string | null;
   name: string;
   rating: number;
   code: string;
@@ -17,88 +25,407 @@ type Props = {
 };
 
 export default function PickupRequestModal({
-  visible, step, avatar, name, rating, code, cost,
-  onProceed, onCancel, onAssignedCancel, animationType = "fade",
+  visible,
+  step,
+  avatar,
+  avatarUrl,
+  name,
+  rating,
+  code,
+  cost,
+  onProceed,
+  onCancel,
+  onAssignedCancel,
+  isPremium,
+  animationType,
 }: Props) {
-  const isAssigned = step === "assigned";
-  const { colors } = useTheme();
+  const { isDark, colors } = useTheme();
 
   return (
-    <Modal visible={visible} transparent animationType={animationType}>
-      <View style={{ flex: 1, justifyContent: "flex-end", alignItems: "center", paddingBottom: 130, paddingHorizontal: 16 }}>
-        <View style={{ width: "100%", backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 20, padding: 24, gap: 16 }}>
-
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 16, color: colors.text }}>
-              Driver selected
-            </Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(0,107,35,0.10)", borderWidth: 1, borderColor: colors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#31973D" }} />
-              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 13, color: "#31973D" }}>Live view</Text>
-            </View>
-          </View>
-
-          <View style={{ height: 1, backgroundColor: colors.border }} />
-
-          <View style={{ alignItems: "center", gap: 12 }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, overflow: "hidden" }}>
-              {avatar ? (
-                <Image source={avatar} style={{ width: 40, height: 40 }} resizeMode="cover" />
-              ) : (
-                <View style={{ width: 40, height: 40, backgroundColor: "#7C3AED", alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 12, color: "#fff" }}>
-                    {name.split(" ").map(p => p.charAt(0)).join("")}
+    <Modal
+      visible={visible}
+      transparent
+      animationType={animationType ? animationType : "fade"}
+    >
+      <View className="flex-1 justify-end items-center pb-[130px] px-4">
+        <View
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            gap: 20,
+          }}
+          className={`border rounded-[22px] items-center p-6 w-full`}
+        >
+          {step == "found_drivers" ? (
+            <View className="w-full items-center gap-4">
+              <View className="flex justify-between flex-row w-full">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-base font-medium"
+                >
+                  Driver Selected
+                </Text>
+                <View className="rounded-lg bg-[#E2E8F0]">
+                  <Text className="text-[#31973D] font-bold text-sm py-1.5 px-3">
+                    • Live View
                   </Text>
                 </View>
-              )}
-            </View>
+              </View>
+              <View
+                style={{
+                  backgroundColor: colors.border,
+                  borderColor: colors.border,
+                }}
+                className="border w-full"
+              />
+              <View className="w-full gap-4 rounded-3xl p-6 items-center justify-center">
+                <View
+                  style={{
+                    backgroundColor: colors.card,
+                    borderColor: colors.border,
+                    boxShadow: [
+                      {
+                        offsetX: 0,
+                        offsetY: 0,
+                        blurRadius: 0,
+                        spreadDistance: 2,
+                        color: colors.border,
+                      },
+                    ],
+                  }}
+                  className="w-16 h-16 rounded-xl items-center justify-center"
+                >
+                  <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden items-center justify-center bg-[#C7E0C9]">
+                    {avatar ? (
+                      <Image
+                        source={avatarUrl ? { uri: avatarUrl } : avatar}
+                        style={{ width: 54, height: 54 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Text
+                        style={{ color: colors.text }}
+                        className="text-sm font-bold uppercase"
+                      >
+                        {name
+                          .split(" ")
+                          .map((part) => part.charAt(0))
+                          .join("")}
+                      </Text>
+                    )}
+                  </View>
+                  {isPremium && (
+                    <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
+                      <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={13}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                  )}
+                </View>
 
-            <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 16, color: colors.text, letterSpacing: 1.6, textTransform: "uppercase", textAlign: "center" }}>
-              {name}
-            </Text>
+                <View className="flex-col items-center gap-1">
+                  <Text
+                    style={{ color: colors.text }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    className="mt-3 text-base font-bold uppercase"
+                  >
+                    {name}
+                  </Text>
 
-            {!isAssigned && (
-              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: "#31973D", textAlign: "center" }}>
-                GHS {cost} / distance
-              </Text>
-            )}
+                  <Text className="text-[#31973D] text-base">
+                    GHS {cost} /{" "}
+                    <span style={{ color: colors.textSub }}>distance</span>
+                  </Text>
 
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-              <MaterialCommunityIcons name="star" size={12} color="#0D631B" />
-              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: "#0D631B" }}>
-                {rating} • {code}
-              </Text>
-            </View>
+                  <View className="flex-row items-center">
+                    <MaterialCommunityIcons
+                      name="star"
+                      size={14}
+                      color="#0D631B"
+                    />
+                    <Text className="text-sm text-[#0D631B] ml-1">
+                      {rating <= 0 ? "First Request" : rating} • {code}
+                    </Text>
+                  </View>
+                </View>
+              </View>
 
-            {isAssigned && (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: colors.surface, borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
-                  <MaterialCommunityIcons name="phone-outline" size={16} color={colors.text} />
-                  <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: colors.text }}>Call</Text>
+              <View className="flex-row items-center gap-3 w-full">
+                <Pressable
+                  onPress={onCancel}
+                  className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"
+                >
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={20}
+                    color="#DC2626"
+                  />
                 </Pressable>
-                <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: colors.surface, borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
-                  <MaterialCommunityIcons name="message-outline" size={16} color={colors.text} />
-                  <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, color: colors.text }}>Message</Text>
+
+                <Pressable
+                  onPress={onProceed}
+                  className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
+                >
+                  <Text className="text-white text-sm">Continue</Text>
                 </Pressable>
               </View>
-            )}
-          </View>
+            </View>
+          ) : step == "customer_requests" ? (
+            <View className="w-full items-center gap-4">
+              <View className="flex justify-between flex-row w-full">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-base font-medium"
+                >
+                  Sending request
+                </Text>
+                <View className="rounded-lg bg-[#E2E8F0]">
+                  <Text className="text-[#31973D] font-bold text-sm py-1.5 px-3">
+                    • Live View
+                  </Text>
+                </View>
+              </View>
+              <View className="w-full gap-4 rounded-3xl p-6 items-center justify-center">
+                <View
+                  style={{
+                    backgroundColor: colors.card,
+                    borderColor: colors.border,
+                    boxShadow: [
+                      {
+                        offsetX: 0,
+                        offsetY: 0,
+                        blurRadius: 0,
+                        spreadDistance: 2,
+                        color: colors.border,
+                      },
+                    ],
+                  }}
+                  className="w-16 h-16 rounded-xl items-center justify-center"
+                >
+                  <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden items-center justify-center bg-[#C7E0C9]">
+                    {avatar ? (
+                      <Image
+                        source={avatarUrl ? { uri: avatarUrl } : avatar}
+                        style={{ width: 54, height: 54 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Text
+                        style={{ color: colors.text }}
+                        className="text-sm font-bold uppercase"
+                      >
+                        {name
+                          .split(" ")
+                          .map((part) => part.charAt(0))
+                          .join("")}
+                      </Text>
+                    )}
+                  </View>
+                  {isPremium && (
+                    <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
+                      <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={13}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                  )}
+                </View>
 
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <Pressable
-              onPress={isAssigned ? onAssignedCancel : onCancel}
-              style={{ width: 40, height: 40, backgroundColor: "#FFE2E2", borderRadius: 12, alignItems: "center", justifyContent: "center" }}
-            >
-              <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
-            </Pressable>
-            <Pressable
-              onPress={isAssigned ? undefined : onProceed}
-              style={{ flex: 1, height: 40, backgroundColor: isAssigned ? "rgba(52,168,83,0.5)" : "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
-            >
-              <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>Proceed</Text>
-            </Pressable>
-          </View>
+                <View className="flex-col items-center gap-1">
+                  <Text
+                    style={{ color: colors.text }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    className="mt-3 text-base font-bold uppercase"
+                  >
+                    {name}
+                  </Text>
 
+                  <Text className="text-[#31973D] text-base">
+                    GHS {cost} /{" "}
+                    <span style={{ color: colors.textSub }}>distance</span>
+                  </Text>
+
+                  <View className="flex-row items-center">
+                    <MaterialCommunityIcons
+                      name="star"
+                      size={14}
+                      color="#0D631B"
+                    />
+                    <Text className="text-sm text-[#0D631B] ml-1">
+                      {rating <= 0 ? "First Request" : rating} • {code}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row items-center mt-4 gap-2">
+                    <ActivityIndicator size="small" color="#31973D" />
+                    <Text
+                      style={{ color: colors.textMuted }}
+                      className="text-sm"
+                    >
+                      Waiting for driver to accept...
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              <View className="flex-row items-center gap-3 w-full">
+                <Pressable
+                  onPress={onCancel}
+                  className="flex-1 h-10 border border-red-300 bg-[#e93c3c] rounded-full items-center justify-center"
+                >
+                  <Text style={{color: colors.text}} className="text-sm">Cancel</Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : (
+            step == "driver_accepts" && (
+              <View className="w-full items-center gap-4">
+                <View className="flex justify-between flex-row w-full">
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-base font-medium"
+                  >
+                    Driver Selected
+                  </Text>
+                  <View className="rounded-lg bg-[#E2E8F0]">
+                    <Text className="text-[#31973D] font-bold text-sm py-1.5 px-3">
+                      • Live View
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: colors.border,
+                    borderColor: colors.border,
+                  }}
+                  className="border w-full"
+                />
+                <View className="w-full gap-4 rounded-3xl p-6 items-center justify-center">
+                  <View
+                    style={{
+                      backgroundColor: colors.card,
+                      borderColor: colors.border,
+                      boxShadow: [
+                        {
+                          offsetX: 0,
+                          offsetY: 0,
+                          blurRadius: 0,
+                          spreadDistance: 2,
+                          color: colors.border,
+                        },
+                      ],
+                    }}
+                    className="w-16 h-16 rounded-xl items-center justify-center"
+                  >
+                    <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden items-center justify-center bg-[#C7E0C9]">
+                      {avatar ? (
+                        <Image
+                          source={avatarUrl ? { uri: avatarUrl } : avatar}
+                          style={{ width: 54, height: 54 }}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Text
+                          style={{ color: colors.text }}
+                          className="text-sm font-bold uppercase"
+                        >
+                          {name
+                            .split(" ")
+                            .map((part) => part.charAt(0))
+                            .join("")}
+                        </Text>
+                      )}
+                    </View>
+                    {isPremium && (
+                      <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
+                        <MaterialCommunityIcons
+                          name="check-decagram"
+                          size={13}
+                          color="#FFFFFF"
+                        />
+                      </View>
+                    )}
+                  </View>
+
+                  <View className="flex-col items-center gap-1">
+                    <Text
+                      style={{ color: colors.text }}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      className="mt-3 text-base font-bold uppercase"
+                    >
+                      {name}
+                    </Text>
+
+                    <View className="flex-row items-center">
+                      <MaterialCommunityIcons
+                        name="star"
+                        size={14}
+                        color="#0D631B"
+                      />
+                      <Text className="text-sm text-[#0D631B] ml-1">
+                        {rating <= 0 ? "First Request" : rating} • {code}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row mt-3 items-center gap-6">
+                      <View className="flex-row items-center gap-2">
+                        <MaterialCommunityIcons
+                          name="phone-outline"
+                          size={16}
+                          color={colors.textSub}
+                        />
+                        <Text
+                          style={{ color: colors.textSub }}
+                          className="ml-1 text-sm"
+                        >
+                          Call
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center gap-2">
+                        <MaterialCommunityIcons
+                          name="message-outline"
+                          size={16}
+                          color={colors.textSub}
+                        />
+                        <Text
+                          style={{ color: colors.textSub }}
+                          className="ml-1 text-sm"
+                        >
+                          Message
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center gap-3 w-full">
+                  <Pressable
+                    onPress={onCancel}
+                    className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"
+                  >
+                    <MaterialCommunityIcons
+                      name="close"
+                      size={20}
+                      color="#DC2626"
+                    />
+                  </Pressable>
+
+                  <Pressable
+                    className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center opacity-85"
+                    disabled={true}
+                  >
+                    <Text className="text-white text-sm">Proceed</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )
+          )}
         </View>
       </View>
     </Modal>

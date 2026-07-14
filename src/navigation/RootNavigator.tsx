@@ -5,7 +5,6 @@ import { SplashScreen } from '../screens/onboarding/SplashScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { EmailSignUpScreen } from '../screens/auth/EmailSignUpScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
-import { PremiumHomeScreen } from '../screens/home/PremiumHomeScreen';
 import { ZubbaWalletScreen } from '../screens/wallet/ZubbaWalletScreen';
 import { TransactionsScreen } from '../screens/wallet/TransactionsScreen';
 import { CreditAccountScreen } from '../screens/wallet/CreditAccountScreen';
@@ -23,7 +22,7 @@ import { SettingsScreen } from '../screens/profile/SettingsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { TermsAndConditionsScreen } from '../screens/onboarding/TermsAndConditionsScreen';
 import { AboutUsScreen } from '../screens/support/AboutUsScreen';
-import { NotificationsScreen } from '../screens/support/NotificationsScreen';
+import { NotificationSettingsScreen } from '../screens/support/NotificationSettingsScreen';
 import { HelpCenterScreen } from '../screens/support/HelpCenterScreen';
 import { ActiveSessionScreen } from '../screens/pickup/ActiveSessionScreen';
 import { UpdateDetailsScreen } from '../screens/profile/UpdateDetailsScreen';
@@ -58,13 +57,37 @@ import { SignInScreen } from '../screens/auth/SignInScreen';
 import { ExistingUserNotificationScreen } from '../screens/auth/ExistingUserNotificationScreen';
 import RateRideScreen from '../screens/payments/RateRideScreen';
 import { ThankYouScreen } from '../screens/payments/ThankYouScreen';
+import { useEffect } from 'react';
+import { useAppSelector } from '../hooks/useAppSelector';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { customerService } from '../api/customerService';
+import { setCustomer } from '../slices/customer/customerSlice';
+import NotificationsListScreen from '../screens/home/NotificationsListScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
+  const dispatch = useAppDispatch()
+  const customer = useAppSelector((state) => state.customer)
+  const user = useAppSelector((state) => state.auth.user)
+
+  useEffect( () => {
+    const getCustomer = async () => {
+      if(user && !customer){
+        const customerResponse = await customerService.getCustomerById(user.id)
+        if(customerResponse.success){
+          const customer = customerResponse.data.customer;
+          dispatch(setCustomer(customer))
+        }
+      }
+    }
+
+    getCustomer()
+  }, [])
+
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Schedule"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A'
@@ -78,13 +101,13 @@ export function RootNavigator() {
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardLocationAccess" component={OnboardLocationAccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardNotificationsAccess" component={OnboardNotificationsAccessScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="NotificationsList" component={NotificationsListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="EmailSignUp" component={EmailSignUpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ExistingUserNotification" component={ExistingUserNotificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="PremiumHome" component={PremiumHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ZubbaWallet" component={ZubbaWalletScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="CreditAccount" component={CreditAccountScreen} options={{ headerShown: false }} />
@@ -104,7 +127,7 @@ export function RootNavigator() {
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ActiveSession" component={ActiveSessionScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: false }} />

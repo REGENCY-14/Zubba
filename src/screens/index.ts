@@ -23,7 +23,7 @@ export * from './payments/AuthorizePaymentScreen';
 export * from './payments/PaymentSuccessScreen';
 export * from './onboarding/TermsAndConditionsScreen';
 export * from './support/AboutUsScreen';
-export * from './support/NotificationsScreen';
+export * from './support/NotificationSettingsScreen';
 export * from './support/HelpCenterScreen';
 export * from './pickup/ActiveSessionScreen';
 export * from './pickup/PickupsScreen';

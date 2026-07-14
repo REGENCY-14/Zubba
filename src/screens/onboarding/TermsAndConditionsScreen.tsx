@@ -87,7 +87,7 @@ export function TermsAndConditionsScreen({
           contentContainerStyle={{
             paddingHorizontal: 12,
             paddingTop: 16,
-            paddingBottom: 128,
+            paddingBottom: 100,
             gap: 24,
           }}
         >
@@ -220,9 +220,7 @@ export function TermsAndConditionsScreen({
         <AppBottomNav
           activeTab="settings"
           paddingBottom={0}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Pickups')}
-          onSettingsPress={() => navigation.navigate('Settings')}
+          navigation={navigation}
         />
       </View>
     </SafeAreaView>

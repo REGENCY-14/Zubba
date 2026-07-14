@@ -7,6 +7,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
+import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 
 const avatar = require("../../../assets/avatar.jpg");
 const airtelTigo = require("../../../assets/airtelTigo.png");
@@ -50,15 +51,8 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<"Driver
   const isPremium = useAppSelector((state) => state.customer.is_premium);
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const [showPayment, setShowPayment] = React.useState(false);
-  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
-
-  const rows: { id: PaymentMethodId; badge: React.ReactNode; label: string }[] = [
-    ...(isPremium ? [{ id: "wallet" as PaymentMethodId, badge: <View style={{ width: 42, height: 26, backgroundColor: "#31973D", borderRadius: 8, alignItems: "center", justifyContent: "center" }}><MaterialCommunityIcons name="wallet" size={14} color="#FFFFFF" /></View>, label: "Zubba Wallet" }] : []),
-    { id: "momo", badge: <View style={{ width: 42, height: 26, backgroundColor: "#FFCC00", borderRadius: 8, alignItems: "center", justifyContent: "center" }}><Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 12, color: "#000000" }}>MTN</Text></View>, label: "MTN MoMo" },
-    { id: "telecel", badge: <View style={{ width: 42, height: 26, backgroundColor: "#DC2626", borderRadius: 8, alignItems: "center", justifyContent: "center" }}><Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 12, color: "#FFFFFF" }}>T.cash</Text></View>, label: "Telecel cash" },
-    { id: "airtel", badge: <View style={{ width: 42, height: 26, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}><Image source={airtelTigo} style={{ width: 22, height: 14 }} resizeMode="contain" /></View>, label: "Airtel money" },
-  ];
+  const request = useAppSelector((state) => state.request)
+  const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
@@ -79,30 +73,44 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<"Driver
           contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 16, gap: 16, paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Driver card */}
-          <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 20, padding: 24, gap: 16 }}>
-            <View style={{ alignItems: "center", gap: 12 }}>
-              <View style={{ width: 40, height: 40, borderRadius: 20, overflow: "hidden" }}>
-                <Image source={avatar} style={{ width: 40, height: 40 }} resizeMode="cover" />
+          <View style={{ width: '100%', gap: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card, padding: 24, alignItems: 'center', justifyContent: 'center' }}>
+            <View>
+              <View style={{ width: 54, height: 54, borderRadius: 12, overflow: 'hidden' }}>
+                <Image
+                  source={avatar}
+                  style={{ width: 54, height: 54 }}
+                  resizeMode="cover"
+                />
               </View>
-              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 16, lineHeight: 24, letterSpacing: 1.6, textTransform: "uppercase", color: colors.text }}>
-                MARCUS CHEN
+            </View>
+
+            <View style={{ gap: 8, alignItems: 'center' }}>
+              <Text style={{ marginTop: 12, fontSize: 14, fontWeight: 'bold', color: colors.text, textTransform: 'uppercase' }}>
+                {request.driver.name}
               </Text>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <MaterialCommunityIcons name="star" size={12} color="#0D631B" />
-                <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 14, lineHeight: 20, color: "#0D631B" }}>
-                  4.9 • ZB-Expert
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <MaterialCommunityIcons name="star" size={14} color="#0D631B" />
+                <Text style={{ fontSize: 14, color: '#0D631B', marginLeft: 4 }}>
+                  {request.driver.rating <= 0 ? "First Request" : request.driver.rating} • {request.driver.code}
                 </Text>
               </View>
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: colors.surface, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 9999 }}>
-                  <MaterialCommunityIcons name="phone-outline" size={12} color={colors.text} />
-                  <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: colors.text }}>Call</Text>
-                </Pressable>
-                <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: colors.surface, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 9999 }}>
-                  <MaterialCommunityIcons name="message-outline" size={12} color={colors.text} />
-                  <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: colors.text }}>Message</Text>
-                </Pressable>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <MaterialCommunityIcons
+                    name="phone-outline"
+                    size={16}
+                    color={colors.textMuted}
+                  />
+                  <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Call</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <MaterialCommunityIcons
+                    name="message-outline"
+                    size={16}
+                    color={colors.textMuted}
+                  />
+                  <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Message</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -112,15 +120,24 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<"Driver
             <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "#FFFFFF", opacity: 0.8 }}>
               COLLECTION CODE
             </Text>
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              {["8", "2", "4", "9"].map((d, i) => (
-                <View key={i} style={{ width: 47, height: 56, backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 12, alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontFamily: "Poppins", fontWeight: "900", fontSize: 36, lineHeight: 40, color: "#FFFFFF" }}>{d}</Text>
+
+            <View style={{ flexDirection: 'row', gap: 8, width: '100%', justifyContent: 'center' }}>
+              {request.collection_code.toString().split("").map((d, i) => (
+                <View
+                  key={i}
+                  style={{ width: 56, height: 56, paddingBottom: 4, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderRadius: 12 }}
+                >
+                  <Text
+                    style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 36 }}
+                  >
+                    {d}
+                  </Text>
                 </View>
               ))}
             </View>
-            <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 12, lineHeight: 16, color: "#FFFFFF", opacity: 0.9, textAlign: "center" }}>
-              Show this to Marcus to verify
+
+            <Text style={{ color: '#FFFFFF', fontSize: 12, textAlign: 'center', opacity: 0.9 }}>
+              Show this to {request.driver.name} to verify
             </Text>
           </View>
 
@@ -139,8 +156,8 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<"Driver
           {/* Buttons */}
           <View style={{ gap: 0 }}>
             <Pressable
-              onPress={() => setShowPayment(true)}
-              style={{ height: 48, backgroundColor: "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+              onPress={() => setShowPaymentDrawer(true)}
+              style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
             >
               <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#FFFFFF" }}>
                 Proceed to payment
@@ -159,12 +176,20 @@ export function DriverArrivesScreen({ navigation }: RootStackScreenProps<"Driver
 
         <AppBottomNav
           activeTab="home"
-          paddingBottom={14}
-          showCalendar={isPremium}
-          onHomePress={() => navigation.navigate("Home")}
-          onSavedPress={() => navigation.navigate("Pickups")}
-          onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={isPremium ? () => navigation.navigate("Schedule") : undefined}
+          navigation={navigation}
+        />
+
+        <PaymentMethodDrawer
+          visible={showPaymentDrawer}
+          onClose={() => setShowPaymentDrawer(false)}
+          onContinue={(method) => {
+            setShowPaymentDrawer(false);
+            if (method === "wallet") {
+              navigation.navigate("WalletCheckout");
+            } else {
+              navigation.navigate("PaymentMethod");
+            }
+          }}
         />
       </View>
 

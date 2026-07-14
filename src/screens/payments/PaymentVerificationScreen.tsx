@@ -10,13 +10,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentVerificationScreen({
-  navigation,
   route,
+  navigation,
 }: RootStackScreenProps<"PaymentVerification">) {
   const { method, phone } = route.params;
   const { colors } = useTheme();
@@ -24,6 +23,7 @@ export function PaymentVerificationScreen({
   const [code, setCode] = React.useState("");
   const [resendTimer, setResendTimer] = React.useState(60);
   const inputRef = React.useRef<TextInput | null>(null);
+  const request = useAppSelector((state) => state.request)
 
   React.useEffect(() => {
     if (resendTimer > 0) {
@@ -59,7 +59,7 @@ export function PaymentVerificationScreen({
           <View className="w-6" />
         </View>
 
-        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 120 }}>
+        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 10 }}>
 
           <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, marginBottom: 16 }}>
             Verification Code
@@ -70,11 +70,11 @@ export function PaymentVerificationScreen({
             <Text style={{ color: colors.text, fontWeight: '600' }}>{method}</Text> number{" "}
             <Text style={{ color: colors.text, fontWeight: '600' }}>{phone}</Text>. Please
             enter it below to authorize your{" "}
-            <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS 45.00</Text> payment.
+            <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS {request.pickup_price + request.service_price}</Text> payment.
           </Text>
 
           <View className="flex-row gap-4 mb-6">
-            {codeDigits.map((digit, index) => {
+            {codeDigits.map((_, index) => {
               const isFilled = index < code.length;
 
               return (
@@ -132,17 +132,6 @@ export function PaymentVerificationScreen({
             <Text className="text-white text-sm">Verify</Text>
           </Pressable>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          showCalendar={isPremium}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Pickups')}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
-        />
       </View>
     </SafeAreaView>
   );

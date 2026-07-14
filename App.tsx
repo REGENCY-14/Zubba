@@ -17,7 +17,6 @@ import {
 import { store } from "./src/store";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { ThemeProvider } from "./src/context/ThemeContext";
-import "./global.css";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
 
 const queryClient = new QueryClient();
@@ -27,6 +26,10 @@ if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
 (Text as any).defaultProps.style = { fontFamily: 'Poppins_400Regular' };
 if ((TextInput as any).defaultProps == null) (TextInput as any).defaultProps = {};
 (TextInput as any).defaultProps.style = { fontFamily: 'Poppins_400Regular' };
+import "./global.css";
+import ToastManager from "./src/components/ui/ToastManager";
+
+const queryClient = new QueryClient();
 
 export default function App() {
   useFonts({
@@ -48,6 +51,7 @@ export default function App() {
           <NavigationContainer>
             <StatusBar style="auto" />
             <RootNavigator />
+            <ToastManager/>
           </NavigationContainer>
         </QueryClientProvider>
       </Provider>

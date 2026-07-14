@@ -13,7 +13,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { OTPInput } from "../../components/common/OTPInput";
 import { useVerifyOtp, useResendOtp } from "../../slices/auth/auth.hooks";
-import { useTheme } from "../../context/ThemeContext";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setCredentials } from "../../slices/auth/authSlice";
+import { authStorage } from "../../utils/authStorage";
+import { customerService } from "../../api/customerService";
+import { setCustomer } from "../../slices/customer/customerSlice";
 
 export function FindAccountEmailOtpScreen({
   route,
@@ -23,6 +27,7 @@ export function FindAccountEmailOtpScreen({
 
   const verifyOtpMutation = useVerifyOtp();
   const resendOtpMutation = useResendOtp();
+  const dispatch = useAppDispatch();
 
   const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
   const [showResendModal, setShowResendModal] = useState(false);
@@ -37,13 +42,26 @@ export function FindAccountEmailOtpScreen({
 
   const handleVerify = async (otp: string) => {
     try {
-      await verifyOtpMutation.mutateAsync({
+      const result = await verifyOtpMutation.mutateAsync({
         authKey: "email",
         authValue: email,
         otp,
         purpose: "login",
       });
+      if (!result.success)
+        Alert.alert("OTP incorrect, please verify and try again.");
+      const { user, accessToken, refreshToken } = result.data;
+      dispatch(setCredentials({ user, accessToken, refreshToken }));
+      await authStorage.save({ user, accessToken, refreshToken });
 
+      const customerResponse = await customerService.getCustomerById(user.id);
+
+      if (!customerResponse.success)
+        Alert.alert(
+          "Could not find your account, please verify and try again.",
+        );
+      const customer = customerResponse.data.customer;
+      dispatch(setCustomer(customer));
       navigation.replace("ExistingUserNotification", {
         email,
       });

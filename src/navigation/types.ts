@@ -1,9 +1,11 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NearbyDriver } from '../types/driver.types';
 
 export type RootStackParamList = {
   Splash: undefined;
   OnboardLocationAccess: undefined;
   OnboardNotificationsAccess: undefined;
+  NotificationsList: undefined;
   Landing: undefined;
   SignUp: undefined;
   EmailSignUp: undefined;
@@ -35,7 +37,7 @@ export type RootStackParamList = {
   Settings: undefined;
   TermsAndConditions: undefined;
   AboutUs: undefined;
-  Notifications: undefined;
+  NotificationSettings: undefined;
   HelpCenter: undefined;
   ActiveSession: undefined;
   UpdateDetails: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
@@ -48,7 +50,7 @@ export type RootStackParamList = {
   PremiumPayment: undefined;
   WalletNumber: undefined;
   SavedCards: undefined;
-  DriversFound: undefined;
+  DriversFound: { drivers: Array<NearbyDriver> };
   WalletCheckout: undefined;
   PlanForLater: undefined;
   Details: { itemId: string; title: string } | undefined;
