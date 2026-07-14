@@ -255,25 +255,6 @@ export function DriversFoundScreen({
                   <Text className="text-[13px] font-bold text-[#31973D]">
                     Live view
                   </Text>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                    <MaterialCommunityIcons name="star" size={13} color="#0D631B" />
-                    <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: '#0D631B' }}>
-                      {NEARBY_DRIVERS[selectedDriver].rating} • ZB-Expert
-                    </Text>
-                  </View>
-
-                  {/* Call + Message */}
-                  <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center', paddingTop: 24 }}>
-                    <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface, borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
-                      <MaterialCommunityIcons name="phone-outline" size={14} color={colors.text} />
-                      <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: colors.text }}>Call</Text>
-                    </Pressable>
-                    <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface, borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 }}>
-                      <MaterialCommunityIcons name="message-outline" size={14} color={colors.text} />
-                      <Text style={{ fontFamily: 'Nexa Text-Trial', fontWeight: '700', fontSize: 14, color: colors.text }}>Message</Text>
-                    </Pressable>
-                  </View>
                 </View>
               </View>
 
