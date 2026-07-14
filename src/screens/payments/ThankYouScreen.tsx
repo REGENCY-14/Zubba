@@ -48,8 +48,13 @@ export function ThankYouScreen({
             </Text>
           </View>
 
-          <Pressable onPress={() => navigation.navigate("Home")} style={styles.button}>
-            <Text style={styles.buttonText}>Proceed to Home</Text>
+          <Pressable
+            onPress={() => navigation.navigate("Home")}
+            className="w-full bg-[#31973D] rounded-full py-[14px] items-center"
+          >
+            <Text className="text-white text-sm font-medium tracking-wide">
+              Proceed to Home
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -63,5 +68,3 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(225,225,225,0.3)",
   },
 });
-
-export default ThankYouScreen;

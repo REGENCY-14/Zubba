@@ -1,11 +1,10 @@
-import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
 import { useTheme } from "../../context/ThemeContext";
 import { ScrollView } from "react-native";
+import CustomAppBar from "../../components/common/CustomAppBar";
 
 export function WalletCheckoutScreen({
   navigation,
@@ -27,24 +26,7 @@ export function WalletCheckoutScreen({
             borderColor: colors.border,
           }}
         >
-          <View className="h-12 flex-row items-center justify-between px-4">
-            <Pressable
-              className="w-6 h-6 items-center justify-center"
-              onPress={() => navigation.goBack()}
-            >
-              <Text
-                style={{ fontSize: 28, color: colors.text, lineHeight: 30 }}
-              >
-                ‹
-              </Text>
-            </Pressable>
-            <Text
-              style={{ fontSize: 16, fontWeight: "600", color: colors.text }}
-            >
-              Payment
-            </Text>
-            <View className="w-6 h-6" />
-          </View>
+          <CustomAppBar title="Payment" navigation={navigation}/>
 
           <View className="items-center gap-[10px] relative">
             <View className="flex-row items-center gap-[6px] rounded-full px-2 py-1">
@@ -100,7 +82,7 @@ export function WalletCheckoutScreen({
             </Pressable>
             <Pressable
               className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
-              onPress={() => navigation.navigate("PaymentSuccess")}
+              onPress={() => navigation.navigate("PaymentSuccess", { phone: "" })}
             >
               <Text className="text-sm text-white leading-5">Pay</Text>
             </Pressable>

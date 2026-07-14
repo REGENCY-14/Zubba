@@ -250,11 +250,8 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<'Pickups'>) {
 
         <AppBottomNav
           activeTab="saved"
-          onHomePress={() => navigation.navigate(isPremium ? 'PremiumHome' : 'Home')}
-          onSavedPress={() => {}}
-          onSettingsPress={() => navigation.navigate('Settings')}
           showCalendar={isPremium}
-          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
+          navigation={navigation}
         />
       </View>
     </SafeAreaView>
