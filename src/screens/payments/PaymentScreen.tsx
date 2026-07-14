@@ -4,25 +4,21 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { AppBottomNav } from "../../components";
+import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
-import { ThemeColors } from "../../context/ThemeContext";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
 
-const METHOD_LABELS: Record<PaymentMethodId, string> = {
-  wallet: "Zubba Wallet",
-  momo: "MTN MoMo",
-  telecel: "Telecel Cash",
-  airtel: "Airtel Money",
-};
-
-type RowProps = {
+type PaymentOptionProps = {
   selected: boolean;
+  title: string;
+  badge?: string;
+  image?: any;
+  iconName?: string;
+  badgeBg?: string;
+  badgeTextColor?: string;
   onPress: () => void;
-  cardBg: string;
-  cardBorder: string;
-  textColor: string;
 };
 
 function PaymentOption({
@@ -46,12 +42,16 @@ function PaymentOption({
           : "bg-white border-[#E2E8F0]"
       }`}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
-        {badge}
-        <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 24, color: colors.text }}>
-          {label}
-        </Text>
-      </View>
+      <View className="flex-row items-center flex-1 gap-4">
+        <View className={`w-12 h-12 rounded-xl items-center justify-center overflow-hidden ${badgeBg}`}>
+          {iconName ? (
+            <MaterialCommunityIcons name={iconName as any} size={22} color="#FFFFFF" />
+          ) : image ? (
+            <Image source={image} style={{ width: 28, height: 28 }} resizeMode="contain" />
+          ) : (
+            <Text className={`text-xs font-bold ${badgeTextColor}`}>{badge}</Text>
+          )}
+        </View>
 
         <View className="flex-1">
           <Text className="text-base font-medium text-[#1C1B1B]">{title}</Text>
@@ -69,40 +69,7 @@ function PaymentOption({
   );
 }
 
-function MtnBadge() {
-  return (
-    <View style={{ width: 42, height: 26, backgroundColor: "#FFCC00", borderRadius: 8, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 12, color: "#000000" }}>MTN</Text>
-    </View>
-  );
-}
-
-function TelecelBadge() {
-  return (
-    <View style={{ width: 42, height: 26, backgroundColor: "#DC2626", borderRadius: 8, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 12, color: "#FFFFFF" }}>T.cash</Text>
-    </View>
-  );
-}
-
-function WalletBadge() {
-  return (
-    <View style={{ width: 42, height: 26, backgroundColor: "#31973D", borderRadius: 8, alignItems: "center", justifyContent: "center" }}>
-      <MaterialCommunityIcons name="wallet" size={14} color="#FFFFFF" />
-    </View>
-  );
-}
-
 const airtelTigo = require("../../../assets/airtelTigo.png");
-
-function AirtelBadge({ colors }: { colors: ThemeColors }) {
-  return (
-    <View style={{ width: 42, height: 26, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}>
-      <Image source={airtelTigo} style={{ width: 22, height: 14 }} resizeMode="contain" />
-    </View>
-  );
-}
-
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>("wallet");
   const { isDark, colors } = useTheme()
@@ -207,7 +174,7 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
           navigation={navigation}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
