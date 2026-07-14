@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppBottomNav } from '../../components';
 import AnimatedSwitch from '../../components/ui/inputs/AnimatedSwitch';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { useTheme } from '../../context/ThemeContext';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -34,6 +35,7 @@ function buildCalendarCells(year: number, month: number): (number | null)[] {
 
 export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanForLater'>) {
   const [activeTab, setActiveTab] = React.useState<'plan' | 'schedules'>('plan');
+  const { colors } = useTheme()
   const [frequency, setFrequency] = React.useState('Weekly');
   const [showDropdown, setShowDropdown] = React.useState(false);
   const [binFull, setBinFull] = React.useState(false);
@@ -70,7 +72,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
               <AnimatedSwitch value={binFull} onChange={setBinFull} />
             </View>
             <Pressable
-              onPress={() => navigation.navigate('Notifications')}
+              onPress={() => navigation.navigate('NotificationsList')}
               style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#F3F4F6', alignItems: 'center', justifyContent: 'center' }}
             >
               <MaterialCommunityIcons name="bell-outline" size={20} color="#374151" />
@@ -280,11 +282,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
           activeTab="settings"
           paddingBottom={14}
           bottomOffset={8}
-          showCalendar
-          onHomePress={() => navigation.navigate('PremiumHome')}
-          onSavedPress={() => navigation.navigate('Pickups')}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={() => navigation.navigate('Schedule')}
+          navigation={navigation}
         />
       </View>
     </SafeAreaView>

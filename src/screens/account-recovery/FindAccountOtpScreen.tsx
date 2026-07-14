@@ -18,6 +18,7 @@ import { setCredentials } from "../../slices/auth/authSlice";
 import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
+import { useTheme } from "../../context/ThemeContext";
 
 export function FindAccountOtpScreen({
   route,
