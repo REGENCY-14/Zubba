@@ -82,7 +82,7 @@ const requestSlice = createSlice({
       state.payment_method = action.payload;
     },
 
-    setMassKg(state, action: PayloadAction<number>) {
+    setBags(state, action: PayloadAction<number>) {
       state.bags = action.payload;
     },
 
@@ -117,7 +117,7 @@ export const {
   setPickupAddress,
   setStatus,
   setPaymentMethod,
-  setMassKg,
+  setBags,
   setDistanceM,
   setPickupPrice,
   setServicePrice,

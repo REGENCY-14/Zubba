@@ -88,7 +88,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  onPress={() => navigation.navigate("Notifications")}
+                  onPress={() => navigation.navigate("NotificationsList")}
                 >
                   <MaterialCommunityIcons name="bell-outline" size={20} color={colors.iconColor} />
                 </Pressable>
@@ -197,7 +197,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
 
                 {/* Stat cards */}
                 <StatCardsRow
-                  mass_recycled={customer.mass_recycled}
+                  bags={customer.bags}
                   points={customer.points}
                   noCard
                 />
@@ -323,11 +323,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
         <AppBottomNav
           activeTab="home"
           paddingBottom={0}
-          showCalendar
-          onHomePress={() => navigation.navigate("PremiumHome")}
-          onSavedPress={() => navigation.navigate("Pickups")}
-          onSettingsPress={() => navigation.navigate("Settings")}
-          onCalendarPress={() => navigation.navigate("Schedule")}
+          navigation={navigation}
         />
 
         <PremiumSidebar
