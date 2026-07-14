@@ -17,7 +17,7 @@ export function PaymentVerificationScreen({
   route,
   navigation,
 }: RootStackScreenProps<"PaymentVerification">) {
-  const { method, phone } = route.params;
+  const { phone } = route.params;
   const { colors } = useTheme();
   const isPremium = useAppSelector((state) => state.customer.is_premium);
   const [code, setCode] = React.useState("");
@@ -67,7 +67,7 @@ export function PaymentVerificationScreen({
 
           <Text style={{ fontSize: 16, lineHeight: 24, color: colors.textSub, marginBottom: 32 }}>
             We've sent a 4-digit code to your{" "}
-            <Text style={{ color: colors.text, fontWeight: '600' }}>{method}</Text> number{" "}
+            <Text style={{ color: colors.text, fontWeight: '600' }}>{request.payment_method}</Text> number{" "}
             <Text style={{ color: colors.text, fontWeight: '600' }}>{phone}</Text>. Please
             enter it below to authorize your{" "}
             <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS {request.pickup_price + request.service_price}</Text> payment.
@@ -125,7 +125,7 @@ export function PaymentVerificationScreen({
 
           <Pressable
             onPress={() =>
-              code.length === 4 && navigation.navigate("AuthorizePayment", { method, phone })
+              code.length === 4 && navigation.navigate("AuthorizePayment", { phone })
             }
             className="h-12 bg-[#31973D] rounded-full items-center justify-center"
           >

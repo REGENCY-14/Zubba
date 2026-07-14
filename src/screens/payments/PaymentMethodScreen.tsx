@@ -16,12 +16,9 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 
 export function PaymentMethodScreen({
   navigation,
-  route,
 }: RootStackScreenProps<"PaymentMethod">) {
-  const { method } = route.params;
   const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
   const { colors } = useTheme();
-  const isPremium = useAppSelector((state) => state.customer.is_premium);
   const request = useAppSelector((state) => state.request)
 
   return (
@@ -66,7 +63,7 @@ export function PaymentMethodScreen({
             <View className="gap-2">
 
               <Text style={{ fontSize: 16, color: colors.text }}>
-                {method} Number
+                Wallet Phone Number
               </Text>
 
               <TextInput
@@ -115,7 +112,7 @@ export function PaymentMethodScreen({
             </View>
 
             <Pressable
-              onPress={() => navigation.navigate("PaymentVerification", { method, number: Number(phoneNumber) })}
+              onPress={() => navigation.navigate("PaymentVerification", { phone: phoneNumber })}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">
