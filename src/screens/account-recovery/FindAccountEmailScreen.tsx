@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
+import { authService } from "../../api/authService";
 import { useTheme } from "../../context/ThemeContext";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,9 +34,10 @@ export function FindAccountEmailScreen({
     try {
       setLoading(true);
 
-      const res = await userService.findUser({
+      const res = await authService.register({
         authKey: "email",
         authValue: trimmedEmail,
+        role: "customer"
       });
 
       const user = res.data.user;

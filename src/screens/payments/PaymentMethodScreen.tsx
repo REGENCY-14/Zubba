@@ -9,7 +9,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
@@ -23,6 +22,7 @@ export function PaymentMethodScreen({
   const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
   const { colors } = useTheme();
   const isPremium = useAppSelector((state) => state.customer.is_premium);
+  const request = useAppSelector((state) => state.request)
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
@@ -31,7 +31,7 @@ export function PaymentMethodScreen({
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 24 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 10, gap: 24 }}
         >
 
           <View className="gap-6">
@@ -51,7 +51,7 @@ export function PaymentMethodScreen({
               </Text>
 
               <Text style={{ fontSize: 32, fontWeight: "600", color: colors.text, textAlign: "center" }}>
-                GHS 45.00
+                GHS {request.pickup_price + request.service_price}
               </Text>
 
               <View style={{ width: "100%", borderTopWidth: 1, borderTopColor: colors.border }} />
@@ -92,8 +92,30 @@ export function PaymentMethodScreen({
               </Text>
             </View>
 
+            <View style={{ flexDirection: "row", gap: 16, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card }}>
+
+              <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
+                <MaterialCommunityIcons
+                  name="information-outline"
+                  size={18}
+                  color="#31973D"
+                />
+              </View>
+
+              <View className="flex-1 gap-1">
+                <Text style={{ fontSize: 16, color: colors.text }}>
+                  How it works
+                </Text>
+
+                <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 24 }}>
+                  You will receive a secure payment prompt on your mobile phone.
+                  Enter your Mobile Money PIN to authorize the transaction instantly.
+                </Text>
+              </View>
+            </View>
+
             <Pressable
-              onPress={() => navigation.navigate("PaymentVerification", { method, phone: phoneNumber })}
+              onPress={() => navigation.navigate("PaymentVerification", { method, number: Number(phoneNumber) })}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">
@@ -106,17 +128,6 @@ export function PaymentMethodScreen({
             </Text>
           </View>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          showCalendar={isPremium}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Pickups')}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
-        />
       </View>
     </SafeAreaView>
   );

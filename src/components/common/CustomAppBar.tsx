@@ -11,7 +11,7 @@ const CustomAppBar = ({ title, navigation }: Props) => {
   const { colors } = useTheme();
 
   return (
-    <View className="h-[62px]">
+    <View style={{height: 52}}>
       <View
         className="absolute top-0 left-0 right-0 h-12 flex-row items-center px-4 justify-between z-10"
         style={{ backgroundColor: colors.bg }}

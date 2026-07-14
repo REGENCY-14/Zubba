@@ -1,108 +1,113 @@
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
-import { ThemeColors } from "../../context/ThemeContext";
+import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
 
-function Row({ label, value, large, colors }: { label: string; value: string; large?: boolean; colors: ThemeColors }) {
-  return (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-      <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 14, color: colors.textMuted }}>
-        {label}
-      </Text>
-      <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: large ? 18 : 14, color: colors.text }}>
-        {value}
-      </Text>
-    </View>
-  );
-}
-
-export function PaymentSuccessScreen({ navigation, route }: RootStackScreenProps<"PaymentSuccess">) {
-  const { method, phone } = route.params;
+export function PaymentSuccessScreen({
+  navigation,
+}: RootStackScreenProps<"PaymentSuccess">) {
   const { colors } = useTheme();
-  const user = useAppSelector((state) => state.auth.user);
-  const accountName = user ? `${user.firstname} ${user.lastname}` : "—";
+  const request = useAppSelector((state) => state.request)
+  const user = useAppSelector((state) => state.auth.user)
 
-  const now = new Date();
-  const date = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
-  const hours = now.getHours();
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const ampm = hours >= 12 ? "pm" : "am";
-  const pickupTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+  const details = [
+    { label: "Transaction Reference", value: "J243q5SHw43O" },
+    { label: "Payment Method", value: request.payment_method },
+    { label: "Account Number", value: user?.phone },
+    { label: "Account Name", value: `${user?.firstname} ${user?.lastname}`},
+    { label: "Bin Bags", value: `${request.bags} Bag${request.bags != 1 ? "s" : ""}` },
+    { label: "Date", value: request.date_created.getDate() },
+    { label: "Pickup time", value: request.date_created.getTime() },
+  ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      className="flex-1"
+      edges={["top", "left", "right"]}
+    >
+      <View style={{ backgroundColor: colors.bg }} className="flex-1">
+        <CustomAppBar navigation={() => navigation.goBack()} title="Success" />
 
-        {/* Header */}
-        <View style={{ height: 48, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16 }}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color={colors.text} />
-          </Pressable>
-          <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 16, color: colors.text }}>
-            Payment status
-          </Text>
-          <View style={{ width: 28 }} />
-        </View>
-
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 20 }} showsVerticalScrollIndicator={false}>
-
-          {/* Main receipt card */}
-          <View style={{ backgroundColor: colors.card, borderRadius: 24, padding: 32, gap: 24, borderWidth: 1, borderColor: colors.border }}>
-
-            {/* Success icon */}
-            <View style={{ alignItems: "center" }}>
-              <View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: "#DCFCE7", alignItems: "center", justifyContent: "center" }}>
-                <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: "#31973D", alignItems: "center", justifyContent: "center" }}>
-                  <MaterialCommunityIcons name="check" size={36} color="#FFFFFF" />
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="pb-2"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="px-6">
+            <View
+              style={{backgroundColor: colors.surface}}
+              className="px-5 py-8 flex-col gap-6 rounded-3xl mt-5 shadow-md shadow-black/10">
+              <View className="items-center gap-6 px-4">
+                <View
+                  style={{
+                    boxShadow: [
+                      {
+                        offsetX: 0,
+                        offsetY: 0,
+                        blurRadius: 0,
+                        spreadDistance: 14,
+                        color: "#DCFCE7",
+                      },
+                    ],
+                  }}
+                  className="w-[72px] h-[72px] rounded-full bg-green-600 items-center justify-center"
+                >
+                  <MaterialCommunityIcons name="check" size={40} color="#fff" />
                 </View>
-              </View>
-            </View>
 
-            {/* Heading */}
-            <View style={{ alignItems: "center", paddingBottom: 8 }}>
-              <Text style={{ fontFamily: "Poppins", fontWeight: "800", fontSize: 20, lineHeight: 28, color: colors.text, textAlign: "center" }}>
-                Transaction successful
-              </Text>
-            </View>
-
-            {/* Dashed divider */}
-            <View style={{ height: 1, borderTopWidth: 1, borderTopColor: colors.border, borderStyle: "dashed" }} />
-
-            {/* Transaction rows */}
-            <View style={{ gap: 20, paddingTop: 8 }}>
-              <Row label="Payment method" value={method} colors={colors} />
-              <Row label="Account number" value={phone.replace(/\s/g, "")} colors={colors} />
-              <Row label="Account name" value={accountName} colors={colors} />
-              <Row label="Bin bags" value="2" colors={colors} />
-              <Row label="Amount" value="GHS 45.00" large colors={colors} />
-              <Row label="Date" value={date} colors={colors} />
-              <Row label="Pickup time" value={pickupTime} colors={colors} />
-            </View>
-
-            {/* Download receipt */}
-            <View style={{ alignItems: "center", paddingTop: 16 }}>
-              <Pressable>
-                <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 16, color: "#3B82F6" }}>
-                  Download receipt
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-2xl font-bold text-center leading-8"
+                >
+                  Transaction successful
                 </Text>
-              </Pressable>
+              </View>
+
+              <View style={{borderColor: colors.border, borderStyle: "dashed"}} className="border-t" />
+
+              <View
+                className="rounded-3xl gap-4"
+              >
+                <View className="gap-5">
+                  {details.map((item) => (
+                    <View key={item.label} className="flex-row justify-between">
+                      <Text style={{ color: colors.textSub }}>
+                        {item.label}
+                      </Text>
+                      <Text
+                        style={{ color: colors.text }}
+                        className="font-medium"
+                      >
+                        {item.value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+                <Pressable
+                  className="h-12 rounded-full items-center justify-center"
+                >
+                  <Text className="text-[#3B82F6] text-base font-bold">
+                    Download Transaction
+                  </Text>
+                </Pressable>
+              </View>
             </View>
           </View>
 
-          {/* Done button */}
-          <Pressable
-            onPress={() => navigation.navigate("RateRide")}
-            style={{ height: 48, backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, color: "#FFFFFF" }}>
-              Done
-            </Text>
-          </Pressable>
+          <View className="px-6 mt-8 gap-2">
+            <Pressable
+              onPress={() => navigation.navigate("RateRide")}
+              className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+            >
+              <Text className="text-white text-sm">Done</Text>
+            </Pressable>
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>

@@ -208,7 +208,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
-                  navigation.navigate('PremiumHome');
+                  navigation.navigate('Home');
                 }}
               >
                 <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: '#FFFFFF' }}>
@@ -221,7 +221,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
-                  navigation.navigate('PremiumHome');
+                  navigation.navigate('Home');
                 }}
               >
                 <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, color: '#1F2A33' }}>

@@ -4,7 +4,7 @@ import { Customer } from "./customer.types";
 const initialState: Customer = {
     id: "",
     points: 0,
-    mass_recycled: 0,
+    bags: 0,
     is_premium: false,
 }
 
@@ -13,12 +13,12 @@ const customerSlice = createSlice({
     initialState,
     reducers: {
         setCustomer: (state, action: PayloadAction<{
-            id: string, points: number, mass_recycled: number,
+            id: string, points: number, bags: number,
             is_premium: boolean
         }>) => {
             state.id = action.payload.id;
             state.points = action.payload.points;
-            state.mass_recycled = action.payload.mass_recycled;
+            state.bags = action.payload.bags;
             state.is_premium = action.payload.is_premium;
         },
         clearCustomer: (state) => {
@@ -33,5 +33,5 @@ const customerSlice = createSlice({
     }
 })
 
-export const { upgradeToPremium, cancelPremium } = customerSlice.actions
+export const { setCustomer, clearCustomer, upgradeToPremium, cancelPremium } = customerSlice.actions
 export const customerReducer = customerSlice.reducer

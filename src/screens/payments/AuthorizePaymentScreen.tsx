@@ -24,6 +24,7 @@ export function AuthorizePaymentScreen({
   const isPremium = useAppSelector((state) => state.customer.is_premium);
   const [pin, setPin] = React.useState("");
   const inputRef = React.useRef<TextInput | null>(null);
+  const request = useAppSelector((state) => state.request)
 
   const digits = Array.from({ length: 4 }).map((_, i) => pin[i] || "");
 
@@ -32,7 +33,7 @@ export function AuthorizePaymentScreen({
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 120, gap: 24 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 10, gap: 24 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <View className="w-8 h-8 rounded-lg bg-[#31973D] items-center justify-center">
@@ -51,7 +52,7 @@ export function AuthorizePaymentScreen({
 
           <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>
             Enter your 4-digit PIN to authorize the payment of{" "}
-            <Text style={{ fontWeight: '700', color: colors.text }}>GHS 45.00</Text> to{" "}
+            <Text style={{ fontWeight: '700', color: colors.text }}>GHS {request.pickup_price + request.service_price}</Text> to{" "}
             <Text style={{ fontWeight: '700', color: colors.text }}>Zubba</Text>.
           </Text>
 
@@ -106,17 +107,6 @@ export function AuthorizePaymentScreen({
             <Text className="text-white text-sm">Proceed to pay</Text>
           </Pressable>
         </ScrollView>
-
-        <AppBottomNav
-          activeTab="home"
-          paddingBottom={14}
-          bottomOffset={8}
-          showCalendar={isPremium}
-          onHomePress={() => navigation.navigate('Home')}
-          onSavedPress={() => navigation.navigate('Pickups')}
-          onSettingsPress={() => navigation.navigate('Settings')}
-          onCalendarPress={isPremium ? () => navigation.navigate('Schedule') : undefined}
-        />
       </View>
     </SafeAreaView>
   );

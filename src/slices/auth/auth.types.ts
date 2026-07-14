@@ -16,7 +16,6 @@ export interface User {
   lastname: string;
   role: "customer" | "driver" | "admin";
   is_active: boolean;
-  is_premium: boolean;
   verified: boolean;
 }
 

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import CustomAppBar from '../../components/common/CustomAppBar';
 
 type NotificationItem = {
   id: string;
@@ -24,6 +24,8 @@ const WEEK_AGO: NotificationItem[] = [
   { id: '7', message: 'GHS 50.00 has been added to your Zubba Wallet successfully.', time: '3:04PM' },
 ];
 
+const bellIcon = require("../../../assets/activities.png")
+
 function NotificationRow({ item, iconSize, colors }: { item: NotificationItem; iconSize: number; colors: ReturnType<typeof useTheme>['colors'] }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingVertical: 12, gap: 16 }}>
@@ -31,10 +33,10 @@ function NotificationRow({ item, iconSize, colors }: { item: NotificationItem; i
         <MaterialCommunityIcons name="bell-outline" size={16} color="#31973D" />
       </View>
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-        <Text style={{ flex: 1, fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.text }}>
+        <Text style={{ flex: 1, fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.text }}>
           {item.message}
         </Text>
-        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub, paddingTop: 5, flexShrink: 0 }}>
+        <Text style={{ fontWeight: '400', fontSize: 12, lineHeight: 16, color: colors.textSub, paddingTop: 5, flexShrink: 0 }}>
           {item.time}
         </Text>
       </View>
@@ -59,44 +61,30 @@ function BellIllustration() {
 
 const hasActivity = TODAY.length > 0 || WEEK_AGO.length > 0;
 
-export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifications'>) {
+export function NotificationsListScreen({ navigation }: RootStackScreenProps<'NotificationsList'>) {
   const { colors } = useTheme();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
-        {/* Header */}
-        <View
-          style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg, borderBottomWidth: 0.5, borderBottomColor: colors.border }}
-        >
-          <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color={colors.text} />
-          </Pressable>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Notification</Text>
-          <View style={{ width: 28 }} />
-        </View>
+        <CustomAppBar title="Notifications" navigation={navigation}/>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 24 }}
         >
           {hasActivity ? (
-            /* ── Activity list ── */
             <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingVertical: 11 }}>
               <View style={{ paddingHorizontal: 16, gap: 16 }}>
-
-                {/* Section header */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 20, lineHeight: 28, color: colors.text }}>
+                  <Text style={{ fontWeight: '500', fontSize: 20, lineHeight: 28, color: colors.text }}>
                     Recent Activity
                   </Text>
                   <MaterialCommunityIcons name="tune-variant" size={18} color={colors.textSub} />
                 </View>
-
-                {/* Today */}
                 <View>
-                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub, marginBottom: 0 }}>
+                  <Text style={{ fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub, marginBottom: 0 }}>
                     Today
                   </Text>
                   {TODAY.map(item => (
@@ -104,7 +92,6 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
                   ))}
                 </View>
 
-                {/* 7 Days Ago */}
                 <View>
                   <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub }}>
                     7 Days Ago
@@ -117,34 +104,35 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
               </View>
             </View>
           ) : (
-            /* ── Empty state ── */
             <>
               <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16 }}>
-                <View style={{ alignItems: 'center', paddingHorizontal: 24, paddingTop: 48, paddingBottom: 24, gap: 12 }}>
-                  <BellIllustration />
+                <View style={{ alignItems: 'center', paddingHorizontal: 24, paddingVertical: 64, gap: 12 }}>
+                  <Image source={bellIcon} style={{width: 196, height: 146}}/>
                   <View style={{ alignItems: 'center', gap: 5, marginTop: 8 }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, lineHeight: 24, color: colors.text, textAlign: 'center' }}>
+                    <Text style={{ fontWeight: '600', fontSize: 16, lineHeight: 24, color: colors.text, textAlign: 'center' }}>
                       All quiet here
                     </Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.textSub, textAlign: 'center' }}>
+                    <Text style={{ fontWeight: '400', fontSize: 14, lineHeight: 20, color: colors.textSub, textAlign: 'center' }}>
                       You're all caught up! We'll notify you here about all activities on the platform
                     </Text>
                   </View>
                 </View>
               </View>
 
-              <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16 }}>
-                <View style={{ backgroundColor: '#EDE9FE', borderRadius: 28, padding: 24, flexDirection: 'row', alignItems: 'flex-start', gap: 16 }}>
+              <View style={{ backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16 }}>
+                <Pressable
+                  onPress={() => {navigation.navigate("NotificationSettings")}}
+                  style={{ backgroundColor: colors.card, borderRadius: 28, padding: 24, flexDirection: 'row', alignItems: 'flex-start', gap: 16 }}>
                   <View style={{ width: 32, height: 32, backgroundColor: '#DDD6FE', borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <MaterialCommunityIcons name="lightbulb-outline" size={16} color="#7C3AED" />
                   </View>
                   <View style={{ flex: 1, gap: 4 }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 20, color: '#0F1621' }}>Quick Tip</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 12, lineHeight: 18, color: '#1F2A33' }}>
+                    <Text style={{ fontWeight: '600', fontSize: 14, lineHeight: 20, color: colors.text }}>Quick Tip</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 12, lineHeight: 18, color: colors.textSub }}>
                       Customize your notification preferences in settings.
                     </Text>
                   </View>
-                </View>
+                </Pressable>
               </View>
             </>
           )}
@@ -154,4 +142,4 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
   );
 }
 
-export default NotificationsScreen;
+export default NotificationsListScreen;

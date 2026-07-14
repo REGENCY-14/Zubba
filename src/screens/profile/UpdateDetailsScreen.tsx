@@ -3,13 +3,16 @@ import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { AppBottomNav } from '../../components';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import CustomAppBar from '../../components/common/CustomAppBar';
 
 const ghanaFlag = require('../../../assets/ghana-flag.png');
 
 export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<'UpdateDetails'>) {
-  const { colors } = useTheme();
+  const {colors} = useTheme()
+
   const selectedKind = route.params?.kind ?? 'phone';
   const isNewNumberStep = route.params?.step === 'new';
   const [phoneNumber, setPhoneNumber] = React.useState(isNewNumberStep ? '' : route.params?.phone ?? '233 24 11 22 310');
@@ -50,74 +53,76 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
       : 'For your protection, an OTP verification code will be sent to your current number to confirm this change.';
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg }}>
-          <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="chevron-left" size={24} color={colors.text} />
-          </Pressable>
-          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, textAlign: 'center' }}>Update Details</Text>
-          <View style={{ width: 24, height: 24 }} />
-        </View>
+    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={['top', 'left', 'right']}>
+      <View className="flex-1">
+        <CustomAppBar title="Update Details" navigation={navigation} />
 
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40, gap: 24 }} showsVerticalScrollIndicator={false}>
-          <View style={{ alignItems: 'center', backgroundColor: colors.card, borderRadius: 16, borderWidth: 1, borderColor: colors.borderLight, paddingHorizontal: 18, paddingVertical: 24, gap: 16 }}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 128, gap: 24 }} showsVerticalScrollIndicator={false}>
+          <View className="items-center px-[18px] py-6 gap-4">
             <View
-              style={{ width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(65, 158, 106, 0.1)' }}
+              className="w-[54px] h-[54px] rounded-full items-center justify-center"
+              style={{ backgroundColor: 'rgba(65, 158, 106, 0.1)' }}
             >
               <MaterialCommunityIcons name="cellphone-arrow-down" size={24} color="#0D631B" />
             </View>
-            <Text style={{ fontSize: 14, lineHeight: 20, color: colors.textSub, textAlign: 'center', fontFamily: 'Poppins' }}>
+            <Text className="text-sm leading-5 text-[#64748A] text-center" style={{ color: colors.text }}>
               Keep your account safe and accessible by ensuring your contact information is current.
             </Text>
           </View>
 
-          <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 16, gap: 8 }}>
+          <View className='flex-row items-center justify-center'>
+          <View style={{backgroundColor: colors.surface}} className="flex-row justify-center items-center py-2 px-1.5 rounded-full gap-2">
             <Pressable
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 11, backgroundColor: selectedTab === 'number' ? colors.surface : 'transparent' }}
+              style={{backgroundColor: selectedTab === 'number' ? colors.card : ''}}
+              className={`flex-row items-center gap-1 px-2 py-[6px] rounded-full`}
               onPress={() => setSelectedTab('number')}
             >
-              <MaterialCommunityIcons name="phone" size={16} color={selectedTab === 'number' ? colors.textSub : colors.textMuted} />
-              <Text style={{ fontSize: 12, lineHeight: 16, color: colors.textSub, fontFamily: 'Poppins' }}>Update number</Text>
+              <MaterialCommunityIcons name="phone" size={16} color={selectedTab === 'number' ? '#64748A' : '#94A3B8'} />
+              <Text className={`text-xs leading-4`} style={{ color: colors.textSub }}>Update number</Text>
             </Pressable>
 
             <Pressable
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 11, backgroundColor: selectedTab === 'email' ? colors.surface : 'transparent' }}
+              style={{backgroundColor: selectedTab === 'email' ? colors.card : ''}}
+              className={`flex-row items-center gap-1 px-2 py-[6px] rounded-full`}
               onPress={() => setSelectedTab('email')}
             >
-              <MaterialCommunityIcons name="email-outline" size={16} color={selectedTab === 'email' ? colors.textSub : colors.textMuted} />
-              <Text style={{ fontSize: 12, lineHeight: 16, color: colors.textSub, fontFamily: 'Poppins' }}>Update email</Text>
+              <MaterialCommunityIcons name="email-outline" size={16} color={selectedTab === 'email' ? '#64748A' : '#94A3B8'} />
+              <Text className="text-xs leading-4" style={{ color: colors.textSub }}>Update email</Text>
             </Pressable>
+          </View>
           </View>
 
           {true ? (
-            <View style={{ backgroundColor: colors.card, borderTopWidth: 1, borderTopColor: colors.border, padding: 16, borderRadius: 12 }}>
-              <View style={{ gap: 16 }}>
-                <Text style={{ fontSize: 15, lineHeight: 22, color: colors.text, fontFamily: 'Poppins' }}>{contactLabel}</Text>
+            <View style={{borderColor: colors.border}} className="border p-4 rounded-xl">
+              <View className="gap-4">
+                <Text className="text-[15px] leading-[22px]" style={{ color: colors.text, fontFamily: 'Poppins' }}>{contactLabel}</Text>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View className="flex-row items-center gap-2">
                   {!isEmailMode ? (
-                    <View style={{ width: 94, height: 48, padding: 10, borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.card, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Image source={ghanaFlag} style={{ width: 28, height: 20 }} resizeMode="contain" />
-                      <MaterialCommunityIcons name="menu-down" size={24} color={colors.iconColor} />
+                    <View style={{borderColor: colors.border}} className="h-12 p-[10px] gap-2 border rounded-full flex-row items-center justify-between">
+                      <View className="rounded-full overflow-hidden">
+                        <Image source={ghanaFlag} style={{ width: 28, height: 20 }} resizeMode="contain" />
+                      </View>
+                      <MaterialCommunityIcons name="menu-down" size={24} color={colors.text} />
                     </View>
                   ) : null}
 
                   <TextInput
-                    style={{ flex: 1, height: 48, backgroundColor: colors.card, borderRadius: 12, paddingHorizontal: 16, fontSize: 15, color: colors.text, borderWidth: 1.8, borderColor: colors.border, fontFamily: 'Poppins', lineHeight: 18 }}
+                    style={{borderColor: colors.border, color: colors.text}}
+                    className="flex-1 h-12 rounded-full px-4 text-[15px]  border"
                     value={contactValue}
                     onChangeText={setContactValue}
                     keyboardType={contactKeyboardType}
                     autoCapitalize={isEmailMode ? 'none' : 'words'}
                     placeholder={contactPlaceholder}
-                    placeholderTextColor={colors.textSub}
+                    placeholderTextColor="#64748A"
                   />
                 </View>
 
-                <Text style={{ fontSize: 11, lineHeight: 16, color: colors.text, fontFamily: 'Poppins' }}>{contactHelper}</Text>
+                <Text className="text-[11px] leading-4 " style={{ color: colors.text }}>{contactHelper}</Text>
 
                 <Pressable
-                  style={{ width: '100%', height: 48, backgroundColor: '#31973D', borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+                  className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center"
                   onPress={() =>
                     navigation.navigate('UpdateDetailsOtp', {
                       kind: isEmailMode ? 'email' : 'phone',
@@ -127,25 +132,26 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                     })
                   }
                 >
-                  <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20, fontFamily: 'Poppins' }}>{contactActionLabel}</Text>
+                  <Text className="text-white text-sm leading-5" style={{ color: colors.text }}>{contactActionLabel}</Text>
                 </Pressable>
 
-                <View style={{ gap: 8 }}>
-                  <Pressable style={{ width: 99, height: 32, borderRadius: 22, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }} onPress={() => {}}>
-                    <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500', fontFamily: 'Poppins' }}>Resend</Text>
+                <View className="gap-2">
+                  <Pressable className="w-[99px] h-8 rounded-[22px] border items-center justify-center px-3" style={{ borderColor: colors.border }} onPress={() => {}}>
+                    <Text className=" text-xs leading-5 font-medium" style={{ color: colors.text }}>Resend</Text>
                   </Pressable>
-                  <Pressable style={{ width: 178, height: 32, borderRadius: 22, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }} onPress={() => {}}>
-                    <Text style={{ color: colors.text, fontSize: 12, lineHeight: 20, fontWeight: '500', fontFamily: 'Poppins' }}>{isEmailMode ? 'Send code via email' : 'Send code via WhatsApp'}</Text>
+                  <Pressable className="w-[178px] h-8 rounded-[22px] border items-center justify-center px-3" style={{ borderColor: colors.border }} onPress={() => {}}>
+                    <Text className=" text-xs leading-5 font-medium" style={{ color: colors.text }}>{isEmailMode ? 'Send code via email' : 'Send code via WhatsApp'}</Text>
                   </Pressable>
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 16, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card }}>
+                <View className="flex-row items-start gap-4 p-4 rounded-2xl border" style={{ borderColor: colors.border }}>
                   <View
-                    style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 107, 35, 0.1)' }}
+                    className="w-8 h-8 rounded-full items-center justify-center"
+                    style={{ backgroundColor: 'rgba(0, 107, 35, 0.1)' }}
                   >
                     <MaterialCommunityIcons name="information" size={18} color="#31973D" />
                   </View>
-                  <Text style={{ flex: 1, fontSize: 14, lineHeight: 21, color: colors.textSub, fontFamily: 'Poppins' }}>
+                  <Text className="flex-1 text-sm leading-[21px] text-[#64748A]" style={{ color: colors.text }}>
                     {contactNotice}
                   </Text>
                 </View>
@@ -154,6 +160,11 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           ) : null}
         </ScrollView>
 
+        <AppBottomNav
+          activeTab="settings"
+          paddingBottom={0}
+          navigation={navigation}
+        />
       </View>
     </SafeAreaView>
   );

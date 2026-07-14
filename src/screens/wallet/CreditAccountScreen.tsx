@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState } from "react";
+import { Dimensions, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import type { RootStackScreenProps } from '../../navigation/types';
+import type { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from "../../context/ThemeContext";
+import CustomAppBar from "../../components/common/CustomAppBar";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
-export function CreditAccountScreen({ navigation }: RootStackScreenProps<'CreditAccount'>) {
-  const [phone, setPhone] = useState('055 123 4567');
+export function CreditAccountScreen({
+  navigation,
+}: RootStackScreenProps<"CreditAccount">) {
+  const { colors, isDark } = useTheme();
+
+  const [phone, setPhone] = useState("055 123 4567");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
-  const [customAmount, setCustomAmount] = useState('GHS 50.00');
+  const [customAmount, setCustomAmount] = useState("GHS 50.00");
 
   const handleAmountChip = (amount: number) => {
     setSelectedAmount(amount);
@@ -29,175 +28,188 @@ export function CreditAccountScreen({ navigation }: RootStackScreenProps<'Credit
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top', 'left', 'right']}>
-
-      {/* Header */}
-      <View
-        style={{
-          height: 48,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          backgroundColor: '#FFFFFF',
-        }}
-      >
-        <Pressable
-          style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialCommunityIcons name="chevron-left" size={24} color="#0F1621" />
-        </Pressable>
-
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#1F2A33', lineHeight: 24 }}>
-          Credit Account
-        </Text>
-
-        <View style={{ width: 24 }} />
-      </View>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      edges={["top", "left", "right"]}
+    >
+      <CustomAppBar title="Credit Account" navigation={navigation} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, padding: 12, paddingBottom: 96 }}
+        contentContainerStyle={{ flexGrow: 1, padding: 12 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Form card */}
         <View
+          className="flex justify-between"
           style={{
-            backgroundColor: '#FFFFFF',
+            minHeight: Dimensions.get("window").height - 120,
+            backgroundColor: isDark ? colors.surface : colors.bg,
             borderWidth: 1,
-            borderColor: '#E2E8F0',
+            borderColor: colors.border,
             borderRadius: 24,
             padding: 16,
             gap: 16,
           }}
         >
-          {/* Wallet Phone Number */}
-          <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 14, fontWeight: '400', letterSpacing: 0.15, color: '#1F2A33', lineHeight: 22 }}>
-              Wallet Phone Number
-            </Text>
+          <View>
+            {/* Wallet Phone Number */}
+            <View style={{ gap: 8 }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "400",
+                  letterSpacing: 0.15,
+                  color: colors.text,
+                  lineHeight: 22,
+                }}
+              >
+                Wallet Phone Number
+              </Text>
 
-            <TextInput
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              placeholder="055 123 4567"
-              placeholderTextColor="#ACB5BB"
+              <TextInput
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                placeholder="055 123 4567"
+                placeholderTextColor={colors.textSub}
+                style={{
+                  height: 48,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  backgroundColor: colors.bg,
+                  borderRadius: 9999,
+                  paddingHorizontal: 12,
+                  fontSize: 16,
+                  color: colors.text,
+                }}
+              />
+
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "400",
+                  color: colors.textMuted,
+                  lineHeight: 16,
+                }}
+              >
+                Enter your mobile money number
+              </Text>
+            </View>
+
+            {/* Amount to top up */}
+            <View
               style={{
-                height: 48,
-                borderWidth: 1,
-                borderColor: '#CBD5E0',
-                borderRadius: 9999,
-                paddingHorizontal: 12,
-                fontSize: 16,
-                color: '#1F2A33',
+                borderTopWidth: 1,
+                borderTopColor: colors.borderLight,
+                paddingTop: 8,
+                gap: 8,
               }}
-            />
-
-            <Text style={{ fontSize: 12, fontWeight: '400', color: '#64748A', lineHeight: 16 }}>
-              Enter your mobile money number
-            </Text>
-          </View>
-
-          {/* Amount to top up */}
-          <View
-            style={{
-              borderTopWidth: 1,
-              borderTopColor: '#E2E8F0',
-              paddingTop: 8,
-              gap: 8,
-            }}
-          >
-            <Text style={{ fontSize: 14, fontWeight: '400', letterSpacing: 0.15, color: '#1F2A33', lineHeight: 22 }}>
-              Amount to top up
-            </Text>
-
-            <TextInput
-              value={customAmount}
-              onChangeText={handleAmountChange}
-              keyboardType="numeric"
-              placeholder="GHS 0.00"
-              placeholderTextColor="#ACB5BB"
-              style={{
-                height: 48,
-                borderWidth: 1,
-                borderColor: '#CBD5E0',
-                borderRadius: 9999,
-                paddingHorizontal: 12,
-                fontSize: 16,
-                color: '#1F2A33',
-              }}
-            />
-
-            {/* Quick select chips */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingVertical: 8, gap: 8 }}
             >
-              {QUICK_AMOUNTS.map((amount) => {
-                const isSelected = selectedAmount === amount;
-                return (
-                  <Pressable
-                    key={amount}
-                    onPress={() => handleAmountChip(amount)}
-                    style={{
-                      paddingHorizontal: 24,
-                      paddingVertical: 9,
-                      borderRadius: 9999,
-                      backgroundColor: isSelected ? '#31973D' : 'rgba(0, 107, 35, 0.1)',
-                      borderWidth: isSelected ? 0 : 1,
-                      borderColor: '#E2E8F0',
-                    }}
-                  >
-                    <Text
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "400",
+                  letterSpacing: 0.15,
+                  color: colors.text,
+                  lineHeight: 22,
+                }}
+              >
+                Amount to top up
+              </Text>
+
+              <TextInput
+                value={customAmount}
+                onChangeText={handleAmountChange}
+                keyboardType="numeric"
+                placeholder="GHS 0.00"
+                placeholderTextColor="#ACB5BB"
+                style={{
+                  height: 48,
+                  borderWidth: 1,
+                  backgroundColor: colors.bg,
+                  borderColor: colors.border,
+                  borderRadius: 9999,
+                  paddingHorizontal: 12,
+                  fontSize: 16,
+                  color: colors.text,
+                }}
+              />
+
+              {/* Quick select chips */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingVertical: 8, gap: 8 }}
+              >
+                {QUICK_AMOUNTS.map((amount) => {
+                  const isSelected = selectedAmount === amount;
+                  return (
+                    <Pressable
+                      key={amount}
+                      onPress={() => handleAmountChip(amount)}
                       style={{
-                        fontSize: 16,
-                        fontWeight: '400',
-                        lineHeight: 24,
-                        color: isSelected ? '#FFFFFF' : '#3F4A3D',
+                        paddingHorizontal: 24,
+                        paddingVertical: 9,
+                        borderRadius: 9999,
+                        backgroundColor: isSelected
+                          ? "#31973D"
+                          : "rgba(0, 107, 35, 0.1)",
+                        borderWidth: isSelected ? 0 : 1,
+                        borderColor: colors.border,
                       }}
                     >
-                      GHS {amount}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "400",
+                          lineHeight: 24,
+                          color: isSelected ? colors.text : colors.textMuted,
+                        }}
+                      >
+                        GHS {amount}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          </View>
+
+          <View
+            style={{
+              bottom: 0,
+              left: 0,
+              right: 0,
+              paddingVertical: 12,
+            }}
+          >
+            <Pressable
+              style={{
+                height: 48,
+                backgroundColor: "#31973D",
+                borderRadius: 9999,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onPress={() =>
+                navigation.navigate("ZubbaWallet", { credited: true })
+              }
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "400",
+                  color: "#FFFFFF",
+                  lineHeight: 20,
+                }}
+              >
+                Top up
+              </Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>
-
-      {/* Bottom "Top up" button */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          paddingHorizontal: 24,
-          paddingBottom: 32,
-          paddingTop: 12,
-          backgroundColor: '#FFFFFF',
-        }}
-      >
-        <Pressable
-          style={{
-            height: 48,
-            backgroundColor: '#31973D',
-            borderRadius: 9999,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onPress={() => navigation.navigate('ZubbaWallet', { credited: true })}
-        >
-          <Text style={{ fontSize: 14, fontWeight: '400', color: '#FFFFFF', lineHeight: 20 }}>
-            Top up
-          </Text>
-        </Pressable>
-      </View>
-
     </SafeAreaView>
   );
 }
