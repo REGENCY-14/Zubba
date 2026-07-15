@@ -14,6 +14,8 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
 import { authService } from "../../api/authService";
 import { useTheme } from "../../context/ThemeContext";
+import { toast } from "../../hooks/toast";
+import { handleApiError } from "../../utils/handleApiError";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
@@ -44,7 +46,8 @@ export function FindAccountScreen({
       const res = await authService.register({
         authKey: "phone",
         authValue: phone,
-        role: "customer"
+        role: "customer",
+        find: true
       });
 
       const user = res.data.user;
@@ -57,8 +60,9 @@ export function FindAccountScreen({
       navigation.navigate("FindAccountOtp", {
         phone,
       });
-    } catch (err) {
-      console.log("Find user failed:", err);
+    } catch (err: any) {
+      handleApiError(err);
+      console.log("Find user failed:", err, err.type);
     } finally {
       setLoading(false);
     }
@@ -96,6 +100,7 @@ export function FindAccountScreen({
                 onChangeText={setPhoneNumber}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
+                className="outline-none"
               />
             </View>
           </View>

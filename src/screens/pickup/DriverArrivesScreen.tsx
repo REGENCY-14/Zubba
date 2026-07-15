@@ -32,7 +32,7 @@ export function DriverArrivesScreen({
             <View>
               <View style={{ width: 54, height: 54, borderRadius: 12, overflow: 'hidden' }}>
                 <Image
-                  source={avatar}
+                  source={request.driver.avatar ? request.driver.avatar : avatar}
                   style={{ width: 54, height: 54 }}
                   resizeMode="cover"
                 />

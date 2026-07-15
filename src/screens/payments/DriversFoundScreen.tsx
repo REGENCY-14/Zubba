@@ -18,8 +18,10 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import { useEffect, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
+import { useTheme } from "../../context/ThemeContext";
 
 const mapImage = require("../../../assets/RawMap.png");
+const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const fallbackAvatar = require("../../../assets/avatar.jpg");
 
 function DriverCard({
@@ -33,6 +35,7 @@ function DriverCard({
 }) {
   const distanceLabel = `${(driver.distanceM / 1000).toFixed(1)}km away`;
   const etaLabel = `${driver.etaMinutes} mins`;
+  const { colors, isDark } = useTheme()
 
   return (
     <Pressable
@@ -120,6 +123,7 @@ export function DriversFoundScreen({
 }: RootStackScreenProps<"DriversFound">) {
   const drivers: NearbyDriver[] = route.params?.drivers ?? [];
   const insets = useSafeAreaInsets();
+  const { isDark, colors } = useTheme()
   const [selectedDriver, setSelectedDriver] = useState(0);
   const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts">("found_drivers");
   const [showModal, setShowModal] = useState(false);
@@ -151,7 +155,7 @@ export function DriversFoundScreen({
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
       <ImageBackground
-        source={mapImage}
+        source={isDark ? mapDarkImage : mapImage}
         style={{ flex: 1 }}
         resizeMode="cover"
         imageStyle={{ opacity: 0.8 }}

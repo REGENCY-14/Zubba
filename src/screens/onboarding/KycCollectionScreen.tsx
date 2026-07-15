@@ -15,6 +15,9 @@ import { RootState } from "../../store";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { userService } from "../../api/userService";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setCredentials, updateUser } from "../../slices/auth/authSlice";
+import { useTheme } from "../../context/ThemeContext";
 
 export function KycCollectionScreen({
   route,
@@ -22,10 +25,12 @@ export function KycCollectionScreen({
 }: RootStackScreenProps<"KycCollection">) {
   const phone = route.params?.phone;
   const email = route.params?.email;
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const { colors } = useTheme();
   const { user } = useAppSelector((state: RootState) => state.auth);
-  const isValid = firstName.trim().length > 0 && lastName.trim().length > 0;
+  const dispatch = useAppDispatch()
+  const isValid = firstname.trim().length > 0 && lastname.trim().length > 0;
 
   const handleContinue = async () => {
     if (!user?.id) return;
@@ -34,13 +39,14 @@ export function KycCollectionScreen({
       await userService.updateUser(user.id, {
         email,
         phone,
-        firstname: firstName.trim(),
-        lastname: lastName.trim(),
+        firstname: firstname.trim(),
+        lastname: lastname.trim(),
       });
+      dispatch(updateUser({...user, firstname, lastname}))
 
       navigation.navigate("TermsAcceptance", {
-        firstName,
-        lastName,
+        firstname,
+        lastname,
       });
     } catch (err) {
       console.log("KYC update failed:", err);
@@ -49,7 +55,8 @@ export function KycCollectionScreen({
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white"
+    style={{backgroundColor: colors.bg}}
+      className="flex-1"
       edges={["top", "left", "right", "bottom"]}
     >
       <KeyboardAvoidingView
@@ -63,33 +70,34 @@ export function KycCollectionScreen({
           <View className="h-[6px]" />
 
           <View className="w-full gap-3">
-            <Text className="text-[20px] font-bold text-[#1F2A33]">
+            <Text style={{color: colors.text}} className="text-[20px] font-bold">
               What's your name?
             </Text>
-            <Text className="text-[13px] text-[#1F2A33] mt-1">
+            <Text style={{color: colors.textSub}} className="text-[13px] mt-1">
               Let us know how to properly address you
             </Text>
           </View>
 
           <View className="mt-6">
-            <View className="w-[358px] h-[56px] min-h-[56px] bg-white border border-black/5 rounded-full px-5 justify-center">
+            <View style={{backgroundColor: colors.surface, borderColor: colors.border}} className="w-full h-[56px] min-h-[56px border rounded-full px-5 justify-center">
               <TextInput
                 className="text-[15px] text-[#707579] outline-none focus:outline-none"
                 placeholder="Please enter first name"
-                value={firstName}
-                onChangeText={setFirstName}
-                placeholderTextColor="#BDBDBD"
+                value={firstname}
+                onChangeText={setFirstname}
+                placeholderTextColor={colors.textMuted}
                 autoCapitalize="words"
               />
             </View>
 
-            <View className="w-[358px] h-[56px] min-h-[56px] bg-white border border-black/5 rounded-full px-5 justify-center mt-4">
+            <View style={{backgroundColor: colors.surface, borderColor: colors.border}} className="w-full h-[56px] min-h-[56px] border rounded-full px-5 justify-center mt-4">
               <TextInput
-                className="text-[15px] text-[#707579] outline-none focus:outline-none"
+                style={{color: colors.textSub}}
+                className="text-[15px] outline-none focus:outline-none"
                 placeholder="Please enter last name"
-                value={lastName}
-                onChangeText={setLastName}
-                placeholderTextColor="#BDBDBD"
+                value={lastname}
+                onChangeText={setLastname}
+                placeholderTextColor={colors.textMuted}
                 autoCapitalize="words"
               />
             </View>
@@ -101,10 +109,10 @@ export function KycCollectionScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <Text className="text-2xl text-black">
+            <Text className="text-2xl">
               <MaterialCommunityIcons
                 name="arrow-left"
-                color="#000000"
+                color={colors.text}
                 size={24}
               />
             </Text>

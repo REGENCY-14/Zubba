@@ -122,7 +122,7 @@ export function SettingsScreen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 12,
-            paddingBottom: 148,
+            paddingBottom: 100,
             gap: 24,
           }}
         >
@@ -251,7 +251,7 @@ export function SettingsScreen({
                   color={colors.textMuted}
                 />
               }
-              title="NotificationSettings"
+              title="Notifications"
               subtitle="Manage your notifications and alerts."
               onPress={() => navigation.navigate("NotificationSettings")}
             />

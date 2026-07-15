@@ -14,64 +14,8 @@ import { TextAvatar } from "../onboarding/TextAvatar";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { RootStackParamList } from "../../navigation/types";
-
-export type SidebarMenuItem = {
-  key: string;
-  label: string;
-  icon: string;
-  navigate: keyof RootStackParamList;
-};
-
-export const DEFAULT_SIDEBAR_ITEMS: SidebarMenuItem[] = [
-  { 
-    key:"home",
-    label: "Home",
-    icon: "home-outline",
-    navigate: "Home"
-  },
-  {
-    key: "profile",
-    label: "Profile",
-    icon: "account-outline",
-    navigate: "Profile",
-  },
-  {
-    key: "wallet",
-    label: "Zubba Wallet",
-    icon: "wallet-outline",
-    navigate: "ZubbaWallet",
-  },
-  {
-    key: "settings",
-    label: "Settings",
-    icon: "cog-outline",
-    navigate: "Settings",
-  },
-  {
-    key: "subscription",
-    label: "Subscription",
-    icon: "clock-outline",
-    navigate: "ManageSubscription",
-  },
-  {
-    key: "chooseplan",
-    label: "Subscription",
-    icon: "crown-outline",
-    navigate: "ConfirmSubscription",
-  },
-  {
-    key: "support",
-    label: "Support",
-    icon: "face-agent",
-    navigate: "HelpCenter",
-  },
-  {
-    key: "promotions",
-    label: "Promotions",
-    icon: "tag-outline",
-    navigate: "Promotions",
-  },
-];
+import { SidebarMenuItem } from "../../types/sidebarItem.types";
+import { bottom_sidebar_items, isPremiumSidebarItem, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
 
 const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -90,16 +34,25 @@ export default function Sidebar({
   visible,
   onClose,
   isVerified = true,
-  menuItems = DEFAULT_SIDEBAR_ITEMS,
+  menuItems = [],
   navigation,
   activeKey,
 }: SidebarProps) {
   const { colors } = useTheme();
   const user = useAppSelector((state) => state.auth.user);
+  const customer = useAppSelector((state) => state.customer)
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const [mounted, setMounted] = useState(visible);
   const [active, setActive] = useState<string>(activeKey ?? "");
+  const sidebarItems = [
+    ...top_sidebar_items,
+    ...(customer.is_premium ? [isPremiumSidebarItem] : [noPlanSidebarItem]),
+    ...bottom_sidebar_items,
+    ...menuItems,
+  ];
+
+  console.log(sidebarItems)
 
   useEffect(() => {
     if (visible) {
@@ -264,7 +217,7 @@ export default function Sidebar({
 
           {/* Menu items */}
           <View style={{ gap: 12 }}>
-            {menuItems.map((item) => {
+            {sidebarItems.map((item) => {
               const currentScreen = item.key === active;
               return (
                 <Pressable

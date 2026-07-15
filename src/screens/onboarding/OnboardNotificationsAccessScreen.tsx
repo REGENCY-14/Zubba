@@ -5,11 +5,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
+import { useTheme } from "../../context/ThemeContext";
 
 export const OnboardNotificationsAccessScreen = ({
   navigation,
 }: RootStackScreenProps<"OnboardNotificationsAccess">) => {
   const sendNotification = require("../../../assets/sendNotification.png");
+  const { colors } = useTheme()
 
   // const requestNotificationPermission = async () => {
   //   try {
@@ -23,8 +25,7 @@ export const OnboardNotificationsAccessScreen = ({
 
   //     if (finalStatus !== "granted") {
   //       toast.success(
-  //         "Permission denied",
-  //         "You can enable notifications later in settings.",
+  //         "Permission denied\nYou can enable notifications later in settings.",
   //       );
   //       return false;
   //     }
@@ -33,8 +34,7 @@ export const OnboardNotificationsAccessScreen = ({
   //   } catch (error) {
   //     console.log("Notification permission error:", error);
   //     toast.error(
-  //       "Error",
-  //       "Unable to request notification permissions right now.",
+  //       "Error\nUnable to request notification permissions right now.",
   //     );
   //     return false;
   //   }
@@ -49,7 +49,7 @@ export const OnboardNotificationsAccessScreen = ({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ backgroundColor: colors.bg}} className="flex-1">
       <ScrollView
         className="flex-1 px-[20px] py-[20px]"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -62,11 +62,11 @@ export const OnboardNotificationsAccessScreen = ({
             resizeMode="contain"
           />
 
-          <Text className="text-[24px] font-bold text-center text-gray-900 mb-3">
+          <Text style={{color: colors.text}} className="text-[24px] font-bold text-center mb-3">
             Stay updated on requests and promos
           </Text>
 
-          <Text className="text-[15px] font-thin leading-6 text-center text-gray-500 mb-8">
+          <Text style={{color: colors.textSub}} className="text-[15px] font-thin leading-6 text-center mb-8">
             Get notified when your driver is nearby and for job updates.
           </Text>
         </View>
