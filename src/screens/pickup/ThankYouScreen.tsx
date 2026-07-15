@@ -30,7 +30,7 @@ export function ThankYouScreen({
       <BlurView
         intensity={40}
         tint="dark"
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
       />
 
       <View style={styles.overlay} />
@@ -64,7 +64,7 @@ export function ThankYouScreen({
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(225,225,225,0.3)",
   },
 });
