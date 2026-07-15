@@ -9,6 +9,7 @@ export interface DriverRequest {
 }
 
 export interface RequestState {
+  id: string;
   customer_id: string;
   driver: DriverRequest;
   pickup_location: string;
@@ -25,6 +26,7 @@ export interface RequestState {
 }
 
 const initialState: RequestState = {
+  id: "",
   customer_id: "",
   driver: {
     driver_id: "",

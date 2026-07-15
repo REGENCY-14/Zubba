@@ -19,7 +19,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
 import { driverService } from "../../api/driverService";
 import { customerService } from "../../api/customerService";
-import { RequestTakeout } from "../../types/customer.types";
+import { RequestTakeout } from "../../types/request.types";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import {
   resetRequest,
@@ -28,6 +28,7 @@ import {
   setStatus,
 } from "../../slices/request/requestSlice";
 import { toast } from "../../hooks/toast";
+import { requestService } from "../../api/requestService";
 
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
@@ -50,6 +51,7 @@ export function ScanningScreen({
   navigation,
 }: RootStackScreenProps<"Scanning">) {
   const dispatch = useAppDispatch();
+  const request = useAppSelector((state) => state.request);
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
   const [appBarText, setAppBarText] = useState("Scanning...");
@@ -57,7 +59,7 @@ export function ScanningScreen({
   const [driver, setDriver] = useState<NearbyDriver | null>(null);
   const isPremium = customer.is_premium;
   const { coords } = useCurrentLocation();
-  const { colors, isDark } = useTheme()
+  const { colors, isDark } = useTheme();
   const [modalStep, setModalStep] = useState<
     "" | "found_drivers" | "customer_requests" | "driver_accepts"
   >("");
@@ -98,13 +100,15 @@ export function ScanningScreen({
           setModalStep("found_drivers");
           setShowModal(true);
         } else {
-          toast.error("No drivers found within you vicinity.\nPlease try again later.")
+          toast.error(
+            "No drivers found within you vicinity.\nPlease try again later.",
+          );
           navigation.navigate("Home");
         }
       } catch (err: any) {
         if (!cancelled) {
           animation.stop();
-          toast.error(err)
+          toast.error(err);
           navigation.navigate("Home");
         }
       }
@@ -132,12 +136,14 @@ export function ScanningScreen({
         service_price: 5,
       };
       const result = await customerService.requestTakeout(requestTakeout);
-      if (!result.success)
+      const requestResult = result.data.request;
+      if (!result.success) {
         toast.error("Failed to request takeout, please try again later");
-
+      }
 
       dispatch(
         setRequest({
+          id: requestResult.id,
           customer_id: customer.id,
           pickup_location: requestTakeout.pickup_location.toString(),
           pickup_address: requestTakeout.pickup_address,
@@ -146,7 +152,7 @@ export function ScanningScreen({
           distance_m: requestTakeout.distance_m,
           pickup_price: requestTakeout.pickup_price,
           service_price: requestTakeout.service_price,
-          collection_code: result.data.request.collection_code,
+          collection_code: requestResult.collection_code,
           scheduleRequest: false,
           status: "pending",
         }),
@@ -163,19 +169,32 @@ export function ScanningScreen({
           }),
         );
         dispatch(setStatus("accepted"));
+        // change to accepted on drivers side
+        requestService.updateRequestStatus(requestResult.id, "accepted");
         setModalStep("driver_accepts");
       }, 3000);
+      setTimeout(() => {
+        requestService.updateRequestStatus(requestResult.id, "en_route");
+      }, 2000);
     } catch (err) {
       dispatch(resetRequest());
       console.error(err);
     }
   };
 
+  const cancelRequest = async () => {
+    await requestService.updateRequestStatus(request.id, "cancelled");
+    navigation.pop();
+    setShowModal(false);
+  };
+
   useEffect(() => {
     if (modalStep !== "driver_accepts") return;
+    requestService.updateRequestStatus(request.id, "arrived");
     assignedTimerRef.current = setTimeout(() => {
       assignedTimerRef.current = null;
       setShowModal(false);
+
       navigation.navigate("DriverArrives");
     }, 5000);
     return () => {
@@ -348,10 +367,7 @@ export function ScanningScreen({
             code={driver.code ?? "—"}
             cost={driver.cost.toFixed(2)}
             onProceed={customer_requests}
-            onCancel={() => {
-              navigation.pop();
-              setShowModal(false);
-            }}
+            onCancel={cancelRequest}
             onAssignedCancel={() => {
               if (assignedTimerRef.current)
                 clearTimeout(assignedTimerRef.current);

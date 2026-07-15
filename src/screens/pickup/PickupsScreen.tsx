@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, SectionList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -7,15 +7,19 @@ import { AppBottomNav } from '../../components';
 import { useTheme, ThemeColors } from '../../context/ThemeContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import type { RootStackScreenProps } from '../../navigation/types';
-
-type PickupStatus = 'Completed' | 'Cancelled';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { customerService } from '../../api/customerService';
+import { toast } from '../../hooks/toast';
+import { setRequest } from '../../slices/request/requestSlice';
+import { CustomerRequestItem } from '../../types/request.types';
 
 type Pickup = {
   id: string;
   date: string;
-  status: PickupStatus;
+  status: string;
   location: string;
   amount: string;
+  raw: CustomerRequestItem;
 };
 
 type PickupSection = {
@@ -23,41 +27,45 @@ type PickupSection = {
   data: Pickup[];
 };
 
-const COMPLETED_SECTIONS: PickupSection[] = [
-  {
-    title: null,
-    data: [
-      { id: '1', date: '21 July', status: 'Completed', location: 'Komfo Anokye Hospital, Kumasi', amount: 'GHS 45.00' },
-      { id: '2', date: '21 July', status: 'Cancelled', location: 'Adum Central Market, Kumasi', amount: 'GHS 0.00' },
-      { id: '3', date: '20 July', status: 'Completed', location: 'KNUST Campus, Kumasi', amount: 'GHS 45.00' },
-    ],
-  },
-  {
-    title: '7 Days Ago',
-    data: [
-      { id: '4', date: '14 July', status: 'Completed', location: 'Suame Roundabout, Kumasi', amount: 'GHS 45.00' },
-      { id: '5', date: '14 July', status: 'Completed', location: 'Bantama Market, Kumasi', amount: 'GHS 45.00' },
-      { id: '6', date: '13 July', status: 'Cancelled', location: 'Asafo Market, Kumasi', amount: 'GHS 0.00' },
-      { id: '7', date: '13 July', status: 'Completed', location: 'Ahodwo Roundabout, Kumasi', amount: 'GHS 45.00' },
-    ],
-  },
-];
-
-const PENDING_SECTIONS: PickupSection[] = [
-  {
-    title: null,
-    data: [
-      { id: 'p1', date: 'Today', status: 'Completed', location: 'Tech Junction, Kumasi', amount: 'GHS 45.00' },
-    ],
-  },
-];
-
 type TabKey = 'completed' | 'pending';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'completed', label: 'Completed' },
   { key: 'pending', label: 'Pending' },
 ];
+
+const COMPLETED_STATUSES = new Set(['completed', 'cancelled']);
+
+function formatStatusLabel(status: string) {
+  return status
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+function formatShortDate(iso: string) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+}
+
+function formatAmount(item: CustomerRequestItem) {
+  if (item.status === 'cancelled') return 'GHS 0.00';
+  const total = Number(item.pickup_price ?? 0) + Number(item.service_price ?? 0);
+  return `GHS ${total.toFixed(2)}`;
+}
+
+function mapRequestToPickup(item: CustomerRequestItem): Pickup {
+  const dateSource = item.completed_at ?? item.cancelled_at ?? item.created_at;
+  return {
+    id: item.id,
+    date: formatShortDate(dateSource),
+    status: formatStatusLabel(item.status),
+    location: item.pickup_address,
+    amount: formatAmount(item),
+    raw: item,
+  };
+}
 
 function TabBar({
   active,
@@ -108,10 +116,20 @@ function TabBar({
   );
 }
 
-function PickupRow({ pickup, isLast, colors }: { pickup: Pickup; isLast: boolean; colors: ThemeColors }) {
-  const isCancelled = pickup.status === 'Cancelled';
+function PickupRow({
+  pickup,
+  isLast,
+  colors,
+  onPress,
+}: {
+  pickup: Pickup;
+  isLast: boolean;
+  colors: ThemeColors;
+  onPress?: () => void;
+}) {
+  const isCancelled = pickup.raw.status === 'cancelled';
 
-  return (
+  const content = (
     <View
       style={{
         flexDirection: 'row',
@@ -165,14 +183,96 @@ function PickupRow({ pickup, isLast, colors }: { pickup: Pickup; isLast: boolean
       </Pressable>
     </View>
   );
+
+  if (!onPress) return content;
+
+  return <Pressable onPress={onPress}>{content}</Pressable>;
 }
 
 export function PickupsScreen({ navigation }: RootStackScreenProps<'Pickups'>) {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
+  const [requests, setRequests] = useState<CustomerRequestItem[]>([]);
+  const [total, setTotal] = useState<number>(0);
   const isPremium = useAppSelector((state) => state.customer.is_premium);
   const [activeTab, setActiveTab] = useState<TabKey>('completed');
 
-  const sections = activeTab === 'completed' ? COMPLETED_SECTIONS : PENDING_SECTIONS;
+  useEffect(() => {
+    const fetchCustomerRequests = async () => {
+      try {
+        const result = await customerService.getCustomerRequests({
+          limit: 1000,
+          current_page: 1,
+          offset: 0,
+        });
+        const customerRequests = result.data.items;
+        setRequests(customerRequests);
+        setTotal(result.data.metadata.total);
+      } catch (err: any) {
+        toast.error(err);
+      }
+    };
+    fetchCustomerRequests();
+  }, []);
+
+  const { completedSections, pendingSections } = useMemo(() => {
+    const completed = requests.filter((r) => COMPLETED_STATUSES.has(r.status));
+    const pending = requests.filter((r) => !COMPLETED_STATUSES.has(r.status));
+
+    return {
+      completedSections: [
+        { title: null, data: completed.map(mapRequestToPickup) },
+      ] as PickupSection[],
+      pendingSections: [
+        { title: null, data: pending.map(mapRequestToPickup) },
+      ] as PickupSection[],
+    };
+  }, [requests]);
+
+  const sections = activeTab === 'completed' ? completedSections : pendingSections;
+
+  const buildRequestStateFromItem = (item: CustomerRequestItem) => ({
+    customer_id: item.customer_id,
+    driver: {
+      driver_id: item.driver?.id ?? '',
+      name: item.driver
+       ? [item.driver.firstname, item.driver.lastname].filter(Boolean).join(' ')
+       : '',
+      avatar: item.driver?.profile_picture ?? '',
+      code: item.driver?.vehicle_plate ?? '',
+      rating: item.driver?.rating ?? 0,
+    },
+    pickup_location:
+      typeof item.pickup_location === 'string'
+        ? item.pickup_location
+        : JSON.stringify(item.pickup_location),
+    pickup_address: item.pickup_address,
+    status: item.status,
+    payment_method: item.payment_method ?? '',
+    bags: Number(item.bags ?? 0),
+    distance_m: item.distance_m,
+    pickup_price: Number(item.pickup_price),
+    service_price: Number(item.service_price),
+    date_created: new Date(item.created_at),
+    collection_code: item.collection_code,
+    scheduleRequest: !!item.schedule_id,
+  });
+
+  const handlePickupPress = (pickup: Pickup) => {
+    const { raw } = pickup;
+
+    if (activeTab === 'pending' && raw.status === 'arrived') {
+      dispatch(setRequest(buildRequestStateFromItem(raw)));
+      navigation.navigate('DriverArrives');
+      return;
+    }
+
+    if (activeTab === 'completed' && raw.status === 'completed') {
+      dispatch(setRequest(buildRequestStateFromItem(raw)));
+      navigation.navigate('PaymentSuccess', {phone: raw.payment_method ?? ""});
+      return;
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -235,7 +335,12 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<'Pickups'>) {
                 ) : null
               }
               renderItem={({ item, index, section }) => (
-                <PickupRow pickup={item} isLast={index === section.data.length - 1} colors={colors} />
+                <PickupRow
+                  pickup={item}
+                  isLast={index === section.data.length - 1}
+                  colors={colors}
+                  onPress={() => handlePickupPress(item)}
+                />
               )}
               ListEmptyComponent={
                 <View style={{ padding: 32, alignItems: 'center' }}>
