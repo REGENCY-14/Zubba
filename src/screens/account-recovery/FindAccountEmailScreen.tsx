@@ -37,7 +37,8 @@ export function FindAccountEmailScreen({
       const res = await authService.register({
         authKey: "email",
         authValue: trimmedEmail,
-        role: "customer"
+        role: "customer",
+        find: true
       });
 
       const user = res.data.user;

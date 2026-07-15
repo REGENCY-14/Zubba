@@ -134,7 +134,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                     })
                   }
                 >
-                  <Text className="text-white text-sm leading-5" style={{ color: colors.text }}>{contactActionLabel}</Text>
+                  <Text className="text-white text-sm leading-5" style={{ color: "#FFFFFF" }}>{contactActionLabel}</Text>
                 </Pressable>
 
                 <View className="gap-2">
@@ -153,7 +153,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                   >
                     <MaterialCommunityIcons name="information" size={18} color="#31973D" />
                   </View>
-                  <Text className="flex-1 text-sm leading-[21px] text-[#64748A]" style={{ color: colors.text }}>
+                  <Text className="flex-1 text-sm leading-[21px] text-[#64748A]" style={{ color: colors.textSub }}>
                     {contactNotice}
                   </Text>
                 </View>

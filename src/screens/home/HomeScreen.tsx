@@ -138,7 +138,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             style={{
               backgroundColor: isDark ? colors.card : colors.bg,
               borderColor: colors.border,
-              gap: 20,
+              gap: 12,
             }}
             className="absolute p-5 border rounded-3xl top-[58px] left-2.5 right-2.5 space-y-6"
           >
@@ -387,7 +387,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 style={{
                   flexDirection: "row",
                   gap: 8,
-                  marginBottom: 12,
+                  marginBottom: 16,
                   alignItems: "center",
                   backgroundColor: colors.card,
                   borderWidth: 1,
@@ -441,6 +441,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 style={{
                   flexDirection: "row",
                   gap: 8,
+                  marginBottom: 16,
                   alignItems: "center",
                   backgroundColor: colors.card,
                   borderWidth: 1,

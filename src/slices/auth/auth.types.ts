@@ -23,6 +23,7 @@ export interface RegisterDto {
   authKey: AuthKey;
   authValue: string;
   role: UserRole;
+  find?: boolean
 }
 
 export interface VerifyOtpDto {

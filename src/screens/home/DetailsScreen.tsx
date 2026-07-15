@@ -61,6 +61,7 @@ export function DetailsScreen({
                   backgroundColor: colors.card,
                   opacity: isFocused || isPhoneValid ? 1 : 0.5,
                 }}
+                className="outline-none"
                 placeholder="phone number"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="phone-pad"

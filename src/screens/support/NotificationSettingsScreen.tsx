@@ -150,7 +150,7 @@ export function NotificationSettingsScreen({
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 148 }}
+          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 100 }}
           onScrollBeginDrag={closeFrequency}
         >
           <View
@@ -167,7 +167,9 @@ export function NotificationSettingsScreen({
               <Pressable
                 ref={buttonRef}
                 className="flex-row items-center justify-between"
-                onPress={() => (frequencyOpen ? closeFrequency() : openFrequency())}
+                onPress={() =>
+                  frequencyOpen ? closeFrequency() : openFrequency()
+                }
               >
                 <View className="flex-1 gap-1 pr-4">
                   <Text
@@ -265,10 +267,7 @@ export function NotificationSettingsScreen({
           animationType="none"
           onRequestClose={closeFrequency}
         >
-          <Pressable
-            style={{ flex: 1 }}
-            onPress={closeFrequency}
-          >
+          <Pressable style={{ flex: 1 }} onPress={closeFrequency}>
             <View
               style={{
                 position: "absolute",
@@ -297,7 +296,7 @@ export function NotificationSettingsScreen({
                         : isDark
                           ? colors.card
                           : colors.bg,
-                    borderColor: colors.border
+                    borderColor: colors.border,
                   }}
                   className={`px-4 py-3 ${
                     i !== FREQUENCIES.length - 1 ? "border-b" : ""

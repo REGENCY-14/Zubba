@@ -8,8 +8,15 @@ import {
   AuthTokens,
 } from "../slices/auth/auth.types";
 import { ApiResponse } from "../types/api.types";
+import axios from "axios";
 
 export const authService = {
+  googleLogin: (idToken: string) => {
+    return axios.post(`${process.env.EXPO_PUBLIC_API_URL}/auth/google`, {
+      idToken, role: "customer"
+    });
+  },
+
   register: async (payload: RegisterDto) => {
     const { data } = await api.post<ApiResponse<{ user: User }>>(
       "/auth/register",

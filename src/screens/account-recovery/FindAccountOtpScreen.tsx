@@ -52,6 +52,7 @@ export function FindAccountOtpScreen({
       });
       if (!result.success)
         toast.error("OTP incorrect, please verify and try again.");
+      console.log("user: ", result.data)
       const { user, accessToken, refreshToken } = result.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
@@ -117,7 +118,7 @@ export function FindAccountOtpScreen({
             disabled={!isCodeComplete}
             onPress={() => handleVerify(codeDigits.join(""))}
             className={[
-              "h-12 rounded-xl items-center justify-center mb-4",
+              "h-12 rounded-full items-center justify-center mb-4",
               isCodeComplete ? "bg-[#34A853]" : "bg-[#34A85380]",
             ].join(" ")}
           >

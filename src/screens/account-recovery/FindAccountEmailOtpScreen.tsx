@@ -116,7 +116,7 @@ export function FindAccountEmailOtpScreen({
             disabled={!isCodeComplete}
             onPress={() => handleVerify(codeDigits.join(""))}
             className={[
-              "h-12 rounded-xl items-center justify-center mb-4",
+              "h-12 rounded-full items-center justify-center mb-4",
               isCodeComplete ? "bg-[#34A853]" : "bg-[#34A85380]",
             ].join(" ")}
           >

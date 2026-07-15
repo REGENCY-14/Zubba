@@ -13,7 +13,7 @@ export type RootStackParamList = {
   ExistingUserNotification: { phone?: string; email?: string } | undefined;
   NewUserOnboarding: { phone?: string; email?: string } | undefined;
   KycCollection: { phone?: string; email?: string } | undefined;
-  TermsAcceptance: { phone?: string; email?: string; firstName?: string; lastName?: string } | undefined;
+  TermsAcceptance: { phone?: string; email?: string; firstname?: string; lastname?: string } | undefined;
   Home: undefined;
   Profile: { updatedAt?: number; newPhone?: string; newEmail?: string; newFullName?: string } | undefined;
   UpdateName: undefined;

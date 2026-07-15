@@ -138,7 +138,7 @@ export default function PickupRequestModal({
 
                   <Text className="text-[#31973D] text-base">
                     GHS {cost} /{" "}
-                    <span style={{ color: colors.textSub }}>distance</span>
+                    <Text style={{ color: colors.textSub }}>distance</Text>
                   </Text>
 
                   <View className="flex-row items-center">
@@ -248,7 +248,7 @@ export default function PickupRequestModal({
 
                   <Text className="text-[#31973D] text-base">
                     GHS {cost} /{" "}
-                    <span style={{ color: colors.textSub }}>distance</span>
+                    <Text style={{ color: colors.textSub }}>distance</Text>
                   </Text>
 
                   <View className="flex-row items-center">
@@ -277,9 +277,9 @@ export default function PickupRequestModal({
               <View className="flex-row items-center gap-3 w-full">
                 <Pressable
                   onPress={onCancel}
-                  className="flex-1 h-10 border border-red-300 bg-[#e93c3c] rounded-full items-center justify-center"
+                  className="flex-1 h-10 border border-red-300 bg-[#FDF2F8] rounded-full items-center justify-center"
                 >
-                  <Text style={{color: colors.text}} className="text-sm">Cancel</Text>
+                  <Text style={{color: "#EC4899"}} className="text-sm">Cancel</Text>
                 </Pressable>
               </View>
             </View>

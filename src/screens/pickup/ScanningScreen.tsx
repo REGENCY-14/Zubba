@@ -30,6 +30,7 @@ import {
 import { toast } from "../../hooks/toast";
 
 const mapImage = require("../../../assets/RawMap.png");
+const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const avatar = require("../../../assets/avatar.jpg");
 
 const { width: screenW, height: screenH } = Dimensions.get("window");
@@ -48,7 +49,6 @@ const TRICYCLES: { top: number; left: number; rotate: string }[] = [
 export function ScanningScreen({
   navigation,
 }: RootStackScreenProps<"Scanning">) {
-  const { colors } = useTheme();
   const dispatch = useAppDispatch();
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
@@ -57,6 +57,7 @@ export function ScanningScreen({
   const [driver, setDriver] = useState<NearbyDriver | null>(null);
   const isPremium = customer.is_premium;
   const { coords } = useCurrentLocation();
+  const { colors, isDark } = useTheme()
   const [modalStep, setModalStep] = useState<
     "" | "found_drivers" | "customer_requests" | "driver_accepts"
   >("");
@@ -97,11 +98,13 @@ export function ScanningScreen({
           setModalStep("found_drivers");
           setShowModal(true);
         } else {
+          toast.error("No drivers found within you vicinity.\nPlease try again later.")
           navigation.navigate("Home");
         }
-      } catch (err) {
+      } catch (err: any) {
         if (!cancelled) {
           animation.stop();
+          toast.error(err)
           navigation.navigate("Home");
         }
       }
@@ -132,17 +135,18 @@ export function ScanningScreen({
       if (!result.success)
         toast.error("Failed to request takeout, please try again later");
 
+
       dispatch(
         setRequest({
           customer_id: customer.id,
           pickup_location: requestTakeout.pickup_location.toString(),
           pickup_address: requestTakeout.pickup_address,
           payment_method: "",
-          bags: requestTakeout.bags,
+          bags: requestTakeout.bags ?? 0,
           distance_m: requestTakeout.distance_m,
           pickup_price: requestTakeout.pickup_price,
           service_price: requestTakeout.service_price,
-          collection_code: result.data.collection_code,
+          collection_code: result.data.request.collection_code,
           scheduleRequest: false,
           status: "pending",
         }),
@@ -190,7 +194,7 @@ export function ScanningScreen({
       edges={["top", "left", "right"]}
     >
       <ImageBackground
-        source={mapImage}
+        source={isDark ? mapDarkImage : mapImage}
         style={{ flex: 1, width: "100%", height: "100%" }}
         resizeMode="cover"
       >
