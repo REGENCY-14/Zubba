@@ -439,9 +439,9 @@ export function SettingsScreen({
           </SectionCard>
 
           <Pressable
-            style={{ backgroundColor: colors.card }}
+            style={{ backgroundColor: isDark ? "#f5cfd0" : colors.card }}
             className="h-[42px] rounded-full border border-[#C10007] items-center justify-center flex-row gap-2"
-            onPress={() => navigation.navigate("SignIn")}
+            onPress={() => navigation.navigate("FindAccount")}
           >
             <MaterialCommunityIcons name="logout" size={16} color="#C10007" />
             <Text className="text-sm leading-5 text-[#C10007] font-['Manrope']">

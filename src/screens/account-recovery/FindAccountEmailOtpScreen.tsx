@@ -19,6 +19,7 @@ import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
+import { handleApiError } from "../../utils/handleApiError";
 
 export function FindAccountEmailOtpScreen({
   route,
@@ -66,8 +67,8 @@ export function FindAccountEmailOtpScreen({
       navigation.replace("ExistingUserNotification", {
         email,
       });
-    } catch (err) {
-      console.log("OTP verify failed:", err);
+    } catch (err: any) {
+      handleApiError(err)
       setCodeDigits(["", "", "", ""]);
     }
   };

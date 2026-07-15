@@ -13,6 +13,8 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { userService } from "../../api/userService";
 import { authService } from "../../api/authService";
 import { useTheme } from "../../context/ThemeContext";
+import { toast } from "../../hooks/toast";
+import { handleApiError } from "../../utils/handleApiError";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -44,15 +46,15 @@ export function FindAccountEmailScreen({
       const user = res.data.user;
 
       if (!user) {
-        console.log("User not found");
+        toast.error("User not found");
         return;
       }
 
       navigation.navigate("FindAccountEmailOtp", {
         email: trimmedEmail,
       });
-    } catch (err) {
-      console.log("Find user failed:", err);
+    } catch (err: any) {
+      handleApiError(err)
     } finally {
       setLoading(false);
     }

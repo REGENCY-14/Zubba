@@ -13,6 +13,7 @@ import { authStorage } from "../../utils/authStorage";
 import { OTPInput } from "../../components/common/OTPInput";
 import { customerService } from "../../api/customerService";
 import { useTheme } from "../../context/ThemeContext";
+import { handleApiError } from "../../utils/handleApiError";
 
 export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";
@@ -63,7 +64,7 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
         navigation.replace("ExistingUserNotification", { ...(email ? { email: contact } : { phone: contact }) });
       }
     } catch (err) {
-      console.log("OTP verify failed:", err);
+      handleApiError(err)
       setCodeDigits(["", "", "", ""]);
     }
   };
@@ -76,7 +77,7 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
       setResendTimer(60);
       setCanResend(false);
     } catch (err) {
-      console.log("Resend OTP failed:", err);
+      handleApiError(err)
     }
   };
 

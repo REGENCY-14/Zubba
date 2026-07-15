@@ -74,7 +74,6 @@ export function RootNavigator() {
   useEffect(() => {
     const getCustomer = async () => {
       if(user && !customer){
-        console.log("getting logged in user customer details")
         const customerResponse = await customerService.getCustomerById(user.id)
         if(customerResponse.success){
           const customer = customerResponse.data.customer;

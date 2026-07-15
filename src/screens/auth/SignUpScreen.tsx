@@ -17,6 +17,7 @@ import { useRegister } from "../../slices/auth/auth.hooks";
 import { useTheme } from "../../context/ThemeContext";
 import { useGoogleLogin } from "../../services/googleAuth";
 import { authService } from "../../api/authService";
+import { handleApiError } from "../../utils/handleApiError";
 
 const googleIcon = require("../../../assets/Google icon.png");
 const ghanaFlag = require("../../../assets/ghana-flag.png");
@@ -44,7 +45,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
         userExists: isExisting,
       });
     } catch (err) {
-      console.log("Register error:", err);
+      handleApiError(err)
     }
   };
 

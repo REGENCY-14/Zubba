@@ -29,6 +29,7 @@ import {
 } from "../../slices/request/requestSlice";
 import { toast } from "../../hooks/toast";
 import { requestService } from "../../api/requestService";
+import { handleApiError } from "../../utils/handleApiError";
 
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
@@ -108,7 +109,7 @@ export function ScanningScreen({
       } catch (err: any) {
         if (!cancelled) {
           animation.stop();
-          toast.error(err);
+          handleApiError(err);
           navigation.navigate("Home");
         }
       }

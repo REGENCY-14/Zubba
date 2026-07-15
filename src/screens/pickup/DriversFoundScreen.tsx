@@ -40,8 +40,8 @@ function DriverCard({
   return (
     <Pressable
       onPress={onPress}
-      className="w-[248px] rounded-3xl p-4 gap-4 bg-white"
-      style={{ borderWidth: 1, borderColor: selected ? "#31973D" : "#E2E8F0" }}
+      className="w-[248px] rounded-3xl p-4 gap-4"
+      style={{ backgroundColor: isDark ? colors.card : colors.bg, borderWidth: 1, borderColor: selected ? "#31973D" : colors.border }}
     >
       <View className="flex-row gap-4 items-center">
         <View className="w-16 h-16 rounded-xl bg-[#F4F4F5] items-center justify-center flex-shrink-0">
@@ -70,7 +70,8 @@ function DriverCard({
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              className="text-sm font-bold text-[#1A1C1E] shrink"
+              style={{color: colors.text}}
+              className="text-sm font-bold shrink"
             >
               {driver.name}
             </Text>
@@ -85,10 +86,14 @@ function DriverCard({
 
           <View className="flex-row items-center gap-1">
             <MaterialCommunityIcons name="star" size={11} color="#735C00" />
-            <Text className="text-xs font-bold text-[#1A1C1E]">
+            <Text
+              style={{color: colors.text}}
+              className="text-xs font-bold">
               {driver.rating}
             </Text>
-            <Text className="text-xs font-extrabold text-[#BECAB9]"> · </Text>
+            <Text
+              style={{color: colors.text}}
+              className="text-xs font-extrabold text-[#BECAB9]"> · </Text>
             <Text className="text-sm font-bold text-[#0D631B] uppercase">
               {driver.code ?? "—"}
             </Text>
@@ -96,18 +101,22 @@ function DriverCard({
         </View>
       </View>
 
-      <View className="flex-row justify-between items-center pt-3 border-t border-t-[#F1F5F9]">
+      <View
+        style={{borderColor: colors.border}}
+        className="flex-row justify-between items-center pt-3 border-t border-t-[#F1F5F9]">
         <View className="flex-row items-center gap-2">
           <MaterialCommunityIcons
             name="map-marker-radius-outline"
             size={16}
             color="#006B23"
           />
-          <Text className="text-sm font-bold text-[#1A1C1E] tracking-[0.28px]">
+          <Text
+              style={{color: colors.text}}
+              className="text-sm font-bold tracking-[0.28px]">
             {distanceLabel}
           </Text>
         </View>
-        <View className="bg-[rgba(0,107,35,0.05)] rounded-lg px-2 py-0.5">
+        <View  className="bg-[rgba(0,107,35,0.05)] rounded-lg px-2 py-0.5">
           <Text className="text-xs font-bold text-[#006B23] tracking-[0.48px]">
             {etaLabel}
           </Text>
@@ -153,14 +162,14 @@ export function DriversFoundScreen({
   }, [modalStep, navigation]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right"]}>
       <ImageBackground
         source={isDark ? mapDarkImage : mapImage}
         style={{ flex: 1 }}
         resizeMode="cover"
         imageStyle={{ opacity: 0.8 }}
       >
-        <View className="h-12 bg-white flex-row items-center justify-between px-4 border-b border-b-[#E2E8F0]">
+        <View style={{backgroundColor: colors.bg, borderColor: colors.border}} className="h-12 flex-row items-center justify-between px-4 border-b">
           <Pressable
             className="w-7 h-7 items-center justify-center"
             onPress={() => navigation.navigate("Home")}
@@ -171,7 +180,7 @@ export function DriversFoundScreen({
               color="#1F2A33"
             />
           </Pressable>
-          <Text className="text-base font-bold text-[#1F2A33]">
+          <Text style={{color: colors.textSub}} className="text-base font-bold text-[#1F2A33]">
             Drivers found
           </Text>
           <View className="w-7" />
@@ -182,7 +191,7 @@ export function DriversFoundScreen({
             className="absolute items-center gap-1"
             style={{ left: "13%", top: "12%" }}
           >
-            <Text className="text-sm font-bold text-[#1F2A33]">5mins</Text>
+            <Text style={{color: colors.textSub}} className="text-sm font-bold text-[#1F2A33]">5mins</Text>
             <MaterialCommunityIcons
               name="map-marker"
               size={32}
@@ -194,7 +203,7 @@ export function DriversFoundScreen({
             className="absolute w-[34px] h-[34px] rounded-full items-center justify-center bg-[rgba(49,151,61,0.25)]"
             style={{ left: "14%", top: "42%" }}
           >
-            <View className="w-[17px] h-[17px] rounded-full bg-[#31973D] border-2 border-white" />
+            <View style={{borderColor: colors.border}} className="w-[17px] h-[17px] rounded-full bg-[#31973D] border-2" />
           </View>
 
           <View
