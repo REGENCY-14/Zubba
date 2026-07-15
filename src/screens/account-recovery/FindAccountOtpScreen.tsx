@@ -52,7 +52,6 @@ export function FindAccountOtpScreen({
       });
       if (!result.success)
         toast.error("OTP incorrect, please verify and try again.");
-      console.log("user: ", result.data)
       const { user, accessToken, refreshToken } = result.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await authStorage.save({ user, accessToken, refreshToken });
@@ -87,7 +86,6 @@ export function FindAccountOtpScreen({
       setCodeDigits(["", "", "", ""]);
     } catch (err) {
       toast.error("Failed to resend otp, please try again later");
-      console.log("Resend OTP failed:", err);
     }
   };
 

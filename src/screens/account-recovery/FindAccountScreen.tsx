@@ -40,9 +40,6 @@ export function FindAccountScreen({
 
     try {
       setLoading(true);
-
-      console.log(phone)
-
       const res = await authService.register({
         authKey: "phone",
         authValue: phone,
@@ -53,7 +50,7 @@ export function FindAccountScreen({
       const user = res.data.user;
 
       if (!user) {
-        console.log("User not found");
+        toast.error("User not found");
         return;
       }
 
@@ -62,7 +59,6 @@ export function FindAccountScreen({
       });
     } catch (err: any) {
       handleApiError(err);
-      console.log("Find user failed:", err, err.type);
     } finally {
       setLoading(false);
     }

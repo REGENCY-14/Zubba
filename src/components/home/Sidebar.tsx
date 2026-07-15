@@ -52,8 +52,6 @@ export default function Sidebar({
     ...menuItems,
   ];
 
-  console.log(sidebarItems)
-
   useEffect(() => {
     if (visible) {
       setMounted(true);
