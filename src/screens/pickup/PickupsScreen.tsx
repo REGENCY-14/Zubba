@@ -257,16 +257,20 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
   }, [fetchCustomerRequests]);
 
   const { completedSections, pendingSections } = useMemo(() => {
-    const completed = requests.filter((r) => COMPLETED_STATUSES.has(r.status));
-    const pending = requests.filter((r) => !COMPLETED_STATUSES.has(r.status));
+    const completed = requests
+      .filter((r) => COMPLETED_STATUSES.has(r.status))
+      .map(mapRequestToPickup);
+    const pending = requests
+      .filter((r) => !COMPLETED_STATUSES.has(r.status))
+      .map(mapRequestToPickup);
 
     return {
-      completedSections: [
-        { title: null, data: completed.map(mapRequestToPickup) },
-      ] as PickupSection[],
-      pendingSections: [
-        { title: null, data: pending.map(mapRequestToPickup) },
-      ] as PickupSection[],
+      completedSections: (completed.length
+        ? [{ title: null, data: completed }]
+        : []) as PickupSection[],
+      pendingSections: (pending.length
+        ? [{ title: null, data: pending }]
+        : []) as PickupSection[],
     };
   }, [requests]);
 
