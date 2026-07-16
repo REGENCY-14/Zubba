@@ -16,7 +16,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { userService } from "../../api/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { setCredentials, updateUser } from "../../slices/auth/authSlice";
+import { updateUser } from "../../slices/auth/authSlice";
 import { useTheme } from "../../context/ThemeContext";
 
 export function KycCollectionScreen({

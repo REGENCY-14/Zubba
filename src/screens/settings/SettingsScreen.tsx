@@ -10,6 +10,9 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { NavigationContainer } from "@react-navigation/native";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { logout } from "../../slices/auth/authSlice";
+import { authStorage } from "../../utils/authStorage";
 
 type SettingsRowProps = {
   icon: React.ReactNode;
@@ -104,11 +107,21 @@ export function SettingsScreen({
   navigation,
 }: RootStackScreenProps<"Settings">) {
   const { isDark, colors, toggle } = useTheme();
-  const customer = useAppSelector((state) => state.customer)
+  const customer = useAppSelector((state) => state.customer);
   const isPremium = customer.is_premium;
+  const dispatch = useAppDispatch();
 
   const zubbaText = require("../../../assets/zubbaText.png");
   const tricycleImage = require("../../../assets/tricycle image.png");
+
+  const handleSignout = async () => {
+    dispatch(logout());
+    await authStorage.clear();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "SignUp" }],
+    });
+  };
 
   return (
     <SafeAreaView
@@ -343,7 +356,7 @@ export function SettingsScreen({
                 </View>
               </View>
               <Pressable
-              style={{
+                style={{
                   backgroundColor: isDark ? colors.surface : colors.bg,
                   borderColor: isDark ? colors.border : colors.borderLight,
                 }}
@@ -441,7 +454,7 @@ export function SettingsScreen({
           <Pressable
             style={{ backgroundColor: isDark ? "#f5cfd0" : colors.card }}
             className="h-[42px] rounded-full border border-[#C10007] items-center justify-center flex-row gap-2"
-            onPress={() => navigation.navigate("FindAccount")}
+            onPress={handleSignout}
           >
             <MaterialCommunityIcons name="logout" size={16} color="#C10007" />
             <Text className="text-sm leading-5 text-[#C10007] font-['Manrope']">
