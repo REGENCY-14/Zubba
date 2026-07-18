@@ -95,7 +95,7 @@ export function ScanningScreen({
         setAppBarText(drivers.length ? "Driver Found" : "No drivers nearby");
 
         if (isPremium) {
-          navigation.navigate("DriversFound", { drivers });
+          navigation.replace("DriversFound", { drivers });
         } else if (drivers.length > 0) {
           setDriver(drivers[0]);
           setModalStep("found_drivers");
@@ -104,13 +104,13 @@ export function ScanningScreen({
           toast.error(
             "No drivers found within you vicinity.\nPlease try again later.",
           );
-          navigation.navigate("Home");
+          navigation.replace("Home");
         }
       } catch (err: any) {
         if (!cancelled) {
           animation.stop();
           handleApiError(err);
-          navigation.navigate("Home");
+          navigation.replace("Home");
         }
       }
     };
@@ -196,7 +196,7 @@ export function ScanningScreen({
       assignedTimerRef.current = null;
       setShowModal(false);
 
-      navigation.navigate("DriverArrives");
+      navigation.replace("DriverArrives");
     }, 5000);
     return () => {
       if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
@@ -373,7 +373,7 @@ export function ScanningScreen({
               if (assignedTimerRef.current)
                 clearTimeout(assignedTimerRef.current);
               setShowModal(false);
-              navigation.navigate("Home");
+              navigation.replace("Home");
             }}
           />
         )}

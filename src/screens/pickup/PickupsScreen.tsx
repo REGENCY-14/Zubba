@@ -237,7 +237,6 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
         offset: 0,
       });
       const customerRequests = result.data.items;
-      console.log("customer requests: ", customerRequests);
       setRequests(customerRequests);
       setTotal(result.data.metadata.total);
     } catch (err: any) {
