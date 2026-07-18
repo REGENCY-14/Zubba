@@ -11,7 +11,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zubbadevs.zubba"
     },
     "android": {
       "package": "com.zubba.app"
