@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -12,125 +14,125 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import CustomAppBar from "../../components/common/CustomAppBar";
+import { api } from "../../api/axios";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { markRequestCompleted, setPaymentDate, setPaymentStatus, setTransactionReference } from "../../slices/request/requestSlice";
+import { requestService } from "../../api/requestService";
+import { toast } from "../../hooks/toast";
+import { handleApiError } from "../../utils/handleApiError";
 
 export function PaymentVerificationScreen({
   route,
   navigation,
 }: RootStackScreenProps<"PaymentVerification">) {
-  const { phone } = route.params;
+  const { phone, reference, amount, provider = 'mtn' } = route.params;
+  const dispatch = useAppDispatch();
   const { colors } = useTheme();
-  const isPremium = useAppSelector((state) => state.customer.is_premium);
-  const [code, setCode] = React.useState("");
-  const [resendTimer, setResendTimer] = React.useState(60);
-  const inputRef = React.useRef<TextInput | null>(null);
-  const request = useAppSelector((state) => state.request)
+  const request = useAppSelector((state) => state.request);
+  const [status, setStatus] = useState<'pending' | 'success' | 'failed'>('pending');
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
-  React.useEffect(() => {
-    if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendTimer]);
+  useEffect(() => {
+    const pollPaymentStatus = async () => {
+      try {
+        const response = await api.get(`/payments/status/${reference}`);
+        const { status: paymentStatus } = response.data.data;
 
-  const handleResend = () => {
-    setCode("");
-    setResendTimer(60);
-  };
+        if (paymentStatus === 'success') {
+          setStatus('success');
+          
+          dispatch(setPaymentStatus('success'));
+          dispatch(setPaymentDate(new Date()));
+          dispatch(setTransactionReference(reference));
+          dispatch(markRequestCompleted());
+          await requestService.updateRequestStatus(request.id, "completed")
 
-  const codeDigits = ["", "", "", ""].map((_, i) => code[i] || "");
+          if (pollingInterval.current) {
+            clearInterval(pollingInterval.current);
+            pollingInterval.current = null;
+          }
+          setTimeout(() => {
+            navigation.replace("PaymentSuccess", { reference, amount, provider, phone });
+          }, 1500);
+        } else if (paymentStatus === 'failed') {
+          setStatus('failed');
+          if (pollingInterval.current) {
+            clearInterval(pollingInterval.current);
+            pollingInterval.current = null;
+          }
+          toast.error('Payment Failed. Please try again');
+        }
+      } catch (error) {
+        handleApiError(error)
+      }
+    };
+
+    pollingInterval.current = setInterval(pollPaymentStatus, 3000);
+    pollPaymentStatus();
+
+    return () => {
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current);
+        pollingInterval.current = null;
+      }
+    };
+  }, [reference]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-
-        <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, backgroundColor: colors.bg }}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons
-              name="chevron-left"
-              size={28}
-              color={colors.text}
-            />
-          </Pressable>
-
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
-            Payment Verification
-          </Text>
-
-          <View className="w-6" />
-        </View>
+        <CustomAppBar navigation={navigation} title="Payment Verification" />
 
         <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 10 }}>
-
           <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, marginBottom: 16 }}>
-            Verification Code
+            {status === 'pending' ? 'Processing Payment' : 
+             status === 'success' ? 'Payment Successful!' : 
+             'Payment Failed'}
           </Text>
 
           <Text style={{ fontSize: 16, lineHeight: 24, color: colors.textSub, marginBottom: 32 }}>
-            We've sent a 4-digit code to your{" "}
-            <Text style={{ color: colors.text, fontWeight: '600' }}>{request.payment_method}</Text> number{" "}
-            <Text style={{ color: colors.text, fontWeight: '600' }}>{phone}</Text>. Please
-            enter it below to authorize your{" "}
-            <Text style={{ color: '#006B23', fontWeight: '600' }}>GHS {request.pickup_price + request.service_price}</Text> payment.
+            {status === 'pending' ? (
+              <>
+                We're confirming your payment of{' '}
+                <Text style={{ color: colors.text, fontWeight: '600' }}>
+                  GHS {amount || request.pickup_price + request.service_price}
+                </Text>
+                . Please check your phone for the payment prompt.
+              </>
+            ) : status === 'success' ? (
+              'Your payment has been confirmed successfully!'
+            ) : (
+              'There was an issue with your payment. Please try again.'
+            )}
           </Text>
 
-          <View className="flex-row gap-4 mb-6">
-            {codeDigits.map((_, index) => {
-              const isFilled = index < code.length;
-
-              return (
-                <Pressable
-                  key={index}
-                  onPress={() => inputRef.current?.focus()}
-                  style={{ width: 52, height: 64, borderWidth: 2, borderColor: colors.border, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface }}
-                >
-                  {isFilled && (
-                    <View className="w-3 h-3 rounded-full bg-[#31973D]" />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-
-          <TextInput
-            ref={inputRef}
-            value={code}
-            onChangeText={(text) => {
-              if (text.length <= 4 && /^\d*$/.test(text)) setCode(text);
-            }}
-            keyboardType="numeric"
-            maxLength={4}
-            className="absolute opacity-0"
-          />
-
-          <View className="items-start mb-8 gap-2">
-            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
-              {resendTimer > 0
-                ? `Resend code in ${resendTimer}s`
-                : "Resend code"}
-            </Text>
-
-            <Pressable
-              onPress={handleResend}
-              disabled={resendTimer > 0}
-              style={[
-                { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
-                resendTimer > 0 ? { opacity: 0.5 } : {},
-              ]}
-            >
-              <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
-                Resend
+          {status === 'pending' && (
+            <View style={{ alignItems: 'center', marginVertical: 20 }}>
+              <ActivityIndicator size="large" color="#31973D" />
+              <Text style={{ marginTop: 16, color: colors.textSub }}>
+                Waiting for confirmation...
               </Text>
-            </Pressable>
-          </View>
+            </View>
+          )}
 
-          <Pressable
-            onPress={() =>
-              code.length === 4 && navigation.navigate("AuthorizePayment", { phone })
-            }
-            className="h-12 bg-[#31973D] rounded-full items-center justify-center"
-          >
-            <Text className="text-white text-sm">Verify</Text>
-          </Pressable>
+          {status === 'success' && (
+            <View style={{ alignItems: 'center', marginVertical: 20 }}>
+              <MaterialCommunityIcons name="check-circle" size={64} color="#31973D" />
+            </View>
+          )}
+
+          {status === 'failed' && (
+            <View style={{ alignItems: 'center', marginVertical: 20 }}>
+              <MaterialCommunityIcons name="close-circle" size={64} color="#EF4444" />
+              <Pressable
+                onPress={() => navigation.goBack()}
+                className="h-12 bg-[#31973D] rounded-full items-center justify-center w-full mt-4"
+              >
+                <Text className="text-white text-sm">Try Again</Text>
+              </Pressable>
+            </View>
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>

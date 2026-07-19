@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, Alert, ActivityIndicator } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { api } from "../../api/axios";
+import { toast } from "../../hooks/toast";
+import { handleApiError } from "../../utils/handleApiError";
 
 const PROFESSIONALISM_LABELS: Record<number, string> = {
   1: "Bad", 2: "Good", 3: "Very good", 4: "Great", 5: "Amazing",
@@ -64,9 +68,12 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
   const [ecoFriendly, setEcoFriendly] = useState(4);
   const [note, setNote] = useState("");
   const { colors } = useTheme();
-  const [proRating, setProRating] = useState<number>(0);
-  const [ecoRating, setEcoRating] = useState<number>(0);
+  const [proRating, setProRating] = useState<number>(4);
+  const [ecoRating, setEcoRating] = useState<number>(4);
   const [comment, setComment] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const request = useAppSelector((state) => state.request);
 
   const RATING_OPTIONS = [
     { label: "Bad", value: 1 },
@@ -75,6 +82,46 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
     { label: "Great", value: 4 },
     { label: "Amazing", value: 5 },
   ];
+
+  const handleSubmit = async () => {
+    if (!request.id) {
+      toast.error("No request found. Please try again.");
+      return;
+    }
+    if (serviceRating === 0 || proRating === 0 || ecoRating === 0) {
+      toast.error("Incomplete Rating. Please rate all categories before submitting.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const payload = {
+        serviceRating: serviceRating,
+        professionalism: proRating,
+        ecoFriendly: ecoRating,
+        comment: comment.trim() || undefined,
+      };
+
+      const response = await api.post(`/ratings/rate-request/${request.id}`, payload);
+
+      if (response.data.success) {
+        toast.success(
+          "Thank You!\nYour feedback helps us improve our service.",
+        );
+        navigation.replace("Home")
+      }
+    } catch (error: any) {
+      console.error("Rating error:", error);
+      handleApiError(error)
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSkip = () => {
+    navigation.navigate("Home");
+  };
 
   return (
     <SafeAreaView
@@ -102,7 +149,9 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
             Success
           </Text>
 
-          <View className="w-6 h-6" />
+          <Pressable onPress={handleSkip} className="w-6 h-6 items-center justify-center">
+            <Text style={{ color: colors.textSub }} className="text-sm">Skip</Text>
+          </Pressable>
         </View>
 
         <View className="flex-1 items-center gap-6 pt-[66px]">
@@ -178,6 +227,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                         key={index}
                         onPress={() => setServiceRating(index + 1)}
                         hitSlop={6}
+                        disabled={isLoading}
                       >
                         <MaterialCommunityIcons
                           name={active ? "star" : "star-outline"}
@@ -188,16 +238,6 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                     );
                   })}
                 </View>
-
-                {/* {serviceRating > 0 && (
-                  <Text className="text-sm text-[#31973D]">
-                    {
-                      ["", "Poor", "Fair", "Good", "Great", "Excellent"][
-                        serviceRating
-                      ]
-                    }
-                  </Text>
-                )} */}
               </View>
 
               <View style={{borderColor: colors.border}} className="w-full border"/>
@@ -216,6 +256,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                           key={item.value}
                           onPress={() => setProRating(item.value)}
                           className="items-center gap-2"
+                          disabled={isLoading}
                         >
                           <View
                             style={{
@@ -260,6 +301,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                           key={item.value}
                           onPress={() => setEcoRating(item.value)}
                           className="items-center gap-2"
+                          disabled={isLoading}
                         >
                           <View
                             style={{
@@ -313,13 +355,15 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                 placeholderTextColor={colors.textMuted}
                 value={comment}
                 onChangeText={setComment}
+                editable={!isLoading}
               />
             </View>
 
             <View className="gap-2 px-2 flex-row items-center">
               <Pressable
-                onPress={() => navigation.navigate("Home")}
+                onPress={handleSkip}
                 className="w-[34px] h-[34px] bg-red-100 rounded-xl items-center justify-center"
+                disabled={isLoading}
               >
                 <MaterialCommunityIcons
                   name="close"
@@ -329,10 +373,19 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
               </Pressable>
 
               <Pressable
-                onPress={() => navigation.navigate("Home")}
+                onPress={handleSubmit}
+                disabled={isLoading}
+                style={{
+                  opacity: isLoading ? 0.8 : 1,
+                  backgroundColor: isLoading ? "#31973D" : "#31973D",
+                }}
                 className="h-12 bg-[#31973D] flex-1 rounded-full items-center justify-center"
               >
-                <Text className="text-white text-sm">Submit</Text>
+                {isLoading ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <Text className="text-white text-sm">Submit</Text>
+                )}
               </Pressable>
             </View>
           </ScrollView>

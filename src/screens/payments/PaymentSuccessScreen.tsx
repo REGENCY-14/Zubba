@@ -6,23 +6,37 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { resetRequest } from "../../slices/request/requestSlice";
 
 export function PaymentSuccessScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"PaymentSuccess">) {
   const { colors } = useTheme();
-  const request = useAppSelector((state) => state.request)
-  const user = useAppSelector((state) => state.auth.user)
+  const dispatch = useAppDispatch();
+  const request = useAppSelector((state) => state.request);
+  const user = useAppSelector((state) => state.auth.user);
+  const { reference, amount, provider, phone } = route.params || {};
+  const transactionReference = request.transaction_reference || reference || "N/A";
+  const totalAmount = amount || request.pickup_price + request.service_price || 0;
 
   const details = [
-    { label: "Transaction Reference", value: "J243q5SHw43O" },
-    { label: "Payment Method", value: request.payment_method },
-    { label: "Account Number", value: user?.phone },
-    { label: "Account Name", value: `${user?.firstname} ${user?.lastname}`},
-    { label: "Bin Bags", value: `${request.bags} Bag${request.bags != 1 ? "s" : ""}` },
-    { label: "Date", value: request.date_created.getDate() },
-    { label: "Pickup time", value: request.date_created.getTime() },
+    { label: "Transaction Reference", value: transactionReference },
+    { label: "Payment Method", value: provider || request.payment_method || "Mobile Money" },
+    { label: "Account Number", value: phone || user?.phone || "" },
+    { label: "Account Name", value: `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || "N/A" },
+    { label: "Amount Paid", value: `GHS ${totalAmount.toFixed(2)}` },
+    { label: "Bin Bags", value: `${request.bags || 0} Bag${request.bags !== 1 ? "s" : ""}` },
+    { label: "Status", value: request.status === 'completed' ? 'Completed' : request.payment_status || 'Completed' },
+    { label: "Date", value: request.payment_date ? new Date(request.payment_date).toLocaleDateString() : new Date().toLocaleDateString() },
+    { label: "Pickup Time", value: request.date_created ? new Date(request.date_created).toLocaleTimeString() : "N/A" },
   ];
+
+  const handleDone = () => {
+    dispatch(resetRequest());
+    navigation.navigate("RateRide");
+  };
 
   return (
     <SafeAreaView
@@ -70,9 +84,7 @@ export function PaymentSuccessScreen({
 
               <View style={{borderColor: colors.border, borderStyle: "dashed"}} className="border-t" />
 
-              <View
-                className="rounded-3xl gap-4"
-              >
+              <View className="rounded-3xl gap-4">
                 <View className="gap-5">
                   {details.map((item) => (
                     <View key={item.label} className="flex-row justify-between">
@@ -102,7 +114,7 @@ export function PaymentSuccessScreen({
 
           <View className="px-6 mt-8 gap-2">
             <Pressable
-              onPress={() => navigation.navigate("RateRide")}
+              onPress={handleDone}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">Done</Text>

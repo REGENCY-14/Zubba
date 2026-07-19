@@ -23,6 +23,9 @@ export interface RequestState {
   date_created: Date;
   collection_code: number;
   scheduleRequest: boolean;
+  transaction_reference: string | null;
+  payment_status: string | null;
+  payment_date: Date | null;
 }
 
 const initialState: RequestState = {
@@ -46,6 +49,9 @@ const initialState: RequestState = {
   date_created: new Date(),
   collection_code: 0,
   scheduleRequest: false,
+  transaction_reference: null,
+  payment_status: null,
+  payment_date: null,
 };
 
 const requestSlice = createSlice({
@@ -104,6 +110,26 @@ const requestSlice = createSlice({
       state.scheduleRequest = action.payload;
     },
 
+    setTransactionReference(state, action: PayloadAction<string>) {
+      state.transaction_reference = action.payload;
+    },
+
+    setPaymentStatus(state, action: PayloadAction<string>) {
+      state.payment_status = action.payload;
+    },
+
+    setPaymentDate(state, action: PayloadAction<Date>) {
+      state.payment_date = action.payload;
+    },
+
+    markRequestCompleted(state) {
+      state.status = 'completed';
+    },
+    
+    updateRequestStatus(state, action: PayloadAction<string>) {
+      state.status = action.payload;
+    },
+
     resetRequest() {
       return initialState;
     },
@@ -124,7 +150,12 @@ export const {
   setPickupPrice,
   setServicePrice,
   setScheduleRequest,
+  setTransactionReference,
+  setPaymentStatus,
+  setPaymentDate,
   resetRequest,
+  markRequestCompleted,
+  updateRequestStatus,
 } = requestSlice.actions;
 
 export const requestReducer = requestSlice.reducer;

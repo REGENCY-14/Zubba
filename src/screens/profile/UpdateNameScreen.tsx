@@ -12,8 +12,8 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
   const user = useAppSelector((state) => state.auth.user);
   const { colors, isDark } = useTheme()
 
-  const [firstName, setFirstName] = useState(user?.firstname ?? 'Edwin');
-  const [lastName, setLastName] = useState(user?.lastname ?? 'Adu Boateng');
+  const [firstName, setFirstName] = useState(user?.firstname ?? '');
+  const [lastName, setLastName] = useState(user?.lastname ?? '');
 
   const canSave = firstName.trim().length > 0 && lastName.trim().length > 0;
 

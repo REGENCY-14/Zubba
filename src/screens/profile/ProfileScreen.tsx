@@ -90,9 +90,9 @@ export function ProfileScreen({
 
   const fullName =
     route.params?.newFullName ??
-    (user ? `${user.firstname} ${user.lastname}` : "Edwin Adu Boateng");
-  const phone = route.params?.newPhone ?? user?.phone ?? "0244 11 22 310";
-  const email = route.params?.newEmail ?? user?.email ?? "Edwinaduboateng2@gmail.com";
+    (user ? `${user.firstname} ${user.lastname}` : "");
+  const phone = route.params?.newPhone ?? user?.phone ?? "";
+  const email = route.params?.newEmail ?? user?.email ?? "";
   const isVerified = user?.verified ?? true;
 
   useEffect(() => {

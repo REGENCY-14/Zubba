@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,13 +15,60 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { api } from "../../api/axios";
+import { handleApiError } from "../../utils/handleApiError";
+import { toast } from "../../hooks/toast";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setTransactionReference } from "../../slices/request/requestSlice";
 
 export function PaymentMethodScreen({
   navigation,
 }: RootStackScreenProps<"PaymentMethod">) {
+  const dispatch = useAppDispatch();
   const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
+  const [isLoading, setIsLoading] = useState(false);
   const { colors } = useTheme();
-  const request = useAppSelector((state) => state.request)
+  const request = useAppSelector((state) => state.request);
+  const user = useAppSelector((state) => state.auth.user);
+
+  const totalAmount = (request.pickup_price || 0) + (request.service_price || 0);
+
+  const handleProceedToPay = async () => {
+    const cleanedPhone = phoneNumber.replace(/\s/g, '');
+    if (cleanedPhone.length < 10) {
+      toast.error('Invalid Phone, Please enter a valid phone number');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await api.post('/payments/mobile-money/initiate', {
+        amount: totalAmount,
+        email: user?.email,
+        phone: cleanedPhone,
+        provider: 'mtn',
+        requestId: request.id,
+        payment_method: 'mobile_money',
+      });
+
+      if (response.data.success) {
+        const { reference } = response.data.data;
+        dispatch(setTransactionReference(reference));
+        navigation.navigate("PaymentVerification", { 
+          phone: phoneNumber,
+          reference: reference,
+          amount: totalAmount,
+          provider: 'mtn'
+        });
+      }
+    } catch (error: any) {
+      console.error(error)
+      handleApiError(error)
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
@@ -30,17 +79,10 @@ export function PaymentMethodScreen({
           className="flex-1"
           contentContainerStyle={{ padding: 16, paddingBottom: 10, gap: 24 }}
         >
-
           <View className="gap-6">
-
             <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 24, alignItems: "center", gap: 16 }}>
-
               <View className="w-14 h-14 rounded-full bg-[#41A06A]/10 items-center justify-center">
-                <MaterialCommunityIcons
-                  name="wallet"
-                  size={27}
-                  color="#31973D"
-                />
+                <MaterialCommunityIcons name="wallet" size={27} color="#31973D" />
               </View>
 
               <Text style={{ fontSize: 16, textAlign: "center", color: colors.textSub }}>
@@ -48,7 +90,7 @@ export function PaymentMethodScreen({
               </Text>
 
               <Text style={{ fontSize: 32, fontWeight: "600", color: colors.text, textAlign: "center" }}>
-                GHS {request.pickup_price + request.service_price}
+                GHS {totalAmount}
               </Text>
 
               <View style={{ width: "100%", borderTopWidth: 1, borderTopColor: colors.border }} />
@@ -61,7 +103,6 @@ export function PaymentMethodScreen({
             </View>
 
             <View className="gap-2">
-
               <Text style={{ fontSize: 16, color: colors.text }}>
                 Wallet Phone Number
               </Text>
@@ -90,13 +131,8 @@ export function PaymentMethodScreen({
             </View>
 
             <View style={{ flexDirection: "row", gap: 16, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card }}>
-
               <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
-                <MaterialCommunityIcons
-                  name="information-outline"
-                  size={18}
-                  color="#31973D"
-                />
+                <MaterialCommunityIcons name="information-outline" size={18} color="#31973D" />
               </View>
 
               <View className="flex-1 gap-1">
@@ -112,12 +148,16 @@ export function PaymentMethodScreen({
             </View>
 
             <Pressable
-              onPress={() => navigation.navigate("PaymentVerification", { phone: phoneNumber })}
+              onPress={handleProceedToPay}
+              disabled={isLoading}
               className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+              style={{ opacity: isLoading ? 0.7 : 1 }}
             >
-              <Text className="text-white text-sm">
-                Proceed to verify
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-white text-sm">Proceed to verify</Text>
+              )}
             </Pressable>
 
             <Text style={{ fontSize: 10, textAlign: "center", textTransform: "uppercase", color: colors.textMuted }}>
