@@ -277,6 +277,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     activeTab === "completed" ? completedSections : pendingSections;
 
   const buildRequestStateFromItem = (item: CustomerRequestItem) => ({
+    id: item.id,
     customer_id: item.customer_id,
     driver: {
       driver_id: item.driver?.id ?? "",

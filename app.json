@@ -2,7 +2,7 @@
   "expo": {
     "name": "Zubba Frontend",
     "slug": "zubba-frontend",
-    "owner": "zubba-frontend",
+    "owner": "andyaa",
     "scheme": "zubbafrontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -23,6 +23,11 @@
       "expo-splash-screen",
       "expo-status-bar",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f54db8fc-b548-4fb4-92ac-755981574a54"
+      }
+    }
   }
 }

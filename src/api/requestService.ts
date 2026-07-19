@@ -11,4 +11,17 @@ export const requestService = {
     );
     return data;
   },
+
+  rateRequest: async (requestId: string, ratings: {
+    serviceRating: number;
+    professionalism: number;
+    ecoFriendly: number;
+    comment?: string;
+  }) => {
+    const { data } = await api.post<ApiResponse<{ success: boolean }>>(
+      `/ratings/rate-request/${requestId}`,
+      ratings
+    );
+    return data;
+  }
 };
