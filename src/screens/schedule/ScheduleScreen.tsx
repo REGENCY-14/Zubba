@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -17,6 +18,12 @@ import { AppBottomNav } from "../../components";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { ThemeColors, useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import {
+  scheduleService,
+  Schedule as ApiSchedule,
+} from "../../api/scheduleService";
+import { handleApiError } from "../../utils/handleApiError";
+import { toast } from "../../hooks/toast";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -206,6 +213,10 @@ type ScheduleItem = {
   rawStartTime: string;
   rawEndTime: string;
   frequency: string;
+  status: 'scheduled' | 'completed' | 'cancelled' | 'processing' | 'failed';
+  retryCount?: number;
+  estimatedPrice?: number;
+  lastError?: string;
 };
 
 /* ─── ScheduleCard ──────────────────────────────────────────── */
@@ -216,7 +227,8 @@ function ScheduleCard({
   onMenuOpen,
   onMenuClose,
   onEdit,
-  onDelete
+  onDelete,
+  onRetry,
 }: {
   item: ScheduleItem;
   menuOpen: boolean;
@@ -224,58 +236,165 @@ function ScheduleCard({
   onMenuClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onRetry?: () => void;
 }) {
-  const {colors} = useTheme()
+  const { colors } = useTheme();
+
+  // Determine status badge styling
+  const getStatusBadge = () => {
+    switch (item.status) {
+      case 'scheduled':
+        return {
+          bg: '#FEF3C7',
+          text: '#92400E',
+          icon: 'moon-waning-crescent',
+          label: 'Scheduled',
+        };
+      case 'completed':
+        return {
+          bg: '#DCFCE7',
+          text: '#166534',
+          icon: 'check-circle',
+          label: 'Completed',
+        };
+      case 'cancelled':
+        return {
+          bg: '#FEE2E2',
+          text: '#991B1B',
+          icon: 'close-circle',
+          label: 'Cancelled',
+        };
+      case 'processing':
+        return {
+          bg: '#DBEAFE',
+          text: '#1E40AF',
+          icon: 'clock-outline',
+          label: 'Processing',
+        };
+      case 'failed':
+        return {
+          bg: '#FEF3C7',
+          text: '#92400E',
+          icon: 'alert-circle',
+          label: 'Retrying...',
+        };
+      default:
+        return {
+          bg: '#F1F5F9',
+          text: '#475569',
+          icon: 'moon-waning-crescent',
+          label: 'Scheduled',
+        };
+    }
+  };
+
+  const statusBadge = getStatusBadge();
 
   return (
     <View className="flex-row items-start px-3 h-32">
       {/* Main section */}
       <View className="flex-1 pt-1 pr-4 pb-1 gap-2.5 justify-center h-full">
         {/* Status badge */}
-        <View className="flex-row items-center">
-          <View className="flex-row items-center gap-1.5 bg-[#FEF3C7] rounded-xl px-2 py-1">
+        <View className="flex-row items-center gap-2">
+          <View
+            className="flex-row items-center gap-1.5 rounded-xl px-2 py-1"
+            style={{ backgroundColor: statusBadge.bg }}
+          >
             <MaterialCommunityIcons
-              name="moon-waning-crescent"
+              name={statusBadge.icon as any}
               size={14}
-              color="#92400E"
+              color={statusBadge.text}
             />
-            <Text className="text-xs text-[#92400E]">Scheduled</Text>
+            <Text
+              className="text-xs font-medium"
+              style={{ color: statusBadge.text }}
+            >
+              {statusBadge.label}
+            </Text>
           </View>
+
+          {/* Retry badge - only show if status is 'failed' and retryCount < 3 */}
+          {item.status === 'failed' && 
+           item.retryCount !== undefined && 
+           item.retryCount > 0 && 
+           item.retryCount < 3 && (
+            <View className="flex-row items-center gap-1.5 bg-[#FEF3C7] rounded-xl px-2 py-1">
+              <MaterialCommunityIcons
+                name="refresh"
+                size={12}
+                color="#92400E"
+              />
+              <Text className="text-xs text-[#92400E] font-medium">
+                Retry {item.retryCount}/3
+              </Text>
+            </View>
+          )}
+
+          {/* Max retries reached */}
+          {item.status === 'failed' && 
+           item.retryCount !== undefined && 
+           item.retryCount >= 3 && (
+            <View className="flex-row items-center gap-1.5 bg-[#FEE2E2] rounded-xl px-2 py-1">
+              <MaterialCommunityIcons
+                name="close-circle"
+                size={12}
+                color="#991B1B"
+              />
+              <Text className="text-xs text-[#991B1B] font-medium">
+                Max retries
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Date / time / location */}
         <View className="gap-px">
           <View className="flex-row items-center">
             <View className="px-1 py-1">
-              <Text style={{color: colors.text}} className="text-xs font-medium">
+              <Text
+                style={{ color: colors.text }}
+                className="text-xs font-medium"
+              >
                 {item.date}
               </Text>
             </View>
-            <View style={{backgroundColor: colors.border}} className="w-px h-4"/>
+            <View
+              style={{ backgroundColor: colors.border }}
+              className="w-px h-4"
+            />
             <View className="px-1 py-1">
-              <Text style={{color: colors.text}} className="text-xs font-medium">
-                {item.timeRange || "-"}
+              <Text
+                style={{ color: colors.text }}
+                className="text-xs font-medium"
+              >
+                {item.timeRange || '-'}
               </Text>
             </View>
           </View>
           <View className="px-1">
             <Text
-              style={{color: colors.text}}
+              style={{ color: colors.text }}
               className="text-[13px] font-medium"
               numberOfLines={1}
             >
-              {item.location || "No location set"}
+              {item.location || 'No location set'}
             </Text>
           </View>
         </View>
 
         {/* Estimated cost */}
         <View className="flex-row justify-between items-center">
-          <Text style={{color: colors.textSub}} className="text-[13px] font-medium">
+          <Text
+            style={{ color: colors.textSub }}
+            className="text-[13px] font-medium"
+          >
             Estimated cost
           </Text>
-          <Text style={{color: colors.textMuted}} className="text-xl font-bold">
-            GHS 15.00
+          <Text
+            style={{ color: colors.textMuted }}
+            className="text-xl font-bold"
+          >
+            GHS {item.estimatedPrice || '15.00'}
           </Text>
         </View>
       </View>
@@ -283,7 +402,7 @@ function ScheduleCard({
       {/* Three-dot menu column */}
       <View className="w-[35px] items-center pt-2">
         <Pressable
-          style={{backgroundColor: colors.iconBg}}
+          style={{ backgroundColor: colors.iconBg }}
           className="w-8 h-8 rounded-full items-center justify-center"
           onPress={menuOpen ? onMenuClose : onMenuOpen}
         >
@@ -297,30 +416,61 @@ function ScheduleCard({
         {/* Dropdown */}
         {menuOpen && (
           <View
-            className="absolute top-10 right-0 w-[145px] bg-[rgba(250,250,250,0.96)] border border-[#E2E8F0] rounded-2xl overflow-hidden z-50"
+            className="absolute top-10 right-0 w-[165px] bg-[rgba(250,250,250,0.96)] border border-[#E2E8F0] rounded-2xl overflow-hidden z-50"
             style={{
-              shadowColor: "#000",
+              shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.12,
               shadowRadius: 12,
               elevation: 16,
             }}
           >
-            <Pressable
-              className="flex-row items-center justify-between px-5 h-11"
-              onPress={() => {
-                onEdit();
-                onMenuClose();
-              }}
-            >
-              <Text className="text-sm text-[#1F2A33] ">Edit</Text>
-              <MaterialCommunityIcons
-                name="pencil-outline"
-                size={18}
-                color="#475568"
-              />
-            </Pressable>
-            <View className="h-px bg-[#E2E8F0] mx-3" />
+            {/* Edit - only show for scheduled or failed schedules */}
+            {(item.status === 'scheduled' || item.status === 'failed') && (
+              <>
+                <Pressable
+                  className="flex-row items-center justify-between px-5 h-11"
+                  onPress={() => {
+                    onEdit();
+                    onMenuClose();
+                  }}
+                >
+                  <Text className="text-sm text-[#1F2A33]">Edit</Text>
+                  <MaterialCommunityIcons
+                    name="pencil-outline"
+                    size={18}
+                    color="#475568"
+                  />
+                </Pressable>
+                <View className="h-px bg-[#E2E8F0] mx-3" />
+              </>
+            )}
+
+            {/* Retry - only show for failed schedules with retryCount < 3 */}
+            {item.status === 'failed' && 
+             item.retryCount !== undefined && 
+             item.retryCount < 3 && 
+             onRetry && (
+              <>
+                <Pressable
+                  className="flex-row items-center justify-between px-5 h-11"
+                  onPress={() => {
+                    onRetry();
+                    onMenuClose();
+                  }}
+                >
+                  <Text className="text-sm text-[#2563EB]">Retry</Text>
+                  <MaterialCommunityIcons
+                    name="refresh"
+                    size={18}
+                    color="#2563EB"
+                  />
+                </Pressable>
+                <View className="h-px bg-[#E2E8F0] mx-3" />
+              </>
+            )}
+
+            {/* Delete - always show */}
             <Pressable
               className="flex-row items-center justify-between px-5 h-11"
               onPress={() => {
@@ -328,7 +478,7 @@ function ScheduleCard({
                 onMenuClose();
               }}
             >
-              <Text className="text-sm text-[#EF4444] ">Delete</Text>
+              <Text className="text-sm text-[#EF4444]">Delete</Text>
               <MaterialCommunityIcons
                 name="trash-can-outline"
                 size={18}
@@ -348,9 +498,15 @@ export function ScheduleScreen({
   navigation,
 }: RootStackScreenProps<"Schedule">) {
   const { colors } = useTheme();
-  const customer = useAppSelector((state) => state.customer)
+  const customer = useAppSelector((state) => state.customer);
   const isPremium = customer.is_premium;
   const todayDate = new Date();
+
+  // Loading states
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   // Screen
   const [isBinFull, setIsBinFull] = useState(false);
@@ -367,7 +523,7 @@ export function ScheduleScreen({
 
   // Frequency
   const [frequencyOpen, setFrequencyOpen] = useState(false);
-  const [selectedFrequency, setSelectedFrequency] = useState("Daily");
+  const [selectedFrequency, setSelectedFrequency] = useState("One time pickup");
 
   // Calendar
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -405,36 +561,280 @@ export function ScheduleScreen({
     day: number;
   } | null>(null);
 
-  // Toast
+  // Toast animation
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastAnim = useRef(new Animated.Value(-80)).current;
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showToast = (message: string) => {
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    setToastMessage(message);
-    Animated.spring(toastAnim, {
-      toValue: 0,
-      useNativeDriver: true,
-      damping: 18,
-      stiffness: 220,
-    }).start();
-    toastTimer.current = setTimeout(hideToast, 3000);
-  };
+  // ─── Toast helpers ────────────────────────────────────────────
 
-  const hideToast = () => {
-    Animated.timing(toastAnim, {
-      toValue: -80,
-      duration: 220,
-      useNativeDriver: true,
-    }).start(() => setToastMessage(null));
-    if (toastTimer.current) {
-      clearTimeout(toastTimer.current);
-      toastTimer.current = null;
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
+    switch (type) {
+      case 'success':
+        toast.success(message);
+        break;
+      case 'error':
+        toast.error(message);
+        break;
+      case 'warning':
+        toast.warning(message);
+        break;
+      case 'info':
+        toast.info(message);
+        break;
     }
   };
 
-  const canSchedule = !!selectedDriver;
+  // ─── Handle Retry ─────────────────────────────────────────────
+
+  const handleRetrySchedule = async (scheduleId: string) => {
+    try {
+      setIsSubmitting(true);
+      const response = await scheduleService.retrySchedule(scheduleId);
+
+      if (response.success) {
+        showToast("Retrying schedule...", 'info');
+        await fetchSchedules(
+          activeFilter?.year,
+          activeFilter?.month,
+          activeFilter?.day,
+        );
+      }
+    } catch (error: any) {
+      console.error("Error retrying schedule:", error);
+      handleApiError(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ─── Fetch Schedules ──────────────────────────────────────────
+
+  const fetchSchedules = async (year?: number, month?: number, day?: number) => {
+    try {
+      setIsFetching(true);
+      const params: any = {};
+      if (year !== undefined && month !== undefined && day !== undefined) {
+        params.year = year;
+        params.month = month;
+        params.day = day;
+      }
+
+      const response = await scheduleService.getSchedules(params);
+
+      if (response.success && response.data) {
+        const items = response.data.items.map((s: ApiSchedule) => {
+          const date = new Date(s.scheduled_date);
+          const driver = DRIVERS.find((d) => d.name === s.driver_id) || DRIVERS[0];
+
+          // Map status from API
+          let status: ScheduleItem['status'] = 'scheduled';
+          if (s.status === 'completed') status = 'completed';
+          else if (s.status === 'cancelled') status = 'cancelled';
+          else if (s.processed_at && s.status === 'scheduled') status = 'processing';
+          else if (s.last_error && s.retry_count && s.retry_count > 0) status = 'failed';
+
+          return {
+            id: s.id,
+            driver: driver?.name || 'Driver',
+            date: date.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            timeRange:
+              s.start_time && s.end_time
+                ? `${s.start_time} - ${s.end_time}`
+                : s.start_time || s.end_time || '',
+            location: s.pickup_address || 'No location set',
+            rawYear: date.getFullYear(),
+            rawMonth: date.getMonth(),
+            rawDay: date.getDate(),
+            rawStartTime: s.start_time || '',
+            rawEndTime: s.end_time || '',
+            frequency: s.frequency || 'One time pickup',
+            status: status,
+            retryCount: s.retry_count || 0,
+            estimatedPrice: s.estimated_price || 15,
+            lastError: s.last_error || undefined,
+          };
+        });
+        setSchedules(items);
+      }
+    } catch (error: any) {
+      console.error('Error fetching schedules:', error);
+      handleApiError(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  // ─── Load schedules on mount ──────────────────────────────────
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
+
+  // ─── Create Schedule ──────────────────────────────────────────
+
+  const createSchedule = async () => {
+    if (!selectedDriver || !location || !selectedDate) {
+      showToast("Please fill all required fields", 'warning');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const scheduledDate = new Date(calendarYear, calendarMonth, selectedDate);
+
+      const frequencyMap: Record<string, "one_time" | "daily" | "weekly" | "monthly"> = {
+        "One time pickup": "one_time",
+        Daily: "daily",
+        Weekly: "weekly",
+        Monthly: "monthly",
+      };
+
+      const payload = {
+        driver_id: selectedDriver,
+        pickup_address: location,
+        pickup_location: {
+          type: "Point" as const,
+          coordinates: [-1.0, 5.0] as [number, number], // Fixed: type assertion
+        },
+        phone: phone || null,
+        note: note || null,
+        frequency: frequencyMap[selectedFrequency] || "one_time",
+        scheduled_date: scheduledDate.toISOString().split("T")[0],
+        start_time: startTime || null,
+        end_time: endTime || null,
+        estimated_price: 15, // TODO: Calculate actual price
+      };
+
+      const response = await scheduleService.createSchedule(payload);
+
+      if (response.success) {
+        showToast("Schedule created successfully", 'success');
+        await fetchSchedules(
+          activeFilter?.year,
+          activeFilter?.month,
+          activeFilter?.day,
+        );
+        setConfirmOpen(false);
+        setSheetOpen(false);
+        resetForm();
+      }
+    } catch (error: any) {
+      console.error("Error creating schedule:", error);
+      handleApiError(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ─── Update Schedule ──────────────────────────────────────────
+
+  const updateSchedule = async () => {
+    if (!editTargetId || !selectedDriver || !location || !selectedDate) {
+      showToast("Please fill all required fields", 'warning');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const scheduledDate = new Date(calendarYear, calendarMonth, selectedDate);
+
+      const frequencyMap: Record<string, "one_time" | "daily" | "weekly" | "monthly"> = {
+        "One time pickup": "one_time",
+        Daily: "daily",
+        Weekly: "weekly",
+        Monthly: "monthly",
+      };
+
+      const payload = {
+        driver_id: selectedDriver,
+        pickup_address: location,
+        pickup_location: {
+          type: "Point" as const,
+          coordinates: [-1.0, 5.0] as [number, number], // Fixed: type assertion
+        },
+        phone: phone || null,
+        note: note || null,
+        frequency: frequencyMap[selectedFrequency] || "one_time",
+        scheduled_date: scheduledDate.toISOString().split("T")[0],
+        start_time: startTime || null,
+        end_time: endTime || null,
+        estimated_price: 15, // TODO: Calculate actual price
+      };
+
+      const response = await scheduleService.updateSchedule(
+        editTargetId,
+        payload,
+      );
+
+      if (response.success) {
+        showToast("Schedule updated successfully", 'success');
+        await fetchSchedules(
+          activeFilter?.year,
+          activeFilter?.month,
+          activeFilter?.day,
+        );
+        setEditTargetId(null);
+        setSheetOpen(false);
+        resetForm();
+      }
+    } catch (error: any) {
+      console.error("Error updating schedule:", error);
+      handleApiError(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ─── Delete Schedule ──────────────────────────────────────────
+
+  const deleteSchedule = async () => {
+    if (!deleteTargetId) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await scheduleService.deleteSchedule(deleteTargetId);
+
+      if (response.success) {
+        showToast("Schedule deleted successfully", 'success');
+        setSchedules((prev) => prev.filter((s) => s.id !== deleteTargetId));
+        setDeleteTargetId(null);
+        await fetchSchedules(
+          activeFilter?.year,
+          activeFilter?.month,
+          activeFilter?.day,
+        );
+      }
+    } catch (error: any) {
+      console.error("Error deleting schedule:", error);
+      handleApiError(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // ─── Reset Form ──────────────────────────────────────────────
+
+  const resetForm = () => {
+    setSelectedDriver(null);
+    setLocation("");
+    setPhone("");
+    setNote("");
+    setStartTime("");
+    setEndTime("");
+    setSelectedDate(null);
+    setSelectedFrequency("One time pickup");
+    setEditTargetId(null);
+  };
+
+  const canSchedule = !!selectedDriver && !!location && !!selectedDate;
 
   const closeOverlays = () => {
     setFrequencyOpen(false);
@@ -469,20 +869,13 @@ export function ScheduleScreen({
   };
 
   const openSheet = () => {
-    setEditTargetId(null);
-    setSelectedDriver(null);
-    setStartTime("");
-    setEndTime("");
-    setLocation("");
-    setPhone("");
-    setNote("");
+    resetForm();
     setDriverListOpen(false);
     setSearchMode(false);
     setSearchQuery("");
     setFrequencyOpen(false);
     setCalendarOpen(false);
     setTimePickerFor(null);
-    setSelectedDate(null);
     setCalendarYear(todayDate.getFullYear());
     setCalendarMonth(todayDate.getMonth());
     setSheetOpen(true);
@@ -593,6 +986,23 @@ export function ScheduleScreen({
           s.rawDay === activeFilter.day,
       )
     : schedules;
+
+  if (isFetching) {
+    return (
+      <SafeAreaView
+        className="flex-1"
+        style={{ backgroundColor: colors.bg }}
+        edges={["top", "left", "right"]}
+      >
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#31973D" />
+          <Text style={{ color: colors.textSub, marginTop: 16 }}>
+            Loading schedules...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -714,7 +1124,12 @@ export function ScheduleScreen({
             <ScrollView showsVerticalScrollIndicator={false}>
               {visibleSchedules.map((item, index) => (
                 <React.Fragment key={item.id}>
-                  {index > 0 && <View style={{borderColor: colors.border}} className="border mx-3 m-2" />}
+                  {index > 0 && (
+                    <View
+                      style={{ borderColor: colors.border }}
+                      className="border mx-3 m-2"
+                    />
+                  )}
                   <ScheduleCard
                     item={item}
                     menuOpen={openMenuId === item.id}
@@ -727,6 +1142,10 @@ export function ScheduleScreen({
                     onDelete={() => {
                       setOpenMenuId(null);
                       setDeleteTargetId(item.id);
+                    }}
+                    onRetry={() => {
+                      setOpenMenuId(null);
+                      handleRetrySchedule(item.id);
                     }}
                   />
                 </React.Fragment>
@@ -806,6 +1225,7 @@ export function ScheduleScreen({
                     setDriverListOpen(false);
                     setTimePickerFor(null);
                   }}
+                  disabled={isSubmitting}
                 >
                   <Text
                     style={{ color: colors.text }}
@@ -853,7 +1273,10 @@ export function ScheduleScreen({
                         color="#D4AF37"
                       />
                     </View>
-                    <Pressable onPress={() => setSelectedDriver(null)}>
+                    <Pressable
+                      onPress={() => setSelectedDriver(null)}
+                      disabled={isSubmitting}
+                    >
                       <MaterialCommunityIcons
                         name="close-circle-outline"
                         size={16}
@@ -868,6 +1291,8 @@ export function ScheduleScreen({
                       setDriverListOpen(true);
                       closeOverlays();
                     }}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.8 : 1 }}
                   >
                     <MaterialCommunityIcons
                       name="plus-circle-outline"
@@ -1006,6 +1431,7 @@ export function ScheduleScreen({
                       value={location}
                       onChangeText={setLocation}
                       onFocus={closeOverlays}
+                      editable={!isSubmitting}
                     />
                     {location.length > 0 && (
                       <Pressable onPress={() => setLocation("")}>
@@ -1037,6 +1463,7 @@ export function ScheduleScreen({
                       value={phone}
                       onChangeText={setPhone}
                       onFocus={closeOverlays}
+                      editable={!isSubmitting}
                     />
                     {phone.length > 0 && (
                       <Pressable onPress={() => setPhone("")}>
@@ -1069,12 +1496,16 @@ export function ScheduleScreen({
                     value={note}
                     onChangeText={setNote}
                     onFocus={closeOverlays}
+                    editable={!isSubmitting}
                   />
                 </View>
 
                 {/* Date row */}
                 <Pressable
-                  style={{ backgroundColor: colors.card }}
+                  style={{
+                    backgroundColor: colors.card,
+                    opacity: isSubmitting ? 0.8 : 1,
+                  }}
                   className="flex-row items-center justify-center gap-2 h-12 rounded-xl"
                   onPress={() => {
                     setCalendarOpen((v) => !v);
@@ -1082,6 +1513,7 @@ export function ScheduleScreen({
                     setDriverListOpen(false);
                     setTimePickerFor(null);
                   }}
+                  disabled={isSubmitting}
                 >
                   <MaterialCommunityIcons
                     name="calendar"
@@ -1119,9 +1551,13 @@ export function ScheduleScreen({
                   </View>
                   <View className="flex-row items-center gap-2 w-full">
                     <Pressable
-                      style={{ borderColor: colors.border }}
+                      style={{
+                        borderColor: colors.border,
+                        opacity: isSubmitting ? 0.8 : 1,
+                      }}
                       className="flex-1 min-w-0 h-12 border rounded-3xl px-4 flex-row items-center"
                       onPress={() => openTimePicker("start")}
+                      disabled={isSubmitting}
                     >
                       <Text
                         className={`text-sm  ${
@@ -1139,9 +1575,13 @@ export function ScheduleScreen({
                       />
                     </View>
                     <Pressable
-                      style={{ borderColor: colors.border }}
+                      style={{
+                        borderColor: colors.border,
+                        opacity: isSubmitting ? 0.8 : 1,
+                      }}
                       className="flex-1 min-w-0 h-12 border rounded-3xl px-4 flex-row items-center"
                       onPress={() => openTimePicker("end")}
+                      disabled={isSubmitting}
                     >
                       <Text
                         className={`text-sm  ${
@@ -1182,6 +1622,7 @@ export function ScheduleScreen({
                       setSelectedFrequency(freq);
                       setFrequencyOpen(false);
                     }}
+                    disabled={isSubmitting}
                   >
                     <Text
                       style={{
@@ -1295,6 +1736,7 @@ export function ScheduleScreen({
                               setSelectedDate(cell.day);
                               setCalendarOpen(false);
                             }}
+                            disabled={isSubmitting}
                           >
                             <Text
                               style={{
@@ -1369,6 +1811,8 @@ export function ScheduleScreen({
                 <Pressable
                   className="h-10 bg-[#31973D] rounded-2xl items-center justify-center"
                   onPress={applyPickerTime}
+                  disabled={isSubmitting}
+                  style={{ opacity: isSubmitting ? 0.8 : 1 }}
                 >
                   <Text className="text-sm text-white ">Done</Text>
                 </Pressable>
@@ -1380,6 +1824,7 @@ export function ScheduleScreen({
               <Pressable
                 className="w-8 h-8 rounded-xl bg-[#FFE2E2] items-center justify-center"
                 onPress={() => setSheetOpen(false)}
+                disabled={isSubmitting}
               >
                 <MaterialCommunityIcons
                   name="close"
@@ -1391,39 +1836,23 @@ export function ScheduleScreen({
                 className={`flex-1 h-10 rounded-full items-center justify-center ${
                   canSchedule ? "bg-[#31973D]" : "bg-[rgba(52,168,83,0.5)]"
                 }`}
-                disabled={!canSchedule}
+                disabled={!canSchedule || isSubmitting}
+                style={{ opacity: isSubmitting || !canSchedule ? 0.8 : 1 }}
                 onPress={() => {
                   if (editTargetId) {
-                    setSchedules((prev) =>
-                      prev.map((s) =>
-                        s.id === editTargetId
-                          ? {
-                              ...s,
-                              driver: selectedDriver!,
-                              date: confirmDate,
-                              timeRange: confirmTimeRange,
-                              location,
-                              rawYear: calendarYear,
-                              rawMonth: calendarMonth,
-                              rawDay: selectedDate,
-                              rawStartTime: startTime,
-                              rawEndTime: endTime,
-                              frequency: selectedFrequency,
-                            }
-                          : s,
-                      ),
-                    );
-                    setEditTargetId(null);
-                    setSheetOpen(false);
-                    showToast("Schedule successfully edited");
+                    updateSchedule();
                   } else {
                     setConfirmOpen(true);
                   }
                 }}
               >
-                <Text className="text-sm text-white ">
-                  {editTargetId ? "Save" : "Schedule"}
-                </Text>
+                {isSubmitting ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <Text className="text-sm text-white ">
+                    {editTargetId ? "Save" : "Schedule"}
+                  </Text>
+                )}
               </Pressable>
             </View>
           </View>
@@ -1496,28 +1925,15 @@ export function ScheduleScreen({
                 </View>
                 <Pressable
                   className="bg-[#31973D] rounded-2xl px-6 py-2.5"
-                  onPress={() => {
-                    setSchedules((prev) => [
-                      ...prev,
-                      {
-                        id: Date.now().toString(),
-                        driver: selectedDriver!,
-                        date: confirmDate,
-                        timeRange: confirmTimeRange,
-                        location,
-                        rawYear: calendarYear,
-                        rawMonth: calendarMonth,
-                        rawDay: selectedDate,
-                        rawStartTime: startTime,
-                        rawEndTime: endTime,
-                        frequency: selectedFrequency,
-                      },
-                    ]);
-                    setConfirmOpen(false);
-                    setSheetOpen(false);
-                  }}
+                  onPress={createSchedule}
+                  disabled={isSubmitting}
+                  style={{ opacity: isSubmitting ? 0.8 : 1 }}
                 >
-                  <Text className="text-sm text-white ">Schedule</Text>
+                  {isSubmitting ? (
+                    <ActivityIndicator color="white" size="small" />
+                  ) : (
+                    <Text className="text-sm text-white ">Schedule</Text>
+                  )}
                 </Pressable>
               </View>
             </View>
@@ -1564,6 +1980,7 @@ export function ScheduleScreen({
             <Pressable
               className="absolute top-11 right-6 w-7 h-7 rounded-[14px] border-[1.5px] border-white items-center justify-center"
               onPress={() => setConfirmOpen(false)}
+              disabled={isSubmitting}
             >
               <MaterialCommunityIcons name="close" size={14} color="#FFFFFF" />
             </Pressable>
@@ -1604,22 +2021,23 @@ export function ScheduleScreen({
               <Pressable
                 className="flex-1 h-10 bg-[#EF4444] rounded-2xl items-center justify-center"
                 onPress={() => setDeleteTargetId(null)}
+                disabled={isDeleting}
               >
                 <Text className="text-sm font-normal text-white ">Cancel</Text>
               </Pressable>
               <Pressable
                 className="flex-1 h-10 bg-white border border-[#CBD5E0] rounded-2xl items-center justify-center"
-                onPress={() => {
-                  setSchedules((prev) =>
-                    prev.filter((s) => s.id !== deleteTargetId),
-                  );
-                  setDeleteTargetId(null);
-                  showToast("Schedule successfully deleted");
-                }}
+                onPress={deleteSchedule}
+                disabled={isDeleting}
+                style={{ opacity: isDeleting ? 0.8 : 1 }}
               >
-                <Text className="text-sm font-medium text-[#EF4444] ">
-                  Delete
-                </Text>
+                {isDeleting ? (
+                  <ActivityIndicator color="#EF4444" size="small" />
+                ) : (
+                  <Text className="text-sm font-medium text-[#EF4444] ">
+                    Delete
+                  </Text>
+                )}
               </Pressable>
             </View>
           </View>
@@ -1750,6 +2168,11 @@ export function ScheduleScreen({
                     });
                   }
                   setFilterOpen(false);
+                  fetchSchedules(
+                    filterYear,
+                    filterMonth,
+                    filterPickDate || undefined,
+                  );
                 }}
               >
                 <Text className="text-sm text-white ">Apply change</Text>
@@ -1758,31 +2181,6 @@ export function ScheduleScreen({
           </View>
         </View>
       </Modal>
-
-      {/* ══ Success toast ══ */}
-      {toastMessage !== null && (
-        <Animated.View
-          className="absolute top-[46px] left-0 right-0 items-center z-[200]"
-          style={{ transform: [{ translateY: toastAnim }] }}
-          pointerEvents="box-none"
-        >
-          <View className="w-[357px] h-[51px] bg-[#F0FDFA] border border-[#14B8A6] rounded-full flex-row items-center justify-between px-5">
-            <View className="flex-row items-center gap-3 flex-1">
-              <MaterialCommunityIcons
-                name="check-circle"
-                size={24}
-                color="#14B8A6"
-              />
-              <Text className="text-[13px] font-medium text-[#0F766E]  leading-7">
-                {toastMessage}
-              </Text>
-            </View>
-            <Pressable onPress={hideToast}>
-              <MaterialCommunityIcons name="close" size={20} color="#0D9488" />
-            </Pressable>
-          </View>
-        </Animated.View>
-      )}
     </SafeAreaView>
   );
 }

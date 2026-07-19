@@ -50,8 +50,10 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <NavigationContainer>
             <StatusBar
-              barStyle={isDark ? "light-content" : "dark-content"}
-              backgroundColor={colors.bg}/>
+                barStyle={isDark ? "light-content" : "dark-content"}
+                backgroundColor={colors.bg}
+                translucent={false}
+              />
             <RootNavigator />
             <ToastManager/>
           </NavigationContainer>
