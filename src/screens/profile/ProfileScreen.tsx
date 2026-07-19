@@ -86,6 +86,7 @@ export function ProfileScreen({
   route,
 }: RootStackScreenProps<"Profile">) {
   const user = useAppSelector((state) => state.auth.user);
+  const customer = useAppSelector((state) => state.customer);
   const { colors } = useTheme()
 
   const fullName =
@@ -150,29 +151,32 @@ export function ProfileScreen({
                   name={`${user?.firstname} ${user?.lastname}`}
                 />
               )}
-              {isVerified && (
-                <View
-                  style={{
-                    position: "absolute",
-                    bottom: -2,
-                    right: -2,
-                    width: 18,
-                    height: 18,
-                    borderRadius: 9,
-                    backgroundColor: "#006B23",
-                    borderWidth: 2,
-                    borderColor: "#FFFFFF",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="check-decagram"
-                    size={11}
-                    color="#FFFFFF"
-                  />
-                </View>
-              )}
+              {customer.is_premium && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      bottom: -2,
+                      right: -2,
+                      width: 18,
+                      height: 18,
+                      borderRadius: 9,
+                      backgroundColor: "#006B23",
+                      borderWidth: 2,
+                      borderColor: "#FFFFFF",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    className="flex items-center justify-center"
+                  >
+                    <View>
+                      <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={11}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                  </View>
+                )}
             </View>
           </View>
 

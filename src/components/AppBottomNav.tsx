@@ -5,6 +5,7 @@ import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-na
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useAppSelector } from '../hooks/useAppSelector';
 
 
 type Tab = 'home' | 'calendar' | 'saved' | 'settings';
@@ -64,13 +65,13 @@ export function AppBottomNav({
   activeTab,
   paddingBottom = 8,
   bottomOffset = 20,
-  showCalendar = false,
   navigation
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const bottomPadding = Math.max(insets.bottom, paddingBottom);
   const isActive = (tab: Tab) => activeTab === tab;
+  const isPremium = useAppSelector((state) => state.customer.is_premium)
 
   return (
     <View
@@ -80,7 +81,7 @@ export function AppBottomNav({
       <View
         style={{
           width: '100%',
-          maxWidth: showCalendar ? 402 : 300,
+          maxWidth: isPremium ? 402 : 300,
           paddingVertical: 12,
           paddingHorizontal: 16,
           flexDirection: 'row',
@@ -106,7 +107,7 @@ export function AppBottomNav({
           label="Home"
         />
 
-        {showCalendar && (
+        {isPremium && (
           <NavItem
             active={isActive('calendar')}
             onPress={() => navigation.navigate("Schedule")}
