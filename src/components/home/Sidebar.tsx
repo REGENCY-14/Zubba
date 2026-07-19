@@ -163,7 +163,7 @@ export default function Sidebar({
                     name={`${user?.firstname} ${user?.lastname}`}
                   />
                 )}
-                {isVerified && (
+                {customer.is_premium && (
                   <View
                     style={{
                       position: "absolute",

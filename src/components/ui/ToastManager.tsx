@@ -184,7 +184,7 @@ function ToastItemView({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 5,
+    top: 52,
     left: 16,
     right: 16,
     zIndex: 999,
