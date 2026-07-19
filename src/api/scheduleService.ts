@@ -1,98 +1,114 @@
-import { api } from "./axios";
+import { api } from "../api/axios";
 import { ApiResponse } from "../types/api.types";
-
-export type ScheduleFrequency = "one_time" | "daily" | "weekly" | "monthly";
-export type ScheduleStatus = "scheduled" | "paused" | "cancelled" | "completed";
 
 export interface Schedule {
   id: string;
-  driverId: string | null;
-  pickupAddress: string;
+  customer_id: string;
+  driver_id: string | null;
+  pickup_address: string;
+  pickup_location: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
   phone: string | null;
   note: string | null;
-  frequency: ScheduleFrequency;
-  scheduledDate: string;
-  startTime: string | null;
-  endTime: string | null;
-  status: ScheduleStatus;
-  estimatedPrice: number;
-  createdAt: string;
-}
-
-export interface CreateScheduleInput {
-  driver_id?: string;
-  pickup_address: string;
-  phone?: string;
-  note?: string;
-  frequency?: ScheduleFrequency;
+  frequency: 'one_time' | 'daily' | 'weekly' | 'monthly';
   scheduled_date: string;
-  start_time?: string;
-  end_time?: string;
+  start_time: string | null;
+  end_time: string | null;
+  status: 'scheduled' | 'paused' | 'cancelled' | 'completed';
+  estimated_price: number;
+  created_at: string;
+  updated_at: string;
+  cancelled_at: string | null;
+  processed_at: string | null;
+  retry_count: number;
+  last_error: string | null;
 }
 
-export type UpdateScheduleInput = Partial<CreateScheduleInput>;
-
-export interface ScheduleListFilters {
-  current_page?: number;
-  limit?: number;
-  year?: number;
-  month?: number;
-  day?: number;
-}
-
-export interface PaginationMetadata {
-  total: number;
-  pages: number;
-  current_page: number;
-  limit: number;
+export interface CreateScheduleData {
+  driver_id?: string | null;
+  pickup_address: string;
+  pickup_location: {
+    type: "Point";
+    coordinates: [number, number];
+  };
+  phone?: string | null;
+  note?: string | null;
+  frequency?: "one_time" | "daily" | "weekly" | "monthly";
+  scheduled_date: string;
+  start_time?: string | null;
+  end_time?: string | null;
+  estimated_price?: number;
 }
 
 export const scheduleService = {
-  createSchedule: async (payload: CreateScheduleInput) => {
-    const { data } = await api.post<ApiResponse<{ schedule: Schedule }>>(
-      `/schedules`,
-      payload,
+  createSchedule: async (data: CreateScheduleData) => {
+    const response = await api.post<ApiResponse<{ schedule: Schedule }>>(
+      "/schedules",
+      data,
     );
-    return data;
+    return response.data;
   },
 
-  getSchedules: async (filters?: ScheduleListFilters) => {
-    const { data } = await api.get<
-      ApiResponse<{ schedules: Schedule[]; metadata: PaginationMetadata }>
-    >(`/schedules`, { params: filters });
-    return data;
+  getSchedules: async (params?: {
+    year?: number;
+    month?: number;
+    day?: number;
+    limit?: number;
+    page?: number;
+  }) => {
+    const response = await api.get<
+      ApiResponse<{
+        items: Schedule[];
+        metadata: {
+          total: number;
+          pages: number;
+          current_page: number;
+          limit: number;
+        };
+      }>
+    >("/schedules", { params });
+    return response.data;
   },
 
-  getSchedule: async (scheduleId: string) => {
-    const { data } = await api.get<ApiResponse<{ schedule: Schedule }>>(
-      `/schedules/${scheduleId}`,
+  getSchedule: async (id: string) => {
+    const response = await api.get<ApiResponse<{ schedule: Schedule }>>(
+      `/schedules/${id}`,
     );
-    return data;
+    return response.data;
   },
 
-  updateSchedule: async (scheduleId: string, payload: UpdateScheduleInput) => {
-    const { data } = await api.patch<ApiResponse<{ schedule: Schedule }>>(
-      `/schedules/${scheduleId}`,
-      payload,
+  updateSchedule: async (id: string, data: Partial<CreateScheduleData>) => {
+    const response = await api.patch<ApiResponse<{ schedule: Schedule }>>(
+      `/schedules/${id}`,
+      data,
     );
-    return data;
+    return response.data;
   },
 
   updateScheduleStatus: async (
-    scheduleId: string,
-    status: Exclude<ScheduleStatus, "completed">,
+    id: string,
+    status: "scheduled" | "paused" | "cancelled",
   ) => {
-    const { data } = await api.patch<ApiResponse<{ schedule: Schedule }>>(
-      `/schedules/${scheduleId}/status`,
+    const response = await api.patch<ApiResponse<{ schedule: Schedule }>>(
+      `/schedules/${id}/status`,
       { status },
     );
-    return data;
+    return response.data;
   },
 
-  deleteSchedule: async (scheduleId: string) => {
-    const { data } = await api.delete<ApiResponse<{}>>(
-      `/schedules/${scheduleId}`,
+  retrySchedule: async (id: string) => {
+    const response = await api.post<ApiResponse<{ processed: boolean }>>(
+      `/schedules/${id}/retry`,
     );
-    return data;
+    return response.data;
+  },
+
+  deleteSchedule: async (id: string) => {
+    const response = await api.delete<ApiResponse<{ message: string }>>(
+      `/schedules/${id}`,
+    );
+    return response.data;
   },
 };
