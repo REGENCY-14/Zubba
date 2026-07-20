@@ -127,7 +127,7 @@ export function SettingsScreen({
     <SafeAreaView
       style={{ backgroundColor: colors.bg }}
       className="flex-1"
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="Settings" navigation={navigation} />
       <View style={{ backgroundColor: colors.bg }} className="flex-1">

@@ -16,6 +16,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { RootStackParamList } from "../../navigation/types";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
 import { bottom_sidebar_items, isPremiumSidebarItem, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -39,6 +40,7 @@ export default function Sidebar({
   activeKey,
 }: SidebarProps) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
   const customer = useAppSelector((state) => state.customer)
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -119,7 +121,8 @@ export default function Sidebar({
             left: 0,
             width: DRAWER_WIDTH,
             backgroundColor: colors.bg,
-            paddingVertical: 74,
+            paddingTop: insets.top + 24,
+            paddingBottom: Math.max(insets.bottom, 20),
             paddingHorizontal: 20,
             transform: [{ translateX }],
           }}
