@@ -119,7 +119,7 @@ export default function Sidebar({
             left: 0,
             width: DRAWER_WIDTH,
             backgroundColor: colors.bg,
-            paddingTop: 24,
+            paddingVertical: 74,
             paddingHorizontal: 20,
             transform: [{ translateX }],
           }}

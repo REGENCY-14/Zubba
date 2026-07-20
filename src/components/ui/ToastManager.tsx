@@ -8,6 +8,8 @@ import {
   ToastItem,
   ToastOptions,
 } from "../../types/toast.types";
+import { useTheme } from "../../context/ThemeContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ShowFn = (message: string, options?: ToastOptions) => string;
 type HideFn = (id: string) => void;
@@ -52,6 +54,7 @@ export function _internalHideAll() {
 export default function ToastManager() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idCounter = useRef(0);
+  const { colors } = useTheme()
 
   const hide = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -89,16 +92,21 @@ export default function ToastManager() {
   if (toasts.length === 0) return null;
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
-      {toasts.map((item, index) => (
-        <ToastItemView
-          key={item.id}
-          toast={item}
-          isFirst={index === 0}
-          onDismiss={() => hide(item.id)}
-        />
-      ))}
-    </View>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      edges={["top", "left", "right"]}
+    >
+      <View style={styles.container} pointerEvents="box-none">
+        {toasts.map((item, index) => (
+          <ToastItemView
+            key={item.id}
+            toast={item}
+            isFirst={index === 0}
+            onDismiss={() => hide(item.id)}
+          />
+        ))}
+      </View>
+    </SafeAreaView>
   );
 }
 
