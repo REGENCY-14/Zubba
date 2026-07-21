@@ -16,7 +16,6 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { toast } from "../../hooks/toast";
-import Sidebar from "../../components/home/Sidebar";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
@@ -218,7 +217,6 @@ export function ZubbaWalletScreen({
 }: RootStackScreenProps<"ZubbaWallet">) {
   const customer = useAppSelector((state) => state.customer);
   const { colors } = useTheme();
-  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [activeSheet, setActiveSheet] = useState<"topup" | "withdraw">("topup");
@@ -264,11 +262,11 @@ export function ZubbaWalletScreen({
         }}
       >
         <Pressable
-          onPress={() => setSidebarVisible(true)}
+          onPress={() => navigation.pop()}
           className="w-8 h-8 items-center justify-center"
         >
           <MaterialCommunityIcons
-            name="menu"
+            name="chevron-left"
             size={20}
             color={colors.iconColor}
           />
@@ -684,12 +682,6 @@ export function ZubbaWalletScreen({
           setSheetOpen(false);
           navigation.navigate(dest);
         }}
-      />
-      <Sidebar
-        visible={sidebarVisible}
-        onClose={() => setSidebarVisible(false)}
-        navigation={navigation}
-        activeKey="wallet"
       />
     </SafeAreaView>
   );

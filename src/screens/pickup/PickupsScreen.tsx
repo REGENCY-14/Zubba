@@ -445,6 +445,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
 
         <AppBottomNav
           activeTab="saved"
+          paddingBottom={0}
           showCalendar={isPremium}
           navigation={navigation}
         />

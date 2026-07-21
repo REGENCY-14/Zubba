@@ -40,8 +40,8 @@ export type RootStackParamList = {
   NotificationSettings: undefined;
   HelpCenter: undefined;
   ActiveSession: undefined;
-  UpdateDetails: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
-  UpdateDetailsOtp: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new' } | undefined;
+  UpdateDetails: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new', userId?: string } | undefined;
+  UpdateDetailsOtp: { phone?: string; email?: string; kind?: 'phone' | 'email'; step?: 'old' | 'new', userId?: string } | undefined;
   UpdateDetailsSuccess: undefined;
   ChoosePlan: undefined;
   ManageSubscription: undefined;

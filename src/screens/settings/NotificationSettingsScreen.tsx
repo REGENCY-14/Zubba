@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Modal, Pressable, ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
@@ -7,13 +7,19 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { AppBottomNav } from "../../components";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
+import { 
+  useNotificationPreferences, 
+  useUpdatePreferences 
+} from "../../hooks/useNotifications";
+import { toast } from "../../hooks/toast";
 
-const FREQUENCIES = ["Daily", "Weekly", "Monthly"];
+const FREQUENCIES = ["Daily", "Weekly", "Monthly", "Never"];
 
 type ToggleRow = {
   key: string;
   title: string;
   subtitle: string;
+  preferenceKey: string;
 };
 
 const DELIVERY_METHODS: ToggleRow[] = [
@@ -21,16 +27,19 @@ const DELIVERY_METHODS: ToggleRow[] = [
     key: "inApp",
     title: "In-app Notifications",
     subtitle: "Show notifications within the app",
+    preferenceKey: "inAppEnabled",
   },
   {
     key: "email",
     title: "Email Notifications",
     subtitle: "Receive notifications in your email",
+    preferenceKey: "emailEnabled",
   },
   {
     key: "sms",
     title: "SMS",
     subtitle: "Receive notifications on your number",
+    preferenceKey: "smsEnabled",
   },
 ];
 
@@ -39,26 +48,31 @@ const NOTIFICATION_TYPES: ToggleRow[] = [
     key: "wallet",
     title: "Zubba Wallet",
     subtitle: "Get notified on transaction confirmation and wallet infos",
+    preferenceKey: "walletEnabled",
   },
   {
     key: "rewards",
     title: "Reward Milestone",
     subtitle: "Get notified on discounts, reward and advantages",
+    preferenceKey: "rewardsEnabled",
   },
   {
     key: "subscription",
     title: "Subscription Notifications",
     subtitle: "Get notified when you are close to subscription deadlines",
+    preferenceKey: "subscriptionEnabled",
   },
   {
     key: "scheduledPickups",
     title: "Scheduled Pickups",
     subtitle: "Get notified on your plan for later pickups",
+    preferenceKey: "scheduledPickupsEnabled",
   },
   {
     key: "arrivalPickups",
     title: "Arrival Pickups",
     subtitle: "Get notified on driver arrivals",
+    preferenceKey: "arrivalPickupsEnabled",
   },
 ];
 
@@ -100,19 +114,16 @@ export function NotificationSettingsScreen({
 }: RootStackScreenProps<"NotificationSettings">) {
   const { colors, isDark } = useTheme();
 
-  const [frequencyOpen, setFrequencyOpen] = useState(false);
+  // Fetch preferences
+  const { data: preferences, isLoading: isLoadingPrefs } = useNotificationPreferences();
+  const { mutate: updatePreferences, isPending: isUpdating } = useUpdatePreferences();
+
   const [frequency, setFrequency] = useState("Weekly");
-  const [anchor, setAnchor] = useState({ top: 0, right: 0, width: 0 });
-  const buttonRef = useRef<View>(null);
-
-  const [deliveryValues, setDeliveryValues] = useState<Record<string, boolean>>(
-    {
-      inApp: false,
-      email: false,
-      sms: false,
-    },
-  );
-
+  const [deliveryValues, setDeliveryValues] = useState<Record<string, boolean>>({
+    inApp: false,
+    email: false,
+    sms: false,
+  });
   const [typeValues, setTypeValues] = useState<Record<string, boolean>>({
     wallet: false,
     rewards: true,
@@ -121,24 +132,98 @@ export function NotificationSettingsScreen({
     arrivalPickups: false,
   });
 
-  const setDeliveryValue = (key: string, value: boolean) =>
-    setDeliveryValues((prev) => ({ ...prev, [key]: value }));
+  const [frequencyOpen, setFrequencyOpen] = useState(false);
+  const [anchor, setAnchor] = useState({ top: 0, right: 0, width: 0 });
+  const buttonRef = useRef<View>(null);
 
-  const setTypeValue = (key: string, value: boolean) =>
+  // Load preferences when fetched
+  useEffect(() => {
+    if (preferences) {
+      setFrequency(preferences.frequency.charAt(0).toUpperCase() + preferences.frequency.slice(1));
+      setDeliveryValues({
+        inApp: preferences.inAppEnabled,
+        email: preferences.emailEnabled,
+        sms: preferences.smsEnabled,
+      });
+      setTypeValues({
+        wallet: preferences.walletEnabled,
+        rewards: preferences.rewardsEnabled,
+        subscription: preferences.subscriptionEnabled,
+        scheduledPickups: preferences.scheduledPickupsEnabled,
+        arrivalPickups: preferences.arrivalPickupsEnabled,
+      });
+    }
+  }, [preferences]);
+
+  const setDeliveryValue = (key: string, value: boolean) => {
+    setDeliveryValues((prev) => ({ ...prev, [key]: value }));
+    // Debounced save
+    savePreferences({
+      [DELIVERY_METHODS.find(m => m.key === key)?.preferenceKey || '']: value,
+    });
+  };
+
+  const setTypeValue = (key: string, value: boolean) => {
     setTypeValues((prev) => ({ ...prev, [key]: value }));
+    savePreferences({
+      [NOTIFICATION_TYPES.find(t => t.key === key)?.preferenceKey || '']: value,
+    });
+  };
+
+  const savePreferences = (updates: any) => {
+    const payload: any = {};
+    
+    // Map frontend values to backend keys
+    Object.entries(updates).forEach(([key, value]) => {
+      payload[key] = value;
+    });
+
+    updatePreferences(payload, {
+      onError: (error: any) => {
+        toast.error(error?.message || 'Failed to save preferences');
+      },
+      onSuccess: () => {
+        toast.success('Preferences saved successfully');
+      },
+    });
+  };
+
+  const handleFrequencyChange = (freq: string) => {
+    const freqMap: Record<string, string> = {
+      'Daily': 'daily',
+      'Weekly': 'weekly',
+      'Monthly': 'monthly',
+      'Never': 'never',
+    };
+    
+    setFrequency(freq);
+    savePreferences({ frequency: freqMap[freq] });
+    setFrequencyOpen(false);
+  };
 
   const closeFrequency = () => setFrequencyOpen(false);
 
   const openFrequency = () => {
-    buttonRef.current?.measureInWindow((x, y, width, height) => {
+    buttonRef.current?.measureInWindow((_x: number, y: number, width: number, height: number) => {
       setAnchor({
         top: y + height + 8,
-        right: Math.max(16, /* screen right padding fallback */ 16),
+        right: Math.max(16, 16),
         width,
       });
       setFrequencyOpen(true);
     });
   };
+
+  if (isLoadingPrefs) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+        <CustomAppBar title="Notifications" navigation={navigation} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#31973D" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -165,7 +250,7 @@ export function NotificationSettingsScreen({
               className="rounded-2xl border px-4 py-4"
             >
               <Pressable
-                ref={buttonRef}
+                ref={(ref) => { buttonRef.current = ref; }}
                 className="flex-row items-center justify-between"
                 onPress={() =>
                   frequencyOpen ? closeFrequency() : openFrequency()
@@ -192,7 +277,7 @@ export function NotificationSettingsScreen({
                     className="text-xs font-medium"
                     style={{ color: colors.text }}
                   >
-                    {frequency}
+                    {isUpdating ? 'Saving...' : frequency}
                   </Text>
 
                   <MaterialCommunityIcons
@@ -260,7 +345,7 @@ export function NotificationSettingsScreen({
           </View>
         </ScrollView>
 
-        {/* Dropdown rendered in a Modal so it's always above everything, touch order guaranteed */}
+        {/* Frequency Dropdown Modal */}
         <Modal
           visible={frequencyOpen}
           transparent
@@ -301,10 +386,7 @@ export function NotificationSettingsScreen({
                   className={`px-4 py-3 ${
                     i !== FREQUENCIES.length - 1 ? "border-b" : ""
                   }`}
-                  onPress={() => {
-                    setFrequency(freq);
-                    closeFrequency();
-                  }}
+                  onPress={() => handleFrequencyChange(freq)}
                 >
                   <Text
                     style={{
