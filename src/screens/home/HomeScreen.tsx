@@ -21,7 +21,7 @@ import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
-import Sidebar from "../../components/home/Sidebar";
+import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 
 const mapImage = require("../../../assets/RawMap.png");
@@ -32,7 +32,7 @@ const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const sidebarRef = useRef<SidebarHandle>(null);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
@@ -67,7 +67,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       style={{ flex: 1, backgroundColor: colors.bg }}
       edges={["top", "left", "right"]}
     >
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <ImageBackground
           source={isDark ? mapDarkImage : mapImage}
           style={{ flex: 1 }}
@@ -91,7 +91,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           >
             <Pressable
               className="w-8 h-8 items-center justify-center"
-              onPress={() => setSidebarVisible(true)}
+              onPress={() => sidebarRef.current?.open()}
             >
               <MaterialCommunityIcons
                 name="menu"
@@ -523,12 +523,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           />
         </ImageBackground>
       </View>
-      <Sidebar
-        visible={sidebarVisible}
-        activeKey="home"
-        onClose={() => setSidebarVisible(false)}
-        navigation={navigation}
-      />
+      <Sidebar ref={sidebarRef} navigation={navigation} activeKey="home" />
     </SafeAreaView>
   );
 }

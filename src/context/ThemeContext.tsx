@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMemo } from "react";
 
 const STORAGE_KEY = '@zubba_theme';
 
@@ -59,23 +60,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then(val => {
-      if (val === 'dark') setIsDark(true);
+      if (val === "dark") setIsDark(true);
     });
   }, []);
 
   const toggle = useCallback(() => {
     setIsDark(prev => {
       const next = !prev;
-      AsyncStorage.setItem(STORAGE_KEY, next ? 'dark' : 'light');
+      AsyncStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
       return next;
     });
   }, []);
 
-  return (
-    <ThemeContext.Provider value={{ isDark, colors: isDark ? DARK : LIGHT, toggle }}>
-      {children}
-    </ThemeContext.Provider>
+  const value = useMemo(
+    () => ({ isDark, colors: isDark ? DARK : LIGHT, toggle }),
+    [isDark, toggle]
   );
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
