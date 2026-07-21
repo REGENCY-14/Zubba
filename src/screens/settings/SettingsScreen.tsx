@@ -127,7 +127,7 @@ export function SettingsScreen({
     <SafeAreaView
       style={{ backgroundColor: colors.bg }}
       className="flex-1"
-      edges={["top", "left", "right", "bottom"]}
+      edges={["top", "left", "right"]}
     >
       <CustomAppBar title="Settings" navigation={navigation} />
       <View style={{ backgroundColor: colors.bg }} className="flex-1">
@@ -135,7 +135,7 @@ export function SettingsScreen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 12,
-            paddingBottom: 100,
+            paddingBottom: 148,
             gap: 24,
           }}
         >
