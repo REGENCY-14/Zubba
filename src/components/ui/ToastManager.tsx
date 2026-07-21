@@ -9,7 +9,6 @@ import {
   ToastOptions,
 } from "../../types/toast.types";
 import { useTheme } from "../../context/ThemeContext";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type ShowFn = (message: string, options?: ToastOptions) => string;
 type HideFn = (id: string) => void;
@@ -19,7 +18,11 @@ let showRef: ShowFn | null = null;
 let hideRef: HideFn | null = null;
 let hideAllRef: HideAllFn | null = null;
 
-export function registerToastHandlers(show: ShowFn, hide: HideFn, hideAll: HideAllFn) {
+export function registerToastHandlers(
+  show: ShowFn,
+  hide: HideFn,
+  hideAll: HideAllFn,
+) {
   showRef = show;
   hideRef = hide;
   hideAllRef = hideAll;
@@ -35,7 +38,7 @@ export function _internalShow(message: string, options?: ToastOptions): string {
   if (!showRef) {
     if (__DEV__) {
       console.warn(
-        "[toast] Called before <ToastManager /> mounted. Make sure it's rendered once near the root of your app."
+        "[toast] Called before <ToastManager /> mounted. Make sure it's rendered once near the root of your app.",
       );
     }
     return "";
@@ -54,7 +57,7 @@ export function _internalHideAll() {
 export default function ToastManager() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idCounter = useRef(0);
-  const { colors } = useTheme()
+  const { colors } = useTheme();
 
   const hide = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -92,21 +95,16 @@ export default function ToastManager() {
   if (toasts.length === 0) return null;
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
-    >
-      <View style={styles.container} pointerEvents="box-none">
-        {toasts.map((item, index) => (
-          <ToastItemView
-            key={item.id}
-            toast={item}
-            isFirst={index === 0}
-            onDismiss={() => hide(item.id)}
-          />
-        ))}
-      </View>
-    </SafeAreaView>
+    <View style={styles.container} pointerEvents="box-none">
+      {toasts.map((item, index) => (
+        <ToastItemView
+          key={item.id}
+          toast={item}
+          isFirst={index === 0}
+          onDismiss={() => hide(item.id)}
+        />
+      ))}
+    </View>
   );
 }
 
@@ -177,8 +175,15 @@ function ToastItemView({
       ]}
     >
       <View style={styles.toastContent}>
-        <MaterialCommunityIcons name={config.icon as any} size={22} color={config.border} />
-        <Text style={[styles.toastText, { color: config.text }]} numberOfLines={2}>
+        <MaterialCommunityIcons
+          name={config.icon as any}
+          size={22}
+          color={config.border}
+        />
+        <Text
+          style={[styles.toastText, { color: config.text }]}
+          numberOfLines={2}
+        >
           {toast.message}
         </Text>
       </View>
