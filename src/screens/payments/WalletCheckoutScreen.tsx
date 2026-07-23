@@ -1,15 +1,39 @@
-import { Pressable, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Pressable, Text, View, ActivityIndicator } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import { ScrollView } from "react-native";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { walletService } from "../../api/walletService";
+import { markRequestPaid } from "../../slices/request/requestSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { handleApiError } from "../../utils/handleApiError";
 
 export function WalletCheckoutScreen({
   navigation,
 }: RootStackScreenProps<"WalletCheckout">) {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
+  const request = useAppSelector((state) => state.request);
+  const [loading, setLoading] = useState(false);
+  const total = (request.pickup_price || 0) + (request.service_price || 0);
+
+  const handlePay = async () => {
+    if (!request.id || loading) return;
+    setLoading(true);
+    try {
+      await walletService.payForRequest(request.id);
+      dispatch(markRequestPaid());
+      navigation.navigate("PaymentSuccess", { phone: "" });
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -56,7 +80,7 @@ export function WalletCheckoutScreen({
                 letterSpacing: -1.2,
               }}
             >
-              GHS 45.00
+              GHS {total.toFixed(2)}
             </Text>
 
             <View className="flex-row absolute -bottom-[40px] items-center gap-1 bg-[#31973D] rounded-full px-3 py-1">
@@ -82,9 +106,15 @@ export function WalletCheckoutScreen({
             </Pressable>
             <Pressable
               className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
-              onPress={() => navigation.navigate("PaymentSuccess", { phone: "" })}
+              style={{ opacity: loading ? 0.6 : 1 }}
+              disabled={loading}
+              onPress={handlePay}
             >
-              <Text className="text-sm text-white leading-5">Pay</Text>
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text className="text-sm text-white leading-5">Pay</Text>
+              )}
             </Pressable>
           </View>
 
@@ -132,7 +162,7 @@ export function WalletCheckoutScreen({
                       lineHeight: 24,
                     }}
                   >
-                    GHS 45.00
+                    GHS {total.toFixed(2)}
                   </Text>
                 </View>
                 <View className="flex-row justify-between items-center py-[14px]">

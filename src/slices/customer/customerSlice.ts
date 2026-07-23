@@ -21,9 +21,7 @@ const customerSlice = createSlice({
             state.bags_recycled = action.payload.bags_recycled;
             state.is_premium = action.payload.is_premium;
         },
-        clearCustomer: (state) => {
-            state = initialState
-        },
+        clearCustomer: () => initialState,
         upgradeToPremium: (state) => {
             state.is_premium = true;
         },

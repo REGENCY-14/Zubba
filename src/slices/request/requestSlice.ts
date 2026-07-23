@@ -122,6 +122,10 @@ const requestSlice = createSlice({
       state.payment_date = action.payload;
     },
 
+    markRequestPaid(state) {
+      state.status = 'paid';
+    },
+
     markRequestCompleted(state) {
       state.status = 'completed';
     },
@@ -154,6 +158,7 @@ export const {
   setPaymentStatus,
   setPaymentDate,
   resetRequest,
+  markRequestPaid,
   markRequestCompleted,
   updateRequestStatus,
 } = requestSlice.actions;

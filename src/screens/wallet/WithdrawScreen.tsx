@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Dimensions, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { walletService } from "../../api/walletService";
+import { handleApiError } from "../../utils/handleApiError";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
@@ -16,6 +18,31 @@ export function WithdrawScreen({
   const [phone, setPhone] = useState("055 123 4567");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
   const [customAmount, setCustomAmount] = useState("GHS 50.00");
+  const [loading, setLoading] = useState(false);
+
+  const parseAmount = () => {
+    if (selectedAmount) return selectedAmount;
+    const numeric = Number(customAmount.replace(/[^\d.]/g, ""));
+    return numeric || 0;
+  };
+
+  const handleWithdraw = async () => {
+    const amount = parseAmount();
+    if (amount <= 0 || loading) return;
+    setLoading(true);
+    try {
+      await walletService.withdraw({
+        amount,
+        phone: phone.replace(/\s/g, ""),
+        provider: "mtn",
+      });
+      navigation.navigate("ZubbaWallet", { debited: true });
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAmountChip = (amount: number) => {
     setSelectedAmount(amount);
@@ -191,10 +218,10 @@ export function WithdrawScreen({
                 borderRadius: 9999,
                 alignItems: "center",
                 justifyContent: "center",
+                opacity: loading ? 0.6 : 1,
               }}
-              onPress={() =>
-                navigation.navigate("ZubbaWallet", { debited: true })
-              }
+              onPress={handleWithdraw}
+              disabled={loading}
             >
               <Text
                 style={{

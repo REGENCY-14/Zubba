@@ -15,7 +15,7 @@ export interface GetRequestsQuery {
   offset: number;
 }
 
-export type RequestStatus = "pending" | "accepted" | "en_route" | "arrived" | "completed" | "cancelled";
+export type RequestStatus = "pending" | "paid" | "accepted" | "en_route" | "arrived" | "completed" | "cancelled";
 
 export interface RequestDriverInfo {
   id: string;

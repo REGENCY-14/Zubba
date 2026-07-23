@@ -14,6 +14,7 @@ import { OTPInput } from "../../components/common/OTPInput";
 import { customerService } from "../../api/customerService";
 import { useTheme } from "../../context/ThemeContext";
 import { handleApiError } from "../../utils/handleApiError";
+import { registerForPushNotifications } from "../../services/pushNotifications";
 
 export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";
@@ -57,6 +58,8 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
         const customer = customerResponse.data.customer;
         dispatch(setCustomer(customer))
       }
+
+      registerForPushNotifications().catch(() => {});
 
       if (!user.email || !user.phone) {
         navigation.replace("NewUserOnboarding", { ...(email ? { email: contact } : { phone: contact }) });

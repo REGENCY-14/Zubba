@@ -1,9 +1,10 @@
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
+import { useNotifications, useDeleteNotification } from '../../hooks/useNotifications';
 
 type NotificationItem = {
   id: string;
@@ -11,18 +12,8 @@ type NotificationItem = {
   time: string;
 };
 
-const TODAY: NotificationItem[] = [
-  { id: '1', message: 'Your waste collection request has been received and is being processed.', time: '5:30PM' },
-  { id: '2', message: 'A driver has been assigned to your pickup request and will arrive shortly.', time: '3:04PM' },
-  { id: '3', message: 'Congratulations! You earned 25 reward points from your recent collection.', time: '3:04PM' },
-];
-
-const WEEK_AGO: NotificationItem[] = [
-  { id: '4', message: 'Your Premium subscription will expire in 3 days. Renew now to continue enjoying premium benefits.', time: '3:04PM' },
-  { id: '5', message: "We couldn't process your payment. Please try again or use another payment method.", time: '3:04PM' },
-  { id: '6', message: 'Your waste has been successfully collected. Thank you for choosing Zubba.', time: '3:04PM' },
-  { id: '7', message: 'GHS 50.00 has been added to your Zubba Wallet successfully.', time: '3:04PM' },
-];
+const TODAY: NotificationItem[] = [];
+const WEEK_AGO: NotificationItem[] = [];
 
 const bellIcon = require("../../../assets/activities.png")
 
@@ -63,6 +54,16 @@ const hasActivity = TODAY.length > 0 || WEEK_AGO.length > 0;
 
 export function NotificationsListScreen({ navigation }: RootStackScreenProps<'NotificationsList'>) {
   const { colors } = useTheme();
+  const { data, isLoading } = useNotifications(50, 0);
+  const deleteNotification = useDeleteNotification();
+
+  const items: NotificationItem[] = (data?.notifications ?? []).map((n: any) => ({
+    id: n.id,
+    message: n.body,
+    time: new Date(n.createdAt ?? n.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+  }));
+
+  const hasItems = items.length > 0;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -74,7 +75,9 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 24 }}
         >
-          {hasActivity ? (
+          {isLoading ? (
+            <ActivityIndicator color="#31973D" />
+          ) : hasItems ? (
             <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingVertical: 11 }}>
               <View style={{ paddingHorizontal: 16, gap: 16 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -83,24 +86,11 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
                   </Text>
                   <MaterialCommunityIcons name="tune-variant" size={18} color={colors.textSub} />
                 </View>
-                <View>
-                  <Text style={{ fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub, marginBottom: 0 }}>
-                    Today
-                  </Text>
-                  {TODAY.map(item => (
-                    <NotificationRow key={item.id} item={item} iconSize={32} colors={colors} />
-                  ))}
-                </View>
-
-                <View>
-                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.textSub }}>
-                    7 Days Ago
-                  </Text>
-                  {WEEK_AGO.map(item => (
-                    <NotificationRow key={item.id} item={item} iconSize={48} colors={colors} />
-                  ))}
-                </View>
-
+                {items.map(item => (
+                  <Pressable key={item.id} onLongPress={() => deleteNotification.mutate(item.id as any)}>
+                    <NotificationRow item={item} iconSize={32} colors={colors} />
+                  </Pressable>
+                ))}
               </View>
             </View>
           ) : (
