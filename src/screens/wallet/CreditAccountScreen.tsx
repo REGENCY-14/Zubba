@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Dimensions, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { walletService } from "../../api/walletService";
+import { handleApiError } from "../../utils/handleApiError";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
@@ -16,6 +18,38 @@ export function CreditAccountScreen({
   const [phone, setPhone] = useState("055 123 4567");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
   const [customAmount, setCustomAmount] = useState("GHS 50.00");
+  const [loading, setLoading] = useState(false);
+
+  const parseAmount = () => {
+    if (selectedAmount) return selectedAmount;
+    const numeric = Number(customAmount.replace(/[^\d.]/g, ""));
+    return numeric || 0;
+  };
+
+  const handleTopUp = async () => {
+    const amount = parseAmount();
+    if (amount <= 0 || loading) return;
+    setLoading(true);
+    try {
+      const res = await walletService.initiateDeposit({
+        amount,
+        phone: phone.replace(/\s/g, ""),
+        provider: "mtn",
+      });
+      if (res.success && res.data.reference) {
+        navigation.navigate("PaymentVerification", {
+          phone,
+          reference: res.data.reference,
+          amount,
+          provider: "mtn",
+        });
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAmountChip = (amount: number) => {
     setSelectedAmount(amount);
@@ -191,21 +225,25 @@ export function CreditAccountScreen({
                 borderRadius: 9999,
                 alignItems: "center",
                 justifyContent: "center",
+                opacity: loading ? 0.6 : 1,
               }}
-              onPress={() =>
-                navigation.navigate("ZubbaWallet", { credited: true })
-              }
+              disabled={loading}
+              onPress={handleTopUp}
             >
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "400",
-                  color: "#FFFFFF",
-                  lineHeight: 20,
-                }}
-              >
-                Top up
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "400",
+                    color: "#FFFFFF",
+                    lineHeight: 20,
+                  }}
+                >
+                  Top up
+                </Text>
+              )}
             </Pressable>
           </View>
         </View>

@@ -1,51 +1,36 @@
+import { useState } from "react";
 import { View, Image, ScrollView, Text } from "react-native";
-import * as Notifications from "expo-notifications";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
 import { useTheme } from "../../context/ThemeContext";
+import { registerForPushNotifications } from "../../services/pushNotifications";
 
 export const OnboardNotificationsAccessScreen = ({
   navigation,
 }: RootStackScreenProps<"OnboardNotificationsAccess">) => {
   const sendNotification = require("../../../assets/sendNotification.png");
-  const { colors } = useTheme()
-
-  // const requestNotificationPermission = async () => {
-  //   try {
-  //     const { status: existingStatus } =
-  //       await Notifications.getPermissionsAsync();
-  //     let finalStatus = existingStatus;
-  //     if (existingStatus !== "granted") {
-  //       const { status } = await Notifications.requestPermissionsAsync();
-  //       finalStatus = status;
-  //     }
-
-  //     if (finalStatus !== "granted") {
-  //       toast.success(
-  //         "Permission denied\nYou can enable notifications later in settings.",
-  //       );
-  //       return false;
-  //     }
-
-  //     return true;
-  //   } catch (error) {
-  //     console.log("Notification permission error:", error);
-  //     toast.error(
-  //       "Error\nUnable to request notification permissions right now.",
-  //     );
-  //     return false;
-  //   }
-  // };
+  const { colors } = useTheme();
+  const [loading, setLoading] = useState(false);
 
   const enableNotifications = async () => {
-    // const granted = await requestNotificationPermission();
-    // if (!granted) return;
-
-    toast.success("Success\nNotifications enabled!");
-    navigation.navigate("SignUp");
+    setLoading(true);
+    try {
+      const token = await registerForPushNotifications();
+      if (token) {
+        toast.success("Success\nNotifications enabled!");
+      } else {
+        toast.info("Permission denied\nYou can enable notifications later in settings.");
+      }
+      navigation.navigate("SignUp");
+    } catch (error) {
+      console.log("Notification permission error:", error);
+      toast.error("Error\nUnable to request notification permissions right now.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,6 +61,8 @@ export const OnboardNotificationsAccessScreen = ({
             title="Enable notifications"
             variant="primary"
             onPress={enableNotifications}
+            disabled={loading}
+            style={{ opacity: loading ? 0.6 : 1 }}
           />
         </View>
       </ScrollView>

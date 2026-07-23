@@ -1,5 +1,5 @@
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Pressable, ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -7,6 +7,7 @@ import { AppBottomNav } from "../../components";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { deviceService, DeviceSession } from "../../api/deviceService";
 
 type DeviceCardProps = {
   iconName: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -28,7 +29,9 @@ function DeviceCard({
   actionTone = "revoke",
   isCurrent = false,
   colors,
-}: DeviceCardProps) {
+  onRevoke,
+  revoking,
+}: DeviceCardProps & { onRevoke?: () => void; revoking?: boolean }) {
   return (
     <View
       style={{
@@ -111,7 +114,9 @@ function DeviceCard({
           </View>
         </View>
 
-        <View
+        <Pressable
+          onPress={onRevoke}
+          disabled={!onRevoke || revoking || actionTone === "current"}
           style={{
             minWidth: 69,
             height: 32,
@@ -123,19 +128,24 @@ function DeviceCard({
               actionTone === "current" ? colors.iconBg : colors.card,
             borderWidth: 1,
             borderColor: actionTone === "current" ? colors.border : "#FF383C",
+            opacity: revoking ? 0.5 : 1,
           }}
         >
-          <Text
-            style={{
-              fontSize: 13,
-              lineHeight: 20,
-              fontWeight: "bold",
-              color: actionTone === "current" ? "#31973D" : "#FF383C",
-            }}
-          >
-            {actionLabel}
-          </Text>
-        </View>
+          {revoking ? (
+            <ActivityIndicator size="small" color="#FF383C" />
+          ) : (
+            <Text
+              style={{
+                fontSize: 13,
+                lineHeight: 20,
+                fontWeight: "bold",
+                color: actionTone === "current" ? "#31973D" : "#FF383C",
+              }}
+            >
+              {actionLabel}
+            </Text>
+          )}
+        </Pressable>
       </View>
     </View>
   );
@@ -189,6 +199,33 @@ export function ActiveSessionScreen({
   navigation,
 }: RootStackScreenProps<"ActiveSession">) {
   const { isDark, colors } = useTheme();
+  const [sessions, setSessions] = useState<DeviceSession[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+
+  const loadSessions = async () => {
+    setLoading(true);
+    try {
+      const res = await deviceService.getSessions();
+      if (res.success) setSessions(res.data.items);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSessions();
+  }, []);
+
+  const handleRevoke = async (sessionId: string) => {
+    setRevokingId(sessionId);
+    try {
+      await deviceService.revokeSession(sessionId);
+      await loadSessions();
+    } finally {
+      setRevokingId(null);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -273,7 +310,7 @@ export function ActiveSessionScreen({
               }}
             >
               <Text style={{ color: "#F7FFF1", fontSize: 12, lineHeight: 14 }}>
-                3 Active
+                {sessions.length} Active
               </Text>
             </View>
           </View>
@@ -289,32 +326,27 @@ export function ActiveSessionScreen({
               gap: 16,
             }}
           >
-            <DeviceCard
-              iconName="cellphone"
-              title="iPhone 13"
-              location="Accra, Ghana"
-              status="Active now"
-              actionLabel="Current"
-              actionTone="current"
-              isCurrent
-              colors={colors}
-            />
-            <DeviceCard
-              iconName="laptop"
-              title='MacBook Pro 14"'
-              location="Accra, Ghana"
-              status="Active now"
-              actionLabel="Revoke"
-              colors={colors}
-            />
-            <DeviceCard
-              iconName="cellphone"
-              title="iPhone 13"
-              location="Accra, Ghana"
-              status="Active now"
-              actionLabel="Revoke"
-              colors={colors}
-            />
+            {loading ? (
+              <ActivityIndicator color="#31973D" />
+            ) : sessions.length === 0 ? (
+              <Text style={{ color: colors.textSub, textAlign: "center" }}>No active sessions</Text>
+            ) : (
+              sessions.map((session, index) => (
+                <DeviceCard
+                  key={session.id}
+                  iconName={session.platform === "ios" ? "cellphone" : "laptop"}
+                  title={session.device_name ?? "Unknown device"}
+                  location={session.ip_address ?? "Unknown location"}
+                  status={`Last active ${new Date(session.last_active_at).toLocaleString()}`}
+                  actionLabel={index === 0 ? "Current" : "Revoke"}
+                  actionTone={index === 0 ? "current" : "revoke"}
+                  isCurrent={index === 0}
+                  colors={colors}
+                  onRevoke={index === 0 ? undefined : () => handleRevoke(session.id)}
+                  revoking={revokingId === session.id}
+                />
+              ))
+            )}
           </View>
 
           <View style={{ paddingTop: 4 }}>

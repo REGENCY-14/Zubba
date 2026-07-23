@@ -24,6 +24,7 @@ import {
 } from "../../api/scheduleService";
 import { handleApiError } from "../../utils/handleApiError";
 import { toast } from "../../hooks/toast";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -500,7 +501,13 @@ export function ScheduleScreen({
   const { colors } = useTheme();
   const customer = useAppSelector((state) => state.customer);
   const isPremium = customer.is_premium;
+  const { coords } = useCurrentLocation();
   const todayDate = new Date();
+
+  const getPickupCoordinates = (): [number, number] => {
+    if (coords) return [coords.longitude, coords.latitude];
+    return [-0.187, 5.6037];
+  };
 
   // Loading states
   const [isLoading, setIsLoading] = useState(false);
@@ -700,7 +707,7 @@ export function ScheduleScreen({
         pickup_address: location,
         pickup_location: {
           type: "Point" as const,
-          coordinates: [-1.0, 5.0] as [number, number], // Fixed: type assertion
+          coordinates: getPickupCoordinates(),
         },
         phone: phone || null,
         note: note || null,
@@ -757,7 +764,7 @@ export function ScheduleScreen({
         pickup_address: location,
         pickup_location: {
           type: "Point" as const,
-          coordinates: [-1.0, 5.0] as [number, number], // Fixed: type assertion
+          coordinates: getPickupCoordinates(),
         },
         phone: phone || null,
         note: note || null,

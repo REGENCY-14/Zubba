@@ -20,6 +20,7 @@ import { store } from "./src/store";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
+import { configureNotifications } from "./src/services/pushNotifications";
 
 // Apply Poppins as the global default for unstyled Text / TextInput
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -62,6 +63,7 @@ export default function App() {
   });
 
   useEffect(() => {
+    configureNotifications();
     hydrateAuth();
   }, []);
 

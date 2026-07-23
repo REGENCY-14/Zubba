@@ -17,8 +17,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { api } from "../../api/axios";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { markRequestCompleted, setPaymentDate, setPaymentStatus, setTransactionReference } from "../../slices/request/requestSlice";
-import { requestService } from "../../api/requestService";
+import { markRequestPaid, setPaymentDate, setPaymentStatus, setTransactionReference } from "../../slices/request/requestSlice";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
 
@@ -45,8 +44,7 @@ export function PaymentVerificationScreen({
           dispatch(setPaymentStatus('success'));
           dispatch(setPaymentDate(new Date()));
           dispatch(setTransactionReference(reference));
-          dispatch(markRequestCompleted());
-          await requestService.updateRequestStatus(request.id, "completed")
+          dispatch(markRequestPaid());
 
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current);
