@@ -223,7 +223,7 @@ export function ZubbaWalletScreen({
   const [activeSheet, setActiveSheet] = useState<"topup" | "withdraw">("topup");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
-  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadWallet = async () => {

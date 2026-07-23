@@ -24,6 +24,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-splash-screen",
     "expo-status-bar",
     "expo-web-browser",
+    "react-native-iap",
     [
       "expo-notifications",
       {

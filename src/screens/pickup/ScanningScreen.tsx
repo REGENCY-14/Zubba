@@ -130,7 +130,7 @@ export function ScanningScreen({
       const requestTakeout: RequestTakeout = {
         pickup_location: [coords.latitude, coords.longitude],
         pickup_address: "Home",
-        // bags: 1,
+        bags: 1,
         driver_id: driver.id,
         distance_m: driver.distanceM,
         pickup_price: driver.cost,

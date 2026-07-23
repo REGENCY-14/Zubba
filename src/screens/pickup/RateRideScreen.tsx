@@ -6,6 +6,8 @@ import { useTheme } from "../../context/ThemeContext";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { resetRequest } from "../../slices/request/requestSlice";
 import { api } from "../../api/axios";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
@@ -74,6 +76,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
   const [isLoading, setIsLoading] = useState(false);
   
   const request = useAppSelector((state) => state.request);
+  const dispatch = useAppDispatch();
 
   const RATING_OPTIONS = [
     { label: "Bad", value: 1 },
@@ -109,6 +112,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
         toast.success(
           "Thank You!\nYour feedback helps us improve our service.",
         );
+        dispatch(resetRequest());
         navigation.replace("Home")
       }
     } catch (error: any) {
@@ -120,6 +124,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
   };
 
   const handleSkip = () => {
+    dispatch(resetRequest());
     navigation.navigate("Home");
   };
 

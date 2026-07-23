@@ -1,10 +1,17 @@
 import React from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View, Platform, ActivityIndicator } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { purchaseGoogleSubscription } from '../../services/googlePlayBilling';
+import { subscriptionService } from '../../api/subscriptionService';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { setCustomer } from '../../slices/customer/customerSlice';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { toast } from '../../hooks/toast';
+import { GOOGLE_PLAY_PACKAGE } from '../../constants/subscriptionProducts';
 
 const PLANS = [
   {
@@ -76,12 +83,52 @@ function PaymentBadge({ id }: { id: string }) {
 
 export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreenProps<'ConfirmSubscription'>) {
   const { colors, isDark } = useTheme();
+  const dispatch = useAppDispatch();
+  const customer = useAppSelector((state) => state.customer);
   const [selectedIndex, setSelectedIndex] = React.useState(route.params?.planIndex ?? 1);
   const [showPaymentSheet, setShowPaymentSheet] = React.useState(false);
   const [selectedPayment, setSelectedPayment] = React.useState('credit');
+  const [subscribing, setSubscribing] = React.useState(false);
 
   const selected = PLANS[selectedIndex];
   const alternates = PLANS.filter((_, i) => i !== selectedIndex);
+
+  const handleGooglePlaySubscribe = async () => {
+    if (subscribing) return;
+    setSubscribing(true);
+    try {
+      const purchase = await purchaseGoogleSubscription(selectedIndex);
+      const verify = await subscriptionService.verifyGoogle({
+        purchaseToken: purchase.purchaseToken,
+        productId: purchase.productId,
+        packageName: GOOGLE_PLAY_PACKAGE,
+      });
+
+      if (verify.success && verify.data.isActive) {
+        dispatch(setCustomer({
+          ...customer,
+          is_premium: true,
+        }));
+        toast.success('Gold subscription activated!');
+        navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+      } else {
+        toast.error('Subscription could not be verified. Please try again.');
+      }
+    } catch (error: any) {
+      toast.error(error?.message ?? 'Unable to complete subscription.');
+    } finally {
+      setSubscribing(false);
+      setShowPaymentSheet(false);
+    }
+  };
+
+  const handleConfirmPress = () => {
+    if (Platform.OS === 'android') {
+      handleGooglePlaySubscribe();
+      return;
+    }
+    setShowPaymentSheet(true);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -146,9 +193,17 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
               </Pressable>
               <Pressable
                 className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
-                onPress={() => setShowPaymentSheet(true)}
+                onPress={handleConfirmPress}
+                disabled={subscribing}
+                style={{ opacity: subscribing ? 0.7 : 1 }}
               >
-                <Text className="text-sm text-white leading-5">Confirm Subscription</Text>
+                {subscribing ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text className="text-sm text-white leading-5">
+                    {Platform.OS === 'android' ? 'Subscribe with Google Play' : 'Confirm Subscription'}
+                  </Text>
+                )}
               </Pressable>
             </View>
           </View>

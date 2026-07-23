@@ -25,19 +25,14 @@ import {
 import { handleApiError } from "../../utils/handleApiError";
 import { toast } from "../../hooks/toast";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { driverService } from "../../api/driverService";
+import { binFullService } from "../../api/binFullService";
+import { NearbyDriver } from "../../types/driver.types";
+import * as Location from "expo-location";
 
 const avatar = require("../../../assets/avatar.jpg");
 
-/* ─── constants ─────────────────────────────────────────────── */
-
-const DRIVERS = [
-  { name: "Kwame Mensah", rating: 4.6, premium: true },
-  { name: "Emmanuel", rating: 4.7, premium: true },
-  { name: "Jeffery", rating: 4.0, premium: true },
-  { name: "Andy", rating: 4.9, premium: true },
-  { name: "Manu", rating: 4.4, premium: true },
-  { name: "Oduro", rating: 3.9, premium: true },
-];
+const SERVICE_FEE = 5;
 
 const FREQUENCIES = ["One time pickup", "Daily", "Weekly", "Monthly"];
 
@@ -517,7 +512,10 @@ export function ScheduleScreen({
 
   // Screen
   const [isBinFull, setIsBinFull] = useState(false);
+  const [binFullLoading, setBinFullLoading] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [nearbyDrivers, setNearbyDrivers] = useState<NearbyDriver[]>([]);
+  const [driversLoading, setDriversLoading] = useState(false);
 
   // Form
   const [driverListOpen, setDriverListOpen] = useState(false);
@@ -592,6 +590,89 @@ export function ScheduleScreen({
     }
   };
 
+  const getDriverById = (id: string | null) =>
+    nearbyDrivers.find((driver) => driver.id === id) ?? null;
+
+  const getEstimatedPrice = () => {
+    const driver = getDriverById(selectedDriver);
+    return (driver?.cost ?? 10) + SERVICE_FEE;
+  };
+
+  const fetchNearbyDrivers = async () => {
+    if (!coords) return;
+    setDriversLoading(true);
+    try {
+      const res = await driverService.getNearbyDrivers({
+        lat: coords.latitude,
+        lng: coords.longitude,
+        isPremium,
+      });
+      if (res.success) {
+        setNearbyDrivers(res.data.drivers);
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setDriversLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isPremium) return;
+    binFullService
+      .getStatus()
+      .then((res) => {
+        if (res.success) setIsBinFull(res.data.is_active);
+      })
+      .catch(() => {});
+  }, [isPremium]);
+
+  useEffect(() => {
+    if (coords && sheetOpen) {
+      fetchNearbyDrivers();
+    }
+  }, [coords, sheetOpen, isPremium]);
+
+  const handleBinFullToggle = async (value: boolean) => {
+    if (!isPremium || binFullLoading) return;
+    setBinFullLoading(true);
+    try {
+      let pickupLocation: { type: "Point"; coordinates: [number, number] } | undefined;
+      let pickupAddress = location || "Scheduled pickup";
+
+      if (value) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === "granted") {
+          const loc = await Location.getCurrentPositionAsync({});
+          pickupLocation = {
+            type: "Point",
+            coordinates: [loc.coords.longitude, loc.coords.latitude],
+          };
+        } else if (coords) {
+          pickupLocation = {
+            type: "Point",
+            coordinates: [coords.longitude, coords.latitude],
+          };
+        }
+      }
+
+      await binFullService.setSignal({
+        isActive: value,
+        pickupAddress,
+        pickupLocation,
+      });
+      setIsBinFull(value);
+      showToast(
+        value ? "Bin-full signal enabled" : "Bin-full signal disabled",
+        "success",
+      );
+    } catch {
+      showToast("Unable to update bin-full signal", "error");
+    } finally {
+      setBinFullLoading(false);
+    }
+  };
+
   // ─── Handle Retry ─────────────────────────────────────────────
 
   const handleRetrySchedule = async (scheduleId: string) => {
@@ -632,7 +713,7 @@ export function ScheduleScreen({
       if (response.success && response.data) {
         const items = response.data.items.map((s: ApiSchedule) => {
           const date = new Date(s.scheduled_date);
-          const driver = DRIVERS.find((d) => d.name === s.driver_id) || DRIVERS[0];
+          const driver = nearbyDrivers.find((d) => d.id === s.driver_id);
 
           // Map status from API
           let status: ScheduleItem['status'] = 'scheduled';
@@ -643,7 +724,7 @@ export function ScheduleScreen({
 
           return {
             id: s.id,
-            driver: driver?.name || 'Driver',
+            driver: driver?.name || "Assigned driver",
             date: date.toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -715,7 +796,7 @@ export function ScheduleScreen({
         scheduled_date: scheduledDate.toISOString().split("T")[0],
         start_time: startTime || null,
         end_time: endTime || null,
-        estimated_price: 15, // TODO: Calculate actual price
+        estimated_price: getEstimatedPrice(),
       };
 
       const response = await scheduleService.createSchedule(payload);
@@ -772,7 +853,7 @@ export function ScheduleScreen({
         scheduled_date: scheduledDate.toISOString().split("T")[0],
         start_time: startTime || null,
         end_time: endTime || null,
-        estimated_price: 15, // TODO: Calculate actual price
+        estimated_price: getEstimatedPrice(),
       };
 
       const response = await scheduleService.updateSchedule(
@@ -978,8 +1059,8 @@ export function ScheduleScreen({
           .join(" - ")
       : "";
 
-  const driverRating =
-    DRIVERS.find((d) => d.name === selectedDriver)?.rating ?? "";
+  const selectedDriverInfo = getDriverById(selectedDriver);
+  const driverRating = selectedDriverInfo?.rating ?? "";
 
   const filterCalendarDays = getCalendarDays(filterYear, filterMonth);
   const filterLabel = activeFilter
@@ -1033,7 +1114,10 @@ export function ScheduleScreen({
               <Text className="text-xs" style={{ color: colors.textSub }}>
                 Bin Full?
               </Text>
-              <AnimatedSwitch value={isBinFull} onChange={setIsBinFull} />
+              <AnimatedSwitch
+                value={isBinFull}
+                onChange={handleBinFullToggle}
+              />
             </View>
           )}
           <Pressable
@@ -1265,20 +1349,22 @@ export function ScheduleScreen({
                       style={{ color: colors.textMuted }}
                       className="text-xs"
                     >
-                      {DRIVERS.find((d) => d.name === selectedDriver)?.rating}
+                      {selectedDriverInfo?.rating ?? "—"}
                     </Text>
                     <View className="flex-row items-center gap-1 flex-1">
                       <Text
                         style={{ color: colors.text }}
                         className="text-sm font-medium"
                       >
-                        {selectedDriver}
+                        {selectedDriverInfo?.name ?? "Driver"}
                       </Text>
-                      <MaterialCommunityIcons
-                        name="check-decagram"
-                        size={13}
-                        color="#D4AF37"
-                      />
+                      {selectedDriverInfo?.isPremium && (
+                        <MaterialCommunityIcons
+                          name="check-decagram"
+                          size={13}
+                          color="#D4AF37"
+                        />
+                      )}
                     </View>
                     <Pressable
                       onPress={() => setSelectedDriver(null)}
@@ -1368,55 +1454,70 @@ export function ScheduleScreen({
                       className="max-h-56"
                       showsVerticalScrollIndicator={false}
                     >
-                      {DRIVERS.filter((d) =>
-                        d.name
-                          .toLowerCase()
-                          .includes(searchQuery.toLowerCase()),
-                      ).map((driver) => (
-                        <Pressable
-                          key={driver.name}
-                          className={`flex-row items-center justify-between px-3 py-2 h-[34px] rounded-2xl mb-1 ${
-                            selectedDriver === driver.name
-                              ? "bg-[#F1F5F9]"
-                              : "bg-transparent"
-                          }`}
-                          onPress={() => {
-                            setSelectedDriver(driver.name);
-                            setDriverListOpen(false);
-                            setSearchMode(false);
-                            setSearchQuery("");
-                          }}
+                      {driversLoading ? (
+                        <View className="py-6 items-center">
+                          <ActivityIndicator color="#31973D" />
+                        </View>
+                      ) : nearbyDrivers.length === 0 ? (
+                        <Text
+                          style={{ color: colors.textSub }}
+                          className="text-sm text-center py-4"
                         >
-                          <View className="flex-row items-center gap-1">
-                            <Text
-                              style={{ color: colors.text }}
-                              className="text-sm font-medium"
+                          No drivers nearby. Try again later.
+                        </Text>
+                      ) : (
+                        nearbyDrivers
+                          .filter((driver) =>
+                            driver.name
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase()),
+                          )
+                          .map((driver) => (
+                            <Pressable
+                              key={driver.id}
+                              className={`flex-row items-center justify-between px-3 py-2 h-[34px] rounded-2xl mb-1 ${
+                                selectedDriver === driver.id
+                                  ? "bg-[#F1F5F9]"
+                                  : "bg-transparent"
+                              }`}
+                              onPress={() => {
+                                setSelectedDriver(driver.id);
+                                setDriverListOpen(false);
+                                setSearchMode(false);
+                                setSearchQuery("");
+                              }}
                             >
-                              {driver.name}
-                            </Text>
-                            {driver.premium && (
-                              <MaterialCommunityIcons
-                                name="check-decagram"
-                                size={13}
-                                color="#D4AF37"
-                              />
-                            )}
-                          </View>
-                          <View className="flex-row items-center gap-[5px]">
-                            <MaterialCommunityIcons
-                              name="star"
-                              size={16}
-                              color="#FEC002"
-                            />
-                            <Text
-                              style={{ color: colors.textSub }}
-                              className="text-xs"
-                            >
-                              {driver.rating}
-                            </Text>
-                          </View>
-                        </Pressable>
-                      ))}
+                              <View className="flex-row items-center gap-1">
+                                <Text
+                                  style={{ color: colors.text }}
+                                  className="text-sm font-medium"
+                                >
+                                  {driver.name}
+                                </Text>
+                                {driver.isPremium && (
+                                  <MaterialCommunityIcons
+                                    name="check-decagram"
+                                    size={13}
+                                    color="#D4AF37"
+                                  />
+                                )}
+                              </View>
+                              <View className="flex-row items-center gap-[5px]">
+                                <MaterialCommunityIcons
+                                  name="star"
+                                  size={16}
+                                  color="#FEC002"
+                                />
+                                <Text
+                                  style={{ color: colors.textSub }}
+                                  className="text-xs"
+                                >
+                                  {driver.rating}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          ))
+                      )}
                     </ScrollView>
                   </View>
                 )}
@@ -1887,7 +1988,7 @@ export function ScheduleScreen({
               {/* Name + badges */}
               <View className="gap-0.5">
                 <Text className="text-xl font-bold text-black font-['Poppins'] tracking-[-0.6px] leading-8">
-                  {selectedDriver}
+                  {selectedDriverInfo?.name ?? "Driver"}
                 </Text>
                 <View className="flex-row gap-1">
                   <View className="bg-[#FEF3C7] rounded-full px-3 py-1">
