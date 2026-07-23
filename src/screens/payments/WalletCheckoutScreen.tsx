@@ -11,6 +11,7 @@ import { walletService } from "../../api/walletService";
 import { markRequestPaid } from "../../slices/request/requestSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { handleApiError } from "../../utils/handleApiError";
+import { completePickupAfterPayment } from "../../services/pickupCompletion";
 
 export function WalletCheckoutScreen({
   navigation,
@@ -18,6 +19,7 @@ export function WalletCheckoutScreen({
   const { colors } = useTheme();
   const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request);
+  const customer = useAppSelector((state) => state.customer);
   const [loading, setLoading] = useState(false);
   const total = (request.pickup_price || 0) + (request.service_price || 0);
 
@@ -27,6 +29,11 @@ export function WalletCheckoutScreen({
     try {
       await walletService.payForRequest(request.id);
       dispatch(markRequestPaid());
+      await completePickupAfterPayment(
+        request.id,
+        request.customer_id || customer.id,
+        dispatch,
+      );
       navigation.navigate("PaymentSuccess", { phone: "" });
     } catch (error) {
       handleApiError(error);

@@ -6,15 +6,12 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { resetRequest } from "../../slices/request/requestSlice";
 
 export function PaymentSuccessScreen({
   navigation,
   route,
 }: RootStackScreenProps<"PaymentSuccess">) {
   const { colors } = useTheme();
-  const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request);
   const user = useAppSelector((state) => state.auth.user);
   const { reference, amount, provider, phone } = route.params || {};
@@ -28,13 +25,12 @@ export function PaymentSuccessScreen({
     { label: "Account Name", value: `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || "N/A" },
     { label: "Amount Paid", value: `GHS ${totalAmount.toFixed(2)}` },
     { label: "Bin Bags", value: `${request.bags || 0} Bag${request.bags !== 1 ? "s" : ""}` },
-    { label: "Status", value: request.status === 'completed' ? 'Completed' : request.payment_status || 'Completed' },
+    { label: "Status", value: request.status === "completed" ? "Completed" : request.status === "paid" ? "Paid" : "Completed" },
     { label: "Date", value: request.payment_date ? new Date(request.payment_date).toLocaleDateString() : new Date().toLocaleDateString() },
     { label: "Pickup Time", value: request.date_created ? new Date(request.date_created).toLocaleTimeString() : "N/A" },
   ];
 
   const handleDone = () => {
-    dispatch(resetRequest());
     navigation.navigate("RateRide");
   };
 

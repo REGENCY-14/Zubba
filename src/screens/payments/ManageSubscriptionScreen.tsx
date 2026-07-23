@@ -1,13 +1,15 @@
-import React, { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Modal, Pressable, ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useTheme } from '../../context/ThemeContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { cancelPremium } from '../../slices/customer/customerSlice';
+import { cancelPremium, setCustomer } from '../../slices/customer/customerSlice';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { subscriptionService } from '../../api/subscriptionService';
+import { toast } from '../../hooks/toast';
 
 const GOLD_FEATURES = [
   { icon: 'flash-outline', label: 'Double Eco-Points on every pickup' },
@@ -23,7 +25,43 @@ function formatDate(date: Date) {
 export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'ManageSubscription'>) {
   const { colors } = useTheme();
   const dispatch = useAppDispatch();
+  const customer = useAppSelector((state) => state.customer);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [planLabel, setPlanLabel] = useState('Gold Plan');
+  const [planPrice, setPlanPrice] = useState('GHS 50.00');
+  const [isActive, setIsActive] = useState(customer.is_premium);
+
+  useEffect(() => {
+    subscriptionService.getMySubscription()
+      .then((res) => {
+        const sub = res.data?.subscription as {
+          product_id?: string;
+          isActive?: boolean;
+          expires_at?: string;
+        } | null;
+        if (sub?.isActive) {
+          setIsActive(true);
+          dispatch(setCustomer({ ...customer, is_premium: true }));
+          if (sub.product_id?.includes('family')) {
+            setPlanLabel('Family Plan');
+            setPlanPrice('GHS 800.00');
+          } else if (sub.product_id?.includes('yearly')) {
+            setPlanLabel('Yearly Plan');
+            setPlanPrice('GHS 550.00');
+          } else {
+            setPlanLabel('Gold Plan');
+            setPlanPrice('GHS 50.00');
+          }
+        } else {
+          setIsActive(customer.is_premium);
+        }
+      })
+      .catch(() => {
+        setIsActive(customer.is_premium);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const renewalDate = useMemo(() => {
     const next = new Date();
@@ -34,8 +72,35 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
   const handleConfirmCancel = () => {
     setCancelModalOpen(false);
     dispatch(cancelPremium());
+    toast.info('Manage cancellation in Google Play Store.');
     navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color="#31973D" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!isActive) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 }}>
+          <Text style={{ fontFamily: 'Poppins', fontSize: 16, color: colors.text, textAlign: 'center' }}>
+            You do not have an active Gold subscription.
+          </Text>
+          <Pressable
+            onPress={() => navigation.navigate('ChoosePlan')}
+            className="h-12 bg-[#31973D] rounded-full items-center justify-center px-8"
+          >
+            <Text className="text-white text-sm">View plans</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -61,7 +126,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <MaterialCommunityIcons name="crown" size={20} color="#FFE088" />
-                <Text style={{ fontFamily: 'Poppins', fontSize: 18, fontWeight: '700', color: '#FFFFFF' }}>Gold Plan</Text>
+                <Text style={{ fontFamily: 'Poppins', fontSize: 18, fontWeight: '700', color: '#FFFFFF' }}>{planLabel}</Text>
               </View>
               <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
                 <Text style={{ fontFamily: 'Poppins', fontSize: 11, fontWeight: '600', color: '#FFFFFF' }}>ACTIVE</Text>
@@ -69,7 +134,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-              <Text style={{ fontFamily: 'Poppins', fontSize: 28, fontWeight: '700', color: '#FFFFFF' }}>GHS 50.00</Text>
+              <Text style={{ fontFamily: 'Poppins', fontSize: 28, fontWeight: '700', color: '#FFFFFF' }}>{planPrice}</Text>
               <Text style={{ fontFamily: 'Poppins', fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>/month</Text>
             </View>
 

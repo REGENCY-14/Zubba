@@ -1,2 +1,0 @@
-    # Conflicts:
-    #       src/screens/support/NotificationsScreen.tsx

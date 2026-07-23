@@ -20,6 +20,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { markRequestPaid, setPaymentDate, setPaymentStatus, setTransactionReference } from "../../slices/request/requestSlice";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { completePickupAfterPayment } from "../../services/pickupCompletion";
 
 export function PaymentVerificationScreen({
   route,
@@ -30,7 +31,7 @@ export function PaymentVerificationScreen({
   const { colors } = useTheme();
   const request = useAppSelector((state) => state.request);
   const [status, setStatus] = useState<'pending' | 'success' | 'failed'>('pending');
-  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
+  const pollingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const pollPaymentStatus = async () => {
@@ -50,6 +51,15 @@ export function PaymentVerificationScreen({
             clearInterval(pollingInterval.current);
             pollingInterval.current = null;
           }
+
+          try {
+            if (request.id && request.customer_id) {
+              await completePickupAfterPayment(request.id, request.customer_id, dispatch);
+            }
+          } catch (error) {
+            handleApiError(error);
+          }
+
           setTimeout(() => {
             navigation.replace("PaymentSuccess", { reference, amount, provider, phone });
           }, 1500);
