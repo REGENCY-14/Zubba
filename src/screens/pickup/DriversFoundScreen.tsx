@@ -19,6 +19,7 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import { useEffect, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
@@ -52,7 +53,7 @@ function DriverCard({
                   ? { uri: driver.profilePicture }
                   : fallbackAvatar
               }
-              style={{ width: 54, height: 54 }}
+              style={{ width: moderateScale(54), height: moderateScale(54) }}
               resizeMode="cover"
             />
           </View>
@@ -211,7 +212,7 @@ export function DriversFoundScreen({
               position: "absolute",
               left: "18%",
               top: "48%",
-              width: 160,
+              width: scale(160),
               borderTopWidth: 2,
               borderColor: "#31973D",
               borderStyle: "dashed",
@@ -223,7 +224,7 @@ export function DriversFoundScreen({
               position: "absolute",
               left: "52%",
               top: "46%",
-              width: 110,
+              width: scale(110),
               borderTopWidth: 2,
               borderColor: "#31973D",
               borderStyle: "dashed",
@@ -232,7 +233,7 @@ export function DriversFoundScreen({
           />
 
           <View className="absolute" style={{ right: "8%", top: "52%" }}>
-            <Text style={{ fontSize: 30 }}>🛺</Text>
+            <Text style={{ fontSize: moderateScale(30) }}>🛺</Text>
           </View>
         </View>
 
@@ -243,12 +244,12 @@ export function DriversFoundScreen({
               left: 0,
               right: 0,
               bottom: navHeight,
-              borderRadius: 22,
-              padding: 16,
-              marginHorizontal: 8,
+              borderRadius: moderateScale(22),
+              padding: moderateScale(16),
+              marginHorizontal: scale(8),
               backgroundColor: "#FFFFFF",
-              paddingTop: 12,
-              gap: 16,
+              paddingTop: verticalScale(12),
+              gap: moderateScale(16),
               shadowColor: "#000",
               shadowOpacity: 0.1,
               shadowRadius: 20,
@@ -281,7 +282,7 @@ export function DriversFoundScreen({
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
+                  contentContainerStyle={{ paddingHorizontal: scale(24), gap: scale(12) }}
                 >
                   {drivers.map((driver, i) => (
                     <DriverCard

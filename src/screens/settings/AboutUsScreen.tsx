@@ -9,6 +9,7 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { Paragraph, Section } from "../../components/common/CustomAccordion";
 import { AppBottomNav } from "../../components";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 
@@ -39,18 +40,18 @@ function FeatureCard({
   return (
     <View
       style={{
-        borderRadius: 24,
+        borderRadius: moderateScale(24),
         borderWidth: 1,
         borderColor: colors.border,
-        padding: 18,
-        gap: 10,
+        padding: moderateScale(18),
+        gap: moderateScale(10),
         backgroundColor,
       }}
     >
       <View
         style={{
-          width: 32,
-          height: 32,
+          width: moderateScale(32),
+          height: moderateScale(32),
           alignItems: "flex-start",
           justifyContent: "center",
         }}
@@ -59,8 +60,8 @@ function FeatureCard({
       </View>
       <Text
         style={{
-          fontSize: 14,
-          lineHeight: 30,
+          fontSize: moderateScale(14),
+          lineHeight: moderateScale(30),
           fontWeight: "600",
           color: colors.text,
         }}
@@ -69,8 +70,8 @@ function FeatureCard({
       </Text>
       <Text
         style={{
-          fontSize: 14,
-          lineHeight: 30,
+          fontSize: moderateScale(14),
+          lineHeight: moderateScale(30),
           color: accentColor,
         }}
       >
@@ -98,8 +99,8 @@ function ResourceRow({
   return (
     <Pressable
       style={{
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(12),
         flexDirection: "row",
         alignItems: alignItems,
         justifyContent: "space-between",
@@ -111,8 +112,8 @@ function ResourceRow({
       <View>
         <Text
           style={{
-            fontSize: 14,
-            lineHeight: 30,
+            fontSize: moderateScale(14),
+            lineHeight: moderateScale(30),
             color: colors.text,
           }}
         >
@@ -121,8 +122,8 @@ function ResourceRow({
         {subtitle ? (
           <Text
             style={{
-              fontSize: 14,
-              lineHeight: 22,
+              fontSize: moderateScale(14),
+              lineHeight: moderateScale(22),
               color: colors.textSub,
             }}
           >
@@ -131,7 +132,7 @@ function ResourceRow({
         ) : null}
       </View>
       <View
-        style={{ width: 26, alignItems: "center", justifyContent: "center" }}
+        style={{ width: scale(26), alignItems: "center", justifyContent: "center" }}
       >
         {icon}
       </View>
@@ -153,10 +154,10 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
       <View style={{ flex: 1, backgroundColor: colors.surface }}>
         <ScrollView
           contentContainerStyle={{
-            paddingHorizontal: 12,
-            paddingTop: 14,
-            paddingBottom: 148,
-            gap: 24,
+            paddingHorizontal: scale(12),
+            paddingTop: verticalScale(14),
+            paddingBottom: verticalScale(148),
+            gap: moderateScale(24),
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -176,7 +177,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
             >
               <Image
                 resizeMode="contain"
-                style={{ height: 30 }}
+                style={{ height: verticalScale(30) }}
                 source={zubbaText}
                 tintColor="#31973D"
               />
@@ -184,7 +185,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                 <View className="flex flex-row items-center justify-center gap-1 border border-[#D4AF37] rounded-full bg-[#FFE088] py-1 px-3">
                   <MaterialCommunityIcons
                     name="star"
-                    size={11}
+                    size={moderateScale(11)}
                     color="#574500"
                   />
                   <Text className="text-xs text-[#574500]">
@@ -214,12 +215,12 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
               </Paragraph>
             </Section>
 
-            <View style={{ gap: 18 }}>
+            <View style={{ gap: moderateScale(18) }}>
               <FeatureCard
                 icon={
                   <MaterialCommunityIcons
                     name="recycle"
-                    size={28}
+                    size={moderateScale(28)}
                     color="#148732"
                   />
                 }
@@ -233,7 +234,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                 icon={
                   <MaterialCommunityIcons
                     name="shield-check"
-                    size={28}
+                    size={moderateScale(28)}
                     color="#735C00"
                   />
                 }
@@ -248,7 +249,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
             <View
               style={{
                 backgroundColor: colors.bg,
-                borderRadius: 16,
+                borderRadius: moderateScale(16),
                 borderWidth: 1,
                 borderColor: colors.borderLight,
                 overflow: "hidden",
@@ -256,17 +257,17 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
             >
               <Text
                 style={{
-                  fontSize: 14,
-                  lineHeight: 30,
+                  fontSize: moderateScale(14),
+                  lineHeight: moderateScale(30),
                   fontWeight: "600",
                   color: colors.text,
-                  padding: 16,
+                  padding: moderateScale(16),
                 }}
               >
                 Resources
               </Text>
               <View
-                style={{ height: 1, backgroundColor: colors.borderLight }}
+                style={{ height: verticalScale(1), backgroundColor: colors.borderLight }}
               />
               <ResourceRow
                 title="Website"
@@ -275,7 +276,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                 icon={
                   <MaterialCommunityIcons
                     name="open-in-new"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.textSub}
                   />
                 }
@@ -287,7 +288,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                 icon={
                   <MaterialCommunityIcons
                     name="chevron-right"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.textSub}
                   />
                 }
@@ -304,7 +305,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                 icon={
                   <MaterialCommunityIcons
                     name="chevron-right"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.textSub}
                   />
                 }

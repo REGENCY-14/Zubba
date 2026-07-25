@@ -8,6 +8,7 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -25,64 +26,64 @@ export function DriverArrivesScreen({
 
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 16 }}
+          contentContainerStyle={{ padding: moderateScale(16), paddingBottom: verticalScale(120), gap: moderateScale(16) }}
           showsVerticalScrollIndicator={false}
         >
-          <View style={{ width: '100%', gap: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card, padding: 24, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: '100%', gap: moderateScale(12), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), backgroundColor: colors.card, padding: moderateScale(24), alignItems: 'center', justifyContent: 'center' }}>
             <View>
-              <View style={{ width: 54, height: 54, borderRadius: 12, overflow: 'hidden' }}>
+              <View style={{ width: moderateScale(54), height: moderateScale(54), borderRadius: moderateScale(12), overflow: 'hidden' }}>
                 <Image
                   source={request.driver.avatar ? request.driver.avatar : avatar}
-                  style={{ width: 54, height: 54 }}
+                  style={{ width: moderateScale(54), height: moderateScale(54) }}
                   resizeMode="cover"
                 />
               </View>
             </View>
 
-            <View style={{ gap: 8, alignItems: 'center' }}>
-              <Text style={{ marginTop: 12, fontSize: 14, fontWeight: 'bold', color: colors.text, textTransform: 'uppercase' }}>
+            <View style={{ gap: moderateScale(8), alignItems: 'center' }}>
+              <Text style={{ marginTop: verticalScale(12), fontSize: moderateScale(14), fontWeight: 'bold', color: colors.text, textTransform: 'uppercase' }}>
                 {request.driver.name}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <MaterialCommunityIcons name="star" size={14} color="#0D631B" />
-                <Text style={{ fontSize: 14, color: '#0D631B', marginLeft: 4 }}>
+                <MaterialCommunityIcons name="star" size={moderateScale(14)} color="#0D631B" />
+                <Text style={{ fontSize: moderateScale(14), color: '#0D631B', marginLeft: scale(4) }}>
                   {request.driver.rating <= 0 ? "First Request" : request.driver.rating} • {request.driver.code}
                 </Text>
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(24) }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
                   <MaterialCommunityIcons
                     name="phone-outline"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.textMuted}
                   />
-                  <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Call</Text>
+                  <Text style={{ marginLeft: scale(4), color: colors.textMuted, fontSize: moderateScale(14) }}>Call</Text>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
                   <MaterialCommunityIcons
                     name="message-outline"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.textMuted}
                   />
-                  <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Message</Text>
+                  <Text style={{ marginLeft: scale(4), color: colors.textMuted, fontSize: moderateScale(14) }}>Message</Text>
                 </View>
               </View>
             </View>
           </View>
 
-          <View style={{ backgroundColor: '#31973D', borderRadius: 24, padding: 24, alignItems: 'center', gap: 16 }}>
-            <Text style={{ fontSize: 10, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 4 }}>
+          <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(24), padding: moderateScale(24), alignItems: 'center', gap: moderateScale(16) }}>
+            <Text style={{ fontSize: moderateScale(10), color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 4 }}>
               COLLECTION CODE
             </Text>
 
-            <View style={{ flexDirection: 'row', gap: 8, width: '100%', justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', gap: scale(8), width: '100%', justifyContent: 'center' }}>
               {request.collection_code.toString().split("").map((d, i) => (
                 <View
                   key={i}
-                  style={{ width: 56, height: 56, paddingBottom: 4, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderRadius: 12 }}
+                  style={{ width: moderateScale(56), height: moderateScale(56), paddingBottom: verticalScale(4), backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderRadius: moderateScale(12) }}
                 >
                   <Text
-                    style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 36 }}
+                    style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: moderateScale(36) }}
                   >
                     {d}
                   </Text>
@@ -90,32 +91,32 @@ export function DriverArrivesScreen({
               ))}
             </View>
 
-            <Text style={{ color: '#FFFFFF', fontSize: 12, textAlign: 'center', opacity: 0.9 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: moderateScale(12), textAlign: 'center', opacity: 0.9 }}>
               Show this to {request.driver.name} to verify
             </Text>
           </View>
 
-          <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
+              <Text style={{ fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
                 Confirm Collection
               </Text>
-              <Text style={{ fontSize: 12, color: colors.textSub, marginTop: 4 }}>
+              <Text style={{ fontSize: moderateScale(12), color: colors.textSub, marginTop: verticalScale(4) }}>
                 Please verify the materials are loaded
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#2E7D32', marginRight: 8 }} />
-              <Text style={{ fontSize: 13, color: '#31973D' }}>Driver Ready</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', paddingHorizontal: scale(12), paddingVertical: verticalScale(4), borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
+              <View style={{ width: moderateScale(8), height: moderateScale(8), borderRadius: moderateScale(4), backgroundColor: '#2E7D32', marginRight: scale(8) }} />
+              <Text style={{ fontSize: moderateScale(13), color: '#31973D' }}>Driver Ready</Text>
             </View>
           </View>
 
-          <View style={{ gap: 16 }}>
+          <View style={{ gap: moderateScale(16) }}>
             <Pressable
               onPress={() => setShowPaymentDrawer(true)}
-              style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+              style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Proceed to payment</Text>
+              <Text style={{ color: '#FFFFFF', fontSize: moderateScale(14) }}>Proceed to payment</Text>
             </Pressable>
 
             <Pressable
@@ -125,9 +126,9 @@ export function DriverArrivesScreen({
                   title: "Issue",
                 })
               }
-              style={{ height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 999 }}
+              style={{ height: verticalScale(48), alignItems: 'center', justifyContent: 'center', borderRadius: 999 }}
             >
-              <Text style={{ color: colors.text, fontSize: 14 }}>Report an Issue</Text>
+              <Text style={{ color: colors.text, fontSize: moderateScale(14) }}>Report an Issue</Text>
             </Pressable>
           </View>
         </ScrollView>

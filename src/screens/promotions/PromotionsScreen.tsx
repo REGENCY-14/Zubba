@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, ThemeColors } from '../../context/ThemeContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 type Promo = {
   id: string;
@@ -29,37 +30,37 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
         backgroundColor: colors.card,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: 16,
-        padding: 16,
-        gap: 12,
+        borderRadius: moderateScale(16),
+        padding: moderateScale(16),
+        gap: verticalScale(12),
       }}
     >
-      <View style={{ flexDirection: 'row', gap: 12 }}>
+      <View style={{ flexDirection: 'row', gap: scale(12) }}>
         <View
           style={{
-            width: 44,
-            height: 44,
-            borderRadius: 12,
+            width: moderateScale(44),
+            height: moderateScale(44),
+            borderRadius: moderateScale(12),
             backgroundColor: promo.iconBg,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <MaterialCommunityIcons name={promo.icon} size={22} color={promo.iconColor} />
+          <MaterialCommunityIcons name={promo.icon} size={moderateScale(22)} color={promo.iconColor} />
         </View>
 
-        <View style={{ flex: 1, gap: 4 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: colors.text, flexShrink: 1 }}>
+        <View style={{ flex: 1, gap: verticalScale(4) }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+            <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: colors.text, flexShrink: 1 }}>
               {promo.title}
             </Text>
             {promo.badge && (
-              <View style={{ backgroundColor: 'rgba(49,151,61,0.12)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
-                <Text style={{ fontFamily: 'Poppins', fontSize: 10, fontWeight: '600', color: '#31973D' }}>{promo.badge}</Text>
+              <View style={{ backgroundColor: 'rgba(49,151,61,0.12)', borderRadius: 999, paddingHorizontal: scale(8), paddingVertical: verticalScale(2) }}>
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(10), fontWeight: '600', color: '#31973D' }}>{promo.badge}</Text>
               </View>
             )}
           </View>
-          <Text style={{ fontFamily: 'Poppins', fontSize: 12, lineHeight: 18, color: colors.textSub }}>
+          <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), lineHeight: moderateScale(18), color: colors.textSub }}>
             {promo.description}
           </Text>
         </View>
@@ -71,12 +72,12 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
           style={{
             alignSelf: 'flex-start',
             borderRadius: 999,
-            paddingHorizontal: 16,
-            paddingVertical: 8,
+            paddingHorizontal: scale(16),
+            paddingVertical: verticalScale(8),
             backgroundColor: '#31973D',
           }}
         >
-          <Text style={{ fontFamily: 'Poppins', fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>{promo.cta}</Text>
+          <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), fontWeight: '600', color: '#FFFFFF' }}>{promo.cta}</Text>
         </Pressable>
       )}
     </View>
@@ -159,42 +160,42 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
         {/* Header */}
-        <View style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ height: verticalScale(48), paddingHorizontal: scale(16), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
-            <MaterialCommunityIcons name="chevron-left" size={24} color={colors.text} />
+            <MaterialCommunityIcons name="chevron-left" size={moderateScale(24)} color={colors.text} />
           </Pressable>
-          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, lineHeight: 24, color: colors.text }}>
+          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(16), lineHeight: moderateScale(24), color: colors.text }}>
             Promotions
           </Text>
-          <View style={{ width: 24 }} />
+          <View style={{ width: moderateScale(24) }} />
         </View>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 40, gap: 20 }}
+          contentContainerStyle={{ paddingHorizontal: scale(16), paddingTop: verticalScale(12), paddingBottom: verticalScale(40), gap: verticalScale(20) }}
         >
           {/* Eco-Points hero */}
-          <View style={{ backgroundColor: '#31973D', borderRadius: 20, padding: 20, gap: 8, overflow: 'hidden' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <MaterialCommunityIcons name="leaf" size={18} color="#90FA96" />
-              <Text style={{ fontFamily: 'Poppins', fontSize: 13, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>
+          <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(8), overflow: 'hidden' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+              <MaterialCommunityIcons name="leaf" size={moderateScale(18)} color="#90FA96" />
+              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(13), fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>
                 Your Eco-Points
               </Text>
             </View>
-            <Text style={{ fontFamily: 'Poppins', fontSize: 32, fontWeight: '700', color: '#FFFFFF' }}>
+            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(32), fontWeight: '700', color: '#FFFFFF' }}>
               {customer.points.toLocaleString()}
             </Text>
-            <Text style={{ fontFamily: 'Poppins', fontSize: 12, lineHeight: 18, color: 'rgba(255,255,255,0.85)' }}>
+            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), lineHeight: moderateScale(18), color: 'rgba(255,255,255,0.85)' }}>
               Every pickup earns you points — redeem them for wallet credit and exclusive rewards.
             </Text>
           </View>
 
           {/* Promo code redeem */}
-          <View style={{ gap: 8 }}>
-            <Text style={{ fontFamily: 'Poppins', fontSize: 14, fontWeight: '600', color: colors.text }}>
+          <View style={{ gap: verticalScale(8) }}>
+            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
               Have a promo code?
             </Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection: 'row', gap: scale(8) }}>
               <TextInput
                 value={promoCode}
                 onChangeText={(text) => {
@@ -206,37 +207,37 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
                 autoCapitalize="characters"
                 style={{
                   flex: 1,
-                  height: 48,
-                  borderRadius: 12,
+                  height: verticalScale(48),
+                  borderRadius: moderateScale(12),
                   borderWidth: 1,
                   borderColor: colors.border,
                   backgroundColor: colors.card,
                   color: colors.text,
-                  paddingHorizontal: 16,
+                  paddingHorizontal: scale(16),
                   fontFamily: 'Poppins',
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                 }}
               />
               <Pressable
                 onPress={handleRedeem}
                 disabled={!promoCode.trim()}
                 style={{
-                  height: 48,
-                  paddingHorizontal: 20,
-                  borderRadius: 12,
+                  height: verticalScale(48),
+                  paddingHorizontal: scale(20),
+                  borderRadius: moderateScale(12),
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: promoCode.trim() ? '#31973D' : 'rgba(49,151,61,0.4)',
                 }}
               >
-                <Text style={{ fontFamily: 'Poppins', fontSize: 14, fontWeight: '600', color: '#FFFFFF' }}>Apply</Text>
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>Apply</Text>
               </Pressable>
             </View>
             {redeemMessage && (
               <Text
                 style={{
                   fontFamily: 'Poppins',
-                  fontSize: 12,
+                  fontSize: moderateScale(12),
                   color: redeemMessage.success ? '#31973D' : '#EF4444',
                 }}
               >
@@ -246,8 +247,8 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
           </View>
 
           {/* Offers */}
-          <View style={{ gap: 12 }}>
-            <Text style={{ fontFamily: 'Poppins', fontSize: 14, fontWeight: '600', color: colors.text }}>
+          <View style={{ gap: verticalScale(12) }}>
+            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
               Offers for you
             </Text>
             {promos.map((promo) => (

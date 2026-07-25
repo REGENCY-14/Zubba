@@ -16,6 +16,7 @@ import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 const avatarUrl = require("../../../assets/avatar.jpg");
 
 function InfoCard({
@@ -39,31 +40,31 @@ function InfoCard({
         backgroundColor: colors.bg,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: 24,
-        padding: 16,
+        borderRadius: moderateScale(24),
+        padding: moderateScale(16),
         flexDirection: "row",
         alignItems: "flex-start",
         justifyContent: "space-between",
-        gap: 16,
+        gap: moderateScale(16),
       }}
     >
-      <View style={{ flex: 1, gap: 4 }}>
+      <View style={{ flex: 1, gap: moderateScale(4) }}>
         <Text
           style={{
-            fontSize: 14,
+            fontSize: moderateScale(14),
             fontWeight: "600",
             color: colors.text,
-            lineHeight: 20,
+            lineHeight: moderateScale(20),
           }}
         >
           {label}
         </Text>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: moderateScale(12),
             fontWeight: "400",
             color: colors.textMuted,
-            lineHeight: 16,
+            lineHeight: moderateScale(16),
           }}
         >
           {value}
@@ -73,9 +74,9 @@ function InfoCard({
 
       <MaterialCommunityIcons
         name="chevron-right"
-        size={16}
+        size={moderateScale(16)}
         color={colors.textMuted}
-        style={{ marginTop: 2 }}
+        style={{ marginTop: verticalScale(2) }}
       />
     </Pressable>
   );
@@ -113,31 +114,31 @@ export function ProfileScreen({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           flexGrow: 1,
-          padding: 16,
-          gap: 16,
+          padding: moderateScale(16),
+          gap: moderateScale(16),
           alignItems: "center",
         }}
       >
         {/* Avatar section */}
-        <View style={{ alignItems: "center", gap: 16 }}>
+        <View style={{ alignItems: "center", gap: moderateScale(16) }}>
           {/* Avatar with verified badge */}
           <View
             style={{
-              width: 64,
-              height: 64,
+              width: moderateScale(64),
+              height: moderateScale(64),
               backgroundColor: colors.card,
-              borderRadius: 12,
+              borderRadius: moderateScale(12),
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <View style={{ width: 54, height: 54 }}>
+            <View style={{ width: moderateScale(54), height: moderateScale(54) }}>
               {avatarUrl ? (
                 <Image
                   source={avatarUrl}
                   style={{
-                    width: 54,
-                    height: 54,
+                    width: moderateScale(54),
+                    height: moderateScale(54),
                     borderRadius: 999,
                     borderWidth: 2,
                     borderColor: colors.border,
@@ -146,7 +147,7 @@ export function ProfileScreen({
                 />
               ) : (
                 <TextAvatar
-                  size={48}
+                  size={moderateScale(48)}
                   bgColor={colors.textSub}
                   name={`${user?.firstname} ${user?.lastname}`}
                 />
@@ -155,11 +156,11 @@ export function ProfileScreen({
                   <View
                     style={{
                       position: "absolute",
-                      bottom: -2,
-                      right: -2,
-                      width: 18,
-                      height: 18,
-                      borderRadius: 9,
+                      bottom: verticalScale(-2),
+                      right: scale(-2),
+                      width: moderateScale(18),
+                      height: moderateScale(18),
+                      borderRadius: moderateScale(9),
                       backgroundColor: "#006B23",
                       borderWidth: 2,
                       borderColor: "#FFFFFF",
@@ -171,7 +172,7 @@ export function ProfileScreen({
                     <View>
                       <MaterialCommunityIcons
                         name="check-decagram"
-                        size={11}
+                        size={moderateScale(11)}
                         color="#FFFFFF"
                       />
                     </View>
@@ -182,10 +183,10 @@ export function ProfileScreen({
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: moderateScale(14),
               fontWeight: "400",
               color: colors.textSub,
-              lineHeight: 20,
+              lineHeight: moderateScale(20),
               textAlign: "center",
             }}
           >
@@ -215,25 +216,25 @@ export function ProfileScreen({
                 alignItems: "center",
                 alignSelf: "flex-start",
                 backgroundColor: "rgba(0, 107, 35, 0.1)",
-                borderRadius: 11,
-                paddingRight: 8,
-                marginTop: 4,
+                borderRadius: moderateScale(11),
+                paddingRight: scale(8),
+                marginTop: verticalScale(4),
               }}
             >
-              <View style={{ padding: 4 }}>
+              <View style={{ padding: moderateScale(4) }}>
                 <MaterialCommunityIcons
                   name="check-circle"
-                  size={14}
+                  size={moderateScale(14)}
                   color="#31973D"
                 />
               </View>
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: moderateScale(10),
                   fontWeight: "400",
                   color: "#31973D",
                   letterSpacing: 0.48,
-                  lineHeight: 14,
+                  lineHeight: moderateScale(14),
                 }}
               >
                 Verified

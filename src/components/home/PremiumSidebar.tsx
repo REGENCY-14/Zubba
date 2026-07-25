@@ -3,6 +3,7 @@ import { Animated, Dimensions, Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useTheme } from '../../context/ThemeContext';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 const SIDEBAR_WIDTH = 260;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -30,11 +31,11 @@ function Avatar({ name }: { name: string }) {
     .slice(0, 2);
 
   return (
-    <View style={{ width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: moderateScale(64), height: moderateScale(64), alignItems: 'center', justifyContent: 'center' }}>
       <View
         style={{
-          width: 54,
-          height: 54,
+          width: moderateScale(54),
+          height: moderateScale(54),
           borderRadius: 9999,
           backgroundColor: '#D1FAD7',
           borderWidth: 2,
@@ -43,13 +44,13 @@ function Avatar({ name }: { name: string }) {
           justifyContent: 'center',
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: '700', color: '#006B23' }}>{initials}</Text>
+        <Text style={{ fontSize: moderateScale(18), fontWeight: '700', color: '#006B23' }}>{initials}</Text>
       </View>
       <View
         style={{
           position: 'absolute',
-          width: 20,
-          height: 20,
+          width: moderateScale(20),
+          height: moderateScale(20),
           borderRadius: 9999,
           backgroundColor: '#006B23',
           borderWidth: 2,
@@ -60,7 +61,7 @@ function Avatar({ name }: { name: string }) {
           bottom: 0,
         }}
       >
-        <MaterialCommunityIcons name="check" size={10} color="#FFFFFF" />
+        <MaterialCommunityIcons name="check" size={moderateScale(10)} color="#FFFFFF" />
       </View>
     </View>
   );
@@ -113,22 +114,22 @@ export function PremiumSidebar({ isOpen, onClose, menuItems, activeKey }: Props)
       >
         <View
           style={{
-            paddingHorizontal: 16, paddingTop: 40, paddingBottom: 12, gap: 12,
+            paddingHorizontal: scale(16), paddingTop: verticalScale(40), paddingBottom: verticalScale(12), gap: moderateScale(12),
             borderBottomWidth: 1, borderBottomColor: colors.border,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10) }}>
             <Avatar name={fullName} />
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={{ fontSize: 20, fontWeight: '400', color: colors.text, lineHeight: 28 }} numberOfLines={1}>
+            <View style={{ flex: 1, gap: moderateScale(2) }}>
+              <Text style={{ fontSize: moderateScale(20), fontWeight: '400', color: colors.text, lineHeight: moderateScale(28) }} numberOfLines={1}>
                 {fullName}
               </Text>
-              <Text style={{ fontSize: 12, color: colors.textSub, lineHeight: 18 }}>{contact}</Text>
+              <Text style={{ fontSize: moderateScale(12), color: colors.textSub, lineHeight: moderateScale(18) }}>{contact}</Text>
             </View>
           </View>
         </View>
 
-        <View style={{ padding: 16, gap: 12 }}>
+        <View style={{ padding: moderateScale(16), gap: moderateScale(12) }}>
           {menuItems.map((item) => {
             const isActive = item.key === activeKey;
             return (
@@ -137,15 +138,15 @@ export function PremiumSidebar({ isOpen, onClose, menuItems, activeKey }: Props)
                 onPress={() => { onClose(); item.onPress(); }}
                 style={{
                   flexDirection: 'row', alignItems: 'center',
-                  paddingHorizontal: 12, paddingVertical: 8, gap: 8,
-                  height: 56, borderRadius: 39,
+                  paddingHorizontal: scale(12), paddingVertical: verticalScale(8), gap: scale(8),
+                  height: verticalScale(56), borderRadius: moderateScale(39),
                   backgroundColor: isActive ? colors.surface : 'transparent',
                 }}
               >
-                <View style={{ width: 40, height: 40, borderRadius: 27, backgroundColor: 'rgba(0, 107, 35, 0.1)', alignItems: 'center', justifyContent: 'center' }}>
-                  <MaterialCommunityIcons name={item.icon} size={22} color="#31973D" />
+                <View style={{ width: moderateScale(40), height: moderateScale(40), borderRadius: moderateScale(27), backgroundColor: 'rgba(0, 107, 35, 0.1)', alignItems: 'center', justifyContent: 'center' }}>
+                  <MaterialCommunityIcons name={item.icon} size={moderateScale(22)} color="#31973D" />
                 </View>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, lineHeight: 20 }}>
+                <Text style={{ fontSize: moderateScale(14), fontWeight: '500', color: colors.text, lineHeight: moderateScale(20) }}>
                   {item.label}
                 </Text>
               </Pressable>

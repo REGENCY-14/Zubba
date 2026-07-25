@@ -13,6 +13,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slices/auth/authSlice";
 import { authStorage } from "../../utils/authStorage";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type SettingsRowProps = {
   icon: React.ReactNode;
@@ -68,7 +69,7 @@ function SettingsRow({
         {showChevron ? (
           <MaterialCommunityIcons
             name="chevron-right"
-            size={22}
+            size={moderateScale(22)}
             color={colors.textMuted}
           />
         ) : null}
@@ -134,9 +135,9 @@ export function SettingsScreen({
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingHorizontal: 12,
-            paddingBottom: 100,
-            gap: 24,
+            paddingHorizontal: scale(12),
+            paddingBottom: verticalScale(100),
+            gap: verticalScale(24),
           }}
         >
           <View
@@ -155,7 +156,7 @@ export function SettingsScreen({
             >
               <Image
                 resizeMode="contain"
-                style={{ height: 30 }}
+                style={{ height: verticalScale(30) }}
                 source={zubbaText}
                 tintColor="#31973D"
               />
@@ -173,7 +174,7 @@ export function SettingsScreen({
               <View className="absolute -top-2 -right-11 rotate-45 opacity-20">
                 <Image
                   resizeMode="cover"
-                  style={{ height: 140, width: 220 }}
+                  style={{ height: verticalScale(140), width: scale(220) }}
                   source={tricycleImage}
                   tintColor="#90FA96"
                 />
@@ -187,7 +188,7 @@ export function SettingsScreen({
                   <View className="flex-1 min-h-[72px] rounded-lg border border-[rgba(144,250,150,0.2)] bg-[rgba(20,135,50,0.4)] p-3 gap-2">
                     <MaterialCommunityIcons
                       name="lightning-bolt-outline"
-                      size={20}
+                      size={moderateScale(20)}
                       color="#90FA96"
                     />
                     <Text className="text-white text-[13px] leading-5 font-['Inter']">
@@ -197,7 +198,7 @@ export function SettingsScreen({
                   <View className="flex-1 min-h-[72px] rounded-lg border border-[rgba(144,250,150,0.2)] bg-[rgba(20,135,50,0.4)] p-3 gap-2">
                     <MaterialCommunityIcons
                       name="face-agent"
-                      size={20}
+                      size={moderateScale(20)}
                       color="#90FA96"
                     />
                     <Text className="text-white text-[13px] leading-5 font-['Inter']">
@@ -221,7 +222,7 @@ export function SettingsScreen({
                 >
                   <MaterialCommunityIcons
                     name="web"
-                    size={22}
+                    size={moderateScale(22)}
                     color={colors.textMuted}
                   />
                 </View>
@@ -260,7 +261,7 @@ export function SettingsScreen({
               icon={
                 <MaterialCommunityIcons
                   name="bell-outline"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.textMuted}
                 />
               }
@@ -272,7 +273,7 @@ export function SettingsScreen({
               icon={
                 <MaterialCommunityIcons
                   name="lock-outline"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.textMuted}
                 />
               }
@@ -284,7 +285,7 @@ export function SettingsScreen({
               icon={
                 <MaterialCommunityIcons
                   name="timer-outline"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.textMuted}
                 />
               }
@@ -303,7 +304,7 @@ export function SettingsScreen({
                 >
                   <MaterialCommunityIcons
                     name="brightness-4"
-                    size={22}
+                    size={moderateScale(22)}
                     color={colors.textMuted}
                     style={{ transform: [{ rotate: "125deg" }] }}
                   />
@@ -339,7 +340,7 @@ export function SettingsScreen({
                 >
                   <MaterialCommunityIcons
                     name="text-box-outline"
-                    size={22}
+                    size={moderateScale(22)}
                     color={colors.textMuted}
                   />
                 </View>
@@ -364,7 +365,7 @@ export function SettingsScreen({
               >
                 <MaterialCommunityIcons
                   name="tray-arrow-down"
-                  size={16}
+                  size={moderateScale(16)}
                   color={colors.textSub}
                 />
                 <Text
@@ -387,7 +388,7 @@ export function SettingsScreen({
                   >
                     <MaterialCommunityIcons
                       name="phone"
-                      size={22}
+                      size={moderateScale(22)}
                       color={colors.textMuted}
                     />
                   </View>
@@ -417,7 +418,7 @@ export function SettingsScreen({
               icon={
                 <MaterialCommunityIcons
                   name="help-circle-outline"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.textMuted}
                 />
               }
@@ -429,7 +430,7 @@ export function SettingsScreen({
               icon={
                 <MaterialCommunityIcons
                   name="message-text-outline"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.textMuted}
                 />
               }
@@ -441,7 +442,7 @@ export function SettingsScreen({
               icon={
                 <MaterialCommunityIcons
                   name="information-outline"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.textMuted}
                 />
               }
@@ -456,7 +457,7 @@ export function SettingsScreen({
             className="h-[42px] rounded-full border border-[#C10007] items-center justify-center flex-row gap-2"
             onPress={handleSignout}
           >
-            <MaterialCommunityIcons name="logout" size={16} color="#C10007" />
+            <MaterialCommunityIcons name="logout" size={moderateScale(16)} color="#C10007" />
             <Text className="text-sm leading-5 text-[#C10007] font-['Manrope']">
               Sign out
             </Text>

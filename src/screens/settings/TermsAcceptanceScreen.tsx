@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, moderateScale } from "../../utils/scale";
 
 export function TermsAcceptanceScreen({
   route,
@@ -28,7 +29,7 @@ export function TermsAcceptanceScreen({
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, padding: 20 }}
+        style={{ flex: 1, padding: moderateScale(20) }}
       >
         <ScrollView keyboardShouldPersistTaps="handled">
           <View className="h-[42px]" />
@@ -36,10 +37,10 @@ export function TermsAcceptanceScreen({
           <View className="w-full gap-3 mb-6">
             <Text
               style={{
-                fontSize: 20,
+                fontSize: moderateScale(20),
                 fontWeight: "400",
                 color: colors.text,
-                lineHeight: 22,
+                lineHeight: moderateScale(22),
               }}
             >
               Accept Zubba's Terms & Review Privacy Notice
@@ -47,10 +48,10 @@ export function TermsAcceptanceScreen({
 
             <Text
               style={{
-                fontSize: 11,
+                fontSize: moderateScale(11),
                 fontWeight: "400",
                 color: colors.text,
-                lineHeight: 16,
+                lineHeight: moderateScale(16),
               }}
             >
               By selecting 'I Agree' below, I have reviewed and agree to the{" "}
@@ -74,17 +75,17 @@ export function TermsAcceptanceScreen({
           <View style={{ borderTopWidth: 1, borderTopColor: colors.border }} />
 
           <View className="flex-row items-center justify-between">
-            <Text style={{ fontSize: 10, color: colors.text, lineHeight: 16 }}>
+            <Text style={{ fontSize: moderateScale(10), color: colors.text, lineHeight: moderateScale(16) }}>
               I agree
             </Text>
             <Pressable
               onPress={() => setAgreedToTerms(!agreedToTerms)}
               style={[
                 {
-                  width: 18,
-                  height: 18,
+                  width: moderateScale(18),
+                  height: moderateScale(18),
                   borderWidth: 1,
-                  borderRadius: 2,
+                  borderRadius: moderateScale(2),
                   alignItems: "center",
                   justifyContent: "center",
                 },
@@ -107,9 +108,9 @@ export function TermsAcceptanceScreen({
           <Pressable
             onPress={() => navigation.goBack()}
             style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
+              width: moderateScale(48),
+              height: moderateScale(48),
+              borderRadius: moderateScale(12),
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -117,7 +118,7 @@ export function TermsAcceptanceScreen({
             <MaterialCommunityIcons
               name="arrow-left"
               color={colors.text}
-              size={24}
+              size={moderateScale(24)}
             />
           </Pressable>
 
@@ -133,9 +134,9 @@ export function TermsAcceptanceScreen({
             }
             style={[
               {
-                width: 96,
-                height: 48,
-                borderRadius: 12,
+                width: scale(96),
+                height: moderateScale(48),
+                borderRadius: moderateScale(12),
                 alignItems: "center",
                 justifyContent: "center",
               },

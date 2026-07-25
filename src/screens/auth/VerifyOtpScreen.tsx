@@ -14,6 +14,7 @@ import { OTPInput } from "../../components/common/OTPInput";
 import { customerService } from "../../api/customerService";
 import { useTheme } from "../../context/ThemeContext";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";
@@ -84,56 +85,56 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, padding: 20 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <ScrollView style={{ flex: 1, padding: moderateScale(20) }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {email ? (
-            <View style={{ gap: 8, marginBottom: 12 }}>
-              <Text style={{ fontSize: 18, color: colors.text }}>Enter the 4-digits code sent to you at:</Text>
-              <Text style={{ fontSize: 16, color: colors.text }}>{contact}</Text>
+            <View style={{ gap: moderateScale(8), marginBottom: verticalScale(12) }}>
+              <Text style={{ fontSize: moderateScale(18), color: colors.text }}>Enter the 4-digits code sent to you at:</Text>
+              <Text style={{ fontSize: moderateScale(16), color: colors.text }}>{contact}</Text>
             </View>
           ) : (
-            <View style={{ gap: 4 }}>
-              <Text style={{ fontSize: 18, color: colors.text }}>
+            <View style={{ gap: moderateScale(4) }}>
+              <Text style={{ fontSize: moderateScale(18), color: colors.text }}>
                 Enter the 4-digits code sent via {deliveryLabel} at {contact}
               </Text>
               <Pressable onPress={() => navigation.navigate("SignUp")}>
-                <Text style={{ fontSize: 13, textDecorationLine: "underline", color: colors.text }}>changed my mobile number?</Text>
+                <Text style={{ fontSize: moderateScale(13), textDecorationLine: "underline", color: colors.text }}>changed my mobile number?</Text>
               </Pressable>
             </View>
           )}
 
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: verticalScale(20) }}>
             <OTPInput value={codeDigits} onChange={setCodeDigits} length={4} onComplete={handleVerify} />
           </View>
 
           {email && (
-            <Text style={{ fontSize: 12, textDecorationLine: "underline", color: colors.text, marginTop: 16 }}>
+            <Text style={{ fontSize: moderateScale(12), textDecorationLine: "underline", color: colors.text, marginTop: verticalScale(16) }}>
               Tip: Be sure to check your inbox and spam folders
             </Text>
           )}
 
           <Pressable
             disabled={!isValid}
-            style={{ height: 48, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginTop: 20, backgroundColor: isValid ? "#34A853" : "rgba(52,168,83,0.5)" }}
+            style={{ height: verticalScale(48), borderRadius: 9999, alignItems: "center", justifyContent: "center", marginTop: verticalScale(20), backgroundColor: isValid ? "#34A853" : "rgba(52,168,83,0.5)" }}
             onPress={() => handleVerify(codeDigits.join(""))}
           >
-            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Verify</Text>
+            <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14) }}>Verify</Text>
           </Pressable>
 
-          <Text style={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
+          <Text style={{ fontSize: moderateScale(12), color: colors.text, marginTop: verticalScale(8) }}>
             {canResend ? `You can resend OTP now via ${deliveryLabel}` : `Resend OTP in ${resendTimer}s via ${deliveryLabel}`}
           </Text>
 
-          <View style={{ gap: 8, marginTop: 12 }}>
+          <View style={{ gap: moderateScale(8), marginTop: verticalScale(12) }}>
             <Pressable
               disabled={!canResend}
               onPress={() => setShowResendModal(true)}
-              style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 28, paddingVertical: 8, alignSelf: "flex-start", opacity: canResend ? 1 : 0.4 }}
+              style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: scale(28), paddingVertical: verticalScale(8), alignSelf: "flex-start", opacity: canResend ? 1 : 0.4 }}
             >
-              <Text style={{ fontSize: 12, fontWeight: "500", color: colors.text }}>Resend</Text>
+              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: colors.text }}>Resend</Text>
             </Pressable>
 
-            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 28, paddingVertical: 8, alignSelf: "flex-start" }}>
-              <Text style={{ fontSize: 12, fontWeight: "500", color: colors.text }}>
+            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: scale(28), paddingVertical: verticalScale(8), alignSelf: "flex-start" }}>
+              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: colors.text }}>
                 {email ? "Send code to another email" : "Send code via WhatsApp"}
               </Text>
             </Pressable>
@@ -141,24 +142,24 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
 
           <Modal visible={showResendModal} transparent animationType="fade">
             <View style={{ flex: 1, backgroundColor: "rgba(31,42,51,0.3)", justifyContent: "flex-end", alignItems: "center" }}>
-              <View style={{ width: "94%", backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: "center" }}>
-                <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "500", marginBottom: 12, color: colors.text }}>
+              <View style={{ width: "94%", backgroundColor: colors.card, borderRadius: moderateScale(16), padding: moderateScale(24), marginBottom: verticalScale(40), alignItems: "center" }}>
+                <Text style={{ textAlign: "center", fontSize: moderateScale(18), fontWeight: "500", marginBottom: verticalScale(12), color: colors.text }}>
                   Resend code to: {contact}
                 </Text>
 
-                <View style={{ width: "100%", gap: 12 }}>
+                <View style={{ width: "100%", gap: moderateScale(12) }}>
                   <Pressable
                     onPress={handleResend}
-                    style={{ height: 48, backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
+                    style={{ height: verticalScale(48), backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
                   >
-                    <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Resend</Text>
+                    <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14) }}>Resend</Text>
                   </Pressable>
 
                   <Pressable
                     onPress={() => setShowResendModal(false)}
-                    style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
+                    style={{ height: verticalScale(48), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
                   >
-                    <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
+                    <Text style={{ color: colors.text, fontSize: moderateScale(14) }}>Cancel</Text>
                   </Pressable>
                 </View>
               </View>

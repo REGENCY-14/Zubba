@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenProps<'UpdateDetailsOtp'>) {
   const { colors } = useTheme();
@@ -30,18 +31,18 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg }}>
-          <Pressable style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="chevron-left" size={24} color={colors.text} />
+        <View style={{ height: verticalScale(48), paddingHorizontal: scale(16), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg }}>
+          <Pressable style={{ width: moderateScale(24), height: moderateScale(24), alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
+            <MaterialCommunityIcons name="chevron-left" size={moderateScale(24)} color={colors.text} />
           </Pressable>
-          <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: '600', color: colors.text, textAlign: 'center' }}>Code Verification</Text>
-          <View style={{ width: 24, height: 24 }} />
+          <Text style={{ fontSize: moderateScale(16), lineHeight: moderateScale(24), fontWeight: '600', color: colors.text, textAlign: 'center' }}>Code Verification</Text>
+          <View style={{ width: moderateScale(24), height: moderateScale(24) }} />
         </View>
 
-        <View style={{ flex: 1, paddingHorizontal: 22, paddingTop: 18, gap: 18 }}>
-          <View style={{ gap: 4 }}>
+        <View style={{ flex: 1, paddingHorizontal: scale(22), paddingTop: verticalScale(18), gap: moderateScale(18) }}>
+          <View style={{ gap: moderateScale(4) }}>
             <Text
-              style={{ fontSize: 18, fontWeight: 'bold', lineHeight: 25, letterSpacing: 0.15, color: colors.text, fontFamily: 'Poppins' }}
+              style={{ fontSize: moderateScale(18), fontWeight: 'bold', lineHeight: moderateScale(25), letterSpacing: 0.15, color: colors.text, fontFamily: 'Poppins' }}
             >
               {kind === 'email'
                 ? step === 'old'
@@ -53,15 +54,15 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
             </Text>
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 12, marginTop: 10 }}>
+          <View style={{ flexDirection: 'row', gap: scale(12), marginTop: verticalScale(10) }}>
             {[0, 1, 2, 3].map((index) => (
               <Pressable
                 key={index}
                 onPress={() => inputRefs.current[index]?.focus()}
                 style={{
-                  width: 39,
-                  height: 34,
-                  borderRadius: 6,
+                  width: scale(39),
+                  height: verticalScale(34),
+                  borderRadius: moderateScale(6),
                   borderWidth: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -71,7 +72,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
               >
                 <TextInput
                   ref={(ref) => { inputRefs.current[index] = ref; }}
-                  style={{ width: '100%', height: '100%', fontSize: 20, fontWeight: '500', color: colors.text, textAlign: 'center' }}
+                  style={{ width: '100%', height: '100%', fontSize: moderateScale(20), fontWeight: '500', color: colors.text, textAlign: 'center' }}
                   value={codeDigits[index]}
                   onChangeText={(value) => updateDigit(index, value)}
                   keyboardType="number-pad"
@@ -84,7 +85,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
 
           <Pressable
             className="rounded-full"
-            style={{ height: 48, alignItems: 'center', justifyContent: 'center', marginTop: 10, backgroundColor: isCodeComplete ? '#34A853' : 'rgba(52,168,83,0.5)' }}
+            style={{ height: verticalScale(48), alignItems: 'center', justifyContent: 'center', marginTop: verticalScale(10), backgroundColor: isCodeComplete ? '#34A853' : 'rgba(52,168,83,0.5)' }}
             disabled={!isCodeComplete}
             onPress={() =>
               step === 'old'
@@ -101,25 +102,25 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
                   })
             }
           >
-            <Text style={{ color: '#FFFFFF', fontSize: 14, lineHeight: 20 }}>Verify</Text>
+            <Text style={{ color: '#FFFFFF', fontSize: moderateScale(14), lineHeight: moderateScale(20) }}>Verify</Text>
           </Pressable>
 
-          <Text style={{ color: colors.text, fontSize: 11, lineHeight: 16 }}>
+          <Text style={{ color: colors.text, fontSize: moderateScale(11), lineHeight: moderateScale(16) }}>
             {kind === 'email' ? 'Resend code by email (1:00)' : 'Resend code by SMS (1:00)'}
           </Text>
 
-          <View style={{ gap: 8, alignItems: 'flex-start' }}>
-            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 22, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: colors.card }} onPress={() => {}}>
-              <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500' }}>Resend</Text>
+          <View style={{ gap: moderateScale(8), alignItems: 'flex-start' }}>
+            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(22), paddingVertical: verticalScale(6), paddingHorizontal: scale(12), backgroundColor: colors.card }} onPress={() => {}}>
+              <Text style={{ color: colors.text, fontSize: moderateScale(12), fontWeight: '500' }}>Resend</Text>
             </Pressable>
-            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 22, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: colors.card }} onPress={() => {}}>
-              <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500' }}>Send code via WhatsApp</Text>
+            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(22), paddingVertical: verticalScale(6), paddingHorizontal: scale(12), backgroundColor: colors.card }} onPress={() => {}}>
+              <Text style={{ color: colors.text, fontSize: moderateScale(12), fontWeight: '500' }}>Send code via WhatsApp</Text>
             </Pressable>
           </View>
         </View>
 
-        <View style={{ height: 24, alignItems: 'center', justifyContent: 'center', paddingBottom: 8 }}>
-          <View style={{ width: 108, height: 4, borderRadius: 12, backgroundColor: colors.border }} />
+        <View style={{ height: verticalScale(24), alignItems: 'center', justifyContent: 'center', paddingBottom: verticalScale(8) }}>
+          <View style={{ width: scale(108), height: verticalScale(4), borderRadius: moderateScale(12), backgroundColor: colors.border }} />
         </View>
       </View>
     </SafeAreaView>

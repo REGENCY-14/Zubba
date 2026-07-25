@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../../context/ThemeContext";
+import { moderateScale } from "../../../utils/scale";
 
 type Props = {
   visible: boolean;
@@ -53,7 +54,7 @@ export default function PickupRequestModal({
           style={{
             backgroundColor: colors.surface,
             borderColor: colors.border,
-            gap: 20,
+            gap: moderateScale(20),
           }}
           className={`border rounded-[22px] items-center p-6 w-full`}
         >
@@ -100,7 +101,7 @@ export default function PickupRequestModal({
                     {avatar ? (
                       <Image
                         source={avatarUrl ? { uri: avatarUrl } : avatar}
-                        style={{ width: 54, height: 54 }}
+                        style={{ width: moderateScale(54), height: moderateScale(54) }}
                         resizeMode="cover"
                       />
                     ) : (
@@ -119,7 +120,7 @@ export default function PickupRequestModal({
                     <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
                       <MaterialCommunityIcons
                         name="check-decagram"
-                        size={13}
+                        size={moderateScale(13)}
                         color="#FFFFFF"
                       />
                     </View>
@@ -144,7 +145,7 @@ export default function PickupRequestModal({
                   <View className="flex-row items-center">
                     <MaterialCommunityIcons
                       name="star"
-                      size={14}
+                      size={moderateScale(14)}
                       color="#0D631B"
                     />
                     <Text className="text-sm text-[#0D631B] ml-1">
@@ -161,7 +162,7 @@ export default function PickupRequestModal({
                 >
                   <MaterialCommunityIcons
                     name="close"
-                    size={20}
+                    size={moderateScale(20)}
                     color="#DC2626"
                   />
                 </Pressable>
@@ -210,7 +211,7 @@ export default function PickupRequestModal({
                     {avatar ? (
                       <Image
                         source={avatarUrl ? { uri: avatarUrl } : avatar}
-                        style={{ width: 54, height: 54 }}
+                        style={{ width: moderateScale(54), height: moderateScale(54) }}
                         resizeMode="cover"
                       />
                     ) : (
@@ -229,7 +230,7 @@ export default function PickupRequestModal({
                     <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
                       <MaterialCommunityIcons
                         name="check-decagram"
-                        size={13}
+                        size={moderateScale(13)}
                         color="#FFFFFF"
                       />
                     </View>
@@ -254,7 +255,7 @@ export default function PickupRequestModal({
                   <View className="flex-row items-center">
                     <MaterialCommunityIcons
                       name="star"
-                      size={14}
+                      size={moderateScale(14)}
                       color="#0D631B"
                     />
                     <Text className="text-sm text-[#0D631B] ml-1">
@@ -327,7 +328,7 @@ export default function PickupRequestModal({
                       {avatar ? (
                         <Image
                           source={avatarUrl ? { uri: avatarUrl } : avatar}
-                          style={{ width: 54, height: 54 }}
+                          style={{ width: moderateScale(54), height: moderateScale(54) }}
                           resizeMode="cover"
                         />
                       ) : (
@@ -346,7 +347,7 @@ export default function PickupRequestModal({
                       <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
                         <MaterialCommunityIcons
                           name="check-decagram"
-                          size={13}
+                          size={moderateScale(13)}
                           color="#FFFFFF"
                         />
                       </View>
@@ -366,7 +367,7 @@ export default function PickupRequestModal({
                     <View className="flex-row items-center">
                       <MaterialCommunityIcons
                         name="star"
-                        size={14}
+                        size={moderateScale(14)}
                         color="#0D631B"
                       />
                       <Text className="text-sm text-[#0D631B] ml-1">
@@ -378,7 +379,7 @@ export default function PickupRequestModal({
                       <View className="flex-row items-center gap-2">
                         <MaterialCommunityIcons
                           name="phone-outline"
-                          size={16}
+                          size={moderateScale(16)}
                           color={colors.textSub}
                         />
                         <Text
@@ -391,7 +392,7 @@ export default function PickupRequestModal({
                       <View className="flex-row items-center gap-2">
                         <MaterialCommunityIcons
                           name="message-outline"
-                          size={16}
+                          size={moderateScale(16)}
                           color={colors.textSub}
                         />
                         <Text
@@ -412,7 +413,7 @@ export default function PickupRequestModal({
                   >
                     <MaterialCommunityIcons
                       name="close"
-                      size={20}
+                      size={moderateScale(20)}
                       color="#DC2626"
                     />
                   </Pressable>

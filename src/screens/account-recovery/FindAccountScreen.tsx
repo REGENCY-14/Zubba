@@ -16,6 +16,7 @@ import { authService } from "../../api/authService";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
@@ -68,27 +69,27 @@ export function FindAccountScreen({
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <View className="flex-1 p-5 pt-10 pb-6 justify-between">
         <View className="gap-4">
-          <Text style={{ fontSize: 15, color: colors.text }}>
+          <Text style={{ fontSize: moderateScale(15), color: colors.text }}>
             What's your phone number
           </Text>
 
           <View className="flex-row items-center gap-2 h-12">
-            <View style={{ flexDirection: 'row', borderRadius: 9999, alignItems: 'center', justifyContent: 'space-between', gap: 16, height: 48, padding: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
+            <View style={{ flexDirection: 'row', borderRadius: 9999, alignItems: 'center', justifyContent: 'space-between', gap: scale(16), height: verticalScale(48), padding: moderateScale(10), backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
               <View className="rounded-full overflow-hidden">
                 <Image
                   source={ghanaFlag}
-                  style={{ width: 28, height: 20 }}
+                  style={{ width: scale(28), height: verticalScale(20) }}
                   resizeMode="contain"
                 />
               </View>
-              <MaterialCommunityIcons name="chevron-down" size={24} color={colors.iconColor} />
+              <MaterialCommunityIcons name="chevron-down" size={moderateScale(24)} color={colors.iconColor} />
             </View>
 
             <View
-              style={{ flex: 1, height: 48, justifyContent: 'center', paddingHorizontal: 16, borderRadius: 9999, borderWidth: 1, backgroundColor: colors.card, borderColor: isFocused || isPhoneValid ? colors.text : colors.border }}
+              style={{ flex: 1, height: verticalScale(48), justifyContent: 'center', paddingHorizontal: scale(16), borderRadius: 9999, borderWidth: 1, backgroundColor: colors.card, borderColor: isFocused || isPhoneValid ? colors.text : colors.border }}
             >
               <TextInput
-                style={{ fontSize: 15, color: isPhoneValid ? colors.text : colors.textMuted }}
+                style={{ fontSize: moderateScale(15), color: isPhoneValid ? colors.text : colors.textMuted }}
                 placeholder="phone number"
                 placeholderTextColor="#707579"
                 keyboardType="phone-pad"
@@ -102,10 +103,10 @@ export function FindAccountScreen({
           </View>
 
           <Pressable
-            style={{ alignSelf: 'flex-start', paddingHorizontal: 20, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+            style={{ alignSelf: 'flex-start', paddingHorizontal: scale(20), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
             onPress={() => navigation.navigate("FindAccountEmail")}
           >
-            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(12), fontWeight: '500', color: colors.text }}>
               Find account with email
             </Text>
           </Pressable>
@@ -116,7 +117,7 @@ export function FindAccountScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <MaterialCommunityIcons color={colors.text} name="arrow-left" size={24} />
+            <MaterialCommunityIcons color={colors.text} name="arrow-left" size={moderateScale(24)} />
           </Pressable>
 
           <Pressable
@@ -132,7 +133,7 @@ export function FindAccountScreen({
             ) : (
               <>
                 <Text className="text-white text-sm">Next</Text>
-                <MaterialCommunityIcons name="arrow-right" size={12} color="#fff" />
+                <MaterialCommunityIcons name="arrow-right" size={moderateScale(12)} color="#fff" />
               </>
             )}
           </Pressable>

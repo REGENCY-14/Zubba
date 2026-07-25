@@ -30,13 +30,14 @@ import {
 import { toast } from "../../hooks/toast";
 import { requestService } from "../../api/requestService";
 import { handleApiError } from "../../utils/handleApiError";
+import { moderateScale } from "../../utils/scale";
 
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const avatar = require("../../../assets/avatar.jpg");
 
 const { width: screenW, height: screenH } = Dimensions.get("window");
-const SCAN_SIZE = 330;
+const SCAN_SIZE = moderateScale(330);
 const SCAN_LEFT = (screenW - SCAN_SIZE) / 2;
 const SCAN_TOP = screenH * 0.14;
 
@@ -244,9 +245,9 @@ export function ScanningScreen({
           >
             <View
               style={{
-                width: 270,
-                height: 270,
-                borderRadius: 135,
+                width: moderateScale(270),
+                height: moderateScale(270),
+                borderRadius: moderateScale(135),
                 position: "absolute",
                 borderWidth: 0.5,
                 borderColor: "rgba(255,255,255,0.65)",
@@ -254,9 +255,9 @@ export function ScanningScreen({
             />
             <View
               style={{
-                width: 210,
-                height: 210,
-                borderRadius: 105,
+                width: moderateScale(210),
+                height: moderateScale(210),
+                borderRadius: moderateScale(105),
                 position: "absolute",
                 borderWidth: 0.5,
                 borderColor: "rgba(255,255,255,0.65)",
@@ -264,9 +265,9 @@ export function ScanningScreen({
             />
             <View
               style={{
-                width: 150,
-                height: 150,
-                borderRadius: 75,
+                width: moderateScale(150),
+                height: moderateScale(150),
+                borderRadius: moderateScale(75),
                 position: "absolute",
                 borderWidth: 0.5,
                 borderColor: "rgba(255,255,255,0.65)",
@@ -274,9 +275,9 @@ export function ScanningScreen({
             />
             <View
               style={{
-                width: 90,
-                height: 90,
-                borderRadius: 45,
+                width: moderateScale(90),
+                height: moderateScale(90),
+                borderRadius: moderateScale(45),
                 position: "absolute",
                 borderWidth: 0.5,
                 borderColor: "rgba(255,255,255,0.65)",
@@ -285,7 +286,7 @@ export function ScanningScreen({
             <View
               style={{
                 position: "absolute",
-                width: 210,
+                width: moderateScale(210),
                 height: 0.5,
                 backgroundColor: "rgba(255,255,255,0.5)",
               }}
@@ -294,7 +295,7 @@ export function ScanningScreen({
               style={{
                 position: "absolute",
                 width: 0.5,
-                height: 210,
+                height: moderateScale(210),
                 backgroundColor: "rgba(255,255,255,0.5)",
               }}
             />
@@ -318,23 +319,23 @@ export function ScanningScreen({
           />
 
           <View style={{ position: "absolute", alignItems: "center" }}>
-            <MaterialIcons name="location-on" size={28} color="#38A667" />
+            <MaterialIcons name="location-on" size={moderateScale(28)} color="#38A667" />
             <View
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: 17,
+                width: moderateScale(34),
+                height: moderateScale(34),
+                borderRadius: moderateScale(17),
                 backgroundColor: "rgba(52,168,83,0.5)",
                 alignItems: "center",
                 justifyContent: "center",
-                marginTop: 2,
+                marginTop: moderateScale(2),
               }}
             >
               <View
                 style={{
-                  width: 17,
-                  height: 17,
-                  borderRadius: 8.5,
+                  width: moderateScale(17),
+                  height: moderateScale(17),
+                  borderRadius: moderateScale(8.5),
                   backgroundColor: "#31973D",
                 }}
               />
@@ -352,7 +353,7 @@ export function ScanningScreen({
               transform: [{ rotate: t.rotate }],
             }}
           >
-            <Text style={{ fontSize: 22 }}>🛺</Text>
+            <Text style={{ fontSize: moderateScale(22) }}>🛺</Text>
           </View>
         ))}
 

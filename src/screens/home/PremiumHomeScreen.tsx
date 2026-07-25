@@ -19,6 +19,7 @@ import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const mapImage = require("../../../assets/RawMap.png");
 const futurePlan = require("../../../assets/futurePlan.png");
@@ -59,62 +60,62 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
             {/* Top bar */}
             <View
               style={{
-                height: 52,
+                height: verticalScale(52),
                 backgroundColor: colors.bg,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 16,
+                paddingHorizontal: scale(16),
               }}
             >
               <Pressable
-                style={{ width: 32, height: 32, alignItems: "center", justifyContent: "center" }}
+                style={{ width: moderateScale(32), height: moderateScale(32), alignItems: "center", justifyContent: "center" }}
                 onPress={() => setSidebarOpen(true)}
               >
-                <MaterialCommunityIcons name="menu" size={22} color={colors.iconColor} />
+                <MaterialCommunityIcons name="menu" size={moderateScale(22)} color={colors.iconColor} />
               </Pressable>
 
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                <Text style={{ fontSize: 12, color: colors.textSub }}>Bin Full?</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: scale(10) }}>
+                <Text style={{ fontSize: moderateScale(12), color: colors.textSub }}>Bin Full?</Text>
                 <AnimatedSwitch value={isBinFull} onChange={handleBinToggle} />
                 <Pressable
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: moderateScale(40),
+                    height: moderateScale(40),
                     borderWidth: 1,
                     borderColor: colors.border,
                     backgroundColor: colors.iconBg,
-                    borderRadius: 8,
+                    borderRadius: moderateScale(8),
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                   onPress={() => navigation.navigate("NotificationsList")}
                 >
-                  <MaterialCommunityIcons name="bell-outline" size={20} color={colors.iconColor} />
+                  <MaterialCommunityIcons name="bell-outline" size={moderateScale(20)} color={colors.iconColor} />
                 </Pressable>
               </View>
             </View>
 
             {/* Pickup location card */}
-            <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
+            <View style={{ paddingHorizontal: scale(12), paddingTop: verticalScale(8) }}>
               <View
                 style={{
                   backgroundColor: colors.card,
                   borderColor: colors.border,
                   borderWidth: 1,
-                  borderRadius: 20,
-                  padding: 12,
-                  gap: 12,
+                  borderRadius: moderateScale(20),
+                  padding: moderateScale(12),
+                  gap: verticalScale(12),
                 }}
               >
                 {/* Pill switcher */}
                 <View
                   style={{
                     backgroundColor: colors.surface,
-                    padding: 4,
+                    padding: moderateScale(4),
                     borderRadius: 999,
                     flexDirection: "row",
-                    gap: 4,
+                    gap: scale(4),
                   }}
                 >
                   {[{ label: "Pickup Location", index: 0 }, { label: "Find Driver", index: 1 }].map(({ label, index }) => (
@@ -127,15 +128,15 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                           flex: 1,
                           alignItems: "center",
                           justifyContent: "center",
-                          paddingHorizontal: 12,
-                          paddingVertical: 8,
+                          paddingHorizontal: scale(12),
+                          paddingVertical: verticalScale(8),
                         },
                         activePill === index
                           ? { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }
                           : {},
                       ]}
                     >
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>{label}</Text>
+                      <Text style={{ fontSize: moderateScale(14), fontWeight: "600", color: colors.text }}>{label}</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -143,24 +144,24 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                 {/* Search bar */}
                 <View
                   style={{
-                    height: 48,
+                    height: verticalScale(48),
                     backgroundColor: colors.card,
                     borderRadius: 999,
                     borderWidth: 1,
                     borderColor: colors.border,
-                    paddingHorizontal: 14,
+                    paddingHorizontal: scale(14),
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 8,
+                    gap: scale(8),
                   }}
                 >
                   <Pressable
                     onPress={() => navigation.navigate("Details", { itemId: "search", title: "Search" })}
                   >
-                    <MaterialCommunityIcons name="magnify" size={22} color={colors.iconColor} />
+                    <MaterialCommunityIcons name="magnify" size={moderateScale(22)} color={colors.iconColor} />
                   </Pressable>
                   <TextInput
-                    style={{ flex: 1, fontSize: 14, color: colors.text, padding: 0 }}
+                    style={{ flex: 1, fontSize: moderateScale(14), color: colors.text, padding: 0 }}
                     placeholder={activePill === 0 ? "Tarkwa, UMaT Campus, Hall 3" : "Search driver by name ..."}
                     placeholderTextColor={colors.textMuted}
                     value={searchQuery}
@@ -169,29 +170,29 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                   {searchQuery.length > 0 && (
                     <Pressable
                       onPress={() => setSearchQuery("")}
-                      style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}
+                      style={{ width: moderateScale(28), height: moderateScale(28), alignItems: "center", justifyContent: "center" }}
                     >
-                      <MaterialCommunityIcons name="close-circle" size={20} color="#EF4444" />
+                      <MaterialCommunityIcons name="close-circle" size={moderateScale(20)} color="#EF4444" />
                     </Pressable>
                   )}
                 </View>
 
                 {/* Nearby drivers */}
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 4 }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: scale(4) }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: scale(8) }}>
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                       {CLOSE_DRIVERS.slice(0, 2).map((driver, index) => (
-                        <View key={index} style={{ marginLeft: index === 0 ? 0 : -8, zIndex: index === 0 ? 1 : 2 }}>
-                          <TextAvatar size={24} bgColor={index === 1 ? "#FFE088" : "#90FA96"} name={driver} />
+                        <View key={index} style={{ marginLeft: index === 0 ? 0 : scale(-8), zIndex: index === 0 ? 1 : 2 }}>
+                          <TextAvatar size={moderateScale(24)} bgColor={index === 1 ? "#FFE088" : "#90FA96"} name={driver} />
                         </View>
                       ))}
                     </View>
-                    <Text style={{ fontSize: 13, fontWeight: "500", color: colors.textSub }}>
+                    <Text style={{ fontSize: moderateScale(13), fontWeight: "500", color: colors.textSub }}>
                       {CLOSE_DRIVERS.length} verified drivers nearby
                     </Text>
                   </View>
-                  <View style={{ backgroundColor: "#148732", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 }}>
-                    <Text style={{ fontSize: 11, color: "#fff" }}>New</Text>
+                  <View style={{ backgroundColor: "#148732", borderRadius: 999, paddingHorizontal: scale(8), paddingVertical: verticalScale(3) }}>
+                    <Text style={{ fontSize: moderateScale(11), color: "#fff" }}>New</Text>
                   </View>
                 </View>
 
@@ -206,27 +207,27 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
           </View>
 
           {/* ── Bottom section ── */}
-          <View style={{ paddingHorizontal: 12, paddingBottom: 96, gap: 8 }}>
+          <View style={{ paddingHorizontal: scale(12), paddingBottom: verticalScale(96), gap: verticalScale(8) }}>
             {/* Find nearby tricycles */}
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 12,
+                gap: scale(12),
                 backgroundColor: colors.card,
                 borderWidth: 1,
                 borderColor: colors.border,
                 borderRadius: 999,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
+                paddingVertical: verticalScale(8),
+                paddingHorizontal: scale(12),
               }}
             >
               <View
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: moderateScale(40),
+                  height: moderateScale(40),
                   backgroundColor: "rgba(65,158,106,0.10)",
-                  borderRadius: 20,
+                  borderRadius: moderateScale(20),
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
@@ -234,13 +235,13 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
               >
                 <Image
                   source={tricycle}
-                  style={{ width: 26, height: 26, transform: [{ scaleX: -1 }] }}
+                  style={{ width: moderateScale(26), height: moderateScale(26), transform: [{ scaleX: -1 }] }}
                   resizeMode="contain"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text, lineHeight: 20 }}>Find nearby tricycles</Text>
-                <Text style={{ fontSize: 12, color: colors.textSub, fontWeight: "400", lineHeight: 16 }}>Instant pickup</Text>
+                <Text style={{ fontSize: moderateScale(14), fontWeight: "600", color: colors.text, lineHeight: moderateScale(20) }}>Find nearby tricycles</Text>
+                <Text style={{ fontSize: moderateScale(12), color: colors.textSub, fontWeight: "400", lineHeight: moderateScale(16) }}>Instant pickup</Text>
               </View>
               <RoundedButton title="Request now" variant="primary" onPress={() => navigation.navigate("Scanning")} />
             </View>
@@ -250,21 +251,21 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 12,
+                gap: scale(12),
                 backgroundColor: colors.card,
                 borderWidth: 1,
                 borderColor: "#FFE088",
                 borderRadius: 999,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
+                paddingVertical: verticalScale(8),
+                paddingHorizontal: scale(12),
               }}
             >
               <View
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: moderateScale(40),
+                  height: moderateScale(40),
                   backgroundColor: "#EFF5FF",
-                  borderRadius: 20,
+                  borderRadius: moderateScale(20),
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
@@ -272,13 +273,13 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
               >
                 <Image
                   source={futurePlan}
-                  style={{ width: 20, height: 20, transform: [{ scaleX: -1 }] }}
+                  style={{ width: moderateScale(20), height: moderateScale(20), transform: [{ scaleX: -1 }] }}
                   resizeMode="contain"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text, lineHeight: 20 }}>Plan future pickup</Text>
-                <Text style={{ fontSize: 12, color: colors.textSub, fontWeight: "400", lineHeight: 16 }}>Future service</Text>
+                <Text style={{ fontSize: moderateScale(14), fontWeight: "600", color: colors.text, lineHeight: moderateScale(20) }}>Plan future pickup</Text>
+                <Text style={{ fontSize: moderateScale(12), color: colors.textSub, fontWeight: "400", lineHeight: moderateScale(16) }}>Future service</Text>
               </View>
               <RoundedButton title="Plan for later" variant="premium" onPress={() => navigation.navigate("PlanForLater")} />
             </View>
@@ -291,14 +292,14 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
           <View
             style={{
               position: "absolute",
-              left: 16,
-              right: 16,
-              top: 60,
+              left: scale(16),
+              right: scale(16),
+              top: verticalScale(60),
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
-              paddingVertical: 8,
-              paddingHorizontal: 20,
+              paddingVertical: verticalScale(8),
+              paddingHorizontal: scale(20),
               backgroundColor: "#F0F9FF",
               borderWidth: 1,
               borderColor: "#38BDF8",
@@ -306,16 +307,16 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
               zIndex: 100,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-              <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#0EA5E9", alignItems: "center", justifyContent: "center" }}>
-                <MaterialCommunityIcons name="information" size={14} color="#FFFFFF" />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: scale(12) }}>
+              <View style={{ width: moderateScale(24), height: moderateScale(24), borderRadius: moderateScale(12), backgroundColor: "#0EA5E9", alignItems: "center", justifyContent: "center" }}>
+                <MaterialCommunityIcons name="information" size={moderateScale(14)} color="#FFFFFF" />
               </View>
-              <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: 13, lineHeight: 28, color: "#0284C7" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: moderateScale(13), lineHeight: moderateScale(28), color: "#0284C7" }}>
                 Bin signal sent. Driver will attend in no time
               </Text>
             </View>
             <Pressable onPress={() => setShowBinToast(false)} hitSlop={8}>
-              <MaterialCommunityIcons name="close" size={16} color="#0284C7" />
+              <MaterialCommunityIcons name="close" size={moderateScale(16)} color="#0284C7" />
             </Pressable>
           </View>
         )}

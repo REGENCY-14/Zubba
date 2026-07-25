@@ -2,6 +2,7 @@ import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
+import { moderateScale } from "../../utils/scale";
 
 export type PaymentOptionProps = {
   selected: boolean;
@@ -36,9 +37,9 @@ export function PaymentOption({
       <View className="flex-row items-center flex-1 gap-4">
         <View className={`w-12 h-7 rounded-xl items-center justify-center overflow-hidden ${badgeBg}`}>
           {iconName ? (
-            <MaterialCommunityIcons name={iconName as any} size={22} color="#31973D" />
+            <MaterialCommunityIcons name={iconName as any} size={moderateScale(22)} color="#31973D" />
           ) : image ? (
-            <Image source={image} style={{ width: 28, height: 28 }} resizeMode="contain" />
+            <Image source={image} style={{ width: moderateScale(28), height: moderateScale(28) }} resizeMode="contain" />
           ) : (
             <Text className={`text-xs font-bold ${badgeTextColor}`}>{badge}</Text>
           )}

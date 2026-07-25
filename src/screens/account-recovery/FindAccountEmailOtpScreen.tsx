@@ -20,6 +20,7 @@ import { setCustomer } from "../../slices/customer/customerSlice";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function FindAccountEmailOtpScreen({
   route,
@@ -94,7 +95,7 @@ export function FindAccountEmailOtpScreen({
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-5 pb-6">
-          <Text style={{ fontSize: 15, color: colors.text, marginBottom: 8 }}>
+          <Text style={{ fontSize: moderateScale(15), color: colors.text, marginBottom: verticalScale(8) }}>
             Enter the 4-digits code sent to you at: {email}
           </Text>
 
@@ -108,7 +109,7 @@ export function FindAccountEmailOtpScreen({
           </View>
 
           <Pressable className="mb-6">
-            <Text style={{ fontSize: 13, textDecorationLine: 'underline', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(13), textDecorationLine: 'underline', color: colors.text }}>
               changed my email address?
             </Text>
           </Pressable>
@@ -127,9 +128,9 @@ export function FindAccountEmailOtpScreen({
           <Pressable
             disabled={isResending}
             onPress={() => setShowResendModal(true)}
-            style={{ alignSelf: 'flex-start', paddingHorizontal: 20, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+            style={{ alignSelf: 'flex-start', paddingHorizontal: scale(20), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(12), fontWeight: '500', color: colors.text }}>
               Resend code
             </Text>
           </Pressable>
@@ -146,8 +147,8 @@ export function FindAccountEmailOtpScreen({
           }}
         >
           <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
-            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: 'center' }}>
-              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', marginBottom: 12, color: colors.text }}>
+            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: moderateScale(16), padding: moderateScale(24), marginBottom: verticalScale(40), alignItems: 'center' }}>
+              <Text style={{ textAlign: 'center', fontSize: moderateScale(18), fontWeight: '500', marginBottom: verticalScale(12), color: colors.text }}>
                 Resend code to: {email}
               </Text>
 
@@ -167,9 +168,9 @@ export function FindAccountEmailOtpScreen({
                 <Pressable
                   disabled={isResending}
                   onPress={() => setShowResendModal(false)}
-                  style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+                  style={{ height: verticalScale(48), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
+                  <Text style={{ color: colors.text, fontSize: moderateScale(14) }}>Cancel</Text>
                 </Pressable>
               </View>
             </View>

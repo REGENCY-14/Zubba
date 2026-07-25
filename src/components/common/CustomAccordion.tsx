@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type SectionProps = {
   title: string;
@@ -25,7 +26,7 @@ export function Section({
     <View
       style={{
         backgroundColor: cardBg ? cardBg : colors.card,
-        borderRadius: 16,
+        borderRadius: moderateScale(16),
         borderWidth: 1,
         borderColor: colors.borderLight,
         overflow: "hidden",
@@ -33,9 +34,9 @@ export function Section({
     >
       <Pressable
         style={{
-          minHeight: 44,
-          paddingHorizontal: 16,
-          paddingVertical: 12,
+          minHeight: verticalScale(44),
+          paddingHorizontal: scale(16),
+          paddingVertical: verticalScale(12),
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
@@ -46,8 +47,8 @@ export function Section({
       >
         <Text
           style={{
-            fontSize: 14,
-            lineHeight: 20,
+            fontSize: moderateScale(14),
+            lineHeight: moderateScale(20),
             fontWeight: "600",
             color: colors.text,
           }}
@@ -56,12 +57,12 @@ export function Section({
         </Text>
         <MaterialCommunityIcons
           name={open ? "chevron-up" : "chevron-down"}
-          size={18}
+          size={moderateScale(18)}
           color={colors.textSub}
         />
       </Pressable>
       {open ? (
-        <View style={{ paddingHorizontal: 16, paddingVertical: 8, gap: 12 }}>
+        <View style={{ paddingHorizontal: scale(16), paddingVertical: verticalScale(8), gap: moderateScale(12) }}>
           {children}
         </View>
       ) : null}
@@ -77,7 +78,7 @@ export function Paragraph({
   colors: ReturnType<typeof useTheme>["colors"];
 }) {
   return (
-    <Text style={{ fontSize: 14, lineHeight: 20, color: colors.textSub }}>
+    <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.textSub }}>
       {children}
     </Text>
   );

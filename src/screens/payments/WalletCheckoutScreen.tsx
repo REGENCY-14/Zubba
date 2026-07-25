@@ -5,6 +5,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import { ScrollView } from "react-native";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function WalletCheckoutScreen({
   navigation,
@@ -37,7 +38,7 @@ export function WalletCheckoutScreen({
               </View>
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: moderateScale(10),
                   fontWeight: "bold",
                   letterSpacing: 0.5,
                   color: colors.text,
@@ -49,10 +50,10 @@ export function WalletCheckoutScreen({
 
             <Text
               style={{
-                fontSize: 48,
+                fontSize: moderateScale(48),
                 fontWeight: "bold",
                 color: colors.text,
-                lineHeight: 56,
+                lineHeight: moderateScale(56),
                 letterSpacing: -1.2,
               }}
             >
@@ -62,7 +63,7 @@ export function WalletCheckoutScreen({
             <View className="flex-row absolute -bottom-[40px] items-center gap-1 bg-[#31973D] rounded-full px-3 py-1">
               <MaterialCommunityIcons
                 name="trending-up"
-                size={12}
+                size={moderateScale(12)}
                 color="#FFFFFF"
               />
               <Text className="text-xs font-bold text-white leading-4">
@@ -72,13 +73,13 @@ export function WalletCheckoutScreen({
           </View>
         </View>
 
-        <View style={{ marginTop: -10, flex: 1 }}>
+        <View style={{ marginTop: verticalScale(-10), flex: 1 }}>
           <View className="flex-row items-center px-6 pt-10 pb-6 gap-[10px]">
             <Pressable
               className="w-8 h-8 bg-[#FFE2E2] rounded-xl items-center justify-center"
               onPress={() => navigation.navigate("Home")}
             >
-              <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
+              <MaterialCommunityIcons name="close" size={moderateScale(16)} color="#EF4444" />
             </Pressable>
             <Pressable
               className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
@@ -92,17 +93,17 @@ export function WalletCheckoutScreen({
             className="flex-1 rounded-t-[32px]"
             style={{
               backgroundColor: colors.card,
-              paddingHorizontal: 12,
-              paddingTop: 16,
-              paddingBottom: 10,
-              gap: 12,
+              paddingHorizontal: scale(12),
+              paddingTop: verticalScale(16),
+              paddingBottom: verticalScale(10),
+              gap: moderateScale(12),
             }}
           >
             <ScrollView
               className="flex-1"
               contentContainerStyle={{
-                padding: 2,
-                gap: 24,
+                padding: moderateScale(2),
+                gap: moderateScale(24),
               }}
               showsHorizontalScrollIndicator={false}
             >
@@ -117,19 +118,19 @@ export function WalletCheckoutScreen({
                 <View className="flex-row justify-between items-center py-[14px]">
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.textSub,
-                      lineHeight: 24,
+                      lineHeight: moderateScale(24),
                     }}
                   >
                     Estimated Cost
                   </Text>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.text,
                       fontWeight: "bold",
-                      lineHeight: 24,
+                      lineHeight: moderateScale(24),
                     }}
                   >
                     GHS 45.00
@@ -138,19 +139,19 @@ export function WalletCheckoutScreen({
                 <View className="flex-row justify-between items-center py-[14px]">
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.textSub,
-                      lineHeight: 24,
+                      lineHeight: moderateScale(24),
                     }}
                   >
                     Pickup - Organic Waste
                   </Text>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.text,
                       fontWeight: "bold",
-                      lineHeight: 24,
+                      lineHeight: moderateScale(24),
                     }}
                   >
                     GHS 35.00
@@ -159,19 +160,19 @@ export function WalletCheckoutScreen({
                 <View className="flex-row justify-between items-center py-[14px]">
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.textSub,
-                      lineHeight: 24,
+                      lineHeight: moderateScale(24),
                     }}
                   >
                     Service Fee
                   </Text>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: moderateScale(16),
                       color: colors.text,
                       fontWeight: "bold",
-                      lineHeight: 24,
+                      lineHeight: moderateScale(24),
                     }}
                   >
                     GHS 10.00
@@ -198,20 +199,20 @@ export function WalletCheckoutScreen({
                   <View className="gap-1">
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         fontWeight: "500",
                         color: colors.text,
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       Zubba Wallet Balance
                     </Text>
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         fontWeight: "500",
                         color: colors.textSub,
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       GHS 124.50
@@ -236,18 +237,18 @@ export function WalletCheckoutScreen({
                   <View className="flex-row justify-between items-center">
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         color: colors.textSub,
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       Base Points
                     </Text>
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         color: colors.text,
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       45 XP
@@ -257,24 +258,24 @@ export function WalletCheckoutScreen({
                     <View className="flex-row items-center gap-1">
                       <Text
                         style={{
-                          fontSize: 16,
+                          fontSize: moderateScale(16),
                           color: colors.textSub,
-                          lineHeight: 24,
+                          lineHeight: moderateScale(24),
                         }}
                       >
                         Premium Multiplier
                       </Text>
                       <MaterialCommunityIcons
                         name="lightning-bolt"
-                        size={10}
+                        size={moderateScale(10)}
                         color={colors.text}
                       />
                     </View>
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         color: colors.text,
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       x 2
@@ -283,9 +284,9 @@ export function WalletCheckoutScreen({
                   <View className="flex-row justify-between items-center">
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         color: colors.text,
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       Total Reward

@@ -7,6 +7,7 @@ import type { RootStackScreenProps } from '../../navigation/types';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateName'>) {
   const user = useAppSelector((state) => state.auth.user);
@@ -26,34 +27,34 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           flexGrow: 1,
-          padding: 12,
-          gap: 24,
+          padding: moderateScale(12),
+          gap: moderateScale(24),
           alignItems: 'center',
         }}
       >
         {/* Icon + description */}
-        <View style={{ alignItems: 'center', gap: 16 }}>
+        <View style={{ alignItems: 'center', gap: moderateScale(16) }}>
           <View
             style={{
-              width: 54,
-              height: 54,
+              width: moderateScale(54),
+              height: moderateScale(54),
               borderRadius: 9999,
               backgroundColor: 'rgba(65, 158, 106, 0.1)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <MaterialCommunityIcons name="cellphone-arrow-down" size={24} color="#006B23" />
+            <MaterialCommunityIcons name="cellphone-arrow-down" size={moderateScale(24)} color="#006B23" />
           </View>
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: moderateScale(14),
               fontWeight: '400',
               color: colors.textSub,
-              lineHeight: 20,
+              lineHeight: moderateScale(20),
               textAlign: 'center',
-              width: 284,
+              width: scale(284),
             }}
           >
             Keep your profile up to date by ensuring your name information is accurate.
@@ -67,13 +68,13 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
             backgroundColor: isDark ? colors.surface : colors.bg,
             borderWidth: 1,
             borderColor: colors.border,
-            borderRadius: 24,
-            padding: 16,
-            gap: 16,
+            borderRadius: moderateScale(24),
+            padding: moderateScale(16),
+            gap: moderateScale(16),
           }}
         >
           {/* Instruction */}
-          <Text style={{ fontSize: 14, lineHeight: 22, color: colors.textSub, letterSpacing: 0.15 }}>
+          <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.textSub, letterSpacing: 0.15 }}>
             Enter your name as it appears on your ID or passport
           </Text>
 
@@ -82,24 +83,24 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
             style={{
               borderTopWidth: 1,
               borderTopColor: colors.borderLight,
-              paddingTop: 8,
-              gap: 8,
+              paddingTop: verticalScale(8),
+              gap: moderateScale(8),
             }}
           >
-            <Text style={{ fontSize: 14, lineHeight: 22, color: colors.textSub, letterSpacing: 0.15 }}>
+            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.textSub, letterSpacing: 0.15 }}>
               First  Name
             </Text>
 
             <TextInput
               style={{
-                height: 48,
+                height: verticalScale(48),
                 backgroundColor: isDark ? colors.surface : colors.bg,
                 borderWidth: 1,
                 borderColor: colors.border,
                 borderRadius: 9999,
-                paddingHorizontal: 12,
-                fontSize: 14,
-                lineHeight: 20,
+                paddingHorizontal: scale(12),
+                fontSize: moderateScale(14),
+                lineHeight: moderateScale(20),
                 color: colors.textSub,
               }}
               value={firstName}
@@ -115,24 +116,24 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
             style={{
               borderTopWidth: 1,
               borderTopColor: colors.borderLight,
-              paddingTop: 8,
-              gap: 8,
+              paddingTop: verticalScale(8),
+              gap: moderateScale(8),
             }}
           >
-            <Text style={{ fontSize: 14, lineHeight: 22, color: colors.textSub, letterSpacing: 0.15 }}>
+            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.textSub, letterSpacing: 0.15 }}>
               Last Name
             </Text>
 
             <TextInput
               style={{
-                height: 48,
+                height: verticalScale(48),
                 backgroundColor: isDark ? colors.surface : colors.bg,
                 borderWidth: 1,
                 borderColor: colors.border,
                 borderRadius: 9999,
-                paddingHorizontal: 12,
-                fontSize: 14,
-                lineHeight: 20,
+                paddingHorizontal: scale(12),
+                fontSize: moderateScale(14),
+                lineHeight: moderateScale(20),
                 color: colors.textSub,
               }}
               value={lastName}
@@ -148,7 +149,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
         <Pressable
           style={{
             width: '100%',
-            height: 48,
+            height: verticalScale(48),
             backgroundColor: canSave ? '#31973D' : 'rgba(49,151,61,0.5)',
             borderRadius: 9999,
             alignItems: 'center',
@@ -162,7 +163,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
             })
           }
         >
-          <Text style={{ fontSize: 14, lineHeight: 20, color: '#FFFFFF' }}>Save Changes</Text>
+          <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#FFFFFF' }}>Save Changes</Text>
         </Pressable>
       </ScrollView>
 

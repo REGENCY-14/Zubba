@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav } from '../../components';
+import { moderateScale } from '../../utils/scale';
 
 type MethodId = 'wallet' | 'mtn' | 'telecel' | 'airtel';
 
@@ -66,7 +67,7 @@ export function PremiumPaymentScreen({ navigation }: RootStackScreenProps<'Premi
               >
                 <View className="flex-row items-center gap-4">
                   <View className="w-12 h-12 rounded-xl bg-[#31973D] items-center justify-center">
-                    <MaterialCommunityIcons name="wallet-outline" size={20} color="#FFFFFF" />
+                    <MaterialCommunityIcons name="wallet-outline" size={moderateScale(20)} color="#FFFFFF" />
                   </View>
                   <Text className="text-base font-medium text-[#1C1B1B] leading-6">Zubba Wallet</Text>
                 </View>
@@ -112,8 +113,8 @@ export function PremiumPaymentScreen({ navigation }: RootStackScreenProps<'Premi
                 <View className="flex-row items-center gap-4">
                   <View className="w-10 h-10 rounded-lg bg-white border border-[#E2E8F0] items-center justify-center">
                     <Text className="text-base">
-                      <Text style={{ color: '#0062A3', fontSize: 16, fontWeight: '700' }}>a</Text>
-                      <Text style={{ color: '#EF4444', fontSize: 16, fontWeight: '700' }}>t</Text>
+                      <Text style={{ color: '#0062A3', fontSize: moderateScale(16), fontWeight: '700' }}>a</Text>
+                      <Text style={{ color: '#EF4444', fontSize: moderateScale(16), fontWeight: '700' }}>t</Text>
                     </Text>
                   </View>
                   <Text className="text-base font-medium text-[#1C1B1B] leading-6">Airtel money</Text>

@@ -20,6 +20,7 @@ import { handleApiError } from "../../utils/handleApiError";
 import { toast } from "../../hooks/toast";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setTransactionReference } from "../../slices/request/requestSlice";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function PaymentMethodScreen({
   navigation,
@@ -77,19 +78,19 @@ export function PaymentMethodScreen({
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 16, paddingBottom: 10, gap: 24 }}
+          contentContainerStyle={{ padding: moderateScale(16), paddingBottom: verticalScale(10), gap: moderateScale(24) }}
         >
           <View className="gap-6">
-            <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 24, alignItems: "center", gap: 16 }}>
+            <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(24), alignItems: "center", gap: moderateScale(16) }}>
               <View className="w-14 h-14 rounded-full bg-[#41A06A]/10 items-center justify-center">
-                <MaterialCommunityIcons name="wallet" size={27} color="#31973D" />
+                <MaterialCommunityIcons name="wallet" size={moderateScale(27)} color="#31973D" />
               </View>
 
-              <Text style={{ fontSize: 16, textAlign: "center", color: colors.textSub }}>
+              <Text style={{ fontSize: moderateScale(16), textAlign: "center", color: colors.textSub }}>
                 Total to Pay
               </Text>
 
-              <Text style={{ fontSize: 32, fontWeight: "600", color: colors.text, textAlign: "center" }}>
+              <Text style={{ fontSize: moderateScale(32), fontWeight: "600", color: colors.text, textAlign: "center" }}>
                 GHS {totalAmount}
               </Text>
 
@@ -103,20 +104,20 @@ export function PaymentMethodScreen({
             </View>
 
             <View className="gap-2">
-              <Text style={{ fontSize: 16, color: colors.text }}>
+              <Text style={{ fontSize: moderateScale(16), color: colors.text }}>
                 Wallet Phone Number
               </Text>
 
               <TextInput
                 style={{
-                  height: 48,
-                  paddingHorizontal: 16,
+                  height: verticalScale(48),
+                  paddingHorizontal: scale(16),
                   borderWidth: 1,
                   borderColor: colors.border,
                   borderRadius: 999,
                   backgroundColor: colors.card,
                   color: colors.text,
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                 }}
                 placeholder="055 123 4567"
                 placeholderTextColor={colors.textSub}
@@ -125,22 +126,22 @@ export function PaymentMethodScreen({
                 onChangeText={setPhoneNumber}
               />
 
-              <Text style={{ fontSize: 12, color: colors.textSub }}>
+              <Text style={{ fontSize: moderateScale(12), color: colors.textSub }}>
                 Enter your mobile money number
               </Text>
             </View>
 
-            <View style={{ flexDirection: "row", gap: 16, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 24, backgroundColor: colors.card }}>
+            <View style={{ flexDirection: "row", gap: scale(16), padding: moderateScale(16), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), backgroundColor: colors.card }}>
               <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
-                <MaterialCommunityIcons name="information-outline" size={18} color="#31973D" />
+                <MaterialCommunityIcons name="information-outline" size={moderateScale(18)} color="#31973D" />
               </View>
 
               <View className="flex-1 gap-1">
-                <Text style={{ fontSize: 16, color: colors.text }}>
+                <Text style={{ fontSize: moderateScale(16), color: colors.text }}>
                   How it works
                 </Text>
 
-                <Text style={{ fontSize: 14, color: colors.textSub, lineHeight: 24 }}>
+                <Text style={{ fontSize: moderateScale(14), color: colors.textSub, lineHeight: moderateScale(24) }}>
                   You will receive a secure payment prompt on your mobile phone.
                   Enter your Mobile Money PIN to authorize the transaction instantly.
                 </Text>
@@ -160,7 +161,7 @@ export function PaymentMethodScreen({
               )}
             </Pressable>
 
-            <Text style={{ fontSize: 10, textAlign: "center", textTransform: "uppercase", color: colors.textMuted }}>
+            <Text style={{ fontSize: moderateScale(10), textAlign: "center", textTransform: "uppercase", color: colors.textMuted }}>
               Secured by Zubba Pay Architecture
             </Text>
           </View>

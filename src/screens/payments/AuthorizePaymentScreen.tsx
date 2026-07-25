@@ -14,6 +14,7 @@ import { AppBottomNav } from "../../components";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function AuthorizePaymentScreen({
   navigation,
@@ -32,24 +33,24 @@ export function AuthorizePaymentScreen({
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 10, gap: 24 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: scale(24), paddingTop: verticalScale(24), paddingBottom: verticalScale(10), gap: verticalScale(24) }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <View className="w-8 h-8 rounded-lg bg-[#31973D] items-center justify-center">
-                <MaterialCommunityIcons name="shield-account-outline" size={16} color="#fff" />
+                <MaterialCommunityIcons name="shield-account-outline" size={moderateScale(16)} color="#fff" />
               </View>
-              <Text style={{ fontSize: 16, color: colors.text }}>Enter PIN</Text>
+              <Text style={{ fontSize: moderateScale(16), color: colors.text }}>Enter PIN</Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999, backgroundColor: colors.iconBg }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingHorizontal: scale(12), paddingVertical: verticalScale(4), borderRadius: 999, backgroundColor: colors.iconBg }}>
               <View className="w-2 h-2 rounded-full bg-[#006B23]" />
-              <Text style={{ fontSize: 12, fontWeight: '600', color: colors.text }}>
+              <Text style={{ fontSize: moderateScale(12), fontWeight: '600', color: colors.text }}>
                 {request.payment_method}
               </Text>
             </View>
           </View>
 
-          <Text style={{ fontSize: 16, color: colors.textSub, lineHeight: 24 }}>
+          <Text style={{ fontSize: moderateScale(16), color: colors.textSub, lineHeight: moderateScale(24) }}>
             Enter your 4-digit PIN to authorize the payment of{" "}
             <Text style={{ fontWeight: '700', color: colors.text }}>GHS {request.pickup_price + request.service_price}</Text> to{" "}
             <Text style={{ fontWeight: '700', color: colors.text }}>Zubba</Text>.
@@ -66,9 +67,9 @@ export function AuthorizePaymentScreen({
                   onPress={() => inputRef.current?.focus()}
                   style={[
                     {
-                      width: active ? 56 : 52,
-                      height: active ? 68 : 64,
-                      borderRadius: 12,
+                      width: moderateScale(active ? 56 : 52),
+                      height: moderateScale(active ? 68 : 64),
+                      borderRadius: moderateScale(12),
                       borderWidth: 1,
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -102,7 +103,7 @@ export function AuthorizePaymentScreen({
             }
             className="h-12 rounded-full bg-[#31973D] flex-row items-center justify-center gap-2"
           >
-            <MaterialCommunityIcons name="lock-outline" size={16} color="#fff" />
+            <MaterialCommunityIcons name="lock-outline" size={moderateScale(16)} color="#fff" />
             <Text className="text-white text-sm">Proceed to pay</Text>
           </Pressable>
         </ScrollView>

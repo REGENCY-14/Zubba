@@ -18,6 +18,7 @@ import { userService } from "../../api/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { updateUser } from "../../slices/auth/authSlice";
 import { useTheme } from "../../context/ThemeContext";
+import { moderateScale } from "../../utils/scale";
 
 export function KycCollectionScreen({
   route,
@@ -113,7 +114,7 @@ export function KycCollectionScreen({
               <MaterialCommunityIcons
                 name="arrow-left"
                 color={colors.text}
-                size={24}
+                size={moderateScale(24)}
               />
             </Text>
           </Pressable>

@@ -18,6 +18,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useGoogleLogin } from "../../services/googleAuth";
 import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const googleIcon = require("../../../assets/Google icon.png");
 const ghanaFlag = require("../../../assets/ghana-flag.png");
@@ -68,14 +69,14 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={{ flex: 1, paddingHorizontal: 20, paddingVertical: 20 }}>
+          <View style={{ flex: 1, paddingHorizontal: scale(20), paddingVertical: verticalScale(20) }}>
             <View style={{ flex: 1 }}>
               <Text
                 style={{
-                  fontSize: 15,
+                  fontSize: moderateScale(15),
                   fontWeight: "400",
                   color: colors.text,
-                  marginBottom: 8,
+                  marginBottom: verticalScale(8),
                 }}
               >
                 What's your phone number
@@ -85,8 +86,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: 8,
-                  marginBottom: 16,
+                  gap: scale(8),
+                  marginBottom: verticalScale(16),
                 }}
               >
                 <View
@@ -95,9 +96,9 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                     borderRadius: 9999,
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 16,
-                    height: 48,
-                    padding: 10,
+                    gap: scale(16),
+                    height: verticalScale(48),
+                    padding: moderateScale(10),
                     backgroundColor: colors.card,
                     borderWidth: 1,
                     borderColor: colors.border,
@@ -106,13 +107,13 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   <View style={{ borderRadius: 9999, overflow: "hidden" }}>
                     <Image
                       source={ghanaFlag}
-                      style={{ width: 28, height: 20 }}
+                      style={{ width: scale(28), height: verticalScale(20) }}
                       resizeMode="contain"
                     />
                   </View>
                   <MaterialCommunityIcons
                     name="chevron-down"
-                    size={24}
+                    size={moderateScale(24)}
                     color={colors.iconColor}
                   />
                 </View>
@@ -120,13 +121,13 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 <TextInput
                   style={{
                     flex: 1,
-                    height: 48,
-                    paddingHorizontal: 16,
+                    height: verticalScale(48),
+                    paddingHorizontal: scale(16),
                     borderWidth: 1,
                     borderColor: colors.border,
                     borderRadius: 9999,
                     backgroundColor: colors.card,
-                    fontSize: 15,
+                    fontSize: moderateScale(15),
                     color: colors.text,
                   }}
                   className="outline-none"
@@ -142,9 +143,9 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 <Text
                   style={{
                     color: "#DC2626",
-                    fontSize: 12,
-                    marginBottom: 8,
-                    paddingHorizontal: 4,
+                    fontSize: moderateScale(12),
+                    marginBottom: verticalScale(8),
+                    paddingHorizontal: scale(4),
                   }}
                 >
                   Enter a valid phone number
@@ -153,18 +154,18 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
 
               <Pressable
                 style={{
-                  height: 48,
+                  height: verticalScale(48),
                   borderRadius: 9999,
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: 16,
+                  marginBottom: verticalScale(16),
                   backgroundColor: "#34A853",
                   opacity: canContinue && !registerMutation.isPending ? 1 : 0.6,
                 }}
                 onPress={handleRegister}
                 disabled={!canContinue || registerMutation.isPending}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14) }}>
                   {registerMutation.isPending ? "Please wait..." : "Continue"}
                 </Text>
               </Pressable>
@@ -173,7 +174,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginVertical: 16,
+                  marginVertical: verticalScale(16),
                 }}
               >
                 <View
@@ -181,8 +182,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 />
                 <Text
                   style={{
-                    marginHorizontal: 16,
-                    fontSize: 12,
+                    marginHorizontal: scale(16),
+                    fontSize: moderateScale(12),
                     color: colors.textSub,
                   }}
                 >
@@ -198,24 +199,24 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: 8,
+                  gap: scale(8),
                   justifyContent: "center",
                   borderWidth: 1,
                   borderColor: colors.border,
                   borderRadius: 9999,
-                  height: 48,
+                  height: verticalScale(48),
                   backgroundColor: colors.card,
-                  marginBottom: 12,
+                  marginBottom: verticalScale(12),
                 }}
               >
                 <Image
                   source={googleIcon}
-                  style={{ width: 16, height: 16 }}
+                  style={{ width: moderateScale(16), height: moderateScale(16) }}
                   resizeMode="contain"
                 />
                 <Text
                   style={{
-                    fontSize: 14,
+                    fontSize: moderateScale(14),
                     color: colors.text,
                     fontWeight: "500",
                   }}
@@ -228,25 +229,25 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: 8,
+                  gap: scale(8),
                   justifyContent: "center",
                   borderWidth: 1,
                   borderColor: colors.border,
                   borderRadius: 9999,
-                  height: 48,
+                  height: verticalScale(48),
                   backgroundColor: colors.card,
-                  marginBottom: 20,
+                  marginBottom: verticalScale(20),
                 }}
                 onPress={() => navigation.navigate("EmailSignUp")}
               >
                 <MaterialCommunityIcons
                   name="email-outline"
-                  size={16}
+                  size={moderateScale(16)}
                   color={colors.text}
                 />
                 <Text
                   style={{
-                    fontSize: 14,
+                    fontSize: moderateScale(14),
                     color: colors.text,
                     fontWeight: "500",
                   }}
@@ -259,7 +260,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginVertical: 16,
+                  marginVertical: verticalScale(16),
                 }}
               >
                 <View
@@ -267,8 +268,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 />
                 <Text
                   style={{
-                    marginHorizontal: 16,
-                    fontSize: 12,
+                    marginHorizontal: scale(16),
+                    fontSize: moderateScale(12),
                     color: colors.textSub,
                   }}
                 >
@@ -284,12 +285,12 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 8,
+                  gap: scale(8),
                 }}
               >
                 <MaterialCommunityIcons
                   name="magnify"
-                  size={14}
+                  size={moderateScale(14)}
                   color={colors.iconColor}
                 />
                 <Pressable
@@ -303,7 +304,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   <Text
                     style={{
                       textAlign: "center",
-                      fontSize: 12,
+                      fontSize: moderateScale(12),
                       color: colors.text,
                     }}
                   >
@@ -313,7 +314,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               </View>
 
               <Text
-                style={{ fontSize: 11, color: colors.textSub, marginTop: 16 }}
+                style={{ fontSize: moderateScale(11), color: colors.textSub, marginTop: verticalScale(16) }}
               >
                 By continuing, you agree to calls including autodialler,
                 WhatsApp or texts from Zubba and its affiliates.

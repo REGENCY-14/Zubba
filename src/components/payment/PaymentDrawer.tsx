@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PaymentOption } from "./PaymentOption";
 import { useTheme } from "../../context/ThemeContext";
 import { creditMethods, paymentMethods } from "../../constants/paymentMethods";
+import { scale, moderateScale } from "../../utils/scale";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel" | "credit_card";
 
@@ -50,7 +51,7 @@ export function PaymentMethodDrawer({
               style={{
                 backgroundColor: colors.text,
                 width: "30%",
-                maxWidth: 200,
+                maxWidth: scale(200),
               }}
               className="h-0.5 rounded-full bg-[#E2E8F0]"
             />
@@ -87,7 +88,7 @@ export function PaymentMethodDrawer({
               onPress={onClose}
               className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"
             >
-              <MaterialCommunityIcons name="close" size={20} color="#DC2626" />
+              <MaterialCommunityIcons name="close" size={moderateScale(20)} color="#DC2626" />
             </Pressable>
 
             <Pressable

@@ -16,6 +16,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { RootStackParamList } from "../../navigation/types";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
 import { bottom_sidebar_items, isPremiumSidebarItem, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -91,10 +92,10 @@ export default function Sidebar({
         <Animated.View
           style={{
             position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
+            top: verticalScale(0),
+            bottom: verticalScale(0),
+            left: scale(0),
+            right: scale(0),
             backgroundColor: "rgba(15,23,42,0.45)",
             opacity: backdropOpacity,
           }}
@@ -102,10 +103,10 @@ export default function Sidebar({
           <Pressable
             style={{
               position: "absolute",
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
+              top: verticalScale(0),
+              bottom: verticalScale(0),
+              left: scale(0),
+              right: scale(0),
             }}
             onPress={onClose}
           />
@@ -114,13 +115,13 @@ export default function Sidebar({
         <Animated.View
           style={{
             position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
+            top: verticalScale(0),
+            bottom: verticalScale(0),
+            left: scale(0),
             width: DRAWER_WIDTH,
             backgroundColor: colors.bg,
-            paddingTop: 24,
-            paddingHorizontal: 20,
+            paddingTop: verticalScale(24),
+            paddingHorizontal: scale(20),
             transform: [{ translateX }],
           }}
         >
@@ -129,27 +130,27 @@ export default function Sidebar({
             style={{
               flexDirection: "row",
               alignItems: "center",
-              gap: 12,
-              marginBottom: 28,
+              gap: scale(12),
+              marginBottom: verticalScale(28),
             }}
           >
             <View
               style={{
-                width: 64,
-                height: 64,
+                width: moderateScale(64),
+                height: moderateScale(64),
                 backgroundColor: colors.surface,
-                borderRadius: 12,
+                borderRadius: moderateScale(12),
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <View style={{ width: 54, height: 54 }}>
+              <View style={{ width: moderateScale(54), height: moderateScale(54) }}>
                 {avatarUrl ? (
                   <Image
                     source={avatarUrl}
                     style={{
-                      width: 54,
-                      height: 54,
+                      width: moderateScale(54),
+                      height: moderateScale(54),
                       borderRadius: 999,
                       borderWidth: 2,
                       borderColor: "#90FA96",
@@ -158,7 +159,7 @@ export default function Sidebar({
                   />
                 ) : (
                   <TextAvatar
-                    size={48}
+                    size={moderateScale(48)}
                     bgColor="#C7E0C9"
                     name={`${user?.firstname} ${user?.lastname}`}
                   />
@@ -167,11 +168,11 @@ export default function Sidebar({
                   <View
                     style={{
                       position: "absolute",
-                      bottom: -2,
-                      right: -2,
-                      width: 18,
-                      height: 18,
-                      borderRadius: 9,
+                      bottom: verticalScale(-2),
+                      right: scale(-2),
+                      width: moderateScale(18),
+                      height: moderateScale(18),
+                      borderRadius: moderateScale(9),
                       backgroundColor: "#006B23",
                       borderWidth: 2,
                       borderColor: "#FFFFFF",
@@ -183,7 +184,7 @@ export default function Sidebar({
                     <View>
                       <MaterialCommunityIcons
                         name="check-decagram"
-                        size={11}
+                        size={moderateScale(11)}
                         color="#FFFFFF"
                       />
                     </View>
@@ -200,7 +201,7 @@ export default function Sidebar({
                 {`${user?.firstname} ${user?.lastname}`}
               </Text>
               <Text
-                style={{ marginTop: 2, color: colors.textSub }}
+                style={{ marginTop: verticalScale(2), color: colors.textSub }}
                 className="text-sm"
               >
                 {user?.phone}
@@ -214,7 +215,7 @@ export default function Sidebar({
           ></View>
 
           {/* Menu items */}
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: moderateScale(12) }}>
             {sidebarItems.map((item) => {
               const currentScreen = item.key === active;
               return (
@@ -227,9 +228,9 @@ export default function Sidebar({
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 8,
-                    paddingVertical: 8,
-                    paddingHorizontal: 12,
+                    gap: scale(8),
+                    paddingVertical: verticalScale(8),
+                    paddingHorizontal: scale(12),
                     borderRadius: 999,
                     backgroundColor: currentScreen
                       ? colors.surface
@@ -238,9 +239,9 @@ export default function Sidebar({
                 >
                   <View
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 18,
+                      width: moderateScale(40),
+                      height: moderateScale(40),
+                      borderRadius: moderateScale(18),
                       backgroundColor: colors.iconBg,
                       alignItems: "center",
                       justifyContent: "center",
@@ -248,13 +249,13 @@ export default function Sidebar({
                   >
                     <MaterialCommunityIcons
                       name={item.icon as any}
-                      size={24}
+                      size={moderateScale(24)}
                       color="#2F8F4E"
                     />
                   </View>
                   <Text
                     style={{
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       fontWeight: "500",
                       color: colors.text,
                     }}

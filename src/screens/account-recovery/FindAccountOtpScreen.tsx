@@ -19,6 +19,7 @@ import { setCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function FindAccountOtpScreen({
   route,
@@ -93,7 +94,7 @@ export function FindAccountOtpScreen({
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-5 pb-6">
-          <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.text, marginBottom: 32 }}>
+          <Text style={{ fontSize: moderateScale(18), fontWeight: 'bold', color: colors.text, marginBottom: verticalScale(32) }}>
             Enter the 4-digits code sent via SMS at {phone}
           </Text>
 
@@ -107,7 +108,7 @@ export function FindAccountOtpScreen({
           </View>
 
           <Pressable className="mb-6">
-            <Text style={{ fontSize: 13, textDecorationLine: 'underline', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(13), textDecorationLine: 'underline', color: colors.text }}>
               changed my mobile number?
             </Text>
           </Pressable>
@@ -126,18 +127,18 @@ export function FindAccountOtpScreen({
           <Pressable
             disabled={isResending}
             onPress={() => setShowResendModal(true)}
-            style={{ width: 99, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: scale(99), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(12), fontWeight: '500', color: colors.text }}>
               Resend code
             </Text>
           </Pressable>
 
           <Pressable
             disabled={isResending}
-            style={{ marginTop: 8, width: 178, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+            style={{ marginTop: verticalScale(8), width: scale(178), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(12), fontWeight: '500', color: colors.text }}>
               Resend code via WhatsApp
             </Text>
           </Pressable>
@@ -154,8 +155,8 @@ export function FindAccountOtpScreen({
           }}
         >
           <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
-            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: 'center' }}>
-              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', marginBottom: 12, color: colors.text }}>
+            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: moderateScale(16), padding: moderateScale(24), marginBottom: verticalScale(40), alignItems: 'center' }}>
+              <Text style={{ textAlign: 'center', fontSize: moderateScale(18), fontWeight: '500', marginBottom: verticalScale(12), color: colors.text }}>
                 Resend code to: {phone}
               </Text>
 
@@ -175,9 +176,9 @@ export function FindAccountOtpScreen({
                 <Pressable
                   disabled={isResending}
                   onPress={() => setShowResendModal(false)}
-                  style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+                  style={{ height: verticalScale(48), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
+                  <Text style={{ color: colors.text, fontSize: moderateScale(14) }}>Cancel</Text>
                 </Pressable>
               </View>
             </View>

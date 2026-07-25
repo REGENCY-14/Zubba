@@ -21,6 +21,7 @@ import { markRequestCompleted, setPaymentDate, setPaymentStatus, setTransactionR
 import { requestService } from "../../api/requestService";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { verticalScale, moderateScale } from "../../utils/scale";
 
 export function PaymentVerificationScreen({
   route,
@@ -84,14 +85,14 @@ export function PaymentVerificationScreen({
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 
-        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 10 }}>
-          <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, marginBottom: 16 }}>
-            {status === 'pending' ? 'Processing Payment' : 
-             status === 'success' ? 'Payment Successful!' : 
+        <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: verticalScale(10) }}>
+          <Text style={{ fontSize: moderateScale(24), fontWeight: '500', color: colors.text, marginBottom: verticalScale(16) }}>
+            {status === 'pending' ? 'Processing Payment' :
+             status === 'success' ? 'Payment Successful!' :
              'Payment Failed'}
           </Text>
 
-          <Text style={{ fontSize: 16, lineHeight: 24, color: colors.textSub, marginBottom: 32 }}>
+          <Text style={{ fontSize: moderateScale(16), lineHeight: moderateScale(24), color: colors.textSub, marginBottom: verticalScale(32) }}>
             {status === 'pending' ? (
               <>
                 We're confirming your payment of{' '}
@@ -108,23 +109,23 @@ export function PaymentVerificationScreen({
           </Text>
 
           {status === 'pending' && (
-            <View style={{ alignItems: 'center', marginVertical: 20 }}>
+            <View style={{ alignItems: 'center', marginVertical: verticalScale(20) }}>
               <ActivityIndicator size="large" color="#31973D" />
-              <Text style={{ marginTop: 16, color: colors.textSub }}>
+              <Text style={{ marginTop: verticalScale(16), color: colors.textSub }}>
                 Waiting for confirmation...
               </Text>
             </View>
           )}
 
           {status === 'success' && (
-            <View style={{ alignItems: 'center', marginVertical: 20 }}>
-              <MaterialCommunityIcons name="check-circle" size={64} color="#31973D" />
+            <View style={{ alignItems: 'center', marginVertical: verticalScale(20) }}>
+              <MaterialCommunityIcons name="check-circle" size={moderateScale(64)} color="#31973D" />
             </View>
           )}
 
           {status === 'failed' && (
-            <View style={{ alignItems: 'center', marginVertical: 20 }}>
-              <MaterialCommunityIcons name="close-circle" size={64} color="#EF4444" />
+            <View style={{ alignItems: 'center', marginVertical: verticalScale(20) }}>
+              <MaterialCommunityIcons name="close-circle" size={moderateScale(64)} color="#EF4444" />
               <Pressable
                 onPress={() => navigation.goBack()}
                 className="h-12 bg-[#31973D] rounded-full items-center justify-center w-full mt-4"

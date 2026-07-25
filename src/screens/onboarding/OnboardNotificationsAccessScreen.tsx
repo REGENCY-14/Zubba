@@ -6,6 +6,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale } from "../../utils/scale";
 
 export const OnboardNotificationsAccessScreen = ({
   navigation,
@@ -58,7 +59,7 @@ export const OnboardNotificationsAccessScreen = ({
         <View className="flex-1 items-center justify-center px-6">
           <Image
             source={sendNotification}
-            style={{ width: 250, height: 220, marginBottom: 24 }}
+            style={{ width: scale(250), height: verticalScale(220), marginBottom: verticalScale(24) }}
             resizeMode="contain"
           />
 

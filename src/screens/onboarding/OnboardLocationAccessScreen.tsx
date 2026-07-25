@@ -13,6 +13,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export const OnboardLocationAccessScreen = ({
   navigation,
@@ -50,14 +51,14 @@ export const OnboardLocationAccessScreen = ({
             >
               <MaterialCommunityIcons
                 name="close-circle"
-                size={32}
+                size={moderateScale(32)}
                 color={colors.bg}
               />
             </TouchableOpacity>
             <Image
               source={locationAccess}
               resizeMode="contain"
-              style={{ width: 250, height: 220, marginBottom: 24 }}
+              style={{ width: scale(250), height: verticalScale(220), marginBottom: verticalScale(24) }}
             />
             <Text style={{color: colors.text}} className="text-[24px] font-bold text-center mb-3">
               Allow location access

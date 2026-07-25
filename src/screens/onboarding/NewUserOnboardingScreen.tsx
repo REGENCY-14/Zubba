@@ -16,6 +16,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { userService } from "../../api/userService";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function NewUserOnboardingScreen({
   route,
@@ -57,21 +58,21 @@ export function NewUserOnboardingScreen({
         >
           <View className="flex-1 p-5">
             <View className="mt-6 gap-3 items-start">
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}>
+              <Text style={{ fontSize: moderateScale(20), fontWeight: 'bold', color: colors.text }}>
                 {shouldCollectPhone
                   ? "What's your phone number"
                   : "What's your email address"}
               </Text>
 
-              <Text style={{ fontSize: 12, color: colors.text, textDecorationLine: 'underline', marginTop: 8, marginBottom: 12 }}>
+              <Text style={{ fontSize: moderateScale(12), color: colors.text, textDecorationLine: 'underline', marginTop: verticalScale(8), marginBottom: verticalScale(12) }}>
                 {shouldCollectPhone
                   ? "Tip: This helps secure your account and makes sign-in easier."
                   : "Tip: This helps us find your account if you change your phone or lose your number."}
               </Text>
 
-              <View style={{ width: '100%', height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: colors.card }}>
+              <View style={{ width: '100%', height: verticalScale(48), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: scale(16), justifyContent: 'center', backgroundColor: colors.card }}>
                 <TextInput
-                  style={{ fontSize: 13, color: colors.text }}
+                  style={{ fontSize: moderateScale(13), color: colors.text }}
                   className="outline-none"
                   placeholder={
                     shouldCollectPhone
@@ -97,7 +98,7 @@ export function NewUserOnboardingScreen({
                 <MaterialCommunityIcons
                   name="arrow-left"
                   color={colors.text}
-                  size={24}
+                  size={moderateScale(24)}
                 />
               </Text>
             </Pressable>

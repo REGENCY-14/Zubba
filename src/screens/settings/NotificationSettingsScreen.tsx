@@ -7,6 +7,7 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { AppBottomNav } from "../../components";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const FREQUENCIES = ["Daily", "Weekly", "Monthly"];
 
@@ -150,7 +151,7 @@ export function NotificationSettingsScreen({
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 100 }}
+          contentContainerStyle={{ padding: moderateScale(16), gap: moderateScale(16), paddingBottom: verticalScale(100) }}
           onScrollBeginDrag={closeFrequency}
         >
           <View
@@ -197,7 +198,7 @@ export function NotificationSettingsScreen({
 
                   <MaterialCommunityIcons
                     name={frequencyOpen ? "chevron-up" : "chevron-down"}
-                    size={14}
+                    size={moderateScale(14)}
                     color={colors.text}
                   />
                 </View>
@@ -273,7 +274,7 @@ export function NotificationSettingsScreen({
                 position: "absolute",
                 top: anchor.top,
                 right: anchor.right,
-                width: 140,
+                width: scale(140),
                 borderColor: colors.border,
                 backgroundColor: isDark ? colors.card : colors.bg,
                 elevation: 8,

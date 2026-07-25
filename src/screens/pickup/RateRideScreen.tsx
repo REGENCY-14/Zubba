@@ -9,6 +9,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { api } from "../../api/axios";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const PROFESSIONALISM_LABELS: Record<number, string> = {
   1: "Bad", 2: "Good", 3: "Very good", 4: "Great", 5: "Amazing",
@@ -16,12 +17,12 @@ const PROFESSIONALISM_LABELS: Record<number, string> = {
 
 function StarRow({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
-    <View style={{ flexDirection: "row", gap: 8 }}>
+    <View style={{ flexDirection: "row", gap: scale(8) }}>
       {[1, 2, 3, 4, 5].map((n) => (
         <Pressable key={n} onPress={() => onChange(n)} hitSlop={6}>
           <MaterialCommunityIcons
             name={n <= value ? "star" : "star-outline"}
-            size={30}
+            size={moderateScale(30)}
             color={n <= value ? "#31973D" : "#BECAB9"}
           />
         </Pressable>
@@ -36,22 +37,22 @@ function NumberRow({ value, onChange, showLabels }: { value: number; onChange: (
       {[1, 2, 3, 4, 5].map((n) => {
         const selected = n === value;
         return (
-          <View key={n} style={{ alignItems: "center", gap: 10 }}>
+          <View key={n} style={{ alignItems: "center", gap: verticalScale(10) }}>
             <Pressable
               onPress={() => onChange(n)}
               style={{
-                width: 44, height: 44, borderRadius: 22, borderWidth: 1,
+                width: moderateScale(44), height: moderateScale(44), borderRadius: moderateScale(22), borderWidth: 1,
                 borderColor: selected ? "#31973D" : "#E5E7EB",
                 backgroundColor: selected ? "#31973D" : "transparent",
                 alignItems: "center", justifyContent: "center",
               }}
             >
-              <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 16, color: selected ? "#FFFFFF" : "#31973D" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: moderateScale(16), color: selected ? "#FFFFFF" : "#31973D" }}>
                 {n}
               </Text>
             </Pressable>
             {showLabels && (
-              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 10, color: "#9CA3AF", textAlign: "center" }}>
+              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: moderateScale(10), color: "#9CA3AF", textAlign: "center" }}>
                 {PROFESSIONALISM_LABELS[n]}
               </Text>
             )}
@@ -138,7 +139,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
             <MaterialCommunityIcons
               name="chevron-left"
               color={colors.text}
-              size={24}
+              size={moderateScale(24)}
             />
           </Pressable>
 
@@ -169,7 +170,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
             }}
             className="w-[72px] h-[72px] rounded-full bg-green-600 items-center justify-center"
           >
-            <MaterialCommunityIcons name="check" size={40} color="#fff" />
+            <MaterialCommunityIcons name="check" size={moderateScale(40)} color="#fff" />
           </View>
 
           <Text
@@ -232,7 +233,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
                         <MaterialCommunityIcons
                           name={active ? "star" : "star-outline"}
                           color={active ? "#31973D" : "#BECAB9"}
-                          size={32}
+                          size={moderateScale(32)}
                         />
                       </Pressable>
                     );
@@ -367,7 +368,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
               >
                 <MaterialCommunityIcons
                   name="close"
-                  size={16}
+                  size={moderateScale(16)}
                   color="#EF4444"
                 />
               </Pressable>

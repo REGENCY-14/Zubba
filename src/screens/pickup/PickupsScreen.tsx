@@ -19,6 +19,7 @@ import { customerService } from "../../api/customerService";
 import { setRequest } from "../../slices/request/requestSlice";
 import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type Pickup = {
   id: string;
@@ -88,8 +89,8 @@ function TabBar({
     <View
       style={{
         flexDirection: "row",
-        gap: 20,
-        paddingHorizontal: 20,
+        gap: scale(20),
+        paddingHorizontal: scale(20),
         backgroundColor: colors.surface,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
@@ -102,7 +103,7 @@ function TabBar({
             key={tab.key}
             onPress={() => onChange(tab.key)}
             style={{
-              paddingVertical: 12,
+              paddingVertical: verticalScale(12),
               borderBottomWidth: 2,
               borderBottomColor: isActive ? "#31973D" : "transparent",
             }}
@@ -110,7 +111,7 @@ function TabBar({
             <Text
               style={{
                 fontFamily: "Poppins",
-                fontSize: 14,
+                fontSize: moderateScale(14),
                 fontWeight: "500",
                 color: isActive ? colors.text : colors.textSub,
               }}
@@ -142,18 +143,18 @@ function PickupRow({
       style={{
         flexDirection: "row",
         alignItems: "center",
-        gap: 16,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        gap: scale(16),
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(12),
         borderBottomWidth: isLast ? 0 : 1,
         borderBottomColor: colors.borderLight,
       }}
     >
       <View
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
+          width: moderateScale(40),
+          height: moderateScale(40),
+          borderRadius: moderateScale(20),
           backgroundColor: colors.iconBg,
           alignItems: "center",
           justifyContent: "center",
@@ -162,30 +163,30 @@ function PickupRow({
       >
         <MaterialCommunityIcons
           name="truck-outline"
-          size={20}
+          size={moderateScale(20)}
           color={colors.iconColor}
         />
       </View>
 
-      <View style={{ flex: 1, gap: 2 }}>
+      <View style={{ flex: 1, gap: moderateScale(2) }}>
         <Text
           style={{
             fontFamily: "Poppins",
-            fontSize: 11,
+            fontSize: moderateScale(11),
             color: colors.textMuted,
           }}
         >
           {pickup.date} . {pickup.status}
         </Text>
         <Text
-          style={{ fontFamily: "Poppins", fontSize: 14, color: colors.text }}
+          style={{ fontFamily: "Poppins", fontSize: moderateScale(14), color: colors.text }}
         >
           {pickup.location}
         </Text>
         <Text
           style={{
             fontFamily: "Poppins",
-            fontSize: 14,
+            fontSize: moderateScale(14),
             fontWeight: "600",
             color: colors.text,
           }}
@@ -197,9 +198,9 @@ function PickupRow({
       <Pressable
         hitSlop={8}
         style={{
-          width: 32,
-          height: 32,
-          borderRadius: 16,
+          width: moderateScale(32),
+          height: moderateScale(32),
+          borderRadius: moderateScale(16),
           borderWidth: 1,
           borderColor: colors.border,
           alignItems: "center",
@@ -208,7 +209,7 @@ function PickupRow({
       >
         <MaterialCommunityIcons
           name="refresh"
-          size={18}
+          size={moderateScale(18)}
           color={colors.textSub}
         />
       </Pressable>
@@ -333,8 +334,8 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
         {/* Header */}
         <View
           style={{
-            height: 48,
-            paddingHorizontal: 16,
+            height: verticalScale(48),
+            paddingHorizontal: scale(16),
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
@@ -344,7 +345,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
           <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
             <MaterialCommunityIcons
               name="chevron-left"
-              size={24}
+              size={moderateScale(24)}
               color={colors.text}
             />
           </Pressable>
@@ -352,19 +353,19 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
             style={{
               fontFamily: "Poppins",
               fontWeight: "600",
-              fontSize: 16,
-              lineHeight: 24,
+              fontSize: moderateScale(16),
+              lineHeight: moderateScale(24),
               color: colors.text,
             }}
           >
             Pickups
           </Text>
-          <View style={{ width: 24 }} />
+          <View style={{ width: scale(24) }} />
         </View>
 
         <TabBar active={activeTab} onChange={setActiveTab} colors={colors} />
 
-        <View style={{ flex: 1, padding: 20 }}>
+        <View style={{ flex: 1, padding: moderateScale(20) }}>
           <View style={{ flex: 1 }}>
             <View
               pointerEvents="none"
@@ -377,17 +378,17 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
                 backgroundColor: colors.surface,
                 borderWidth: 1,
                 borderColor: colors.border,
-                borderRadius: 24,
+                borderRadius: moderateScale(24),
               }}
             />
             <SectionList
               sections={sections}
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
-              style={{ borderRadius: 24 }}
+              style={{ borderRadius: moderateScale(24) }}
               contentContainerStyle={{
-                paddingVertical: 11,
-                paddingBottom: 140,
+                paddingVertical: verticalScale(11),
+                paddingBottom: verticalScale(140),
               }}
               stickySectionHeadersEnabled={false}
               refreshControl={
@@ -405,12 +406,12 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
                   <Text
                     style={{
                       fontFamily: "Poppins",
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       fontWeight: "500",
                       color: colors.textSub,
-                      paddingHorizontal: 16,
-                      paddingTop: 12,
-                      paddingBottom: 4,
+                      paddingHorizontal: scale(16),
+                      paddingTop: verticalScale(12),
+                      paddingBottom: verticalScale(4),
                     }}
                   >
                     {section.title}
@@ -426,11 +427,11 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
                 />
               )}
               ListEmptyComponent={
-                <View style={{ padding: 32, alignItems: "center" }}>
+                <View style={{ padding: moderateScale(32), alignItems: "center" }}>
                   <Text
                     style={{
                       fontFamily: "Poppins",
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       color: colors.textSub,
                       textAlign: "center",
                     }}

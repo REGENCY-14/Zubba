@@ -23,6 +23,7 @@ import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
 import Sidebar from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
@@ -80,12 +81,12 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               top: 0,
               left: 0,
               right: 0,
-              height: 48,
+              height: verticalScale(48),
               backgroundColor: colors.bg,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 16,
+              paddingHorizontal: scale(16),
               zIndex: 10,
             }}
           >
@@ -95,7 +96,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             >
               <MaterialCommunityIcons
                 name="menu"
-                size={20}
+                size={moderateScale(20)}
                 color={colors.iconColor}
               />
             </Pressable>
@@ -103,7 +104,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             <View className="flex-row gap-2 items-center justify-center">
               {isPremium && (
                 <View className="flex-row gap-2 items-center justify-center">
-                  <Text style={{ fontSize: 12, color: colors.textSub }}>
+                  <Text style={{ fontSize: moderateScale(12), color: colors.textSub }}>
                     Bin Full?
                   </Text>
                   <AnimatedSwitch value={isBinFull} onChange={setIsBinFull} />
@@ -111,13 +112,13 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               )}
               <Pressable
                 style={{
-                  width: 40,
-                  height: 40,
-                  padding: 4,
+                  width: moderateScale(40),
+                  height: moderateScale(40),
+                  padding: moderateScale(4),
                   borderWidth: 1,
                   borderColor: colors.border,
                   backgroundColor: colors.iconBg,
-                  borderRadius: 8,
+                  borderRadius: moderateScale(8),
                   alignItems: "center",
                   justifyContent: "center",
                 }}
@@ -127,7 +128,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               >
                 <MaterialCommunityIcons
                   name="bell-outline"
-                  size={20}
+                  size={moderateScale(20)}
                   color={colors.iconColor}
                 />
               </Pressable>
@@ -138,23 +139,23 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             style={{
               backgroundColor: isDark ? colors.card : colors.bg,
               borderColor: colors.border,
-              gap: 12,
+              gap: moderateScale(12),
             }}
             className="absolute p-5 border rounded-3xl top-[58px] left-2.5 right-2.5 space-y-6"
           >
             {isPremium ? (
               <View
                 style={{
-                  gap: 12,
+                  gap: moderateScale(12),
                 }}
               >
                 <View
                   style={{
                     backgroundColor: colors.surface,
-                    padding: 10,
+                    padding: moderateScale(10),
                     borderRadius: 999,
                     flexDirection: "row",
-                    gap: 8,
+                    gap: scale(8),
                     justifyContent: "space-between",
                   }}
                 >
@@ -168,8 +169,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                         flex: 1,
                         alignItems: "center",
                         justifyContent: "center",
-                        paddingHorizontal: 12,
-                        paddingVertical: 10,
+                        paddingHorizontal: scale(12),
+                        paddingVertical: verticalScale(10),
                       },
                       activePill === 0
                         ? {
@@ -182,7 +183,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   >
                     <Text
                       style={{
-                        fontSize: 14,
+                        fontSize: moderateScale(14),
                         fontWeight: "600",
                         color: colors.text,
                       }}
@@ -200,8 +201,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                         flex: 1,
                         alignItems: "center",
                         justifyContent: "center",
-                        paddingHorizontal: 12,
-                        paddingVertical: 10,
+                        paddingHorizontal: scale(12),
+                        paddingVertical: verticalScale(10),
                       },
                       activePill === 1
                         ? {
@@ -214,7 +215,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   >
                     <Text
                       style={{
-                        fontSize: 14,
+                        fontSize: moderateScale(14),
                         fontWeight: "600",
                         color: colors.text,
                       }}
@@ -227,15 +228,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 {/* Search bar */}
                 <View
                   style={{
-                    height: 54,
+                    height: verticalScale(54),
                     backgroundColor: colors.card,
                     borderRadius: 999,
                     borderWidth: 1,
                     borderColor: colors.border,
-                    paddingHorizontal: 12,
+                    paddingHorizontal: scale(12),
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 8,
+                    gap: scale(8),
                   }}
                 >
                   <Pressable
@@ -248,14 +249,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   >
                     <MaterialCommunityIcons
                       name="magnify"
-                      size={24}
+                      size={moderateScale(24)}
                       color={colors.iconColor}
                     />
                   </Pressable>
                   <TextInput
                     style={{
                       flex: 1,
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       color: colors.text,
                       padding: 0,
                     }}
@@ -275,7 +276,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     >
                       <MaterialCommunityIcons
                         name="close-circle"
-                        size={22}
+                        size={moderateScale(22)}
                         color="#EF4444"
                       />
                     </Pressable>
@@ -289,12 +290,12 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                         <View
                           key={index}
                           style={{
-                            marginLeft: index === 0 ? 0 : -8,
+                            marginLeft: index === 0 ? 0 : -scale(8),
                             zIndex: index === 0 ? 1 : 2,
                           }}
                         >
                           <TextAvatar
-                            size={24}
+                            size={moderateScale(24)}
                             bgColor={index == 1 ? "#FFE088" : "#90FA96"}
                             name={driver}
                           />
@@ -303,7 +304,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     </View>
                     <Text
                       style={{
-                        fontSize: 14,
+                        fontSize: moderateScale(14),
                         fontWeight: "500",
                         color: colors.textSub,
                       }}
@@ -322,15 +323,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               /* Non-premium search bar */
               <View
                 style={{
-                  height: 54,
+                  height: verticalScale(54),
                   backgroundColor: isDark ? colors.card : colors.bg,
                   borderRadius: 999,
                   borderWidth: 1,
                   borderColor: colors.border,
-                  paddingHorizontal: 12,
+                  paddingHorizontal: scale(12),
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: 8,
+                  gap: scale(8),
                 }}
               >
                 <Pressable
@@ -343,14 +344,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 >
                   <MaterialCommunityIcons
                     name="magnify"
-                    size={24}
+                    size={moderateScale(24)}
                     color={colors.iconColor}
                   />
                 </Pressable>
                 <TextInput
                   style={{
                     flex: 1,
-                    fontSize: 14,
+                    fontSize: moderateScale(14),
                     color: colors.text,
                     padding: 0,
                   }}
@@ -366,7 +367,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   >
                     <MaterialCommunityIcons
                       name="close-circle"
-                      size={22}
+                      size={moderateScale(22)}
                       color="#EF4444"
                     />
                   </Pressable>
@@ -386,22 +387,22 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               <View
                 style={{
                   flexDirection: "row",
-                  gap: 8,
-                  marginBottom: 16,
+                  gap: scale(8),
+                  marginBottom: verticalScale(16),
                   alignItems: "center",
                   backgroundColor: colors.card,
                   borderWidth: 1,
                   borderColor: colors.border,
                   borderRadius: 999,
-                  padding: 12,
+                  padding: moderateScale(12),
                 }}
               >
                 <View className="w-10 h-10 bg-[#419E6A1A] rounded-full items-center justify-center">
                   <Image
                     source={tricycle}
                     style={{
-                      width: 30,
-                      height: 30,
+                      width: moderateScale(30),
+                      height: moderateScale(30),
                       transform: [{ scaleX: -1 }],
                     }}
                     resizeMode="contain"
@@ -411,7 +412,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <View className="flex-1">
                   <Text
                     style={{
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       fontWeight: "600",
                       color: colors.text,
                     }}
@@ -420,7 +421,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: moderateScale(12),
                       color: colors.textSub,
                       fontWeight: isPremium ? "700" : "400",
                     }}
@@ -440,22 +441,22 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               <View
                 style={{
                   flexDirection: "row",
-                  gap: 8,
-                  marginBottom: 16,
+                  gap: scale(8),
+                  marginBottom: verticalScale(16),
                   alignItems: "center",
                   backgroundColor: colors.card,
                   borderWidth: 1,
                   borderColor: "#FFE088",
                   borderRadius: 999,
-                  padding: 12,
+                  padding: moderateScale(12),
                 }}
               >
                 <View className="w-10 h-10 bg-[##EFF5FF] rounded-full items-center justify-center">
                   <Image
                     source={isPremium ? futurePlan : premium}
                     style={{
-                      width: 20,
-                      height: 20,
+                      width: moderateScale(20),
+                      height: moderateScale(20),
                       transform: [{ scaleX: -1 }],
                     }}
                     resizeMode="contain"
@@ -465,7 +466,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <View className="flex-1">
                   <Text
                     style={{
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       fontWeight: "600",
                       color: colors.text,
                     }}
@@ -474,7 +475,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: moderateScale(12),
                       color: colors.textSub,
                       fontWeight: isPremium ? "700" : "400",
                     }}
@@ -505,7 +506,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 >
                   <MaterialCommunityIcons
                     name="lock"
-                    size={16}
+                    size={moderateScale(16)}
                     color="#574500"
                   />
                   <Text className="text-[#574500] italic">

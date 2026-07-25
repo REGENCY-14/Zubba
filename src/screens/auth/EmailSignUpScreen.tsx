@@ -18,6 +18,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useGoogleLogin } from "../../services/googleAuth";
 import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const googleIcon = require("../../../assets/Google icon.png");
@@ -67,9 +68,9 @@ export function EmailSignUpScreen({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={{ flex: 1, padding: 20, paddingBottom: 24 }}>
+          <View style={{ flex: 1, padding: moderateScale(20), paddingBottom: verticalScale(24) }}>
             <Text
-              style={{ fontSize: 15, color: colors.text, marginBottom: 12 }}
+              style={{ fontSize: moderateScale(15), color: colors.text, marginBottom: verticalScale(12) }}
             >
               What's your email address
             </Text>
@@ -78,18 +79,18 @@ export function EmailSignUpScreen({
               style={{
                 borderWidth: 1,
                 borderRadius: 9999,
-                paddingHorizontal: 16,
-                height: 48,
+                paddingHorizontal: scale(16),
+                height: verticalScale(48),
                 justifyContent: "center",
                 backgroundColor: colors.card,
-                marginBottom: 16,
+                marginBottom: verticalScale(16),
                 borderColor: isEmailValid
                   ? "rgba(52,168,83,0.2)"
                   : colors.border,
               }}
             >
               <TextInput
-                style={{ color: colors.text, fontSize: 13 }}
+                style={{ color: colors.text, fontSize: moderateScale(13) }}
                 placeholder="Enter your email"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="email-address"
@@ -102,18 +103,18 @@ export function EmailSignUpScreen({
 
             <Pressable
               style={{
-                height: 48,
+                height: verticalScale(48),
                 borderRadius: 9999,
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: 16,
+                marginBottom: verticalScale(16),
                 backgroundColor: "#34A853",
                 opacity: isEmailValid && !registerMutation.isPending ? 1 : 0.5,
               }}
               disabled={!isEmailValid || registerMutation.isPending}
               onPress={handleContinue}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+              <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14) }}>
                 {registerMutation.isPending ? "Please wait..." : "Continue"}
               </Text>
             </Pressable>
@@ -122,7 +123,7 @@ export function EmailSignUpScreen({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginVertical: 16,
+                marginVertical: verticalScale(16),
               }}
             >
               <View
@@ -130,8 +131,8 @@ export function EmailSignUpScreen({
               />
               <Text
                 style={{
-                  marginHorizontal: 16,
-                  fontSize: 12,
+                  marginHorizontal: scale(16),
+                  fontSize: moderateScale(12),
                   color: colors.textSub,
                 }}
               >
@@ -147,23 +148,23 @@ export function EmailSignUpScreen({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 8,
+                gap: scale(8),
                 justifyContent: "center",
                 borderWidth: 1,
                 borderColor: colors.border,
                 borderRadius: 9999,
-                height: 48,
+                height: verticalScale(48),
                 backgroundColor: colors.card,
-                marginBottom: 12,
+                marginBottom: verticalScale(12),
               }}
             >
               <Image
                 source={googleIcon}
-                style={{ width: 16, height: 16 }}
+                style={{ width: moderateScale(16), height: moderateScale(16) }}
                 resizeMode="contain"
               />
               <Text
-                style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}
+                style={{ fontSize: moderateScale(14), color: colors.text, fontWeight: "500" }}
               >
                 Continue with Google
               </Text>
@@ -177,22 +178,22 @@ export function EmailSignUpScreen({
                 borderWidth: 1,
                 borderColor: colors.border,
                 borderRadius: 9999,
-                height: 48,
+                height: verticalScale(48),
                 backgroundColor: colors.card,
-                marginBottom: 20,
+                marginBottom: verticalScale(20),
               }}
               onPress={() => navigation.navigate("SignUp")}
             >
               <MaterialCommunityIcons
                 name="phone"
-                size={16}
+                size={moderateScale(16)}
                 color={colors.text}
               />
               <Text
                 style={{
-                  marginLeft: 8,
+                  marginLeft: scale(8),
                   color: colors.text,
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                   fontWeight: "500",
                 }}
               >
@@ -204,7 +205,7 @@ export function EmailSignUpScreen({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginVertical: 16,
+                marginVertical: verticalScale(16),
               }}
             >
               <View
@@ -212,8 +213,8 @@ export function EmailSignUpScreen({
               />
               <Text
                 style={{
-                  marginHorizontal: 16,
-                  fontSize: 12,
+                  marginHorizontal: scale(16),
+                  fontSize: moderateScale(12),
                   color: colors.textSub,
                 }}
               >
@@ -229,12 +230,12 @@ export function EmailSignUpScreen({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 8,
+                gap: scale(8),
               }}
             >
               <MaterialCommunityIcons
                 name="magnify"
-                size={14}
+                size={moderateScale(14)}
                 color={colors.iconColor}
               />
               <Pressable
@@ -243,7 +244,7 @@ export function EmailSignUpScreen({
                 <Text
                   style={{
                     textAlign: "center",
-                    fontSize: 12,
+                    fontSize: moderateScale(12),
                     color: colors.text,
                   }}
                 >
@@ -253,7 +254,7 @@ export function EmailSignUpScreen({
             </View>
 
             <Text
-              style={{ fontSize: 11, color: colors.textSub, marginTop: 16 }}
+              style={{ fontSize: moderateScale(11), color: colors.textSub, marginTop: verticalScale(16) }}
             >
               By continuing, you agree to calls including autodialler, WhatsApp
               or texts from Zubba and its affiliates.

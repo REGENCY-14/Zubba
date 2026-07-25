@@ -8,6 +8,7 @@ import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 const ghanaFlag = require('../../../assets/ghana-flag.png');
 
@@ -59,13 +60,13 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
       <View className="flex-1">
         <CustomAppBar title="Update Details" navigation={navigation} />
 
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 128, gap: 24 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: scale(12), paddingTop: verticalScale(16), paddingBottom: verticalScale(128), gap: moderateScale(24) }} showsVerticalScrollIndicator={false}>
           <View className="items-center px-[18px] py-6 gap-4">
             <View
               className="w-[54px] h-[54px] rounded-full items-center justify-center"
               style={{ backgroundColor: 'rgba(65, 158, 106, 0.1)' }}
             >
-              <MaterialCommunityIcons name="cellphone-arrow-down" size={24} color="#0D631B" />
+              <MaterialCommunityIcons name="cellphone-arrow-down" size={moderateScale(24)} color="#0D631B" />
             </View>
             <Text className="text-sm leading-5 text-[#64748A] text-center" style={{ color: colors.text }}>
               Keep your account safe and accessible by ensuring your contact information is current.
@@ -79,7 +80,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
               className={`flex-row items-center gap-1 px-2 py-[6px] rounded-full`}
               onPress={() => setSelectedTab('number')}
             >
-              <MaterialCommunityIcons name="phone" size={16} color={selectedTab === 'number' ? '#64748A' : '#94A3B8'} />
+              <MaterialCommunityIcons name="phone" size={moderateScale(16)} color={selectedTab === 'number' ? '#64748A' : '#94A3B8'} />
               <Text className={`text-xs leading-4`} style={{ color: colors.textSub }}>Update number</Text>
             </Pressable>
 
@@ -88,7 +89,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
               className={`flex-row items-center gap-1 px-2 py-[6px] rounded-full`}
               onPress={() => setSelectedTab('email')}
             >
-              <MaterialCommunityIcons name="email-outline" size={16} color={selectedTab === 'email' ? '#64748A' : '#94A3B8'} />
+              <MaterialCommunityIcons name="email-outline" size={moderateScale(16)} color={selectedTab === 'email' ? '#64748A' : '#94A3B8'} />
               <Text className="text-xs leading-4" style={{ color: colors.textSub }}>Update email</Text>
             </Pressable>
           </View>
@@ -103,9 +104,9 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                   {!isEmailMode ? (
                     <View style={{borderColor: colors.border}} className="h-12 p-[10px] gap-2 border rounded-full flex-row items-center justify-between">
                       <View className="rounded-full overflow-hidden">
-                        <Image source={ghanaFlag} style={{ width: 28, height: 20 }} resizeMode="contain" />
+                        <Image source={ghanaFlag} style={{ width: scale(28), height: verticalScale(20) }} resizeMode="contain" />
                       </View>
-                      <MaterialCommunityIcons name="menu-down" size={24} color={colors.text} />
+                      <MaterialCommunityIcons name="menu-down" size={moderateScale(24)} color={colors.text} />
                     </View>
                   ) : null}
 
@@ -151,7 +152,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                     className="w-8 h-8 rounded-full items-center justify-center"
                     style={{ backgroundColor: 'rgba(0, 107, 35, 0.1)' }}
                   >
-                    <MaterialCommunityIcons name="information" size={18} color="#31973D" />
+                    <MaterialCommunityIcons name="information" size={moderateScale(18)} color="#31973D" />
                   </View>
                   <Text className="flex-1 text-sm leading-[21px] text-[#64748A]" style={{ color: colors.textSub }}>
                     {contactNotice}

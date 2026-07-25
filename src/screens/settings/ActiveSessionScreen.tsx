@@ -7,6 +7,7 @@ import { AppBottomNav } from "../../components";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type DeviceCardProps = {
   iconName: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -33,8 +34,8 @@ function DeviceCard({
     <View
       style={{
         backgroundColor: isCurrent ? "#31973D" : "transparent",
-        borderRadius: 24,
-        paddingLeft: isCurrent ? 4 : 0,
+        borderRadius: moderateScale(24),
+        paddingLeft: isCurrent ? scale(4) : 0,
       }}
     >
       <View
@@ -45,8 +46,8 @@ function DeviceCard({
           backgroundColor: colors.card,
           borderWidth: 1,
           borderColor: colors.border,
-          borderRadius: 22,
-          padding: 16,
+          borderRadius: moderateScale(22),
+          padding: moderateScale(16),
         }}
       >
         <View
@@ -54,23 +55,23 @@ function DeviceCard({
             flexDirection: "row",
             alignItems: "flex-start",
             flex: 1,
-            marginRight: 16,
+            marginRight: scale(16),
           }}
         >
           <View
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
+              width: moderateScale(40),
+              height: moderateScale(40),
+              borderRadius: moderateScale(10),
               backgroundColor: colors.iconBg,
               alignItems: "center",
               justifyContent: "center",
-              marginRight: 16,
+              marginRight: scale(16),
             }}
           >
             <MaterialCommunityIcons
               name={iconName}
-              size={24}
+              size={moderateScale(24)}
               color={colors.iconColor}
             />
           </View>
@@ -78,8 +79,8 @@ function DeviceCard({
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                fontSize: 14,
-                lineHeight: 20,
+                fontSize: moderateScale(14),
+                lineHeight: moderateScale(20),
                 fontWeight: "600",
                 color: colors.text,
               }}
@@ -89,10 +90,10 @@ function DeviceCard({
 
             <Text
               style={{
-                fontSize: 12,
-                lineHeight: 16,
+                fontSize: moderateScale(12),
+                lineHeight: moderateScale(16),
                 color: colors.textSub,
-                marginTop: 2,
+                marginTop: verticalScale(2),
               }}
             >
               {location}
@@ -100,10 +101,10 @@ function DeviceCard({
 
             <Text
               style={{
-                fontSize: 10,
-                lineHeight: 16,
+                fontSize: moderateScale(10),
+                lineHeight: moderateScale(16),
                 color: "#31973D",
-                marginTop: 4,
+                marginTop: verticalScale(4),
               }}
             >
               {status}
@@ -113,12 +114,12 @@ function DeviceCard({
 
         <View
           style={{
-            minWidth: 69,
-            height: 32,
-            borderRadius: 16,
+            minWidth: scale(69),
+            height: verticalScale(32),
+            borderRadius: moderateScale(16),
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 12,
+            paddingHorizontal: scale(12),
             backgroundColor:
               actionTone === "current" ? colors.iconBg : colors.card,
             borderWidth: 1,
@@ -127,8 +128,8 @@ function DeviceCard({
         >
           <Text
             style={{
-              fontSize: 13,
-              lineHeight: 20,
+              fontSize: moderateScale(13),
+              lineHeight: moderateScale(20),
               fontWeight: "bold",
               color: actionTone === "current" ? "#31973D" : "#FF383C",
             }}
@@ -151,18 +152,18 @@ function InfoCard({
       style={{
         flexDirection: "row",
         alignItems: "flex-start",
-        gap: 16,
-        borderRadius: 16,
+        gap: moderateScale(16),
+        borderRadius: moderateScale(16),
         borderWidth: 1,
         borderColor: colors.border,
         backgroundColor: colors.card,
-        padding: 16,
+        padding: moderateScale(16),
       }}
     >
       <View
         style={{
-          width: 33,
-          height: 33,
+          width: moderateScale(33),
+          height: moderateScale(33),
           borderRadius: 999,
           alignItems: "center",
           justifyContent: "center",
@@ -171,12 +172,12 @@ function InfoCard({
       >
         <MaterialCommunityIcons
           name="information-outline"
-          size={20}
+          size={moderateScale(20)}
           color="#31973D"
         />
       </View>
       <Text
-        style={{ flex: 1, fontSize: 14, lineHeight: 21, color: colors.textSub }}
+        style={{ flex: 1, fontSize: moderateScale(14), lineHeight: moderateScale(21), color: colors.textSub }}
       >
         If you notice a device you don&apos;t recognize, revoke its access
         immediately and change your password.
@@ -200,26 +201,26 @@ export function ActiveSessionScreen({
 
         <ScrollView
           contentContainerStyle={{
-            paddingHorizontal: 12,
-            paddingTop: 16,
-            paddingBottom: 148,
-            gap: 24,
+            paddingHorizontal: scale(12),
+            paddingTop: verticalScale(16),
+            paddingBottom: verticalScale(148),
+            gap: moderateScale(24),
           }}
           showsVerticalScrollIndicator={false}
         >
           <View
             style={{
               alignItems: "center",
-              paddingHorizontal: 18,
-              paddingVertical: 24,
-              gap: 16,
+              paddingHorizontal: scale(18),
+              paddingVertical: verticalScale(24),
+              gap: moderateScale(16),
             }}
           >
             <View
               style={{
-                width: 54,
-                height: 54,
-                borderRadius: 27,
+                width: moderateScale(54),
+                height: moderateScale(54),
+                borderRadius: moderateScale(27),
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: colors.iconBg,
@@ -227,14 +228,14 @@ export function ActiveSessionScreen({
             >
               <MaterialCommunityIcons
                 name="shield-half-full"
-                size={28}
+                size={moderateScale(28)}
                 color="#006B23"
               />
             </View>
             <Text
               style={{
-                fontSize: 14,
-                lineHeight: 20,
+                fontSize: moderateScale(14),
+                lineHeight: moderateScale(20),
                 color: colors.textSub,
                 textAlign: "center",
               }}
@@ -249,13 +250,13 @@ export function ActiveSessionScreen({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 4,
+              paddingHorizontal: scale(4),
             }}
           >
             <Text
               style={{
-                fontSize: 14,
-                lineHeight: 17,
+                fontSize: moderateScale(14),
+                lineHeight: moderateScale(17),
                 fontWeight: "500",
                 color: colors.text,
                 textTransform: "uppercase",
@@ -268,11 +269,11 @@ export function ActiveSessionScreen({
               style={{
                 backgroundColor: "#31973D",
                 borderRadius: 999,
-                paddingHorizontal: 12,
-                paddingVertical: 4,
+                paddingHorizontal: scale(12),
+                paddingVertical: verticalScale(4),
               }}
             >
-              <Text style={{ color: "#F7FFF1", fontSize: 12, lineHeight: 14 }}>
+              <Text style={{ color: "#F7FFF1", fontSize: moderateScale(12), lineHeight: moderateScale(14) }}>
                 3 Active
               </Text>
             </View>
@@ -283,10 +284,10 @@ export function ActiveSessionScreen({
               backgroundColor: isDark ? colors.surface : colors.bg,
               borderWidth: 1,
               borderColor: colors.border,
-              borderRadius: 12,
+              borderRadius: moderateScale(12),
               overflow: "hidden",
-              padding: 16,
-              gap: 16,
+              padding: moderateScale(16),
+              gap: moderateScale(16),
             }}
           >
             <DeviceCard
@@ -317,18 +318,18 @@ export function ActiveSessionScreen({
             />
           </View>
 
-          <View style={{ paddingTop: 4 }}>
+          <View style={{ paddingTop: verticalScale(4) }}>
             <Pressable
               style={{
-                height: 48,
-                borderRadius: 12,
+                height: verticalScale(48),
+                borderRadius: moderateScale(12),
                 backgroundColor: "#31973D",
                 alignItems: "center",
                 justifyContent: "center",
               }}
               onPress={() => navigation.navigate("Settings")}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 14, lineHeight: 20 }}>
+              <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14), lineHeight: moderateScale(20) }}>
                 Back to Settings
               </Text>
             </Pressable>

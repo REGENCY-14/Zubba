@@ -17,6 +17,7 @@ import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { toast } from "../../hooks/toast";
 import Sidebar from "../../components/home/Sidebar";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
@@ -134,9 +135,9 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
       style={{
         flexDirection: "row",
         alignItems: "center",
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        gap: 16,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(16),
+        gap: scale(16),
         borderBottomWidth: isLast ? 0 : 1,
         borderBottomColor: colors.borderLight,
       }}
@@ -144,8 +145,8 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
       {/* Icon */}
       <View
         style={{
-          width: 40,
-          height: 40,
+          width: moderateScale(40),
+          height: moderateScale(40),
           borderRadius: 9999,
           backgroundColor: tx.iconBg,
           alignItems: "center",
@@ -154,28 +155,28 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
       >
         <MaterialCommunityIcons
           name={tx.iconName}
-          size={20}
+          size={moderateScale(20)}
           color={tx.iconColor}
         />
       </View>
-      <View style={{ flex: 1, gap: 4 }}>
+      <View style={{ flex: 1, gap: moderateScale(4) }}>
         <Text
           style={{
-            fontSize: 14,
+            fontSize: moderateScale(14),
             fontWeight: "500",
             letterSpacing: 0.28,
             color: colors.textMuted,
-            lineHeight: 17,
+            lineHeight: moderateScale(17),
           }}
         >
           {tx.title}
         </Text>
         <Text
           style={{
-            fontSize: 13,
+            fontSize: moderateScale(13),
             fontWeight: "400",
             color: "#ACB5BB",
-            lineHeight: 21,
+            lineHeight: moderateScale(21),
           }}
         >
           {tx.date}
@@ -183,26 +184,26 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
       </View>
 
       {/* Amount + status */}
-      <View style={{ alignItems: "flex-end", gap: 4 }}>
+      <View style={{ alignItems: "flex-end", gap: moderateScale(4) }}>
         <Text
           style={{
-            fontSize: 14,
+            fontSize: moderateScale(14),
             fontWeight: "600",
             letterSpacing: 0.28,
             color: tx.amountColor,
-            lineHeight: 17,
+            lineHeight: moderateScale(17),
           }}
         >
           {tx.amount}
         </Text>
         <Text
           style={{
-            fontSize: 10,
+            fontSize: moderateScale(10),
             fontWeight: "600",
             letterSpacing: -0.5,
             textTransform: "uppercase",
             color: STATUS_COLOR[tx.status],
-            lineHeight: 15,
+            lineHeight: moderateScale(15),
           }}
         >
           {tx.status}
@@ -255,11 +256,11 @@ export function ZubbaWalletScreen({
       {/* Header */}
       <View
         style={{
-          height: 48,
+          height: verticalScale(48),
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 16,
+          paddingHorizontal: scale(16),
           backgroundColor: colors.bg,
         }}
       >
@@ -269,37 +270,37 @@ export function ZubbaWalletScreen({
         >
           <MaterialCommunityIcons
             name="menu"
-            size={20}
+            size={moderateScale(20)}
             color={colors.iconColor}
           />
         </Pressable>
 
-        <View style={{ alignItems: "center", gap: 1 }}>
+        <View style={{ alignItems: "center", gap: moderateScale(1) }}>
           <Image
             source={zubbaText}
-            style={{ width: 38, height: 17 }}
+            style={{ width: scale(38), height: verticalScale(17) }}
             resizeMode="contain"
             tintColor="#31973D"
           />
           <Text
             style={{
-              fontSize: 12,
+              fontSize: moderateScale(12),
               fontWeight: "600",
               letterSpacing: 0.6,
               textTransform: "uppercase",
               color: colors.text,
-              lineHeight: 14,
+              lineHeight: moderateScale(14),
             }}
           >
             Account
           </Text>
         </View>
-        <View style={{ width: 32 }} />
+        <View style={{ width: scale(32) }} />
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 12, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: moderateScale(12), paddingBottom: verticalScale(40) }}
       >
         {/* Main card container */}
         <View
@@ -307,9 +308,9 @@ export function ZubbaWalletScreen({
             backgroundColor: colors.card,
             borderWidth: 1,
             borderColor: colors.border,
-            borderRadius: 35,
-            paddingVertical: 11,
-            gap: 24,
+            borderRadius: moderateScale(35),
+            paddingVertical: verticalScale(11),
+            gap: moderateScale(24),
             alignItems: "center",
           }}
         >
@@ -320,9 +321,9 @@ export function ZubbaWalletScreen({
               backgroundColor: colors.surface,
               borderWidth: 1,
               borderColor: colors.border,
-              borderRadius: 24,
-              padding: 24,
-              gap: 12,
+              borderRadius: moderateScale(24),
+              padding: moderateScale(24),
+              gap: moderateScale(12),
             }}
           >
             {/* Top row: balance + premium badge */}
@@ -333,16 +334,16 @@ export function ZubbaWalletScreen({
                 alignItems: "flex-start",
               }}
             >
-              <View style={{ gap: 4, flex: 1 }}>
+              <View style={{ gap: moderateScale(4), flex: 1 }}>
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: moderateScale(12),
                     fontWeight: "500",
                     letterSpacing: 0.6,
                     textTransform: "uppercase",
                     color: colors.text,
                     opacity: 0.9,
-                    lineHeight: 14,
+                    lineHeight: moderateScale(14),
                   }}
                 >
                   Available Balance
@@ -352,15 +353,15 @@ export function ZubbaWalletScreen({
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 10,
+                    gap: scale(10),
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 32,
+                      fontSize: moderateScale(32),
                       fontWeight: "600",
                       color: colors.text,
-                      lineHeight: 38,
+                      lineHeight: moderateScale(38),
                     }}
                   >
                     {balanceVisible ? "GHS 500.00" : "GHS XXXXX"}
@@ -368,7 +369,7 @@ export function ZubbaWalletScreen({
                   <Pressable onPress={() => setBalanceVisible((v) => !v)}>
                     <MaterialCommunityIcons
                       name={balanceVisible ? "eye-outline" : "eye-off-outline"}
-                      size={16}
+                      size={moderateScale(16)}
                       color={colors.textSub}
                     />
                   </Pressable>
@@ -381,27 +382,27 @@ export function ZubbaWalletScreen({
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 4,
+                    gap: scale(4),
                     backgroundColor: "#FFE088",
-                    borderRadius: 39,
-                    paddingHorizontal: 12,
-                    paddingVertical: 3,
+                    borderRadius: moderateScale(39),
+                    paddingHorizontal: scale(12),
+                    paddingVertical: verticalScale(3),
                     borderWidth: 1,
                     borderColor: "#D4AF37",
                   }}
                 >
                   <MaterialCommunityIcons
                     name="star"
-                    size={11}
+                    size={moderateScale(11)}
                     color="#574500"
                   />
                   <Text
                     style={{
-                      fontSize: 10,
+                      fontSize: moderateScale(10),
                       fontWeight: "400",
                       letterSpacing: 0.48,
                       color: "#574500",
-                      lineHeight: 14,
+                      lineHeight: moderateScale(14),
                     }}
                   >
                     Premium
@@ -415,17 +416,17 @@ export function ZubbaWalletScreen({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingHorizontal: 16,
-                height: 40,
-                borderRadius: 8,
-                gap: 8,
+                paddingHorizontal: scale(16),
+                height: verticalScale(40),
+                borderRadius: moderateScale(8),
+                gap: scale(8),
               }}
             >
-              <MaterialCommunityIcons name="leaf" size={17} color="#31973D" />
+              <MaterialCommunityIcons name="leaf" size={moderateScale(17)} color="#31973D" />
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: moderateScale(12),
                     fontWeight: "500",
                     letterSpacing: 0.48,
                     color: colors.text,
@@ -438,22 +439,22 @@ export function ZubbaWalletScreen({
                   style={{
                     flexDirection: "row",
                     alignItems: "baseline",
-                    gap: 4,
+                    gap: scale(4),
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: moderateScale(20),
                       fontWeight: "400",
                       color: "#31973D",
-                      lineHeight: 28,
+                      lineHeight: moderateScale(28),
                     }}
                   >
                     {ecoPoints}
                   </Text>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: moderateScale(12),
                       fontWeight: "400",
                       color: "#31973D",
                       opacity: 0.8,
@@ -466,7 +467,7 @@ export function ZubbaWalletScreen({
 
               <MaterialCommunityIcons
                 name="chevron-right"
-                size={20}
+                size={moderateScale(20)}
                 color="#ACB5BB"
                 opacity={0.6}
               />
@@ -474,19 +475,19 @@ export function ZubbaWalletScreen({
           </View>
 
           {/* Action buttons */}
-          <View style={{ width: "95%", flexDirection: "row", gap: 10 }}>
+          <View style={{ width: "95%", flexDirection: "row", gap: scale(10) }}>
             <Pressable
               style={{
                 flex: 1,
-                height: 91,
+                height: verticalScale(91),
                 backgroundColor:
                   activeSheet === "withdraw" ? "#FFFFFF" : "#31973D",
                 borderWidth: activeSheet === "withdraw" ? 1 : 0,
                 borderColor: "#E2E8F0",
-                borderRadius: 24,
+                borderRadius: moderateScale(24),
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 7,
+                gap: moderateScale(7),
               }}
               onPress={() => {
                 setActiveSheet("topup");
@@ -495,12 +496,12 @@ export function ZubbaWalletScreen({
             >
               <MaterialCommunityIcons
                 name="plus-circle-outline"
-                size={20}
+                size={moderateScale(20)}
                 color={activeSheet === "withdraw" ? "#31973D" : "#FFFFFF"}
               />
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                   fontWeight: "500",
                   color: activeSheet === "withdraw" ? "#31973D" : "#FFFFFF",
                   letterSpacing: 0.28,
@@ -513,15 +514,15 @@ export function ZubbaWalletScreen({
             <Pressable
               style={{
                 flex: 1,
-                height: 91,
+                height: verticalScale(91),
                 backgroundColor:
                   activeSheet === "withdraw" ? "#31973D" : "#FFFFFF",
                 borderWidth: activeSheet === "withdraw" ? 0 : 1,
                 borderColor: "#E2E8F0",
-                borderRadius: 24,
+                borderRadius: moderateScale(24),
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 7,
+                gap: moderateScale(7),
               }}
               onPress={() => {
                 setActiveSheet("withdraw");
@@ -530,12 +531,12 @@ export function ZubbaWalletScreen({
             >
               <MaterialCommunityIcons
                 name="send-outline"
-                size={18}
+                size={moderateScale(18)}
                 color={activeSheet === "withdraw" ? "#FFFFFF" : "#31973D"}
               />
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                   fontWeight: "500",
                   color: activeSheet === "withdraw" ? "#FFFFFF" : "#31973D",
                   letterSpacing: 0.28,
@@ -547,7 +548,7 @@ export function ZubbaWalletScreen({
           </View>
 
           {/* Recent Activity */}
-          <View style={{ width: "95%", gap: 16 }}>
+          <View style={{ width: "95%", gap: moderateScale(16) }}>
             <View
               style={{
                 flexDirection: "row",
@@ -557,17 +558,17 @@ export function ZubbaWalletScreen({
             >
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: moderateScale(20),
                   fontWeight: "500",
                   color: colors.text,
-                  lineHeight: 28,
+                  lineHeight: moderateScale(28),
                 }}
               >
                 Recent Activity
               </Text>
               <MaterialCommunityIcons
                 name="tune-variant"
-                size={18}
+                size={moderateScale(18)}
                 color="#ACB5BB"
               />
             </View>
@@ -580,7 +581,7 @@ export function ZubbaWalletScreen({
                     backgroundColor: colors.bg,
                     borderWidth: 1,
                     borderColor: colors.border,
-                    borderRadius: 24,
+                    borderRadius: moderateScale(24),
                     overflow: "hidden",
                   }}
                 >
@@ -599,13 +600,13 @@ export function ZubbaWalletScreen({
                     flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
-                    paddingVertical: 8,
+                    paddingVertical: verticalScale(8),
                   }}
                   onPress={() => navigation.navigate("Transactions")}
                 >
                   <Text
                     style={{
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       fontWeight: "500",
                       color: colors.textSub,
                       letterSpacing: 0.28,
@@ -622,46 +623,46 @@ export function ZubbaWalletScreen({
                   backgroundColor: colors.surface,
                   borderWidth: 1,
                   borderColor: colors.border,
-                  borderRadius: 24,
-                  paddingVertical: 64,
-                  paddingHorizontal: 24,
+                  borderRadius: moderateScale(24),
+                  paddingVertical: verticalScale(64),
+                  paddingHorizontal: scale(24),
                   alignItems: "center",
-                  gap: 24,
+                  gap: moderateScale(24),
                 }}
               >
-                <View style={{ alignItems: "center", gap: 24 }}>
+                <View style={{ alignItems: "center", gap: moderateScale(24) }}>
                   <View>
                     <Image
                       source={activitesImage}
-                      style={{ width: 166, height: 166 }}
+                      style={{ width: moderateScale(166), height: moderateScale(166) }}
                       resizeMode="contain"
                     />
                   </View>
                   <View
                     style={{
                       alignItems: "center",
-                      gap: 4,
-                      paddingHorizontal: 24,
+                      gap: moderateScale(4),
+                      paddingHorizontal: scale(24),
                     }}
                   >
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: moderateScale(16),
                         fontWeight: "500",
                         color: colors.text,
                         textAlign: "center",
-                        lineHeight: 24,
+                        lineHeight: moderateScale(24),
                       }}
                     >
                       No activities recorded
                     </Text>
                     <Text
                       style={{
-                        fontSize: 14,
+                        fontSize: moderateScale(14),
                         fontWeight: "400",
                         color: colors.textSub,
                         textAlign: "center",
-                        lineHeight: 20,
+                        lineHeight: moderateScale(20),
                       }}
                     >
                       Recorded activities will apprear here

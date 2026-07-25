@@ -14,6 +14,7 @@ import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { upgradeToPremium } from '../../slices/customer/customerSlice';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 const PLAN_TOTALS = ['800/year', '50/month', '550/year'] as const;
 
@@ -57,21 +58,21 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+        <View style={{ height: verticalScale(48), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: scale(16) }}>
           <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
+            <Text style={{ fontSize: moderateScale(28), color: colors.text, lineHeight: moderateScale(28), marginTop: verticalScale(-2) }}>‹</Text>
           </Pressable>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Add Card</Text>
+          <Text style={{ fontSize: moderateScale(16), fontWeight: '600', color: colors.text }}>Add Card</Text>
           <View className="w-6 h-6" />
         </View>
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40 }}
+          contentContainerStyle={{ paddingHorizontal: scale(12), paddingTop: verticalScale(16), paddingBottom: verticalScale(40) }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 16, backgroundColor: colors.card }}>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), gap: moderateScale(16), backgroundColor: colors.card }}>
             {/* Card preview */}
             <View className="min-h-[200px] rounded-3xl p-6 bg-[#31973D] overflow-hidden justify-between">
               <View className="absolute w-[150px] h-[150px] -right-[30px] -top-[50px] rounded-[75px]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
@@ -107,9 +108,9 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
             {/* Form */}
             <View className="gap-4">
               <View className="gap-2">
-                <Text style={{ fontSize: 16, color: colors.text, paddingHorizontal: 8, lineHeight: 24 }}>Card Name</Text>
+                <Text style={{ fontSize: moderateScale(16), color: colors.text, paddingHorizontal: scale(8), lineHeight: moderateScale(24) }}>Card Name</Text>
                 <TextInput
-                  style={{ height: 56, borderWidth: 1, borderColor: colors.border, borderRadius: 28, paddingHorizontal: 16, fontSize: 16, color: colors.text, backgroundColor: colors.surface }}
+                  style={{ height: verticalScale(56), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(28), paddingHorizontal: scale(16), fontSize: moderateScale(16), color: colors.text, backgroundColor: colors.surface }}
                   value={cardName}
                   onChangeText={setCardName}
                   placeholder="Chris Evans"
@@ -118,9 +119,9 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
               </View>
 
               <View className="gap-2">
-                <Text style={{ fontSize: 16, color: colors.text, paddingHorizontal: 8, lineHeight: 24 }}>Card Number</Text>
+                <Text style={{ fontSize: moderateScale(16), color: colors.text, paddingHorizontal: scale(8), lineHeight: moderateScale(24) }}>Card Number</Text>
                 <TextInput
-                  style={{ height: 56, borderWidth: 1, borderColor: colors.border, borderRadius: 28, paddingHorizontal: 16, fontSize: 16, color: colors.text, backgroundColor: colors.surface }}
+                  style={{ height: verticalScale(56), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(28), paddingHorizontal: scale(16), fontSize: moderateScale(16), color: colors.text, backgroundColor: colors.surface }}
                   value={cardNumber}
                   onChangeText={setCardNumber}
                   placeholder="1245 78412 541236"
@@ -132,9 +133,9 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
 
               <View className="flex-row gap-4">
                 <View className="flex-1 gap-2">
-                  <Text style={{ fontSize: 16, color: colors.text, paddingHorizontal: 8, lineHeight: 24 }}>CVV</Text>
+                  <Text style={{ fontSize: moderateScale(16), color: colors.text, paddingHorizontal: scale(8), lineHeight: moderateScale(24) }}>CVV</Text>
                   <TextInput
-                    style={{ height: 56, borderWidth: 1, borderColor: colors.border, borderRadius: 28, paddingHorizontal: 16, fontSize: 16, color: colors.text, backgroundColor: colors.surface }}
+                    style={{ height: verticalScale(56), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(28), paddingHorizontal: scale(16), fontSize: moderateScale(16), color: colors.text, backgroundColor: colors.surface }}
                     value={cvv}
                     onChangeText={setCvv}
                     placeholder="***"
@@ -145,9 +146,9 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                   />
                 </View>
                 <View className="flex-1 gap-2">
-                  <Text style={{ fontSize: 16, color: colors.text, paddingHorizontal: 8, lineHeight: 24 }}>EXPIRED DATE</Text>
+                  <Text style={{ fontSize: moderateScale(16), color: colors.text, paddingHorizontal: scale(8), lineHeight: moderateScale(24) }}>EXPIRED DATE</Text>
                   <TextInput
-                    style={{ height: 56, borderWidth: 1, borderColor: colors.border, borderRadius: 28, paddingHorizontal: 16, fontSize: 16, color: colors.text, backgroundColor: colors.surface }}
+                    style={{ height: verticalScale(56), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(28), paddingHorizontal: scale(16), fontSize: moderateScale(16), color: colors.text, backgroundColor: colors.surface }}
                     value={expiry}
                     onChangeText={setExpiry}
                     placeholder="MM/YY"
@@ -158,8 +159,8 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 </View>
               </View>
 
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 8 }}>
-                <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>Save your card information</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: verticalScale(16), paddingHorizontal: scale(8) }}>
+                <Text style={{ fontSize: moderateScale(16), color: colors.text, lineHeight: moderateScale(24) }}>Save your card information</Text>
                 <Toggle value={saveCard} onValueChange={setSaveCard} />
               </View>
             </View>
@@ -167,8 +168,8 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
             {/* Total + Pay */}
             <View className="flex-row justify-between items-center gap-[10px]">
               <View>
-                <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text, lineHeight: 24 }}>Total</Text>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, lineHeight: 24 }}>{PLAN_TOTALS[planIndex]}</Text>
+                <Text style={{ fontSize: moderateScale(13), fontWeight: '500', color: colors.text, lineHeight: moderateScale(24) }}>Total</Text>
+                <Text style={{ fontSize: moderateScale(20), fontWeight: '700', color: colors.text, lineHeight: moderateScale(24) }}>{PLAN_TOTALS[planIndex]}</Text>
               </View>
               <Pressable
                 className="flex-row items-center justify-center gap-2 h-12 flex-1 max-w-[210px] bg-[#31973D] rounded-full px-4"
@@ -192,39 +193,39 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
           <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
 
           {/* Layer 3: content */}
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 32 }}>
-            <View style={{ alignItems: 'center', gap: 12 }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 36, lineHeight: 44, letterSpacing: -1.08, textAlign: 'center', color: '#0F1621' }}>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: scale(24), gap: moderateScale(32) }}>
+            <View style={{ alignItems: 'center', gap: moderateScale(12) }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(36), lineHeight: moderateScale(44), letterSpacing: -1.08, textAlign: 'center', color: '#0F1621' }}>
                 Successful
               </Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 20, letterSpacing: -0.32, textAlign: 'center', color: '#1F2A33' }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(16), lineHeight: moderateScale(20), letterSpacing: -0.32, textAlign: 'center', color: '#1F2A33' }}>
                 Enjoy double Eco-Points, priority support, and a cleaner tomorrow.
               </Text>
             </View>
 
-            <View style={{ width: '100%', gap: 12 }}>
+            <View style={{ width: '100%', gap: moderateScale(12) }}>
               <Pressable
-                style={{ height: 48, backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
                   navigation.navigate('Home');
                 }}
               >
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: '#FFFFFF' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: '#FFFFFF' }}>
                   Proceed to Premium
                 </Text>
               </Pressable>
 
               <Pressable
-                style={{ height: 48, backgroundColor: '#FFFFFF', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: verticalScale(48), backgroundColor: '#FFFFFF', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
                   navigation.navigate('Home');
                 }}
               >
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, color: '#1F2A33' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), color: '#1F2A33' }}>
                   Set Package expiry alert
                 </Text>
               </Pressable>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Easing, Pressable, ViewStyle } from "react-native";
 import { useTheme } from "../../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../../utils/scale";
 
 type AnimatedSwitchProps = {
   value: boolean;
@@ -23,7 +24,7 @@ export default function AnimatedSwitch({
   thumbColor,
   style,
 }: AnimatedSwitchProps) {
-  const translateX = useRef(new Animated.Value(value ? 14 : 0)).current;
+  const translateX = useRef(new Animated.Value(value ? scale(14) : scale(0))).current;
   const { colors } = useTheme();
 
   const resolvedTrackColor = trackColor ?? {
@@ -38,7 +39,7 @@ export default function AnimatedSwitch({
 
   useEffect(() => {
     Animated.timing(translateX, {
-      toValue: value ? 14 : 0,
+      toValue: value ? scale(14) : scale(0),
       duration: 220,
       easing: Easing.out(Easing.circle),
       useNativeDriver: true,
@@ -58,8 +59,8 @@ export default function AnimatedSwitch({
       onPress={() => onChange(!value)}
       style={[
         {
-          width: 36,
-          height: 20,
+          width: scale(36),
+          height: verticalScale(20),
           borderRadius: 999,
           borderWidth: 1,
           borderColor: "#31973D",
@@ -71,12 +72,12 @@ export default function AnimatedSwitch({
     >
       <Animated.View
         style={{
-          width: 16,
-          height: 16,
+          width: moderateScale(16),
+          height: moderateScale(16),
           borderRadius: 999,
           position: "absolute",
-          left: 2,
-          top: 1,
+          left: scale(2),
+          top: verticalScale(1),
           transform: [{ translateX }],
           backgroundColor: thumbBg,
         }}

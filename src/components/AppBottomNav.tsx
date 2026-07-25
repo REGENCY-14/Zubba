@@ -6,6 +6,7 @@ import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-na
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useAppSelector } from '../hooks/useAppSelector';
+import { scale, verticalScale, moderateScale } from '../utils/scale';
 
 
 type Tab = 'home' | 'calendar' | 'saved' | 'settings';
@@ -81,9 +82,9 @@ export function AppBottomNav({
       <View
         style={{
           width: '100%',
-          maxWidth: isPremium ? 402 : 300,
-          paddingVertical: 12,
-          paddingHorizontal: 16,
+          maxWidth: isPremium ? scale(402) : scale(300),
+          paddingVertical: verticalScale(12),
+          paddingHorizontal: scale(16),
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -99,9 +100,9 @@ export function AppBottomNav({
           onPress={() => navigation.navigate("Home")}
           icon={
             isActive('home') ? (
-              <MaterialCommunityIcons size={20} name="home" color="#fff" />
+              <MaterialCommunityIcons size={moderateScale(20)} name="home" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="home-outline" size={20} color={colors.textSub} />
+              <MaterialCommunityIcons name="home-outline" size={moderateScale(20)} color={colors.textSub} />
             )
           }
           label="Home"
@@ -113,9 +114,9 @@ export function AppBottomNav({
             onPress={() => navigation.navigate("Schedule")}
             icon={
               isActive('calendar') ? (
-                <MaterialCommunityIcons size={20} name="calendar" color="#fff" />
+                <MaterialCommunityIcons size={moderateScale(20)} name="calendar" color="#fff" />
               ) : (
-                <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.textSub} />
+                <MaterialCommunityIcons name="calendar-outline" size={moderateScale(20)} color={colors.textSub} />
               )
             }
             label="Schedule"
@@ -127,9 +128,9 @@ export function AppBottomNav({
           onPress={() => {navigation.navigate("Pickups")}}
           icon={
             isActive('saved') ? (
-              <MaterialCommunityIcons size={20} name="truck" color="#fff" />
+              <MaterialCommunityIcons size={moderateScale(20)} name="truck" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="truck-outline" size={20} color={colors.textSub} />
+              <MaterialCommunityIcons name="truck-outline" size={moderateScale(20)} color={colors.textSub} />
             )
           }
           label="Pickups"
@@ -140,9 +141,9 @@ export function AppBottomNav({
           onPress={() => {navigation.navigate("Settings")}}
           icon={
             isActive('settings') ? (
-              <MaterialCommunityIcons size={20} name="cog" color="#fff" />
+              <MaterialCommunityIcons size={moderateScale(20)} name="cog" color="#fff" />
             ) : (
-              <MaterialCommunityIcons name="cog" size={20} color={colors.textSub} />
+              <MaterialCommunityIcons name="cog" size={moderateScale(20)} color={colors.textSub} />
             )
           }
           label="Settings"

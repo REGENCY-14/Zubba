@@ -6,6 +6,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Card } from "../../components/Card";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const ghanaFlag = require("../../../assets/ghana-flag.png");
 
@@ -24,26 +25,26 @@ export function DetailsScreen({
   if (isFindAccount) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
-        <View style={{ flex: 1, paddingHorizontal: 23, paddingTop: 40, paddingBottom: 24, justifyContent: 'space-between' }}>
+        <View style={{ flex: 1, paddingHorizontal: scale(23), paddingTop: verticalScale(40), paddingBottom: verticalScale(24), justifyContent: 'space-between' }}>
 
-          <View style={{ gap: 16 }}>
+          <View style={{ gap: moderateScale(16) }}>
 
-            <Text style={{ fontSize: 15, lineHeight: 22, color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(15), lineHeight: moderateScale(22), color: colors.text }}>
               What's your phone number
             </Text>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, height: 48 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), height: verticalScale(48) }}>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 94, height: 48, paddingHorizontal: 10, borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.card }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: scale(94), height: verticalScale(48), paddingHorizontal: scale(10), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(12), backgroundColor: colors.card }}>
                 <Image
                   source={ghanaFlag}
-                  style={{ width: 28, height: 20 }}
+                  style={{ width: scale(28), height: verticalScale(20) }}
                   resizeMode="contain"
                 />
 
                 <MaterialCommunityIcons
                   name="chevron-right"
-                  size={22}
+                  size={moderateScale(22)}
                   color={colors.iconColor}
                 />
               </View>
@@ -51,11 +52,11 @@ export function DetailsScreen({
               <TextInput
                 style={{
                   flex: 1,
-                  height: 48,
-                  paddingHorizontal: 16,
+                  height: verticalScale(48),
+                  paddingHorizontal: scale(16),
                   borderWidth: 1,
-                  borderRadius: 12,
-                  fontSize: 15,
+                  borderRadius: moderateScale(12),
+                  fontSize: moderateScale(15),
                   borderColor: isFocused || isPhoneValid ? colors.text : colors.border,
                   color: isFocused || isPhoneValid ? colors.text : colors.textMuted,
                   backgroundColor: colors.card,
@@ -72,24 +73,24 @@ export function DetailsScreen({
               />
             </View>
 
-            <Pressable style={{ width: 178, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 12, color: colors.text, fontWeight: '500' }}>
+            <Pressable style={{ width: scale(178), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: moderateScale(12), color: colors.text, fontWeight: '500' }}>
                 Search my account
               </Text>
             </Pressable>
 
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 48 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: verticalScale(48) }}>
 
             <Pressable onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="arrow-left" size={26} color={colors.text} />
+              <MaterialCommunityIcons name="arrow-left" size={moderateScale(26)} color={colors.text} />
             </Pressable>
 
             <Pressable
-              style={{ width: 96, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: isPhoneValid ? '#34A853' : 'rgba(52, 168, 83, 0.5)' }}
+              style={{ width: scale(96), height: verticalScale(48), borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', backgroundColor: isPhoneValid ? '#34A853' : 'rgba(52, 168, 83, 0.5)' }}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: 14 }}>Next</Text>
+              <Text style={{ color: '#FFFFFF', fontSize: moderateScale(14) }}>Next</Text>
             </Pressable>
 
           </View>
@@ -100,17 +101,17 @@ export function DetailsScreen({
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface, padding: 20 }}>
+    <View style={{ flex: 1, backgroundColor: colors.surface, padding: moderateScale(20) }}>
       <Card>
-        <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800', marginBottom: 8 }}>
+        <Text style={{ color: colors.text, fontSize: moderateScale(24), fontWeight: '800', marginBottom: verticalScale(8) }}>
           {item?.title ?? "Details"}
         </Text>
 
-        <Text style={{ color: colors.textSub, fontSize: 16, lineHeight: 24, marginBottom: 12 }}>
+        <Text style={{ color: colors.textSub, fontSize: moderateScale(16), lineHeight: moderateScale(24), marginBottom: verticalScale(12) }}>
           This is a placeholder screen connected through typed React Navigation.
         </Text>
 
-        <Text style={{ color: colors.text, fontSize: 14, fontWeight: '600' }}>
+        <Text style={{ color: colors.text, fontSize: moderateScale(14), fontWeight: '600' }}>
           Item ID: {item?.itemId ?? "n/a"}
         </Text>
       </Card>

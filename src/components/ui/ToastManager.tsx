@@ -8,6 +8,7 @@ import {
   ToastItem,
   ToastOptions,
 } from "../../types/toast.types";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type ShowFn = (message: string, options?: ToastOptions) => string;
 type HideFn = (id: string) => void;
@@ -162,20 +163,20 @@ function ToastItemView({
         {
           backgroundColor: config.bg,
           borderColor: config.border,
-          marginTop: isFirst ? 0 : 10,
+          marginTop: isFirst ? verticalScale(0) : verticalScale(10),
           transform: [{ translateY }],
           opacity,
         },
       ]}
     >
       <View style={styles.toastContent}>
-        <MaterialCommunityIcons name={config.icon as any} size={22} color={config.border} />
+        <MaterialCommunityIcons name={config.icon as any} size={moderateScale(22)} color={config.border} />
         <Text style={[styles.toastText, { color: config.text }]} numberOfLines={2}>
           {toast.message}
         </Text>
       </View>
       <Pressable onPress={dismiss} hitSlop={8}>
-        <MaterialCommunityIcons name="close" size={18} color={config.text} />
+        <MaterialCommunityIcons name="close" size={moderateScale(18)} color={config.text} />
       </Pressable>
     </Animated.View>
   );
@@ -184,9 +185,9 @@ function ToastItemView({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 52,
-    left: 16,
-    right: 16,
+    top: verticalScale(52),
+    left: scale(16),
+    right: scale(16),
     zIndex: 999,
   },
   toast: {
@@ -195,9 +196,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 999,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    gap: 12,
+    paddingVertical: verticalScale(8),
+    paddingHorizontal: scale(20),
+    gap: scale(12),
     shadowColor: "rgba(69,71,69,0.25)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
@@ -207,13 +208,13 @@ const styles = StyleSheet.create({
   toastContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: scale(12),
     flex: 1,
   },
   toastText: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     fontWeight: "500",
-    lineHeight: 18,
+    lineHeight: moderateScale(18),
     flex: 1,
   },
 });

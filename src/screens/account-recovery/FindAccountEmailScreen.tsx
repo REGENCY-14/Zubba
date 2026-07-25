@@ -15,6 +15,7 @@ import { authService } from "../../api/authService";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -64,13 +65,13 @@ export function FindAccountEmailScreen({
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <View className="flex-1 p-5 pb-6 justify-between">
         <View className="gap-4">
-          <Text style={{ fontSize: 15, color: colors.text, marginBottom: 8 }}>
+          <Text style={{ fontSize: moderateScale(15), color: colors.text, marginBottom: verticalScale(8) }}>
             What's your email address
           </Text>
 
-          <View style={{ minHeight: 48, justifyContent: 'center', paddingHorizontal: 16, backgroundColor: colors.card, borderRadius: 9999, borderWidth: 1.8, borderColor: isEmailValid ? 'rgba(52,168,83,0.2)' : colors.border }}>
+          <View style={{ minHeight: verticalScale(48), justifyContent: 'center', paddingHorizontal: scale(16), backgroundColor: colors.card, borderRadius: 9999, borderWidth: 1.8, borderColor: isEmailValid ? 'rgba(52,168,83,0.2)' : colors.border }}>
             <TextInput
-              style={{ fontSize: 13, color: colors.text, paddingVertical: 8 }}
+              style={{ fontSize: moderateScale(13), color: colors.text, paddingVertical: verticalScale(8) }}
               placeholder="Enter your email"
               placeholderTextColor="#707579"
               keyboardType="email-address"
@@ -82,10 +83,10 @@ export function FindAccountEmailScreen({
           </View>
 
           <Pressable
-            style={{ alignSelf: 'flex-start', paddingHorizontal: 20, height: 32, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card }}
+            style={{ alignSelf: 'flex-start', paddingHorizontal: scale(20), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card }}
             onPress={() => navigation.navigate("FindAccount")}
           >
-            <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>
+            <Text style={{ fontSize: moderateScale(12), fontWeight: '500', color: colors.text }}>
               Find account with phone number
             </Text>
           </Pressable>
@@ -96,7 +97,7 @@ export function FindAccountEmailScreen({
             onPress={() => navigation.goBack()}
             className="w-12 h-12 rounded-xl items-center justify-center"
           >
-            <MaterialCommunityIcons name="arrow-left" color={colors.text} size={24} />
+            <MaterialCommunityIcons name="arrow-left" color={colors.text} size={moderateScale(24)} />
           </Pressable>
 
           <Pressable
@@ -112,7 +113,7 @@ export function FindAccountEmailScreen({
             ) : (
               <>
                 <Text className="text-white text-sm">Next</Text>
-                <MaterialCommunityIcons name="arrow-right" size={12} color="#fff" />
+                <MaterialCommunityIcons name="arrow-right" size={moderateScale(12)} color="#fff" />
               </>
             )}
           </Pressable>

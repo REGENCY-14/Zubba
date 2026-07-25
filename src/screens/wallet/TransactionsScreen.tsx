@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 type TxStatus = 'SUCCESS' | 'CREDITED' | 'PENDING' | 'FAILED';
 type FilterKey = 'All' | 'Incoming' | 'Expenses' | 'Success' | 'Failed';
@@ -142,47 +143,47 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        gap: 16,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(16),
+        gap: moderateScale(16),
         borderBottomWidth: isLast ? 0 : 1,
         borderBottomColor: colors.borderLight,
       }}
     >
       <View
         style={{
-          width: 40,
-          height: 40,
+          width: moderateScale(40),
+          height: moderateScale(40),
           borderRadius: 9999,
           backgroundColor: tx.iconBg,
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <MaterialCommunityIcons name={tx.iconName} size={20} color={tx.iconColor} />
+        <MaterialCommunityIcons name={tx.iconName} size={moderateScale(20)} color={tx.iconColor} />
       </View>
 
-      <View style={{ flex: 1, gap: 4 }}>
-        <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.28, color: colors.text, lineHeight: 17 }}>
+      <View style={{ flex: 1, gap: moderateScale(4) }}>
+        <Text style={{ fontSize: moderateScale(14), fontWeight: '500', letterSpacing: 0.28, color: colors.text, lineHeight: moderateScale(17) }}>
           {tx.title}
         </Text>
-        <Text style={{ fontSize: 13, fontWeight: '400', color: colors.textSub, lineHeight: 21 }}>
+        <Text style={{ fontSize: moderateScale(13), fontWeight: '400', color: colors.textSub, lineHeight: moderateScale(21) }}>
           {tx.date}
         </Text>
       </View>
 
-      <View style={{ alignItems: 'flex-end', gap: 4 }}>
-        <Text style={{ fontSize: 14, fontWeight: '600', letterSpacing: 0.28, color: tx.amountColor, lineHeight: 17 }}>
+      <View style={{ alignItems: 'flex-end', gap: moderateScale(4) }}>
+        <Text style={{ fontSize: moderateScale(14), fontWeight: '600', letterSpacing: 0.28, color: tx.amountColor, lineHeight: moderateScale(17) }}>
           {tx.amount}
         </Text>
         <Text
           style={{
-            fontSize: 10,
+            fontSize: moderateScale(10),
             fontWeight: '600',
             letterSpacing: -0.5,
             textTransform: 'uppercase',
             color: STATUS_COLOR[tx.status],
-            lineHeight: 15,
+            lineHeight: moderateScale(15),
           }}
         >
           {tx.status}
@@ -207,7 +208,7 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 12, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: moderateScale(12), paddingBottom: verticalScale(40) }}
       >
         {/* Main card */}
         <View
@@ -215,22 +216,22 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
             backgroundColor: colors.card,
             borderWidth: 1,
             borderColor: colors.border,
-            borderRadius: 24,
-            paddingVertical: 11,
-            paddingHorizontal: 11,
-            gap: 16,
+            borderRadius: moderateScale(24),
+            paddingVertical: verticalScale(11),
+            paddingHorizontal: scale(11),
+            gap: moderateScale(16),
           }}
         >
           {/* Section header */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
-            <Text style={{ fontSize: 20, fontWeight: '500', color: colors.text, lineHeight: 28 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: scale(5) }}>
+            <Text style={{ fontSize: moderateScale(20), fontWeight: '500', color: colors.text, lineHeight: moderateScale(28) }}>
               Recent Activity
             </Text>
             <Pressable
               onPress={() => setShowFilter((v) => !v)}
-              style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: moderateScale(32), height: moderateScale(32), alignItems: 'center', justifyContent: 'center' }}
             >
-              <MaterialCommunityIcons name="tune-variant" size={18} color={colors.iconColor} />
+              <MaterialCommunityIcons name="tune-variant" size={moderateScale(18)} color={colors.iconColor} />
             </Pressable>
           </View>
 
@@ -240,7 +241,7 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
               backgroundColor: colors.surface,
               borderWidth: 1,
               borderColor: colors.border,
-              borderRadius: 24,
+              borderRadius: moderateScale(24),
               overflow: 'hidden',
             }}
           >
@@ -249,8 +250,8 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
                 <TransactionRow key={tx.id + i} tx={tx} isLast={i === filtered.length - 1} />
               ))
             ) : (
-              <View style={{ padding: 32, alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, color: colors.text, textAlign: 'center' }}>
+              <View style={{ padding: moderateScale(32), alignItems: 'center' }}>
+                <Text style={{ fontSize: moderateScale(14), color: colors.text, textAlign: 'center' }}>
                   No transactions found
                 </Text>
               </View>
@@ -272,15 +273,15 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
           <View
             style={{
               position: 'absolute',
-              top: 154,
-              right: 16,
-              width: 161,
+              top: verticalScale(154),
+              right: scale(16),
+              width: scale(161),
               backgroundColor: colors.bg,
               borderWidth: 1,
               borderColor: colors.borderLight,
-              borderRadius: 24,
-              padding: 8,
-              gap: 4,
+              borderRadius: moderateScale(24),
+              padding: moderateScale(8),
+              gap: moderateScale(4),
               shadowColor: 'rgba(69, 71, 69, 0.15)',
               shadowOffset: { width: 0, height: -4 },
               shadowOpacity: 1,
@@ -300,18 +301,18 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    paddingHorizontal: 8,
-                    height: 32,
-                    borderRadius: 16,
+                    paddingHorizontal: scale(8),
+                    height: verticalScale(32),
+                    borderRadius: moderateScale(16),
                     backgroundColor: isActive ? colors.surface : 'transparent',
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 14,
+                      fontSize: moderateScale(14),
                       fontWeight: '400',
                       color: isActive ? colors.text : colors.textMuted,
-                      lineHeight: 20,
+                      lineHeight: moderateScale(20),
                     }}
                   >
                     {filter}

@@ -24,6 +24,7 @@ import {
 } from "../../api/scheduleService";
 import { handleApiError } from "../../utils/handleApiError";
 import { toast } from "../../hooks/toast";
+import { verticalScale, moderateScale } from "../../utils/scale";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -190,7 +191,7 @@ function ScheduleIllustration() {
         >
           <MaterialCommunityIcons
             name="plus"
-            size={26}
+            size={moderateScale(26)}
             color={colors.iconColor}
           />
         </View>
@@ -302,7 +303,7 @@ function ScheduleCard({
           >
             <MaterialCommunityIcons
               name={statusBadge.icon as any}
-              size={14}
+              size={moderateScale(14)}
               color={statusBadge.text}
             />
             <Text
@@ -321,7 +322,7 @@ function ScheduleCard({
             <View className="flex-row items-center gap-1.5 bg-[#FEF3C7] rounded-xl px-2 py-1">
               <MaterialCommunityIcons
                 name="refresh"
-                size={12}
+                size={moderateScale(12)}
                 color="#92400E"
               />
               <Text className="text-xs text-[#92400E] font-medium">
@@ -337,7 +338,7 @@ function ScheduleCard({
             <View className="flex-row items-center gap-1.5 bg-[#FEE2E2] rounded-xl px-2 py-1">
               <MaterialCommunityIcons
                 name="close-circle"
-                size={12}
+                size={moderateScale(12)}
                 color="#991B1B"
               />
               <Text className="text-xs text-[#991B1B] font-medium">
@@ -408,7 +409,7 @@ function ScheduleCard({
         >
           <MaterialCommunityIcons
             name="dots-horizontal"
-            size={20}
+            size={moderateScale(20)}
             color={colors.iconColor}
           />
         </Pressable>
@@ -438,7 +439,7 @@ function ScheduleCard({
                   <Text className="text-sm text-[#1F2A33]">Edit</Text>
                   <MaterialCommunityIcons
                     name="pencil-outline"
-                    size={18}
+                    size={moderateScale(18)}
                     color="#475568"
                   />
                 </Pressable>
@@ -462,7 +463,7 @@ function ScheduleCard({
                   <Text className="text-sm text-[#2563EB]">Retry</Text>
                   <MaterialCommunityIcons
                     name="refresh"
-                    size={18}
+                    size={moderateScale(18)}
                     color="#2563EB"
                   />
                 </Pressable>
@@ -481,7 +482,7 @@ function ScheduleCard({
               <Text className="text-sm text-[#EF4444]">Delete</Text>
               <MaterialCommunityIcons
                 name="trash-can-outline"
-                size={18}
+                size={moderateScale(18)}
                 color="#EF4444"
               />
             </Pressable>
@@ -996,7 +997,7 @@ export function ScheduleScreen({
       >
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#31973D" />
-          <Text style={{ color: colors.textSub, marginTop: 16 }}>
+          <Text style={{ color: colors.textSub, marginTop: verticalScale(16) }}>
             Loading schedules...
           </Text>
         </View>
@@ -1015,7 +1016,7 @@ export function ScheduleScreen({
         <Pressable className="w-8 h-8 items-center justify-center">
           <MaterialCommunityIcons
             name="menu"
-            size={20}
+            size={moderateScale(20)}
             color={colors.iconColor}
           />
         </Pressable>
@@ -1041,7 +1042,7 @@ export function ScheduleScreen({
           >
             <MaterialCommunityIcons
               name="bell-outline"
-              size={20}
+              size={moderateScale(20)}
               color={colors.iconColor}
             />
           </Pressable>
@@ -1064,14 +1065,14 @@ export function ScheduleScreen({
           >
             <MaterialCommunityIcons
               name="calendar"
-              size={16}
+              size={moderateScale(16)}
               color={"#31973D"}
             />
           </Pressable>
           <Pressable onPress={() => setActiveFilter(null)}>
             <MaterialCommunityIcons
               name="refresh"
-              size={16}
+              size={moderateScale(16)}
               color={colors.iconColor}
             />
           </Pressable>
@@ -1167,7 +1168,7 @@ export function ScheduleScreen({
         }}
         onPress={openSheet}
       >
-        <MaterialCommunityIcons name="plus" size={16} color="#FFFFFF" />
+        <MaterialCommunityIcons name="plus" size={moderateScale(16)} color="#FFFFFF" />
       </Pressable>
 
       {/* Bottom nav */}
@@ -1235,7 +1236,7 @@ export function ScheduleScreen({
                   </Text>
                   <MaterialCommunityIcons
                     name="chevron-down"
-                    size={12}
+                    size={moderateScale(12)}
                     color={colors.iconColor}
                   />
                 </Pressable>
@@ -1251,7 +1252,7 @@ export function ScheduleScreen({
                   >
                     <MaterialCommunityIcons
                       name="star"
-                      size={16}
+                      size={moderateScale(16)}
                       color="#FEC002"
                     />
                     <Text
@@ -1269,7 +1270,7 @@ export function ScheduleScreen({
                       </Text>
                       <MaterialCommunityIcons
                         name="check-decagram"
-                        size={13}
+                        size={moderateScale(13)}
                         color="#D4AF37"
                       />
                     </View>
@@ -1279,7 +1280,7 @@ export function ScheduleScreen({
                     >
                       <MaterialCommunityIcons
                         name="close-circle-outline"
-                        size={16}
+                        size={moderateScale(16)}
                         color="#EF4444"
                       />
                     </Pressable>
@@ -1296,7 +1297,7 @@ export function ScheduleScreen({
                   >
                     <MaterialCommunityIcons
                       name="plus-circle-outline"
-                      size={16}
+                      size={moderateScale(16)}
                       color="#FFFFFF"
                     />
                     <Text className="text-sm text-white ">
@@ -1326,7 +1327,7 @@ export function ScheduleScreen({
                       >
                         <MaterialCommunityIcons
                           name="magnify"
-                          size={11}
+                          size={moderateScale(11)}
                           color={colors.iconColor}
                         />
                         <TextInput
@@ -1390,7 +1391,7 @@ export function ScheduleScreen({
                             {driver.premium && (
                               <MaterialCommunityIcons
                                 name="check-decagram"
-                                size={13}
+                                size={moderateScale(13)}
                                 color="#D4AF37"
                               />
                             )}
@@ -1398,7 +1399,7 @@ export function ScheduleScreen({
                           <View className="flex-row items-center gap-[5px]">
                             <MaterialCommunityIcons
                               name="star"
-                              size={16}
+                              size={moderateScale(16)}
                               color="#FEC002"
                             />
                             <Text
@@ -1437,7 +1438,7 @@ export function ScheduleScreen({
                       <Pressable onPress={() => setLocation("")}>
                         <MaterialCommunityIcons
                           name="close-circle-outline"
-                          size={16}
+                          size={moderateScale(16)}
                           color="#EF4444"
                         />
                       </Pressable>
@@ -1469,7 +1470,7 @@ export function ScheduleScreen({
                       <Pressable onPress={() => setPhone("")}>
                         <MaterialCommunityIcons
                           name="close-circle-outline"
-                          size={16}
+                          size={moderateScale(16)}
                           color="#EF4444"
                         />
                       </Pressable>
@@ -1517,7 +1518,7 @@ export function ScheduleScreen({
                 >
                   <MaterialCommunityIcons
                     name="calendar"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.iconColor}
                   />
                   <Text
@@ -1528,7 +1529,7 @@ export function ScheduleScreen({
                   </Text>
                   <MaterialCommunityIcons
                     name="refresh"
-                    size={16}
+                    size={moderateScale(16)}
                     color={colors.iconColor}
                   />
                 </Pressable>
@@ -1570,7 +1571,7 @@ export function ScheduleScreen({
                     <View className="w-6 h-6 shrink-0 rounded-xl bg-[#31973D] items-center justify-center">
                       <MaterialCommunityIcons
                         name="arrow-right"
-                        size={16}
+                        size={moderateScale(16)}
                         color="#FFFFFF"
                       />
                     </View>
@@ -1668,7 +1669,7 @@ export function ScheduleScreen({
                     </Text>
                     <MaterialCommunityIcons
                       name="chevron-down"
-                      size={16}
+                      size={moderateScale(16)}
                       color={colors.iconColor}
                     />
                   </View>
@@ -1676,14 +1677,14 @@ export function ScheduleScreen({
                     <Pressable onPress={prevMonth} className="p-1">
                       <MaterialCommunityIcons
                         name="chevron-left"
-                        size={16}
+                        size={moderateScale(16)}
                         color={colors.iconColor}
                       />
                     </Pressable>
                     <Pressable onPress={nextMonth} className="p-1">
                       <MaterialCommunityIcons
                         name="chevron-right"
-                        size={16}
+                        size={moderateScale(16)}
                         color={colors.iconColor}
                       />
                     </Pressable>
@@ -1828,7 +1829,7 @@ export function ScheduleScreen({
               >
                 <MaterialCommunityIcons
                   name="close"
-                  size={16}
+                  size={moderateScale(16)}
                   color="#EF4444"
                 />
               </Pressable>
@@ -1951,7 +1952,7 @@ export function ScheduleScreen({
             >
               <Image
                 source={avatar}
-                style={{ width: 82, height: 82 }}
+                style={{ width: moderateScale(82), height: moderateScale(82) }}
                 className="rounded-[41px] border-2 border-[#90FA96]"
                 resizeMode="cover"
               />
@@ -1970,7 +1971,7 @@ export function ScheduleScreen({
             >
               <MaterialCommunityIcons
                 name="clock-outline"
-                size={14}
+                size={moderateScale(14)}
                 color="#FFFFFF"
               />
               <Text className="text-xs text-white ">pending schedule</Text>
@@ -1982,7 +1983,7 @@ export function ScheduleScreen({
               onPress={() => setConfirmOpen(false)}
               disabled={isSubmitting}
             >
-              <MaterialCommunityIcons name="close" size={14} color="#FFFFFF" />
+              <MaterialCommunityIcons name="close" size={moderateScale(14)} color="#FFFFFF" />
             </Pressable>
           </View>
         </View>
@@ -2001,7 +2002,7 @@ export function ScheduleScreen({
             <View className="w-[60px] h-[60px] rounded-[30px] bg-[#FEE2E2] items-center justify-center">
               <MaterialCommunityIcons
                 name="trash-can"
-                size={32}
+                size={moderateScale(32)}
                 color="#F87171"
               />
             </View>
@@ -2066,7 +2067,7 @@ export function ScheduleScreen({
               <Pressable onPress={filterPrevMonth} className="p-2">
                 <MaterialCommunityIcons
                   name="chevron-left"
-                  size={20}
+                  size={moderateScale(20)}
                   color="#1A1C1E"
                 />
               </Pressable>
@@ -2076,7 +2077,7 @@ export function ScheduleScreen({
               <Pressable onPress={filterNextMonth} className="p-2">
                 <MaterialCommunityIcons
                   name="chevron-right"
-                  size={20}
+                  size={moderateScale(20)}
                   color="#1A1C1E"
                 />
               </Pressable>
@@ -2150,7 +2151,7 @@ export function ScheduleScreen({
               >
                 <MaterialCommunityIcons
                   name="close"
-                  size={16}
+                  size={moderateScale(16)}
                   color="#EF4444"
                 />
               </Pressable>

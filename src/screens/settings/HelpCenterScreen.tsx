@@ -16,6 +16,7 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { Paragraph, Section } from "../../components/common/CustomAccordion";
 import { AppBottomNav } from "../../components";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const supportImage = require("../../../assets/help.png");
 
@@ -27,18 +28,18 @@ function BulletList({
   colors: ReturnType<typeof useTheme>["colors"];
 }) {
   return (
-    <View style={{ gap: 8 }}>
+    <View style={{ gap: moderateScale(8) }}>
       {items.map((item) => (
         <View
           key={item}
-          style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}
+          style={{ flexDirection: "row", alignItems: "flex-start", gap: moderateScale(8) }}
         >
           <Text
             style={{
-              width: 12,
+              width: scale(12),
               color: colors.textSub,
-              fontSize: 18,
-              lineHeight: 20,
+              fontSize: moderateScale(18),
+              lineHeight: moderateScale(20),
             }}
           >
             •
@@ -46,8 +47,8 @@ function BulletList({
           <Text
             style={{
               flex: 1,
-              fontSize: 14,
-              lineHeight: 20,
+              fontSize: moderateScale(14),
+              lineHeight: moderateScale(20),
               color: colors.textSub,
             }}
           >
@@ -74,29 +75,29 @@ export function HelpCenterScreen({
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <ScrollView
           contentContainerStyle={{
-            padding: 16,
-            paddingBottom: 148,
-            gap: 14,
+            padding: moderateScale(16),
+            paddingBottom: verticalScale(148),
+            gap: moderateScale(14),
             backgroundColor: colors.surface,
           }}
           showsVerticalScrollIndicator={false}
         >
           <View
             style={{
-              height: 50,
+              height: verticalScale(50),
               borderRadius: 999,
               borderWidth: 1,
               borderColor: colors.border,
               backgroundColor: colors.card,
               flexDirection: "row",
               alignItems: "center",
-              paddingHorizontal: 14,
-              gap: 10,
+              paddingHorizontal: scale(14),
+              gap: moderateScale(10),
             }}
           >
             <MaterialCommunityIcons
               name="magnify"
-              size={24}
+              size={moderateScale(24)}
               color={colors.iconColor}
             />
 
@@ -213,18 +214,18 @@ export function HelpCenterScreen({
 
           <View
             style={{
-              borderRadius: 16,
+              borderRadius: moderateScale(16),
               borderWidth: 1,
               borderColor: "#31973D",
-              padding: 16,
-              gap: 8,
+              padding: moderateScale(16),
+              gap: moderateScale(8),
               backgroundColor: "rgba(0, 107, 35, 0.1)",
             }}
           >
             <Text
               style={{
-                fontSize: 14,
-                lineHeight: 20,
+                fontSize: moderateScale(14),
+                lineHeight: moderateScale(20),
                 fontWeight: "600",
                 color: colors.text,
               }}
@@ -232,7 +233,7 @@ export function HelpCenterScreen({
               Still need help
             </Text>
             <Text
-              style={{ fontSize: 14, lineHeight: 20, color: colors.textSub }}
+              style={{ fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.textSub }}
             >
               Visit our website or contact our support team for personalized
               assistance.
@@ -240,24 +241,24 @@ export function HelpCenterScreen({
             <Pressable
               style={{
                 alignSelf: "flex-start",
-                minWidth: 198,
-                height: 48,
-                paddingHorizontal: 16,
-                borderRadius: 12,
+                minWidth: scale(198),
+                height: verticalScale(48),
+                paddingHorizontal: scale(16),
+                borderRadius: moderateScale(12),
                 backgroundColor: "#31973D",
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 8,
+                gap: moderateScale(8),
               }}
               onPress={() => {}}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 14, lineHeight: 20 }}>
+              <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14), lineHeight: moderateScale(20) }}>
                 Visit Zubba website
               </Text>
               <MaterialCommunityIcons
                 name="open-in-new"
-                size={18}
+                size={moderateScale(18)}
                 color="#FFFFFF"
               />
             </Pressable>

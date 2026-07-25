@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { TextInput, View } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type OTPInputProps = {
   value: string[];
@@ -14,7 +15,7 @@ export function OTPInput({ value, onChange, length = 4, onComplete }: OTPInputPr
   const { colors } = useTheme();
 
   return (
-    <View style={{ flexDirection: "row", gap: 12 }}>
+    <View style={{ flexDirection: "row", gap: scale(12) }}>
       {Array.from({ length }).map((_, i) => (
         <TextInput
           key={i}
@@ -23,8 +24,8 @@ export function OTPInput({ value, onChange, length = 4, onComplete }: OTPInputPr
           keyboardType="number-pad"
           maxLength={i === 0 ? length : 1}
           style={{
-            width: 44, height: 44, paddingBottom: 8, borderRadius: 6,
-            borderWidth: 1, fontSize: 20, textAlign: "center", fontWeight: "500",
+            width: moderateScale(44), height: moderateScale(44), paddingBottom: verticalScale(8), borderRadius: moderateScale(6),
+            borderWidth: 1, fontSize: moderateScale(20), textAlign: "center", fontWeight: "500",
             backgroundColor: value[i] ? colors.card : colors.surface,
             borderColor: value[i] ? "#34A853" : colors.border,
             color: colors.text,

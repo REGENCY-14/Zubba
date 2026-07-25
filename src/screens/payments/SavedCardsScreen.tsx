@@ -8,22 +8,23 @@ import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { upgradeToPremium } from '../../slices/customer/customerSlice';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 type MethodId = 'mtn' | 'telecel' | 'airtel';
 
 function ContactlessIcon() {
   return (
-    <View style={{ width: 25, height: 25, borderRadius: 12.5, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
-      <MaterialCommunityIcons name="contactless-payment" size={14} color="#31973D" />
+    <View style={{ width: moderateScale(25), height: moderateScale(25), borderRadius: moderateScale(12.5), backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+      <MaterialCommunityIcons name="contactless-payment" size={moderateScale(14)} color="#31973D" />
     </View>
   );
 }
 
 function MastercardIcon() {
   return (
-    <View style={{ width: 32, height: 20, flexDirection: 'row' }}>
-      <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: 'rgba(235,0,27,0.8)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)' }} />
-      <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: 'rgba(247,158,27,0.4)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)', marginLeft: -8 }} />
+    <View style={{ width: scale(32), height: verticalScale(20), flexDirection: 'row' }}>
+      <View style={{ width: moderateScale(20), height: moderateScale(20), borderRadius: moderateScale(10), backgroundColor: 'rgba(235,0,27,0.8)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)' }} />
+      <View style={{ width: moderateScale(20), height: moderateScale(20), borderRadius: moderateScale(10), backgroundColor: 'rgba(247,158,27,0.4)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)', marginLeft: scale(-8) }} />
     </View>
   );
 }
@@ -39,53 +40,53 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
         {/* Header */}
-        <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+        <View style={{ height: verticalScale(48), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: scale(16) }}>
           <Pressable onPress={() => navigation.goBack()}>
-            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
+            <Text style={{ fontSize: moderateScale(28), color: colors.text, lineHeight: moderateScale(28), marginTop: verticalScale(-2) }}>‹</Text>
           </Pressable>
-          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 16, lineHeight: 24, color: colors.text }}>Payment</Text>
-          <View style={{ width: 24 }} />
+          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(16), lineHeight: moderateScale(24), color: colors.text }}>Payment</Text>
+          <View style={{ width: scale(24) }} />
         </View>
 
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 16, backgroundColor: colors.card }}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: scale(12), paddingTop: verticalScale(16), paddingBottom: verticalScale(40) }} showsVerticalScrollIndicator={false}>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), gap: moderateScale(16), backgroundColor: colors.card }}>
 
             {/* ── Payment method tiles ── */}
-            <View style={{ gap: 16 }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 16, lineHeight: 24, color: colors.text }}>
+            <View style={{ gap: moderateScale(16) }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(16), lineHeight: moderateScale(24), color: colors.text }}>
                 Select your payment method.
               </Text>
 
-              <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', gap: scale(16), alignItems: 'center' }}>
                 {/* MTN */}
                 <Pressable
                   onPress={() => setSelectedMethod('mtn')}
-                  style={{ width: 102, height: 95, borderRadius: 11, borderWidth: 2, borderColor: selectedMethod === 'mtn' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: 4 }}
+                  style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'mtn' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: 84, height: 78, backgroundColor: '#FFCC00', borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 12, color: '#000000' }}>MTN</Text>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#FFCC00', borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(12), color: '#000000' }}>MTN</Text>
                   </View>
                 </Pressable>
 
                 {/* Telecel */}
                 <Pressable
                   onPress={() => setSelectedMethod('telecel')}
-                  style={{ width: 102, height: 95, borderRadius: 11, borderWidth: 2, borderColor: selectedMethod === 'telecel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: 4 }}
+                  style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'telecel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: 84, height: 78, backgroundColor: '#DC2626', borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: 12, color: '#FFFFFF', textAlign: 'center', lineHeight: 15 }}>{'Telecel\nCash'}</Text>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#DC2626', borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: moderateScale(12), color: '#FFFFFF', textAlign: 'center', lineHeight: moderateScale(15) }}>{'Telecel\nCash'}</Text>
                   </View>
                 </Pressable>
 
                 {/* Airtel */}
                 <Pressable
                   onPress={() => setSelectedMethod('airtel')}
-                  style={{ width: 102, height: 95, borderRadius: 11, borderWidth: 2, borderColor: selectedMethod === 'airtel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: 4 }}
+                  style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'airtel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: 84, height: 78, backgroundColor: colors.surface, borderRadius: 8, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: colors.surface, borderRadius: moderateScale(8), borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}>
                     <Text>
-                      <Text style={{ color: '#0062A3', fontSize: 16, fontWeight: '700' }}>a</Text>
-                      <Text style={{ color: '#EF4444', fontSize: 16, fontWeight: '700' }}>t</Text>
+                      <Text style={{ color: '#0062A3', fontSize: moderateScale(16), fontWeight: '700' }}>a</Text>
+                      <Text style={{ color: '#EF4444', fontSize: moderateScale(16), fontWeight: '700' }}>t</Text>
                     </Text>
                   </View>
                 </Pressable>
@@ -93,76 +94,76 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
             </View>
 
             {/* ── Saved cards ── */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 17, letterSpacing: 0.28, color: colors.text }}>
+            <View style={{ gap: moderateScale(8) }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), lineHeight: moderateScale(17), letterSpacing: 0.28, color: colors.text }}>
                 Select your card
               </Text>
 
               {/* Wrapper gives context menu a non-clipped positioning parent */}
               <View style={{ position: 'relative' }}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 16 }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: scale(16) }}>
 
                   {/* Primary green card — overflow:hidden only clips the card itself */}
-                  <View style={{ width: 280, height: 170, borderRadius: 24, overflow: 'hidden' }}>
+                  <View style={{ width: scale(280), height: verticalScale(170), borderRadius: moderateScale(24), overflow: 'hidden' }}>
                     <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#006B23' }]} />
                     <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#31973D', opacity: 0.85 }]} />
 
-                    <View style={{ flex: 1, padding: 24, justifyContent: 'space-between' }}>
+                    <View style={{ flex: 1, padding: moderateScale(24), justifyContent: 'space-between' }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <ContactlessIcon />
                         <Pressable onPress={() => setMenuVisible(v => !v)} hitSlop={8}>
-                          <MaterialCommunityIcons name="dots-vertical" size={20} color="#FFFFFF" />
+                          <MaterialCommunityIcons name="dots-vertical" size={moderateScale(20)} color="#FFFFFF" />
                         </Pressable>
                       </View>
 
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>xxx</Text>
-                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>xxx</Text>
-                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>xxx</Text>
-                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 18, color: '#FFFFFF', letterSpacing: 1.8 }}>0932</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(16) }}>
+                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: 'rgba(255,255,255,0.8)' }}>xxx</Text>
+                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: 'rgba(255,255,255,0.8)' }}>xxx</Text>
+                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: 'rgba(255,255,255,0.8)' }}>xxx</Text>
+                        <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(18), color: '#FFFFFF', letterSpacing: 1.8 }}>0932</Text>
                       </View>
 
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <View style={{ gap: 2 }}>
-                          <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Cardholder's Name</Text>
-                          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: '#FFFFFF', letterSpacing: 0.7, textTransform: 'uppercase' }}>Isabella Steele</Text>
+                        <View style={{ gap: moderateScale(2) }}>
+                          <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(10), color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Cardholder's Name</Text>
+                          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: '#FFFFFF', letterSpacing: 0.7, textTransform: 'uppercase' }}>Isabella Steele</Text>
                         </View>
-                        <View style={{ gap: 2, alignItems: 'flex-end' }}>
-                          <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Valid Thru</Text>
-                          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: '#FFFFFF' }}>08/25</Text>
+                        <View style={{ gap: moderateScale(2), alignItems: 'flex-end' }}>
+                          <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(10), color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Valid Thru</Text>
+                          <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: '#FFFFFF' }}>08/25</Text>
                         </View>
                       </View>
                     </View>
                   </View>
 
                   {/* Secondary placeholder card */}
-                <View style={{ width: 280, height: 170, borderRadius: 24, backgroundColor: colors.surface, opacity: 0.6, borderWidth: 1, borderColor: colors.border, padding: 24, justifyContent: 'space-between' }}>
+                <View style={{ width: scale(280), height: verticalScale(170), borderRadius: moderateScale(24), backgroundColor: colors.surface, opacity: 0.6, borderWidth: 1, borderColor: colors.border, padding: moderateScale(24), justifyContent: 'space-between' }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <MastercardIcon />
-                    <Text style={{ fontFamily: 'Poppins', fontStyle: 'italic', fontWeight: '700', fontSize: 20, color: colors.text }}>VISA</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontStyle: 'italic', fontWeight: '700', fontSize: moderateScale(20), color: colors.text }}>VISA</Text>
                   </View>
 
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.textSub }}>xxx</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.textSub }}>xxx</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, color: colors.textSub }}>xxx</Text>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 18, color: colors.text, letterSpacing: 1.8 }}>0932</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(16) }}>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: colors.textSub }}>xxx</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: colors.textSub }}>xxx</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: colors.textSub }}>xxx</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(18), color: colors.text, letterSpacing: 1.8 }}>0932</Text>
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                    <View style={{ gap: 2 }}>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: colors.textMuted, textTransform: 'uppercase' }}>
+                    <View style={{ gap: moderateScale(2) }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(10), color: colors.textMuted, textTransform: 'uppercase' }}>
                         Cardholder's Name
                       </Text>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: colors.text, letterSpacing: 0.7, textTransform: 'uppercase' }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: colors.text, letterSpacing: 0.7, textTransform: 'uppercase' }}>
                         Isabella Steele
                       </Text>
                     </View>
-                    <View style={{ gap: 2, alignItems: 'flex-end' }}>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 10, color: colors.textMuted, textTransform: 'uppercase' }}>
+                    <View style={{ gap: moderateScale(2), alignItems: 'flex-end' }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(10), color: colors.textMuted, textTransform: 'uppercase' }}>
                         Valid Thru
                       </Text>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: colors.text }}>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: colors.text }}>
                         08/25
                       </Text>
                     </View>
@@ -173,24 +174,24 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
                 {/* Context menu — sibling of ScrollView, not inside overflow:hidden card */}
                 {menuVisible && (
-                  <View style={{ position: 'absolute', right: 0, top: 44, width: 105, height: 64, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, zIndex: 10 }}>
+                  <View style={{ position: 'absolute', right: scale(0), top: verticalScale(44), width: scale(105), height: verticalScale(64), borderRadius: moderateScale(12), overflow: 'hidden', borderWidth: 1, borderColor: colors.border, zIndex: 10 }}>
                     <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
                     <View style={[StyleSheet.absoluteFillObject, { backgroundColor: isDark ? 'rgba(20,29,43,0.7)' : 'rgba(250,250,250,0.3)' }]} />
 
                     <Pressable
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8, height: 32, borderBottomWidth: 0.5, borderBottomColor: colors.border }}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingHorizontal: scale(8), height: verticalScale(32), borderBottomWidth: 0.5, borderBottomColor: colors.border }}
                       onPress={() => setMenuVisible(false)}
                     >
-                      <MaterialCommunityIcons name="pencil-outline" size={16} color={colors.iconColor} />
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 24, color: colors.text }}>Edit</Text>
+                      <MaterialCommunityIcons name="pencil-outline" size={moderateScale(16)} color={colors.iconColor} />
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(24), color: colors.text }}>Edit</Text>
                     </Pressable>
 
                     <Pressable
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8, height: 32 }}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingHorizontal: scale(8), height: verticalScale(32) }}
                       onPress={() => setMenuVisible(false)}
                     >
-                      <MaterialCommunityIcons name="close-circle-outline" size={16} color="#EF4444" />
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 20, color: '#FF181C' }}>Delete</Text>
+                      <MaterialCommunityIcons name="close-circle-outline" size={moderateScale(16)} color="#EF4444" />
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#FF181C' }}>Delete</Text>
                     </Pressable>
                   </View>
                 )}
@@ -198,13 +199,13 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
               {/* Add new card link */}
               <Pressable
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), marginTop: verticalScale(4) }}
                 onPress={() => navigation.navigate('AddCard')}
               >
-                <View style={{ width: 10.5, height: 10.5, borderRadius: 5.25, backgroundColor: '#31973D', alignItems: 'center', justifyContent: 'center' }}>
-                  <MaterialCommunityIcons name="plus" size={8} color="#FFFFFF" />
+                <View style={{ width: moderateScale(10.5), height: moderateScale(10.5), borderRadius: moderateScale(5.25), backgroundColor: '#31973D', alignItems: 'center', justifyContent: 'center' }}>
+                  <MaterialCommunityIcons name="plus" size={moderateScale(8)} color="#FFFFFF" />
                 </View>
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 14, lineHeight: 20, color: '#31973D' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#31973D' }}>
                   Or add a new one
                 </Text>
               </Pressable>
@@ -213,13 +214,13 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
             {/* Continue */}
             <Pressable
-              style={{ height: 48, backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+              style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
                 dispatch(upgradeToPremium());
                 navigation.navigate('PremiumHome');
               }}
             >
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: 14, lineHeight: 20, color: '#FFFFFF' }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#FFFFFF' }}>
                 Continue
               </Text>
             </Pressable>

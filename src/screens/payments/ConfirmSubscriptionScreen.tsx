@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 const PLANS = [
   {
@@ -57,8 +58,8 @@ function PaymentBadge({ id }: { id: string }) {
   }
   if (id === 'airtel') {
     return (
-      <View style={{ width: 42, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
-        <Text style={{ fontSize: 14, fontWeight: '700' }}>
+      <View style={{ width: moderateScale(42), height: moderateScale(26), borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
+        <Text style={{ fontSize: moderateScale(14), fontWeight: '700' }}>
           <Text style={{ color: '#0062A3' }}>a</Text>
           <Text style={{ color: '#EF4444' }}>t</Text>
         </Text>
@@ -86,19 +87,19 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+        <View style={{ height: verticalScale(48), backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: scale(16) }}>
           <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
+            <Text style={{ fontSize: moderateScale(28), color: colors.text, lineHeight: moderateScale(28), marginTop: verticalScale(-2) }}>‹</Text>
           </Pressable>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Payment</Text>
+          <Text style={{ fontSize: moderateScale(16), fontWeight: '600', color: colors.text }}>Payment</Text>
           <View className="w-6 h-6" />
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 148 }} showsVerticalScrollIndicator={false}>
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 24, backgroundColor: colors.card }}>
-            <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, lineHeight: 32 }}>Confirm Subscription</Text>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: scale(12), paddingTop: verticalScale(16), paddingBottom: verticalScale(148) }} showsVerticalScrollIndicator={false}>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), gap: verticalScale(24), backgroundColor: colors.card }}>
+            <Text style={{ fontSize: moderateScale(24), fontWeight: '500', color: colors.text, lineHeight: moderateScale(32) }}>Confirm Subscription</Text>
 
-            <Text style={{ fontSize: 14, lineHeight: 26, color: colors.textSub }}>
+            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(26), color: colors.textSub }}>
               {'You selected the '}
               <Text style={{ fontWeight: '700', color: colors.text }}>{selected.displayName} Subscription</Text>
               {'. Enjoy a '}
@@ -106,18 +107,18 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
               {" You won't be charged until your trial ends. Confirm the amount and continue."}
             </Text>
 
-            <View style={{ height: 196, borderWidth: 1, borderColor: colors.border, borderRadius: 32, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <View style={{ height: verticalScale(196), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(32), backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
               {/* Green circle blobs rendered first — BlurView above will blur them */}
-              <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, right: -20, bottom: -20, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
-              <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, left: -40, top: -40, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
+              <View style={{ position: 'absolute', width: moderateScale(140), height: moderateScale(140), borderRadius: moderateScale(70), right: scale(-20), bottom: verticalScale(-20), backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
+              <View style={{ position: 'absolute', width: moderateScale(140), height: moderateScale(140), borderRadius: moderateScale(70), left: scale(-40), top: verticalScale(-40), backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
 
               <BlurView intensity={28} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
 
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 32, lineHeight: 32, letterSpacing: -2, color: colors.text, zIndex: 10 }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(32), lineHeight: moderateScale(32), letterSpacing: -2, color: colors.text, zIndex: 10 }}>
                 {selected.price}
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 18, letterSpacing: 0 }}>{selected.pricePer}</Text>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(18), letterSpacing: 0 }}>{selected.pricePer}</Text>
               </Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 13, color: colors.textSub, textAlign: 'center', zIndex: 10, marginTop: 12 }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), lineHeight: moderateScale(13), color: colors.textSub, textAlign: 'center', zIndex: 10, marginTop: verticalScale(12) }}>
                 Enjoy a 7-day free trial and pay afterward.
               </Text>
             </View>
@@ -128,10 +129,10 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 {alternates.map((plan) => (
                   <Pressable
                     key={plan.label}
-                    style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 53, paddingHorizontal: 10, paddingVertical: 4, height: 48, justifyContent: 'center' }}
+                    style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(53), paddingHorizontal: scale(10), paddingVertical: verticalScale(4), height: verticalScale(48), justifyContent: 'center' }}
                     onPress={() => setSelectedIndex(PLANS.findIndex((p) => p.label === plan.label))}
                   >
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, letterSpacing: -1 }}>{plan.pillText}</Text>
+                    <Text style={{ fontSize: moderateScale(16), fontWeight: '600', color: colors.text, letterSpacing: -1 }}>{plan.pillText}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -164,11 +165,11 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
         onRequestClose={() => setShowPaymentSheet(false)}
       >
         <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }} onPress={() => setShowPaymentSheet(false)}>
-          <Pressable style={{ backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingBottom: 32, paddingTop: 16, gap: 16 }} onPress={() => {}}>
-            <View style={{ width: 152, height: 3, backgroundColor: colors.border, borderRadius: 20, alignSelf: 'center' }} />
+          <Pressable style={{ backgroundColor: colors.card, borderTopLeftRadius: moderateScale(32), borderTopRightRadius: moderateScale(32), paddingBottom: verticalScale(32), paddingTop: verticalScale(16), gap: verticalScale(16) }} onPress={() => {}}>
+            <View style={{ width: scale(152), height: 3, backgroundColor: colors.border, borderRadius: moderateScale(20), alignSelf: 'center' }} />
 
             <View className="px-6">
-              <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, lineHeight: 28, letterSpacing: -0.48 }}>Select  a transfer method</Text>
+              <Text style={{ fontSize: moderateScale(16), fontWeight: '500', color: colors.text, lineHeight: moderateScale(28), letterSpacing: -0.48 }}>Select  a transfer method</Text>
             </View>
 
             <View className="px-5">
@@ -177,17 +178,17 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 return (
                   <Pressable
                     key={method.id}
-                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border }}
+                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: verticalScale(16), borderBottomWidth: 1, borderBottomColor: colors.border }}
                     onPress={() => setSelectedPayment(method.id)}
                   >
                     <View className="flex-row items-center gap-4">
                       <PaymentBadge id={method.id} />
-                      <Text style={{ fontSize: 14, color: colors.text, lineHeight: 24 }}>{method.name}</Text>
+                      <Text style={{ fontSize: moderateScale(14), color: colors.text, lineHeight: moderateScale(24) }}>{method.name}</Text>
                     </View>
                     <View
                       style={isSelected
-                        ? { width: 22, height: 22, borderRadius: 11, backgroundColor: '#31973D', borderWidth: 1, borderColor: '#31973D', alignItems: 'center', justifyContent: 'center' }
-                        : { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: '#8E7164', alignItems: 'center', justifyContent: 'center' }}
+                        ? { width: moderateScale(22), height: moderateScale(22), borderRadius: moderateScale(11), backgroundColor: '#31973D', borderWidth: 1, borderColor: '#31973D', alignItems: 'center', justifyContent: 'center' }
+                        : { width: moderateScale(20), height: moderateScale(20), borderRadius: moderateScale(10), backgroundColor: colors.card, borderWidth: 1, borderColor: '#8E7164', alignItems: 'center', justifyContent: 'center' }}
                     >
                       {isSelected && <View className="w-2 h-2 rounded-full bg-white" />}
                     </View>

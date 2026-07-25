@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
@@ -36,7 +37,7 @@ export function CreditAccountScreen({
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, padding: 12 }}
+        contentContainerStyle={{ flexGrow: 1, padding: moderateScale(12) }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Form card */}
@@ -47,21 +48,21 @@ export function CreditAccountScreen({
             backgroundColor: isDark ? colors.surface : colors.bg,
             borderWidth: 1,
             borderColor: colors.border,
-            borderRadius: 24,
-            padding: 16,
-            gap: 16,
+            borderRadius: moderateScale(24),
+            padding: moderateScale(16),
+            gap: moderateScale(16),
           }}
         >
           <View>
             {/* Wallet Phone Number */}
-            <View style={{ gap: 8 }}>
+            <View style={{ gap: moderateScale(8) }}>
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                   fontWeight: "400",
                   letterSpacing: 0.15,
                   color: colors.text,
-                  lineHeight: 22,
+                  lineHeight: moderateScale(22),
                 }}
               >
                 Wallet Phone Number
@@ -74,23 +75,23 @@ export function CreditAccountScreen({
                 placeholder="055 123 4567"
                 placeholderTextColor={colors.textSub}
                 style={{
-                  height: 48,
+                  height: verticalScale(48),
                   borderWidth: 1,
                   borderColor: colors.border,
                   backgroundColor: colors.bg,
                   borderRadius: 9999,
-                  paddingHorizontal: 12,
-                  fontSize: 16,
+                  paddingHorizontal: scale(12),
+                  fontSize: moderateScale(16),
                   color: colors.text,
                 }}
               />
 
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: moderateScale(12),
                   fontWeight: "400",
                   color: colors.textMuted,
-                  lineHeight: 16,
+                  lineHeight: moderateScale(16),
                 }}
               >
                 Enter your mobile money number
@@ -102,17 +103,17 @@ export function CreditAccountScreen({
               style={{
                 borderTopWidth: 1,
                 borderTopColor: colors.borderLight,
-                paddingTop: 8,
-                gap: 8,
+                paddingTop: verticalScale(8),
+                gap: moderateScale(8),
               }}
             >
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                   fontWeight: "400",
                   letterSpacing: 0.15,
                   color: colors.text,
-                  lineHeight: 22,
+                  lineHeight: moderateScale(22),
                 }}
               >
                 Amount to top up
@@ -125,13 +126,13 @@ export function CreditAccountScreen({
                 placeholder="GHS 0.00"
                 placeholderTextColor="#ACB5BB"
                 style={{
-                  height: 48,
+                  height: verticalScale(48),
                   borderWidth: 1,
                   backgroundColor: colors.bg,
                   borderColor: colors.border,
                   borderRadius: 9999,
-                  paddingHorizontal: 12,
-                  fontSize: 16,
+                  paddingHorizontal: scale(12),
+                  fontSize: moderateScale(16),
                   color: colors.text,
                 }}
               />
@@ -140,7 +141,7 @@ export function CreditAccountScreen({
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: 8, gap: 8 }}
+                contentContainerStyle={{ paddingVertical: verticalScale(8), gap: scale(8) }}
               >
                 {QUICK_AMOUNTS.map((amount) => {
                   const isSelected = selectedAmount === amount;
@@ -149,8 +150,8 @@ export function CreditAccountScreen({
                       key={amount}
                       onPress={() => handleAmountChip(amount)}
                       style={{
-                        paddingHorizontal: 24,
-                        paddingVertical: 9,
+                        paddingHorizontal: scale(24),
+                        paddingVertical: verticalScale(9),
                         borderRadius: 9999,
                         backgroundColor: isSelected
                           ? "#31973D"
@@ -161,9 +162,9 @@ export function CreditAccountScreen({
                     >
                       <Text
                         style={{
-                          fontSize: 16,
+                          fontSize: moderateScale(16),
                           fontWeight: "400",
-                          lineHeight: 24,
+                          lineHeight: moderateScale(24),
                           color: isSelected ? colors.text : colors.textMuted,
                         }}
                       >
@@ -181,12 +182,12 @@ export function CreditAccountScreen({
               bottom: 0,
               left: 0,
               right: 0,
-              paddingVertical: 12,
+              paddingVertical: verticalScale(12),
             }}
           >
             <Pressable
               style={{
-                height: 48,
+                height: verticalScale(48),
                 backgroundColor: "#31973D",
                 borderRadius: 9999,
                 alignItems: "center",
@@ -198,10 +199,10 @@ export function CreditAccountScreen({
             >
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: moderateScale(14),
                   fontWeight: "400",
                   color: "#FFFFFF",
-                  lineHeight: 20,
+                  lineHeight: moderateScale(20),
                 }}
               >
                 Top up

@@ -15,6 +15,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -97,8 +98,8 @@ function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPr
         className="flex-1 p-8 gap-6 justify-between"
         style={{
           backgroundColor: isActive ? plan.activeColor : plan.inactiveColor,
-          borderTopLeftRadius: 32,
-          borderTopRightRadius: 32,
+          borderTopLeftRadius: moderateScale(32),
+          borderTopRightRadius: moderateScale(32),
         }}
       >
 
@@ -210,10 +211,10 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
 
         {/* Comparison table */}
         <View
-          style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, marginHorizontal: 16, marginTop: 16, backgroundColor: colors.card, gap: 24 }}
+          style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), marginHorizontal: scale(16), marginTop: verticalScale(16), backgroundColor: colors.card, gap: verticalScale(24) }}
           onLayout={e => setTableHeight(e.nativeEvent.layout.height)}
         >
-          <Text style={{ fontSize: 30, fontWeight: '800', lineHeight: 38, letterSpacing: -0.75, textTransform: 'uppercase', color: colors.text, textAlign: 'center' }}>
+          <Text style={{ fontSize: moderateScale(30), fontWeight: '800', lineHeight: moderateScale(38), letterSpacing: -0.75, textTransform: 'uppercase', color: colors.text, textAlign: 'center' }}>
             {'START YOUR '}
             <Text style={{ color: '#16CE2C' }}>FREE</Text>
             {'\n'}
@@ -225,26 +226,26 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
             <View className="flex-row items-center mb-1">
               <View className="flex-1" />
               <View className="w-[72px] items-center">
-                <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.text }}>FREE</Text>
+                <Text style={{ fontSize: moderateScale(10), fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.text }}>FREE</Text>
               </View>
               <View className="w-[72px] items-center">
-                <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }}>GOLD</Text>
+                <Text style={{ fontSize: moderateScale(10), fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }}>GOLD</Text>
               </View>
             </View>
 
             {FEATURES.map((f, i) => (
               <View
                 key={i}
-                style={{ flexDirection: 'row', alignItems: 'center', height: 45, borderBottomWidth: i < FEATURES.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
+                style={{ flexDirection: 'row', alignItems: 'center', height: verticalScale(45), borderBottomWidth: i < FEATURES.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
               >
                 <View className="flex-1">
-                  <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>{f.label}</Text>
+                  <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.text }}>{f.label}</Text>
                 </View>
                 <View className="w-[72px] items-center">
-                  {f.free && <MaterialCommunityIcons name="check" size={20} color={colors.iconColor} />}
+                  {f.free && <MaterialCommunityIcons name="check" size={moderateScale(20)} color={colors.iconColor} />}
                 </View>
                 <View className="w-[72px] items-center">
-                  {f.gold && <MaterialCommunityIcons name="check" size={20} color={accentColor} />}
+                  {f.gold && <MaterialCommunityIcons name="check" size={moderateScale(20)} color={accentColor} />}
                 </View>
               </View>
             ))}
