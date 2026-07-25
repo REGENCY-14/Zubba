@@ -16,8 +16,8 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { toast } from "../../hooks/toast";
-import Sidebar from "../../components/home/Sidebar";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { walletService } from "../../api/walletService";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
@@ -219,12 +219,46 @@ export function ZubbaWalletScreen({
 }: RootStackScreenProps<"ZubbaWallet">) {
   const customer = useAppSelector((state) => state.customer);
   const { colors } = useTheme();
-  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [activeSheet, setActiveSheet] = useState<"topup" | "withdraw">("topup");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadWallet = async () => {
+    try {
+      const [walletRes, txRes] = await Promise.all([
+        walletService.getWallet(),
+        walletService.getTransactions({ limit: 10 }),
+      ]);
+      if (walletRes.success) {
+        setWalletBalance(walletRes.data.wallet.available_balance);
+      }
+      if (txRes.success && Array.isArray(txRes.data.items) && txRes.data.items.length > 0) {
+        setTransactions(
+          txRes.data.items.map((item: any, index: number) => ({
+            id: item.id ?? String(index),
+            title: item.transaction_type ?? "Transaction",
+            date: new Date(item.created_at).toLocaleDateString(),
+            amount: `GHS ${Number(item.amount).toFixed(2)}`,
+            amountColor: item.transaction_type === "withdrawal" ? "#FF383C" : "#31973D",
+            status: "SUCCESS" as TxStatus,
+            iconBg: "#E8F5E9",
+            iconName: "wallet" as const,
+            iconColor: "#31973D",
+          })),
+        );
+      }
+    } catch {
+      // keep mock fallback
+    }
+  };
+
+  useEffect(() => {
+    loadWallet();
+  }, [route.params?.credited, route.params?.debited]);
 
   const triggerToast = (message: string) => {
     toast.success(message);
@@ -246,7 +280,7 @@ export function ZubbaWalletScreen({
   }, [route.params?.debited]);
 
   const ecoPoints = customer.points.toLocaleString();
-  const hasTransactions = MOCK_TRANSACTIONS.length > 0;
+  const hasTransactions = transactions.length > 0;
 
   return (
     <SafeAreaView
@@ -265,11 +299,11 @@ export function ZubbaWalletScreen({
         }}
       >
         <Pressable
-          onPress={() => setSidebarVisible(true)}
+          onPress={() => navigation.pop()}
           className="w-8 h-8 items-center justify-center"
         >
           <MaterialCommunityIcons
-            name="menu"
+            name="chevron-left"
             size={moderateScale(20)}
             color={colors.iconColor}
           />
@@ -364,7 +398,7 @@ export function ZubbaWalletScreen({
                       lineHeight: moderateScale(38),
                     }}
                   >
-                    {balanceVisible ? "GHS 500.00" : "GHS XXXXX"}
+                    {balanceVisible ? `GHS ${walletBalance.toFixed(2)}` : "GHS XXXXX"}
                   </Text>
                   <Pressable onPress={() => setBalanceVisible((v) => !v)}>
                     <MaterialCommunityIcons
@@ -585,11 +619,11 @@ export function ZubbaWalletScreen({
                     overflow: "hidden",
                   }}
                 >
-                  {MOCK_TRANSACTIONS.map((tx, i) => (
+                  {transactions.map((tx, i) => (
                     <TransactionRow
                       key={tx.id}
                       tx={tx}
-                      isLast={i === MOCK_TRANSACTIONS.length - 1}
+                      isLast={i === transactions.length - 1}
                     />
                   ))}
                 </View>
@@ -685,12 +719,6 @@ export function ZubbaWalletScreen({
           setSheetOpen(false);
           navigation.navigate(dest);
         }}
-      />
-      <Sidebar
-        visible={sidebarVisible}
-        onClose={() => setSidebarVisible(false)}
-        navigation={navigation}
-        activeKey="wallet"
       />
     </SafeAreaView>
   );

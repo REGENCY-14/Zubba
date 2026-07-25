@@ -8,7 +8,9 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from "react-native";
+import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -21,9 +23,10 @@ import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
-import Sidebar from "../../components/home/Sidebar";
+import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { binFullService } from "../../api/binFullService";
 
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
@@ -33,10 +36,11 @@ const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const sidebarRef = useRef<SidebarHandle>(null);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
+  const [binFullLoading, setBinFullLoading] = useState(false);
   const isPremium = customer.is_premium;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
@@ -50,10 +54,55 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       easing: Easing.out(Easing.circle),
       useNativeDriver: true,
     }).start();
-    if (isBinFull) {
-      toast.info("Bin signal sent. Driver will attend in no time");
-    }
   }, [isBinFull]);
+
+  useEffect(() => {
+    if (!isPremium) return;
+    binFullService.getStatus().then((res) => {
+      if (res.success) setIsBinFull(res.data.is_active);
+    }).catch(() => {});
+  }, [isPremium]);
+
+  const handleBinFullToggle = async (value: boolean) => {
+    if (!isPremium || binFullLoading) return;
+    setBinFullLoading(true);
+    try {
+      let pickupLocation: { type: "Point"; coordinates: [number, number] } | undefined;
+      let pickupAddress = searchQuery || "Current location";
+
+      if (value) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === "granted") {
+          const loc = await Location.getCurrentPositionAsync({});
+          pickupLocation = {
+            type: "Point",
+            coordinates: [loc.coords.longitude, loc.coords.latitude],
+          };
+        }
+      }
+
+      const res = await binFullService.setSignal({
+        isActive: value,
+        pickupAddress,
+        pickupLocation,
+      });
+
+      setIsBinFull(value);
+      if (value) {
+        const immediate = (res.data as { immediateResult?: { assigned?: boolean } })?.immediateResult;
+        if (immediate?.assigned) {
+          toast.success("Driver found!\nA driver has been assigned.");
+          setIsBinFull(false);
+        } else {
+          toast.info("Bin signal sent.\nWe'll notify you when a driver is found.");
+        }
+      }
+    } catch {
+      toast.error("Unable to update bin-full signal.");
+    } finally {
+      setBinFullLoading(false);
+    }
+  };
 
   const changeActivePill = (value: number) => {
     if (isPremium) {
@@ -68,7 +117,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       style={{ flex: 1, backgroundColor: colors.bg }}
       edges={["top", "left", "right"]}
     >
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <ImageBackground
           source={isDark ? mapDarkImage : mapImage}
           style={{ flex: 1 }}
@@ -92,7 +141,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           >
             <Pressable
               className="w-8 h-8 items-center justify-center"
-              onPress={() => setSidebarVisible(true)}
+              onPress={() => sidebarRef.current?.open()}
             >
               <MaterialCommunityIcons
                 name="menu"
@@ -107,7 +156,12 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <Text style={{ fontSize: moderateScale(12), color: colors.textSub }}>
                     Bin Full?
                   </Text>
-                  <AnimatedSwitch value={isBinFull} onChange={setIsBinFull} />
+                <View style={{ opacity: binFullLoading ? 0.5 : 1 }}>
+                  <AnimatedSwitch value={isBinFull} onChange={handleBinFullToggle} />
+                  {binFullLoading && (
+                    <ActivityIndicator size="small" color="#31973D" style={{ position: "absolute", right: -28, top: 8 }} />
+                  )}
+                </View>
                 </View>
               )}
               <Pressable
@@ -524,12 +578,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           />
         </ImageBackground>
       </View>
-      <Sidebar
-        visible={sidebarVisible}
-        activeKey="home"
-        onClose={() => setSidebarVisible(false)}
-        navigation={navigation}
-      />
+      <Sidebar ref={sidebarRef} navigation={navigation} activeKey="home" />
     </SafeAreaView>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -128,7 +128,7 @@ export function SettingsScreen({
     <SafeAreaView
       style={{ backgroundColor: colors.bg }}
       className="flex-1"
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="Settings" navigation={navigation} />
       <View style={{ backgroundColor: colors.bg }} className="flex-1">
@@ -136,7 +136,7 @@ export function SettingsScreen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: scale(12),
-            paddingBottom: verticalScale(100),
+            paddingBottom: verticalScale(148),
             gap: verticalScale(24),
           }}
         >
@@ -404,7 +404,10 @@ export function SettingsScreen({
                     </Text>
                   </View>
                 </View>
-                <Pressable className="flex-row items-center gap-2 border border-[#D4AF37] rounded-full bg-[#FFE088] px-4 py-2.5">
+                <Pressable
+                  className="flex-row items-center gap-2 border border-[#D4AF37] rounded-full bg-[#FFE088] px-4 py-2.5"
+                  onPress={() => Linking.openURL("tel:+233245000709")}
+                >
                   <Text className="text-sm leading-5 text-[#1F2A33]">
                     Call Now
                   </Text>

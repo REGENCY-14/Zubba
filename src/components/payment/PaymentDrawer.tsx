@@ -4,7 +4,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PaymentOption } from "./PaymentOption";
 import { useTheme } from "../../context/ThemeContext";
 import { creditMethods, paymentMethods } from "../../constants/paymentMethods";
-import { scale, moderateScale } from "../../utils/scale";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel" | "credit_card";
 
@@ -13,7 +14,7 @@ type Props = {
   onClose: () => void;
   onContinue: (method: PaymentMethodId) => void;
   initialMethod?: PaymentMethodId;
-  isCreditPage?: boolean
+  isCreditPage?: boolean;
 };
 
 export function PaymentMethodDrawer({
@@ -21,16 +22,17 @@ export function PaymentMethodDrawer({
   onClose,
   onContinue,
   initialMethod = "wallet",
-  isCreditPage = false
+  isCreditPage = false,
 }: Props) {
   const [selectedMethod, setSelectedMethod] =
     useState<PaymentMethodId>(initialMethod);
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (visible) setSelectedMethod(initialMethod);
   }, [visible, initialMethod]);
-  const itemList = isCreditPage ? paymentMethods : creditMethods
+  const itemList = isCreditPage ? paymentMethods : creditMethods;
 
   return (
     <Modal
@@ -43,7 +45,11 @@ export function PaymentMethodDrawer({
       <Pressable onPress={onClose} className="flex-1 bg-black/40 justify-end">
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={{ backgroundColor: colors.bg, borderColor: colors.border }}
+          style={{
+            backgroundColor: colors.bg,
+            borderColor: colors.border,
+            paddingBottom: Math.max(insets.bottom, verticalScale(24)),
+          }}
           className="rounded-t-[32px] px-4 pt-3 pb-6 border-t"
         >
           <View className="items-center mb-4">
