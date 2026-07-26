@@ -15,7 +15,7 @@ export function StatCardsRow({ bags, points }: StatCardsRowProps) {
       <StatCard
         icon={require("../../../assets/recycle.png")}
         label="Active"
-        value={`${bags} bags`}
+        value={`${bags} bag${bags == 1 ? '': 's'}`}
         description="Recycled this month"
         labelColor="#31973D"
       />

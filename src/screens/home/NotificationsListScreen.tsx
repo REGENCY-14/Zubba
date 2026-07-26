@@ -1,4 +1,5 @@
-import { Image, Pressable, ScrollView, Text, View, ActivityIndicator } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { Image, Pressable, ScrollView, Text, View, ActivityIndicator, RefreshControl } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
@@ -10,10 +11,14 @@ type NotificationItem = {
   id: string;
   message: string;
   time: string;
+  createdAt: Date;
 };
 
-const TODAY: NotificationItem[] = [];
-const WEEK_AGO: NotificationItem[] = [];
+type Section = {
+  key: string;
+  title: string;
+  items: NotificationItem[];
+};
 
 const bellIcon = require("../../../assets/notification_bell.png")
 
@@ -50,20 +55,72 @@ function BellIllustration() {
   );
 }
 
-const hasActivity = TODAY.length > 0 || WEEK_AGO.length > 0;
+function startOfDay(d: Date) {
+  const copy = new Date(d);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+function groupNotifications(items: NotificationItem[]): Section[] {
+  const today = startOfDay(new Date());
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const buckets: Record<'today' | 'week' | 'earlier', NotificationItem[]> = {
+    today: [],
+    week: [],
+    earlier: [],
+  };
+
+  for (const item of items) {
+    const day = startOfDay(item.createdAt);
+    if (day.getTime() === today.getTime()) {
+      buckets.today.push(item);
+    } else if (day.getTime() > sevenDaysAgo.getTime()) {
+      buckets.week.push(item);
+    } else {
+      buckets.earlier.push(item);
+    }
+  }
+
+  const sections: Section[] = [];
+  if (buckets.today.length) sections.push({ key: 'today', title: 'Today', items: buckets.today });
+  if (buckets.week.length) sections.push({ key: 'week', title: 'This Week', items: buckets.week });
+  if (buckets.earlier.length) sections.push({ key: 'earlier', title: 'Earlier', items: buckets.earlier });
+  return sections;
+}
 
 export function NotificationsListScreen({ navigation }: RootStackScreenProps<'NotificationsList'>) {
   const { colors } = useTheme();
-  const { data, isLoading } = useNotifications(50, 0);
+  const { data, isLoading, refetch } = useNotifications(50, 0);
   const deleteNotification = useDeleteNotification();
+  const [refreshing, setRefreshing] = useState(false);
 
-  const items: NotificationItem[] = (data?.notifications ?? []).map((n: any) => ({
-    id: n.id,
-    message: n.body,
-    time: new Date(n.createdAt ?? n.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
-  }));
+  const items: NotificationItem[] = useMemo(
+    () =>
+      (data?.notifications ?? []).map((n: any) => {
+        const createdAt = new Date(n.createdAt ?? n.created_at);
+        return {
+          id: n.id,
+          message: n.body,
+          time: createdAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+          createdAt,
+        };
+      }),
+    [data]
+  );
 
+  const sections = useMemo(() => groupNotifications(items), [items]);
   const hasItems = items.length > 0;
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -74,24 +131,51 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 24 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.text}
+              colors={['#31973D']}
+            />
+          }
         >
-          {isLoading ? (
+          {isLoading && !refreshing ? (
             <ActivityIndicator color="#31973D" />
           ) : hasItems ? (
-            <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingVertical: 11 }}>
-              <View style={{ paddingHorizontal: 16, gap: 16 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text style={{ fontWeight: '500', fontSize: 20, lineHeight: 28, color: colors.text }}>
-                    Recent Activity
-                  </Text>
-                  <MaterialCommunityIcons name="tune-variant" size={18} color={colors.textSub} />
-                </View>
-                {items.map(item => (
-                  <Pressable key={item.id} onLongPress={() => deleteNotification.mutate(item.id as any)}>
-                    <NotificationRow item={item} iconSize={32} colors={colors} />
-                  </Pressable>
-                ))}
+            <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 24, paddingVertical: 11, gap: 16 }}>
+              <View style={{ paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontWeight: '500', fontSize: 20, lineHeight: 28, color: colors.text }}>
+                  Recent Activity
+                </Text>
+                <MaterialCommunityIcons name="tune-variant" size={18} color={colors.textSub} />
               </View>
+
+              {sections.map((section, sIdx) => (
+                <View key={section.key} style={{ gap: 8 }}>
+                  <Text style={{
+                    paddingHorizontal: 16,
+                    fontWeight: '600',
+                    fontSize: 12,
+                    lineHeight: 16,
+                    letterSpacing: 0.4,
+                    textTransform: 'uppercase',
+                    color: colors.textSub,
+                  }}>
+                    {section.title}
+                  </Text>
+                  <View>
+                    {section.items.map((item, iIdx) => (
+                      <Pressable key={item.id} onLongPress={() => deleteNotification.mutate(item.id as any)}>
+                        <NotificationRow item={item} iconSize={32} colors={colors} />
+                      </Pressable>
+                    ))}
+                  </View>
+                  {sIdx < sections.length - 1 && (
+                    <View style={{ height: 1, backgroundColor: colors.borderLight, marginHorizontal: 16 }} />
+                  )}
+                </View>
+              ))}
             </View>
           ) : (
             <>

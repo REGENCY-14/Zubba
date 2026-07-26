@@ -170,7 +170,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
             fontSize: 14,
             fontWeight: "500",
             letterSpacing: 0.28,
-            color: colors.textMuted,
+            color: colors.text,
             lineHeight: 17,
           }}
         >
@@ -605,11 +605,15 @@ export function ZubbaWalletScreen({
               >
                 Recent Activity
               </Text>
-              <MaterialCommunityIcons
-                name="tune-variant"
-                size={18}
-                color="#ACB5BB"
-              />
+              <Pressable
+                onPress={() => navigation.navigate("Transactions")}
+              >
+                <MaterialCommunityIcons
+                  name="tune-variant"
+                  size={18}
+                  color="#ACB5BB"
+                />
+              </Pressable>
             </View>
 
             {hasTransactions ? (
@@ -624,7 +628,7 @@ export function ZubbaWalletScreen({
                     overflow: "hidden",
                   }}
                 >
-                  {transactions.map((tx, i) => (
+                  {transactions.slice(0,5).map((tx, i) => (
                     <TransactionRow
                       key={tx.id}
                       tx={tx}
