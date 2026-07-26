@@ -23,7 +23,6 @@ import { SidebarMenuItem } from "../../types/sidebarItem.types";
 import { bottom_sidebar_items, isPremiumSidebarItem, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.7);
 
@@ -47,6 +46,8 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
   const customer = useAppSelector((state) => state.customer);
+  const profilePicture =
+    customer.profile_picture ?? user?.profile_picture ?? null;
 
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -166,9 +167,9 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               }}
             >
               <View style={{ width: 54, height: 54 }}>
-                {avatarUrl ? (
+                {profilePicture ? (
                   <Image
-                    source={avatarUrl}
+                    source={{ uri: profilePicture }}
                     style={{
                       width: 54,
                       height: 54,

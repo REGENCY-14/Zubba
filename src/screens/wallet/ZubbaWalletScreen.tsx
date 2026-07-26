@@ -17,6 +17,12 @@ import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { toast } from "../../hooks/toast";
 import { walletService } from "../../api/walletService";
+import {
+  getMethodLabel,
+  mapMethodToChannel,
+  mapMethodToProvider,
+  type PaymentMethodId,
+} from "../../utils/paymentProviders";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
@@ -712,11 +718,18 @@ export function ZubbaWalletScreen({
       <PaymentMethodDrawer
         visible={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        onContinue={() => {
+        isCreditPage={activeSheet !== "withdraw"}
+        onContinue={(method: PaymentMethodId) => {
           const dest =
             activeSheet === "withdraw" ? "Withdraw" : "CreditAccount";
           setSheetOpen(false);
-          navigation.navigate(dest);
+          navigation.navigate(dest, {
+            provider: mapMethodToProvider(method),
+            methodLabel: getMethodLabel(method),
+            ...(dest === "CreditAccount"
+              ? { channel: mapMethodToChannel(method) }
+              : {}),
+          });
         }}
       />
     </SafeAreaView>

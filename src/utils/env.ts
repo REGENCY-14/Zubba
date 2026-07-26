@@ -4,6 +4,9 @@ type AppExtra = {
   apiUrl?: string;
   googleClientId?: string;
   paystackPublicKey?: string;
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+  supabaseAvatarBucket?: string;
 };
 
 function readEnv(key: string, extraKey?: keyof AppExtra): string {
@@ -25,4 +28,7 @@ export const env = {
   googleWebClientId: readEnv("EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID", "googleClientId"),
   googleAndroidClientId: readEnv("EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID", "googleClientId"),
   paystackPublicKey: readEnv("EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY", "paystackPublicKey"),
+  supabaseUrl: readEnv("EXPO_PUBLIC_SUPABASE_URL", "supabaseUrl"),
+  supabaseAnonKey: readEnv("EXPO_PUBLIC_SUPABASE_ANON_KEY", "supabaseAnonKey"),
+  supabaseAvatarBucket: readEnv("EXPO_PUBLIC_SUPABASE_AVATAR_BUCKET", "supabaseAvatarBucket"),
 };

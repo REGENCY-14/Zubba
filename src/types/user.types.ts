@@ -15,6 +15,7 @@ export interface UpdateUserDto {
   firstname?: string;
   lastname?: string;
   phone?: string;
+  profile_picture?: string | null;
 }
 
 export interface FindUserDto {

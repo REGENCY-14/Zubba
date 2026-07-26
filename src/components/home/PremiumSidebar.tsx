@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Pressable, Text, View } from 'react-native';
+import { Animated, Dimensions, Image, Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useTheme } from '../../context/ThemeContext';
@@ -21,7 +21,41 @@ type Props = {
   activeKey?: string;
 };
 
-function Avatar({ name }: { name: string }) {
+function Avatar({ name, imageUrl }: { name: string; imageUrl?: string | null }) {
+  if (imageUrl) {
+    return (
+      <View style={{ width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
+        <Image
+          source={{ uri: imageUrl }}
+          style={{
+            width: 54,
+            height: 54,
+            borderRadius: 9999,
+            borderWidth: 2,
+            borderColor: '#90FA96',
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            width: 20,
+            height: 20,
+            borderRadius: 9999,
+            backgroundColor: '#006B23',
+            borderWidth: 2,
+            borderColor: '#FFFFFF',
+            alignItems: 'center',
+            justifyContent: 'center',
+            right: 0,
+            bottom: 0,
+          }}
+        >
+          <MaterialCommunityIcons name="check" size={10} color="#FFFFFF" />
+        </View>
+      </View>
+    );
+  }
+
   const initials = name
     .split(' ')
     .map((w) => w[0])
@@ -68,6 +102,7 @@ function Avatar({ name }: { name: string }) {
 
 export function PremiumSidebar({ isOpen, onClose, menuItems, activeKey }: Props) {
   const user = useAppSelector((state) => state.auth.user);
+  const customer = useAppSelector((state) => state.customer);
   const { colors } = useTheme();
   const translateX = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -88,6 +123,8 @@ export function PremiumSidebar({ isOpen, onClose, menuItems, activeKey }: Props)
 
   const fullName = user ? `${user.firstname} ${user.lastname}` : 'Guest User';
   const contact = user?.phone ?? user?.email ?? '';
+  const profilePicture =
+    customer.profile_picture ?? user?.profile_picture ?? null;
 
   return (
     <>
@@ -118,7 +155,7 @@ export function PremiumSidebar({ isOpen, onClose, menuItems, activeKey }: Props)
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Avatar name={fullName} />
+            <Avatar name={fullName} imageUrl={profilePicture} />
             <View style={{ flex: 1, gap: 2 }}>
               <Text style={{ fontSize: 20, fontWeight: '400', color: colors.text, lineHeight: 28 }} numberOfLines={1}>
                 {fullName}

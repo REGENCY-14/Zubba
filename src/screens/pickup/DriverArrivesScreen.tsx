@@ -14,6 +14,7 @@ import {
   mapMethodToChannel,
   mapMethodToProvider,
 } from "../../utils/paymentProviders";
+import { callDriver, messageDriver } from "../../utils/contactDriver";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -56,22 +57,30 @@ export function DriverArrivesScreen({
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Pressable
+                  onPress={() => callDriver(request.driver.phone)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8, opacity: request.driver.phone ? 1 : 0.5 }}
+                  disabled={!request.driver.phone}
+                >
                   <MaterialCommunityIcons
                     name="phone-outline"
                     size={16}
                     color={colors.textMuted}
                   />
                   <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Call</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                </Pressable>
+                <Pressable
+                  onPress={() => messageDriver(request.driver.phone)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8, opacity: request.driver.phone ? 1 : 0.5 }}
+                  disabled={!request.driver.phone}
+                >
                   <MaterialCommunityIcons
                     name="message-outline"
                     size={16}
                     color={colors.textMuted}
                   />
                   <Text style={{ marginLeft: 4, color: colors.textMuted, fontSize: 14 }}>Message</Text>
-                </View>
+                </Pressable>
               </View>
             </View>
           </View>

@@ -50,6 +50,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         color: "#4CAF50",
       },
     ],
+    [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "Allow Zubba to access your photos to set a profile picture.",
+      },
+    ],
   ],
   extra: {
     eas: {
@@ -59,5 +66,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     paystackPublicKey: process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY,
+    supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseAvatarBucket: process.env.EXPO_PUBLIC_SUPABASE_AVATAR_BUCKET,
   },
 });

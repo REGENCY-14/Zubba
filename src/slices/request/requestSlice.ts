@@ -6,6 +6,7 @@ export interface DriverRequest {
   avatar: string;
   code: string;
   rating: number;
+  phone?: string | null;
 }
 
 export interface RequestState {
@@ -37,6 +38,7 @@ const initialState: RequestState = {
     avatar: "",
     code: "",
     rating: 0,
+    phone: null,
   },
   pickup_location: "",
   pickup_address: "",

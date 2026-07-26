@@ -21,7 +21,7 @@ export const userService = {
   },
 
   updateUser: async (id: string, payload: UpdateUserDto) => {
-    const { data } = await api.patch<ApiResponse<{ message: string }>>(
+    const { data } = await api.patch<ApiResponse<{ user: User }>>(
       `/users/${id}`,
       payload,
     );
