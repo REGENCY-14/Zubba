@@ -28,12 +28,28 @@ export type RootStackParamList = {
   Scanning: undefined;
   DriverArrives: undefined;
   Payment: undefined;
-  PaymentMethod: undefined;
+  PaymentMethod: {
+    provider: string;
+    methodLabel: string;
+    channel?: "mobile_money" | "card";
+  };
   PaymentVerification: { phone: string; reference: string; amount: number; provider: string;};
-  PaymentSuccess: { reference?: string; amount?: number; provider?: string; phone?: string;};
+  PaymentSuccess: {
+    reference?: string;
+    amount?: number;
+    provider?: string;
+    phone?: string;
+    paymentMethodLabel?: string;
+  };
   AuthorizePayment: { phone: string };
-  ThankYou: undefined;
-  RateRide: undefined;
+  ThankYou: { reference?: string; amount?: number; phone?: string } | undefined;
+  RateRide: {
+    reference?: string;
+    amount?: number;
+    provider?: string;
+    phone?: string;
+    paymentMethodLabel?: string;
+  } | undefined;
   Settings: undefined;
   TermsAndConditions: undefined;
   AboutUs: undefined;

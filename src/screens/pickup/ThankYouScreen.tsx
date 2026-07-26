@@ -7,7 +7,9 @@ const bgImage = require("../../../assets/thank_you.jpg");
 
 export function ThankYouScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"ThankYou">) {
+  const { amount, phone } = route.params ?? {};
   return (
     <SafeAreaView
       className="flex-1 relative"
@@ -43,8 +45,11 @@ export function ThankYouScreen({
             </Text>
 
             <Text className="text-white/90 text-sm text-center leading-relaxed">
-              You help fellow customers find what's good out there in discovering
-              the best experiences.
+              {amount
+                ? `Your payment of GHS ${Number(amount).toFixed(2)}${
+                    phone ? ` from ${phone}` : ""
+                  } is complete. Thank you for using Zubba.`
+                : "Thank you for using Zubba and helping fellow customers discover the best experiences."}
             </Text>
           </View>
 

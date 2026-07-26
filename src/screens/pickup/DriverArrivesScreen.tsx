@@ -8,6 +8,12 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import {
+  getMethodLabel,
+  isWalletMethod,
+  mapMethodToChannel,
+  mapMethodToProvider,
+} from "../../utils/paymentProviders";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -140,13 +146,19 @@ export function DriverArrivesScreen({
         <PaymentMethodDrawer
           visible={showPaymentDrawer}
           onClose={() => setShowPaymentDrawer(false)}
+          isCreditPage={true}
           onContinue={(method) => {
             setShowPaymentDrawer(false);
-            if (method === "wallet") {
+            if (isWalletMethod(method)) {
               navigation.navigate("WalletCheckout");
-            } else {
-              navigation.navigate("PaymentMethod");
+              return;
             }
+
+            navigation.navigate("PaymentMethod", {
+              provider: mapMethodToProvider(method),
+              methodLabel: getMethodLabel(method),
+              channel: mapMethodToChannel(method),
+            });
           }}
         />
       </View>
