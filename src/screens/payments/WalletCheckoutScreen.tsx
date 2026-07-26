@@ -135,7 +135,7 @@ export function WalletCheckoutScreen({
               GHS {total.toFixed(2)}
             </Text>
 
-            <View className="flex-row absolute -bottom-[40px] items-center gap-1 bg-[#31973D] rounded-full px-3 py-1">
+            <View className="flex-row absolute -bottom-[32px] items-center gap-1 bg-[#31973D] rounded-full px-3 py-1">
               <MaterialCommunityIcons
                 name="trending-up"
                 size={12}
@@ -151,7 +151,7 @@ export function WalletCheckoutScreen({
         <View style={{ marginTop: -10, flex: 1 }}>
           <View className="flex-row items-center px-6 pt-10 pb-6 gap-[10px]">
             <Pressable
-              className="w-8 h-8 bg-[#FFE2E2] rounded-xl items-center justify-center"
+              className="w-9 h-9 bg-[#FFE2E2] rounded-xl items-center justify-center"
               onPress={() => navigation.navigate("Home")}
             >
               <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
@@ -300,7 +300,14 @@ export function WalletCheckoutScreen({
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
-                    <Text className="text-base font-bold text-[#31973D] leading-6">
+                    <Text
+                      style={{
+                        color:
+                          walletBalance !== null && walletBalance >= total
+                            ? "#31973D"
+                            : "#EF4444",
+                      }}
+                      className="text-base font-bold leading-6">
                       {walletBalance !== null && walletBalance >= total
                         ? "READY"
                         : "LOW"}

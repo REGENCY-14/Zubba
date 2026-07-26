@@ -207,7 +207,7 @@ export function WithdrawScreen({
                           fontSize: 16,
                           fontWeight: "400",
                           lineHeight: 24,
-                          color: isSelected ? colors.text : colors.textMuted,
+                          color: isSelected ? colors.bg : colors.textMuted,
                         }}
                       >
                         GHS {amount}

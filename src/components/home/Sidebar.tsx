@@ -20,7 +20,7 @@ import { TextAvatar } from "../onboarding/TextAvatar";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
-import { bottom_sidebar_items, isPremiumSidebarItem, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
+import { bottom_sidebar_items, isPremiumSidebarItems, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -59,7 +59,7 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
 
   const sidebarItems = [
     ...top_sidebar_items,
-    ...(customer.is_premium ? [isPremiumSidebarItem] : [noPlanSidebarItem]),
+    ...(customer.is_premium ? isPremiumSidebarItems : [noPlanSidebarItem]),
     ...bottom_sidebar_items,
     ...menuItems,
   ];
