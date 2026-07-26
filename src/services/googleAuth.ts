@@ -12,14 +12,12 @@ export function useGoogleLogin() {
   console.log("===== redirectUri: ", redirectUri)
   toast.info(redirectUri)
 
-
   const [request, response, promptAsync] =
     Google.useIdTokenAuthRequest({
       webClientId: env.googleWebClientId,
       androidClientId: env.googleAndroidClientId,
       redirectUri,
     });
-
 
   return {
     request,
