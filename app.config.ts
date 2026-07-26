@@ -2,7 +2,7 @@ import "dotenv/config";
 import { existsSync } from "fs";
 import { ExpoConfig, ConfigContext } from "expo/config";
 
-const googleServicesPath = process.env.EXPO_PUBLICGOOGLE_SERVICES_JSON;
+const googleServicesPath = process.env.EXPO_PUBLIC_GOOGLE_SERVICES_JSON;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,

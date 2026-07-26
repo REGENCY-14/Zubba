@@ -144,8 +144,7 @@ export function ProfileScreen({
 
     let uploadedUrl: string | null = null;
     try {
-      const previousUrl =
-        customer.profile_picture ?? user?.profile_picture ?? null;
+      const previousUrl = customer.profile_picture ?? user?.profile_picture ?? null;
       uploadedUrl = await uploadAvatar(user.id, uri, previousUrl);
 
       const response = await userService.updateUser(user.id, {
