@@ -35,6 +35,5 @@ The project is scaffolded with placeholder screens and reusable primitives. UI i
 
 ## Build android apk
 1. ```cd android```
-2. ```./gradlew clean``` (optional)
-3. ```./gradlew assembleRelease```
+2. ```./gradlew clean assembleRelease --no-daemon --max-workers=2```
 - Apk in android/app/bulid/outputs/apk/release/**.apk

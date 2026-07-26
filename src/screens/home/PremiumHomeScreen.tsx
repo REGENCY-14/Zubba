@@ -48,7 +48,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
       <ImageBackground source={mapImage} style={{ flex: 1, width: "100%", height: "100%" }} resizeMode="cover">
 
         {/* Full-height flex column: top — map — bottom */}

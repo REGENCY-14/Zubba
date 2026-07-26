@@ -11,7 +11,7 @@ export function ThankYouScreen({
   return (
     <SafeAreaView
       className="flex-1 relative"
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       {/* <StatusBar barStyle="light-content" /> */}
 

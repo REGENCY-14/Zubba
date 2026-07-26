@@ -64,7 +64,7 @@ export function CreditAccountScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="Credit Account" navigation={navigation} />
 

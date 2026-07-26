@@ -19,7 +19,7 @@ export function DriverArrivesScreen({
   const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
       <View style={{ flex: 1, backgroundColor: colors.surface }}>
         <CustomAppBar title="Driver Arrives" navigation={navigation} />
 

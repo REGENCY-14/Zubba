@@ -68,7 +68,7 @@ export function HelpCenterScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="Help Center" navigation={navigation} />
       <View style={{ flex: 1, backgroundColor: colors.bg }}>

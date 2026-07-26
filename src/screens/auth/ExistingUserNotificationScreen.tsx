@@ -19,7 +19,7 @@ export function ExistingUserNotificationScreen({ route, navigation }: RootStackS
           <View style={{ height: 110, width: 110, marginBottom: 16, borderRadius: 55, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}>
             <MaterialCommunityIcons name="account-circle-outline" color={colors.iconColor} size={50} />
           </View>
-          <Text className="text-[24px] leading-7 font-[500] text-gray-900 text-center">
+          <Text style={{color: colors.text}} className="text-[24px] leading-7 font-[500] text-center">
             Welcome, {user?.firstname}!
           </Text>
           <Text style={{ fontSize: 14, lineHeight: 24, fontWeight: "300", color: colors.textSub, textAlign: "center", marginTop: 8, maxWidth: 366 }}>

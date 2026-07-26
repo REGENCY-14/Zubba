@@ -1,14 +1,19 @@
+import "dotenv/config";
+import { existsSync } from "fs";
 import { ExpoConfig, ConfigContext } from "expo/config";
+
+const googleServicesPath = process.env.EXPO_PUBLICGOOGLE_SERVICES_JSON;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "Zubba Frontend",
+  name: "Zubba Customer",
   slug: "zubba-frontend",
   owner: "andyaa",
   scheme: "zubbafrontend",
   version: "1.0.0",
   orientation: "portrait",
   userInterfaceStyle: "light",
+  icon: "./assets/ic_launcher_round.png",
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
@@ -16,7 +21,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: "com.zubba.app",
-    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+    ...(googleServicesPath && existsSync(googleServicesPath)
+      ? { googleServicesFile: googleServicesPath }
+      : {}),
+    adaptiveIcon: {
+      foregroundImage: "./assets/ic_launcher.png",
+      backgroundColor: "#FFFFFF",
+    },
   },
   web: {},
   plugins: [
@@ -24,12 +35,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-splash-screen",
     "expo-status-bar",
     "expo-web-browser",
-    "react-native-iap",
+    [
+      "expo-build-properties",
+      {
+        android: {
+          buildArchs: ["arm64-v8a"],
+        },
+      },
+    ],
     [
       "expo-notifications",
       {
-        icon: "./assets/icon.png",
-        color: "#0F172A",
+        icon: "./assets/ic_launcher.png",
+        color: "#4CAF50",
       },
     ],
   ],
@@ -38,7 +56,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       projectId: "f54db8fc-b548-4fb4-92ac-755981574a54",
     },
     apiUrl: process.env.EXPO_PUBLIC_API_URL,
-    googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     paystackPublicKey: process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY,
   },
 });

@@ -1080,7 +1080,7 @@ export function ScheduleScreen({
       <SafeAreaView
         className="flex-1"
         style={{ backgroundColor: colors.bg }}
-        edges={["top", "left", "right"]}
+        edges={["top", "left", "right", "bottom"]}
       >
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#31973D" />
@@ -1096,7 +1096,7 @@ export function ScheduleScreen({
     <SafeAreaView
       className="flex-1"
       style={{ backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       {/* Top bar */}
       <View className="w-full h-12 flex-row items-center justify-between px-4 z-10">

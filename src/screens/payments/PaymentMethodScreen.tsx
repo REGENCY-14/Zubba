@@ -71,7 +71,7 @@ export function PaymentMethodScreen({
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment" />
 
