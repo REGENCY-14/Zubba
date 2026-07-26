@@ -6,7 +6,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
 import { useTheme } from "../../context/ThemeContext";
-// import { registerForPushNotifications } from "../../services/pushNotifications";
+import { registerForPushNotifications } from "../../services/pushNotifications";
 import axios from "axios";
 
 export const OnboardNotificationsAccessScreen = ({
@@ -19,12 +19,12 @@ export const OnboardNotificationsAccessScreen = ({
   const enableNotifications = async () => {
     setLoading(true);
     try {
-      // const token = await registerForPushNotifications();
-      // if (token) {
-      //   toast.success("Success\nNotifications enabled!");
-      // } else {
-      //   toast.info("Permission denied\nYou can enable notifications later in settings.");
-      // }
+      const token = await registerForPushNotifications();
+      if (token) {
+        toast.success("Success\nNotifications enabled!");
+      } else {
+        toast.info("Permission denied\nYou can enable notifications later in settings.");
+      }
       navigation.navigate("SignUp");
     } catch (error) {
       console.log("Notification permission error:", error);
