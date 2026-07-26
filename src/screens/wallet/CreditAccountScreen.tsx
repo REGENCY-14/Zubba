@@ -5,20 +5,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
-import { walletService } from "../../api/walletService";
-import { handleApiError } from "../../utils/handleApiError";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { useWalletPaystackCheckout } from "../../hooks/useWalletPaystackCheckout";
+import { formatAuthPhone } from "../../utils/paymentProviders";
+import { toast } from "../../hooks/toast";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
 export function CreditAccountScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"CreditAccount">) {
   const { colors, isDark } = useTheme();
+  const user = useAppSelector((state) => state.auth.user);
+  const { startDeposit, isLoading } = useWalletPaystackCheckout();
 
-  const [phone, setPhone] = useState("055 123 4567");
+  const {
+    provider = "mtn",
+    methodLabel = "Mobile Money",
+    channel = "mobile_money",
+  } = route.params ?? {};
+
+  const [phone, setPhone] = useState(formatAuthPhone(user?.phone) || "055 123 4567");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
   const [customAmount, setCustomAmount] = useState("GHS 50.00");
-  const [loading, setLoading] = useState(false);
 
   const parseAmount = () => {
     if (selectedAmount) return selectedAmount;
@@ -28,27 +38,21 @@ export function CreditAccountScreen({
 
   const handleTopUp = async () => {
     const amount = parseAmount();
-    if (amount <= 0 || loading) return;
-    setLoading(true);
-    try {
-      const res = await walletService.initiateDeposit({
-        amount,
-        phone: phone.replace(/\s/g, ""),
-        provider: "mtn",
-      });
-      if (res.success && res.data.reference) {
-        navigation.navigate("PaymentVerification", {
-          phone,
-          reference: res.data.reference,
-          amount,
-          provider: "mtn",
-        });
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setLoading(false);
+    if (amount <= 0 || isLoading) return;
+
+    if (!user?.email) {
+      toast.error("A verified email is required to complete payment.");
+      return;
     }
+
+    await startDeposit({
+      email: user.email,
+      phone: channel === "mobile_money" ? phone : formatAuthPhone(user.phone),
+      amount,
+      provider,
+      paymentMethodLabel: methodLabel,
+      channel,
+    });
   };
 
   const handleAmountChip = (amount: number) => {
@@ -60,6 +64,8 @@ export function CreditAccountScreen({
     setCustomAmount(text);
     setSelectedAmount(null);
   };
+
+  const loading = isLoading;
 
   return (
     <SafeAreaView
@@ -73,7 +79,6 @@ export function CreditAccountScreen({
         contentContainerStyle={{ flexGrow: 1, padding: 12 }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Form card */}
         <View
           className="flex justify-between"
           style={{
@@ -87,57 +92,64 @@ export function CreditAccountScreen({
           }}
         >
           <View>
-            {/* Wallet Phone Number */}
-            <View style={{ gap: 8 }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "400",
-                  letterSpacing: 0.15,
-                  color: colors.text,
-                  lineHeight: 22,
-                }}
-              >
-                Wallet Phone Number
-              </Text>
-
-              <TextInput
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-                placeholder="055 123 4567"
-                placeholderTextColor={colors.textSub}
-                style={{
-                  height: 48,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  backgroundColor: colors.bg,
-                  borderRadius: 9999,
-                  paddingHorizontal: 12,
-                  fontSize: 16,
-                  color: colors.text,
-                }}
-              />
-
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "400",
-                  color: colors.textMuted,
-                  lineHeight: 16,
-                }}
-              >
-                Enter your mobile money number
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 14, color: colors.textSub }}>
+                Payment method: {methodLabel}
               </Text>
             </View>
 
-            {/* Amount to top up */}
+            {channel === "mobile_money" ? (
+              <View style={{ gap: 8 }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "400",
+                    letterSpacing: 0.15,
+                    color: colors.text,
+                    lineHeight: 22,
+                  }}
+                >
+                  Wallet Phone Number
+                </Text>
+
+                <TextInput
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                  placeholder="055 123 4567"
+                  placeholderTextColor={colors.textSub}
+                  style={{
+                    height: 48,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    backgroundColor: colors.bg,
+                    borderRadius: 9999,
+                    paddingHorizontal: 12,
+                    fontSize: 16,
+                    color: colors.text,
+                  }}
+                />
+
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: "400",
+                    color: colors.textMuted,
+                    lineHeight: 16,
+                  }}
+                >
+                  Enter your mobile money number
+                </Text>
+              </View>
+            ) : null}
+
             <View
               style={{
-                borderTopWidth: 1,
+                borderTopWidth: channel === "mobile_money" ? 1 : 0,
                 borderTopColor: colors.borderLight,
                 paddingTop: 8,
                 gap: 8,
+                marginTop: channel === "mobile_money" ? 8 : 0,
               }}
             >
               <Text
@@ -170,7 +182,6 @@ export function CreditAccountScreen({
                 }}
               />
 
-              {/* Quick select chips */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -210,14 +221,7 @@ export function CreditAccountScreen({
             </View>
           </View>
 
-          <View
-            style={{
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingVertical: 12,
-            }}
-          >
+          <View style={{ paddingVertical: 12 }}>
             <Pressable
               style={{
                 height: 48,

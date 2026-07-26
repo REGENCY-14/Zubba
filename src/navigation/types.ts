@@ -22,9 +22,13 @@ export type RootStackParamList = {
   Promotions: undefined;
   PremiumHome: undefined;
   ZubbaWallet: { credited?: boolean; debited?: boolean } | undefined;
-  Withdraw: undefined;
+  Withdraw: { provider: string; methodLabel: string };
   Transactions: undefined;
-  CreditAccount: undefined;
+  CreditAccount: {
+    provider: string;
+    methodLabel: string;
+    channel?: "mobile_money" | "card";
+  };
   Scanning: undefined;
   DriverArrives: undefined;
   Payment: undefined;
@@ -33,7 +37,13 @@ export type RootStackParamList = {
     methodLabel: string;
     channel?: "mobile_money" | "card";
   };
-  PaymentVerification: { phone: string; reference: string; amount: number; provider: string;};
+  PaymentVerification: {
+    phone: string;
+    reference: string;
+    amount: number;
+    provider: string;
+    purpose?: "wallet_deposit" | "pickup";
+  };
   PaymentSuccess: {
     reference?: string;
     amount?: number;

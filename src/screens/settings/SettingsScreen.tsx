@@ -12,6 +12,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slices/auth/authSlice";
+import { clearCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 
 type SettingsRowProps = {
@@ -116,6 +117,7 @@ export function SettingsScreen({
 
   const handleSignout = async () => {
     dispatch(logout());
+    dispatch(clearCustomer());
     await authStorage.clear();
     navigation.reset({
       index: 0,

@@ -7,15 +7,22 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { walletService } from "../../api/walletService";
 import { handleApiError } from "../../utils/handleApiError";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { formatAuthPhone } from "../../utils/paymentProviders";
+import { toast } from "../../hooks/toast";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
 export function WithdrawScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"Withdraw">) {
   const { colors, isDark } = useTheme();
+  const user = useAppSelector((state) => state.auth.user);
 
-  const [phone, setPhone] = useState("055 123 4567");
+  const { provider = "mtn", methodLabel = "Mobile Money" } = route.params ?? {};
+
+  const [phone, setPhone] = useState(formatAuthPhone(user?.phone) || "055 123 4567");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
   const [customAmount, setCustomAmount] = useState("GHS 50.00");
   const [loading, setLoading] = useState(false);
@@ -31,12 +38,18 @@ export function WithdrawScreen({
     if (amount <= 0 || loading) return;
     setLoading(true);
     try {
-      await walletService.withdraw({
+      const res = await walletService.withdraw({
         amount,
         phone: phone.replace(/\s/g, ""),
-        provider: "mtn",
+        provider,
+        name: `${user?.firstname ?? ""} ${user?.lastname ?? ""}`.trim() || "Zubba User",
       });
-      navigation.navigate("ZubbaWallet", { debited: true });
+      if (res.success) {
+        toast.success(
+          `Withdrawal initiated${res.data.reference ? `\nRef: ${res.data.reference}` : ""}`,
+        );
+        navigation.navigate("ZubbaWallet", { debited: true });
+      }
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -66,7 +79,6 @@ export function WithdrawScreen({
         contentContainerStyle={{ flexGrow: 1, padding: 12 }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Form card */}
         <View
           className="flex justify-between"
           style={{
@@ -80,7 +92,12 @@ export function WithdrawScreen({
           }}
         >
           <View>
-            {/* Wallet Phone Number */}
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 14, color: colors.textSub }}>
+                Payout method: {methodLabel}
+              </Text>
+            </View>
+
             <View style={{ gap: 8 }}>
               <Text
                 style={{
@@ -120,17 +137,17 @@ export function WithdrawScreen({
                   lineHeight: 16,
                 }}
               >
-                Enter your mobile money number
+                Enter the mobile money number to receive funds
               </Text>
             </View>
 
-            {/* Amount to top up */}
             <View
               style={{
                 borderTopWidth: 1,
                 borderTopColor: colors.borderLight,
                 paddingTop: 8,
                 gap: 8,
+                marginTop: 8,
               }}
             >
               <Text
@@ -142,7 +159,7 @@ export function WithdrawScreen({
                   lineHeight: 22,
                 }}
               >
-                Amount to top up
+                Amount to withdraw
               </Text>
 
               <TextInput
@@ -163,7 +180,6 @@ export function WithdrawScreen({
                 }}
               />
 
-              {/* Quick select chips */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -203,14 +219,7 @@ export function WithdrawScreen({
             </View>
           </View>
 
-          <View
-            style={{
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingVertical: 12,
-            }}
-          >
+          <View style={{ paddingVertical: 12 }}>
             <Pressable
               style={{
                 height: 48,
@@ -223,16 +232,20 @@ export function WithdrawScreen({
               onPress={handleWithdraw}
               disabled={loading}
             >
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "400",
-                  color: "#FFFFFF",
-                  lineHeight: 20,
-                }}
-              >
-                Top up
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "400",
+                    color: "#FFFFFF",
+                    lineHeight: 20,
+                  }}
+                >
+                  Withdraw
+                </Text>
+              )}
             </Pressable>
           </View>
         </View>

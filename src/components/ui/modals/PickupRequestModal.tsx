@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../../context/ThemeContext";
+import { callDriver, messageDriver } from "../../../utils/contactDriver";
 
 type Props = {
   visible: boolean;
@@ -17,6 +18,7 @@ type Props = {
   name: string;
   rating: number;
   code: string;
+  phone?: string | null;
   cost: string;
   onProceed: () => void;
   onCancel: () => void;
@@ -33,6 +35,7 @@ export default function PickupRequestModal({
   name,
   rating,
   code,
+  phone,
   cost,
   onProceed,
   onCancel,
@@ -375,7 +378,12 @@ export default function PickupRequestModal({
                     </View>
 
                     <View className="flex-row mt-3 items-center gap-6">
-                      <View className="flex-row items-center gap-2">
+                      <Pressable
+                        onPress={() => callDriver(phone)}
+                        className="flex-row items-center gap-2"
+                        style={{ opacity: phone ? 1 : 0.5 }}
+                        disabled={!phone}
+                      >
                         <MaterialCommunityIcons
                           name="phone-outline"
                           size={16}
@@ -387,8 +395,13 @@ export default function PickupRequestModal({
                         >
                           Call
                         </Text>
-                      </View>
-                      <View className="flex-row items-center gap-2">
+                      </Pressable>
+                      <Pressable
+                        onPress={() => messageDriver(phone)}
+                        className="flex-row items-center gap-2"
+                        style={{ opacity: phone ? 1 : 0.5 }}
+                        disabled={!phone}
+                      >
                         <MaterialCommunityIcons
                           name="message-outline"
                           size={16}
@@ -400,7 +413,7 @@ export default function PickupRequestModal({
                         >
                           Message
                         </Text>
-                      </View>
+                      </Pressable>
                     </View>
                   </View>
                 </View>

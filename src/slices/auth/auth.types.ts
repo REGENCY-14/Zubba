@@ -17,6 +17,7 @@ export interface User {
   role: "customer" | "driver" | "admin";
   is_active: boolean;
   verified: boolean;
+  profile_picture?: string | null;
 }
 
 export interface RegisterDto {

@@ -74,17 +74,16 @@ export function RootNavigator() {
 
   useEffect(() => {
     const getCustomer = async () => {
-      if(user && !customer){
-        const customerResponse = await customerService.getCustomerById(user.id)
-        if(customerResponse.success){
-          const customer = customerResponse.data.customer;
-          dispatch(setCustomer(customer))
+      if (user?.id && !customer.id) {
+        const customerResponse = await customerService.getCustomerById(user.id);
+        if (customerResponse.success) {
+          dispatch(setCustomer(customerResponse.data.customer));
         }
       }
-    }
+    };
 
-    getCustomer()
-  }, [])
+    getCustomer();
+  }, [user?.id]);
 
   return (
     <Stack.Navigator

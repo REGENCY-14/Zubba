@@ -289,8 +289,9 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
             .join(" ")
         : "",
       avatar: item.driver?.profile_picture ?? "",
-      code: item.driver?.vehicle_plate ?? "",
+      code: item.driver?.vehicle_plate ?? item.driver?.code ?? "",
       rating: item.driver?.rating ?? 0,
+      phone: item.driver?.phone ?? null,
     },
     pickup_location:
       typeof item.pickup_location === "string"

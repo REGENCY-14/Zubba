@@ -58,6 +58,7 @@ export function ScanningScreen({
   const [appBarText, setAppBarText] = useState("Scanning...");
   const customer = useAppSelector((state) => state.customer);
   const [driver, setDriver] = useState<NearbyDriver | null>(null);
+  const [driverPhone, setDriverPhone] = React.useState<string | null>(null);
   const isPremium = customer.is_premium;
   const { coords } = useCurrentLocation();
   const { colors, isDark } = useTheme();
@@ -138,6 +139,8 @@ export function ScanningScreen({
       };
       const result = await customerService.requestTakeout(requestTakeout);
       const requestResult = result.data.request;
+      const assignedDriverPhone = requestResult.driver?.phone ?? null;
+      setDriverPhone(assignedDriverPhone);
       if (!result.success) {
         toast.error("Failed to request takeout, please try again later");
       }
@@ -167,6 +170,7 @@ export function ScanningScreen({
             avatar: driver.profilePicture ?? "",
             code: driver.code ?? "N/A",
             rating: driver.rating,
+            phone: assignedDriverPhone,
           }),
         );
         dispatch(setStatus("accepted"));
@@ -366,6 +370,7 @@ export function ScanningScreen({
             name={driver.name}
             rating={driver.rating}
             code={driver.code ?? "—"}
+            phone={driverPhone ?? undefined}
             cost={driver.cost.toFixed(2)}
             onProceed={customer_requests}
             onCancel={cancelRequest}
