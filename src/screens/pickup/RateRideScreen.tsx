@@ -64,7 +64,10 @@ function NumberRow({ value, onChange, showLabels }: { value: number; onChange: (
   );
 }
 
-export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">) {
+export function RateRideScreen({
+  navigation,
+  route,
+}: RootStackScreenProps<"RateRide">) {
   const [serviceRating, setServiceRating] = useState(4);
   const [professionalism, setProfessionalism] = useState(4);
   const [ecoFriendly, setEcoFriendly] = useState(4);
@@ -77,6 +80,18 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
   
   const request = useAppSelector((state) => state.request);
   const dispatch = useAppDispatch();
+
+  const paymentSummary = {
+    reference: route.params?.reference || request.transaction_reference || undefined,
+    amount:
+      route.params?.amount ??
+      (request.pickup_price || 0) + (request.service_price || 0),
+    phone: route.params?.phone || request.payment_method || undefined,
+  };
+
+  const goToThankYou = () => {
+    navigation.replace("ThankYou", paymentSummary);
+  };
 
   const RATING_OPTIONS = [
     { label: "Bad", value: 1 },
@@ -113,7 +128,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
           "Thank You!\nYour feedback helps us improve our service.",
         );
         dispatch(resetRequest());
-        navigation.replace("Home")
+        goToThankYou();
       }
     } catch (error: any) {
       console.error("Rating error:", error);
@@ -125,7 +140,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
 
   const handleSkip = () => {
     dispatch(resetRequest());
-    navigation.navigate("Home");
+    goToThankYou();
   };
 
   return (

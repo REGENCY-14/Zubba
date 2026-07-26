@@ -16,10 +16,13 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 
+import { PaystackProvider } from "react-native-paystack-webview";
+
 import { store } from "./src/store";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
+import { env } from "./src/utils/env";
 // import { configureNotifications } from "./src/services/pushNotifications";
 
 // Apply Poppins as the global default for unstyled Text / TextInput
@@ -73,7 +76,14 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <AppContent />
+      <PaystackProvider
+        publicKey={env.paystackPublicKey}
+        currency="GHS"
+        defaultChannels={["mobile_money", "card"]}
+        debug={__DEV__}
+      >
+        <AppContent />
+      </PaystackProvider>
     </ThemeProvider>
   );
 }

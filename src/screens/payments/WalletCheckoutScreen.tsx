@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, Text, View, ActivityIndicator } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,10 +8,17 @@ import { ScrollView } from "react-native";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { walletService } from "../../api/walletService";
-import { markRequestPaid } from "../../slices/request/requestSlice";
+import {
+  markRequestPaid,
+  setPaymentDate,
+  setPaymentMethod,
+  setPaymentStatus,
+  setTransactionReference,
+} from "../../slices/request/requestSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { handleApiError } from "../../utils/handleApiError";
 import { completePickupAfterPayment } from "../../services/pickupCompletion";
+import { formatAuthPhone } from "../../utils/paymentProviders";
 
 export function WalletCheckoutScreen({
   navigation,
@@ -20,21 +27,59 @@ export function WalletCheckoutScreen({
   const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request);
   const customer = useAppSelector((state) => state.customer);
+  const user = useAppSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const total = (request.pickup_price || 0) + (request.service_price || 0);
+  const pickupPrice = request.pickup_price || 0;
+  const servicePrice = request.service_price || 0;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadWallet = async () => {
+      try {
+        const res = await walletService.getWallet();
+        if (!cancelled) {
+          setWalletBalance(Number(res.data.wallet.available_balance ?? 0));
+        }
+      } catch {
+        if (!cancelled) {
+          setWalletBalance(null);
+        }
+      }
+    };
+
+    loadWallet();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handlePay = async () => {
     if (!request.id || loading) return;
     setLoading(true);
     try {
       await walletService.payForRequest(request.id);
+      const reference = `wallet_${request.id}`;
+      dispatch(setPaymentStatus("success"));
+      dispatch(setPaymentDate(new Date()));
+      dispatch(setTransactionReference(reference));
+      dispatch(setPaymentMethod("wallet"));
       dispatch(markRequestPaid());
       await completePickupAfterPayment(
         request.id,
         request.customer_id || customer.id,
         dispatch,
       );
-      navigation.navigate("PaymentSuccess", { phone: "" });
+      navigation.navigate("PaymentSuccess", {
+        phone: formatAuthPhone(user?.phone),
+        reference,
+        amount: total,
+        provider: "wallet",
+        paymentMethodLabel: "Zubba Wallet",
+      });
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -190,7 +235,7 @@ export function WalletCheckoutScreen({
                       lineHeight: 24,
                     }}
                   >
-                    GHS 35.00
+                    GHS {pickupPrice.toFixed(2)}
                   </Text>
                 </View>
                 <View className="flex-row justify-between items-center py-[14px]">
@@ -211,7 +256,7 @@ export function WalletCheckoutScreen({
                       lineHeight: 24,
                     }}
                   >
-                    GHS 10.00
+                    GHS {servicePrice.toFixed(2)}
                   </Text>
                 </View>
               </View>
@@ -251,14 +296,24 @@ export function WalletCheckoutScreen({
                         lineHeight: 24,
                       }}
                     >
-                      GHS 124.50
+                      GHS {(walletBalance ?? 0).toFixed(2)}
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
                     <Text className="text-base font-bold text-[#31973D] leading-6">
-                      READY
+                      {walletBalance !== null && walletBalance >= total
+                        ? "READY"
+                        : "LOW"}
                     </Text>
-                    <View className="w-2 h-2 rounded-full bg-[#31973D]" />
+                    <View
+                      className="w-2 h-2 rounded-full"
+                      style={{
+                        backgroundColor:
+                          walletBalance !== null && walletBalance >= total
+                            ? "#31973D"
+                            : "#EF4444",
+                      }}
+                    />
                   </View>
                 </View>
 

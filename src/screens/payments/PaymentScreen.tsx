@@ -7,6 +7,12 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { ThemeColors } from "../../context/ThemeContext";
+import {
+  getMethodLabel,
+  isWalletMethod,
+  mapMethodToChannel,
+  mapMethodToProvider,
+} from "../../utils/paymentProviders";
 
 type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
 
@@ -130,11 +136,18 @@ export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
               </Pressable>
 
               <Pressable
-                onPress={() =>
-                  selectedMethod === "wallet"
-                    ? navigation.navigate("WalletCheckout")
-                    : navigation.navigate("PaymentMethod")
-                }
+                onPress={() => {
+                  if (isWalletMethod(selectedMethod)) {
+                    navigation.navigate("WalletCheckout");
+                    return;
+                  }
+
+                  navigation.navigate("PaymentMethod", {
+                    provider: mapMethodToProvider(selectedMethod),
+                    methodLabel: getMethodLabel(selectedMethod),
+                    channel: mapMethodToChannel(selectedMethod),
+                  });
+                }}
                 style={{ flex: 1, height: 40, backgroundColor: "#31973D", borderRadius: 999, alignItems: "center", justifyContent: "center" }}
               >
                 <Text style={{ fontFamily: "Poppins", fontWeight: "400", fontSize: 14, lineHeight: 20, color: "#FFFFFF" }}>
