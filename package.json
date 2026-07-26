@@ -9,7 +9,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prebuild:android": "expo prebuild --platform android --clean",
+    "credentials:android": "eas credentials -p android"
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.4.1",
@@ -25,7 +27,7 @@
     "axios": "^1.17.0",
     "babel-preset-expo": "~57.0.0",
     "dotenv": "^17.4.2",
-    "expo": "~57.0.6",
+    "expo": "~57.0.8",
     "expo-auth-session": "~57.0.2",
     "expo-blur": "~57.0.0",
     "expo-constants": "~57.0.3",
@@ -43,7 +45,7 @@
     "react-native": "0.86.0",
     "react-native-color-matrix-image-filters": "^8.0.2",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-iap": "^12.16.4",
+    "react-native-iap": "^15.6.0",
     "react-native-reanimated": "4.5.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
@@ -59,13 +61,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.5",
     "@types/react": "~19.2.4",
     "@typescript-eslint/eslint-plugin": "^8.5.0",
     "@typescript-eslint/parser": "^8.5.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.9.0",
     "eslint-config-expo": "~57.0.0",
+    "expo-build-properties": "^57.0.7",
     "react-refresh": "^0.14.0",
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.3"

@@ -216,7 +216,7 @@ export function NotificationSettingsScreen({
 
   if (isLoadingPrefs) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
         <CustomAppBar title="Notifications" navigation={navigation} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#31973D" />
@@ -228,7 +228,7 @@ export function NotificationSettingsScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar title="Notifications" navigation={navigation} />

@@ -16,6 +16,13 @@ export const configureNotifications = () => {
 };
 
 export const registerForPushNotifications = async () => {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+    });
+  }
+
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
 
@@ -24,17 +31,16 @@ export const registerForPushNotifications = async () => {
     finalStatus = status;
   }
 
-  if (finalStatus !== "granted") {
-    return null;
-  }
+  if (finalStatus !== "granted") return null;
 
   const projectId =
-    Constants.expoConfig?.extra?.eas?.projectId ??
-    Constants.easConfig?.projectId;
+    Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
 
-  const tokenResponse = await Notifications.getExpoPushTokenAsync({
-    projectId: projectId as string,
-  });
+  if (!projectId) {
+    throw new Error("Missing EAS projectId — check app.json/app.config extra.eas.projectId");
+  }
+
+  const tokenResponse = await Notifications.getExpoPushTokenAsync({ projectId });
 
   await deviceService.registerPushToken({
     expoPushToken: tokenResponse.data,
@@ -42,13 +48,6 @@ export const registerForPushNotifications = async () => {
     deviceName: Platform.OS === "ios" ? "iPhone" : "Android Device",
     appVersion: Constants.expoConfig?.version,
   });
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-    });
-  }
 
   return tokenResponse.data;
 };

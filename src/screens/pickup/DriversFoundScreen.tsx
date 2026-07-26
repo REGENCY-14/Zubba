@@ -162,7 +162,7 @@ export function DriversFoundScreen({
   }, [modalStep, navigation]);
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right"]}>
+    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right", "bottom"]}>
       <ImageBackground
         source={isDark ? mapDarkImage : mapImage}
         style={{ flex: 1 }}

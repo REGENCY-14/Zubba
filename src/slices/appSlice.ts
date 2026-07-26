@@ -6,7 +6,7 @@ type AppState = {
 };
 
 const initialState: AppState = {
-  appName: 'Zubba Frontend',
+  appName: 'Zubba Customer',
   isReady: false
 };
 

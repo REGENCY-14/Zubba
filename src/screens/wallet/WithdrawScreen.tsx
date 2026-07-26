@@ -57,7 +57,7 @@ export function WithdrawScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="Debit Account" navigation={navigation} />
 

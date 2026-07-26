@@ -135,7 +135,7 @@ export function SettingsScreen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 12,
-            paddingBottom: 148,
+            paddingBottom: 90,
             gap: 24,
           }}
         >

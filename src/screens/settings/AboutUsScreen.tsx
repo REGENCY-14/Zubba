@@ -146,7 +146,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.surface }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="About Us" navigation={navigation} />
 

@@ -45,7 +45,7 @@ export function WalletCheckoutScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         {/* Header — top of the static drawer */}

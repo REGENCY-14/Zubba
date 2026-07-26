@@ -1,8 +1,9 @@
 import axios from "axios";
 import { store } from "../store";
+import { env } from "../utils/env";
 
 export const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  baseURL: env.apiUrl,
 });
 
 api.interceptors.request.use((config) => {

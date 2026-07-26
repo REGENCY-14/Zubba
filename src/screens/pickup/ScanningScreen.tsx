@@ -211,7 +211,7 @@ export function ScanningScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <ImageBackground
         source={isDark ? mapDarkImage : mapImage}

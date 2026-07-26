@@ -38,7 +38,7 @@ export function PaymentSuccessScreen({
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
       className="flex-1"
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ backgroundColor: colors.bg }} className="flex-1">
         <CustomAppBar navigation={() => navigation.goBack()} title="Success" />

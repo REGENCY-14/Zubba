@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Image, ScrollView, Text } from "react-native";
+import { View, Image, ScrollView, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
@@ -7,6 +7,7 @@ import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
 import { useTheme } from "../../context/ThemeContext";
 import { registerForPushNotifications } from "../../services/pushNotifications";
+import axios from "axios";
 
 export const OnboardNotificationsAccessScreen = ({
   navigation,
@@ -27,6 +28,14 @@ export const OnboardNotificationsAccessScreen = ({
       navigation.navigate("SignUp");
     } catch (error) {
       console.log("Notification permission error:", error);
+
+      const message =
+        error instanceof Error
+          ? `${error.message}\n\n${error.stack ?? ""}`
+          : JSON.stringify(error, null, 2);
+
+      Alert.alert("Notification Error (debug)", message, [{ text: "OK" }]);
+
       toast.error("Error\nUnable to request notification permissions right now.");
     } finally {
       setLoading(false);
@@ -63,6 +72,13 @@ export const OnboardNotificationsAccessScreen = ({
             onPress={enableNotifications}
             disabled={loading}
             style={{ opacity: loading ? 0.6 : 1 }}
+          />
+          <RoundedButton
+            title="Maybe later"
+            variant="secondary"
+            onPress={() =>
+              navigation.navigate("SignUp")
+            }
           />
         </View>
       </ScrollView>
