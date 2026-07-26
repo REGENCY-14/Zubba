@@ -91,14 +91,14 @@ export function PaymentMethodDrawer({
           <View className="flex-row items-center gap-3">
             <Pressable
               onPress={onClose}
-              className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"
+              className="w-9 h-9 rounded-xl bg-[#FDE8E8] items-center justify-center"
             >
               <MaterialCommunityIcons name="close" size={20} color="#DC2626" />
             </Pressable>
 
             <Pressable
               onPress={() => onContinue(selectedMethod)}
-              className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
+              className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center mb-2"
             >
               <Text className="text-white text-sm">Continue</Text>
             </Pressable>

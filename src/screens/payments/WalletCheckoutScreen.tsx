@@ -112,7 +112,7 @@ export function WalletCheckoutScreen({
               <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
             </Pressable>
             <Pressable
-              className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
+              className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center"
               style={{ opacity: loading ? 0.6 : 1 }}
               disabled={loading}
               onPress={handlePay}

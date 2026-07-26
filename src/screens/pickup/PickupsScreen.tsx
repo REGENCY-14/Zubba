@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Image,
   Platform,
   Pressable,
   RefreshControl,
@@ -19,6 +20,8 @@ import { customerService } from "../../api/customerService";
 import { setRequest } from "../../slices/request/requestSlice";
 import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
+
+const tricycle = require("../../../assets/pickup_tricycle.png");
 
 type Pickup = {
   id: string;
@@ -160,11 +163,10 @@ function PickupRow({
           opacity: isCancelled ? 0.5 : 1,
         }}
       >
-        <MaterialCommunityIcons
-          name="truck-outline"
-          size={20}
-          color={colors.iconColor}
-        />
+        <Image
+          source={tricycle}
+          style={{width: 30, height: 20}}
+          resizeMode="contain"/>
       </View>
 
       <View style={{ flex: 1, gap: 2 }}>

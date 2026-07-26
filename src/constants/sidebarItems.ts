@@ -31,14 +31,14 @@ export const noPlanSidebarItem: SidebarMenuItem = {
   key: "subscription",
   label: "Subscription",
   icon: "account-star-outline",
-  navigate: "ManageSubscription",
+  navigate: "ChoosePlan",
 };
 
 export const isPremiumSidebarItem: SidebarMenuItem = {
   key: "chooseplan",
   label: "Subscription",
   icon: "crown-outline",
-  navigate: "ConfirmSubscription",
+  navigate: "ManageSubscription",
 };
 
 export const bottom_sidebar_items: SidebarMenuItem[] = [

@@ -15,7 +15,7 @@ type NotificationItem = {
 const TODAY: NotificationItem[] = [];
 const WEEK_AGO: NotificationItem[] = [];
 
-const bellIcon = require("../../../assets/activities.png")
+const bellIcon = require("../../../assets/notification_bell.png")
 
 function NotificationRow({ item, iconSize, colors }: { item: NotificationItem; iconSize: number; colors: ReturnType<typeof useTheme>['colors'] }) {
   return (

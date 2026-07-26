@@ -25,11 +25,11 @@ export function PaymentMethodScreen({
   navigation,
 }: RootStackScreenProps<"PaymentMethod">) {
   const dispatch = useAppDispatch();
-  const [phoneNumber, setPhoneNumber] = React.useState("055 123 4567");
+  const user = useAppSelector((state) => state.auth.user);
+  const [phoneNumber, setPhoneNumber] = React.useState(user?.phone ? `0${user.phone}` : "");
   const [isLoading, setIsLoading] = useState(false);
   const { colors } = useTheme();
   const request = useAppSelector((state) => state.request);
-  const user = useAppSelector((state) => state.auth.user);
 
   const totalAmount = (request.pickup_price || 0) + (request.service_price || 0);
 

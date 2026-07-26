@@ -606,7 +606,7 @@ export function ZubbaWalletScreen({
               />
             </View>
 
-            {!hasTransactions ? (
+            {hasTransactions ? (
               /* Transactions list */
               <View>
                 <View

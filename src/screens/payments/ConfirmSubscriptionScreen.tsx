@@ -19,21 +19,24 @@ const PLANS = [
     displayName: 'Family',
     price: 'GHS 800.00',
     pricePer: '/year',
-    pillText: 'GHS 800.00/year (Family)',
+    pillText: 'GHS 800.00',
+    subText: "/year(Family)"
   },
   {
     label: 'MONTHLY',
     displayName: 'Monthly',
     price: 'GHS 50.00',
     pricePer: '/month',
-    pillText: 'GHS 50.00/month',
+    pillText: 'GHS 50.00',
+    subText: '/month',
   },
   {
     label: 'YEARLY',
     displayName: 'Yearly',
     price: 'GHS 550.00',
     pricePer: '/year',
-    pillText: 'GHS 550.00/year',
+    pillText: 'GHS 550.00',
+    subText: '/year',
   },
 ] as const;
 
@@ -158,7 +161,10 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
               <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, right: -20, bottom: -20, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
               <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, left: -40, top: -40, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
 
-              <BlurView intensity={28} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
+              <BlurView
+                intensity={40} tint={isDark ? 'dark' : 'light'}
+                style={StyleSheet.absoluteFill}
+              />
 
               <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 32, lineHeight: 32, letterSpacing: -2, color: colors.text, zIndex: 10 }}>
                 {selected.price}
@@ -178,7 +184,10 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                     style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 53, paddingHorizontal: 10, paddingVertical: 4, height: 48, justifyContent: 'center' }}
                     onPress={() => setSelectedIndex(PLANS.findIndex((p) => p.label === plan.label))}
                   >
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, letterSpacing: -1 }}>{plan.pillText}</Text>
+                    <View className="flex flex-row items-end">
+                      <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, letterSpacing: -1 }}>{plan.pillText}</Text>
+                      <Text className="text-xs" style={{ color: colors.textSub }}>{plan.subText}</Text>
+                    </View>
                   </Pressable>
                 ))}
               </View>
@@ -192,7 +201,7 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 <Text className="text-sm text-[#EF4444] font-bold">✕</Text>
               </Pressable>
               <Pressable
-                className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
+                className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center"
                 onPress={handleConfirmPress}
                 disabled={subscribing}
                 style={{ opacity: subscribing ? 0.7 : 1 }}
@@ -278,5 +287,12 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(225,225,225,0.3)",
+  },
+});
 
 export default ConfirmSubscriptionScreen;
