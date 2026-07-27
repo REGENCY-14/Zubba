@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+    ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -30,7 +31,18 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const digitsOnly = phoneNumber.replace(/\D/g, "");
   const canContinue = digitsOnly.length >= 6;
 
-  const { request, promptAsync, response } = useGoogleLogin();
+  const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleLogin();
+
+  const handleGoogleContinue = async () => {
+    const user = await signInWithGoogle("customer");
+    if (!user) return;
+
+    if (!user.email || !user.phone) {
+      navigation.replace("NewUserOnboarding", { email: user.email });
+    } else {
+      navigation.replace("ExistingUserNotification", { email: user.email });
+    }
+  };
 
   const handleRegister = async () => {
     try {
@@ -48,13 +60,6 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
       handleApiError(err)
     }
   };
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const idToken = response.params.id_token;
-      authService.googleLogin(idToken);
-    }
-  }, [response]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -194,7 +199,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               </View>
 
               <Pressable
-                onPress={() => promptAsync()}
+                onPress={handleGoogleContinue}
+                disabled={isGoogleLoading}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -206,22 +212,17 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   height: 48,
                   backgroundColor: colors.card,
                   marginBottom: 12,
+                  opacity: isGoogleLoading ? 0.6 : 1,
                 }}
               >
-                <Image
-                  source={googleIcon}
-                  style={{ width: 16, height: 16 }}
-                  resizeMode="contain"
-                />
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: colors.text,
-                    fontWeight: "500",
-                  }}
-                >
-                  Continue with Google
-                </Text>
+                {isGoogleLoading ? (
+                  <ActivityIndicator size="small" color={colors.text} />
+                ) : (
+                  <>
+                    <Image source={googleIcon} style={{ width: 20, height: 20 }} />
+                    <Text style={{ color: colors.text }}>Continue with Google</Text>
+                  </>
+                )}
               </Pressable>
 
               <Pressable

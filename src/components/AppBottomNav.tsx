@@ -67,16 +67,14 @@ export function AppBottomNav({
   bottomOffset = 20,
   navigation
 }: Props) {
-  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const bottomPadding = Math.max(insets.bottom, paddingBottom);
   const isActive = (tab: Tab) => activeTab === tab;
   const isPremium = useAppSelector((state) => state.customer.is_premium)
 
   return (
     <View
       className="absolute left-0 bottom-0 right-0 items-center px-2"
-      style={{ bottom: bottomOffset, paddingBottom: bottomPadding }}
+      style={{ bottom: bottomOffset, paddingBottom: paddingBottom }}
     >
       <View
         style={{

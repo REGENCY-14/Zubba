@@ -1,28 +1,62 @@
-import * as Google from "expo-auth-session/providers/google";
-import * as AuthSession from "expo-auth-session";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { env } from "../utils/env";
 import { toast } from "../hooks/toast";
+import { authStorage } from "../utils/authStorage";
+import { customerService } from "../api/customerService";
+import { UserRole } from "../slices/auth/auth.types";
+import { api } from "../api/axios";
+import { setCredentials } from "../slices/auth/authSlice";
+import { setCustomer } from "../slices/customer/customerSlice";
+import { registerForPushNotifications } from "./pushNotifications";
+
+GoogleSignin.configure({
+  webClientId: env.googleWebClientId,
+});
 
 export function useGoogleLogin() {
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: "com.zubba.app",
-  });
+  async function signInWithGoogle(role: UserRole = "customer") {
+    setIsLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const { data } = await GoogleSignin.signIn();
+      const idToken = data?.idToken;
 
-  console.log("===== redirectUri: ", redirectUri)
-  toast.info(redirectUri)
+      if (!idToken) {
+        toast.error("Google sign-in failed: no ID token returned.");
+        return null;
+      }
 
-  const [request, response, promptAsync] =
-    Google.useIdTokenAuthRequest({
-      webClientId: env.googleWebClientId,
-      androidClientId: env.googleAndroidClientId,
-      redirectUri,
-    });
+      const res = await api.post("/auth/google", { idToken, role });
+      const { user, accessToken, refreshToken } = res.data.data;
 
-  return {
-    request,
-    response,
-    promptAsync,
-    redirectUri,
-  };
+      dispatch(setCredentials({ user, accessToken, refreshToken }));
+      await authStorage.save({ user, accessToken, refreshToken });
+
+      const customerResponse = await customerService.getCustomerById(user.id);
+      if (customerResponse.success) {
+        dispatch(setCustomer(customerResponse.data.customer));
+      }
+
+      registerForPushNotifications().catch(() => {});
+
+      return user;
+    } catch (err: any) {
+      if (err.code === statusCodes.SIGN_IN_CANCELLED) {
+      } else if (err.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        toast.error("Google Play Services not available.");
+      } else {
+        toast.error(err?.response?.data?.message ?? "Something went wrong signing in with Google.");
+      }
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return { signInWithGoogle, isLoading };
 }
