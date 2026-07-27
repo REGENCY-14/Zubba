@@ -34,7 +34,7 @@ export function SignInScreen({ route, navigation }: RootStackScreenProps<"SignIn
           </Pressable>
           <Pressable
             style={{ width: "100%", height: 48, backgroundColor: colors.card, borderRadius: 9999, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}
-            onPress={() => navigation.navigate("SignIn")}
+            onPress={() => navigation.navigate("SignUp")}
           >
             <Text style={{ color: colors.text, fontSize: 14, fontWeight: "500" }}>Use another account</Text>
           </Pressable>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+    ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -29,14 +30,18 @@ export function EmailSignUpScreen({
   const registerMutation = useRegister();
   const { colors } = useTheme();
 
-  const { request, promptAsync, response } = useGoogleLogin();
+  const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleLogin();
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const idToken = response.params.id_token;
-      authService.googleLogin(idToken);
+  const handleGoogleContinue = async () => {
+    const user = await signInWithGoogle("customer");
+    if (!user) return;
+
+    if (!user.email || !user.phone) {
+      navigation.replace("NewUserOnboarding", { email: user.email });
+    } else {
+      navigation.replace("ExistingUserNotification", { email: user.email });
     }
-  }, [response]);
+  };
 
   const isEmailValid = useMemo(() => EMAIL_REGEX.test(email.trim()), [email]);
 
@@ -143,7 +148,8 @@ export function EmailSignUpScreen({
             </View>
 
             <Pressable
-              onPress={() => promptAsync()}
+              onPress={handleGoogleContinue}
+              disabled={isGoogleLoading}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -155,18 +161,17 @@ export function EmailSignUpScreen({
                 height: 48,
                 backgroundColor: colors.card,
                 marginBottom: 12,
+                opacity: isGoogleLoading ? 0.6 : 1,
               }}
             >
-              <Image
-                source={googleIcon}
-                style={{ width: 16, height: 16 }}
-                resizeMode="contain"
-              />
-              <Text
-                style={{ fontSize: 14, color: colors.text, fontWeight: "500" }}
-              >
-                Continue with Google
-              </Text>
+              {isGoogleLoading ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <>
+                  <Image source={googleIcon} style={{ width: 20, height: 20 }} />
+                  <Text style={{ color: colors.text }}>Continue with Google</Text>
+                </>
+              )}
             </Pressable>
 
             <Pressable
