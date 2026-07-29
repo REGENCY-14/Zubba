@@ -50,4 +50,19 @@ export const authService = {
     );
     return data;
   },
+
+  getWelcomeContext: async (params: {
+    authKey: string;
+    authValue: string;
+    sessionId?: string;
+  }) => {
+    const { data } = await api.get<
+      ApiResponse<{
+        isFirstLogin: boolean;
+        previousLogin: { authKey: string; authValue: string } | null;
+        matchesCurrentLogin: boolean;
+      }>
+    >("/auth/welcome-context", { params });
+    return data;
+  },
 };

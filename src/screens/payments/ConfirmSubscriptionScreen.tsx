@@ -1,298 +1,123 @@
-import React from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, Platform, ActivityIndicator } from 'react-native';
-import { BlurView } from 'expo-blur';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
-import { purchaseGoogleSubscription } from '../../services/googlePlayBilling';
-import { subscriptionService } from '../../api/subscriptionService';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { setCustomer } from '../../slices/customer/customerSlice';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { toast } from '../../hooks/toast';
-import { GOOGLE_PLAY_PACKAGE } from '../../constants/subscriptionProducts';
-
-const PLANS = [
-  {
-    label: 'FAMILY',
-    displayName: 'Family',
-    price: 'GHS 800.00',
-    pricePer: '/year',
-    pillText: 'GHS 800.00',
-    subText: "/year(Family)"
-  },
-  {
-    label: 'MONTHLY',
-    displayName: 'Monthly',
-    price: 'GHS 50.00',
-    pricePer: '/month',
-    pillText: 'GHS 50.00',
-    subText: '/month',
-  },
-  {
-    label: 'YEARLY',
-    displayName: 'Yearly',
-    price: 'GHS 550.00',
-    pricePer: '/year',
-    pillText: 'GHS 550.00',
-    subText: '/year',
-  },
-] as const;
-
-type PaymentMethod = { id: string; name: string };
-
-const PAYMENT_METHODS: PaymentMethod[] = [
-  { id: 'mtn', name: 'MTN MoMo' },
-  { id: 'telecel', name: 'Telecel cash' },
-  { id: 'airtel', name: 'Airtel money' },
-  { id: 'credit', name: 'Credit Card' },
-];
-
-function PaymentBadge({ id }: { id: string }) {
-  const { colors } = useTheme();
-  if (id === 'mtn') {
-    return (
-      <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-[#FFCC00]">
-        <Text className="text-xs font-semibold text-black" style={{ fontFamily: 'Poppins' }}>MTN</Text>
-      </View>
-    );
-  }
-  if (id === 'telecel') {
-    return (
-      <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-[#DC2626]">
-        <Text className="text-xs font-bold text-white" style={{ fontFamily: 'Poppins' }}>T.cash</Text>
-      </View>
-    );
-  }
-  if (id === 'airtel') {
-    return (
-      <View style={{ width: 42, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
-        <Text style={{ fontSize: 14, fontWeight: '700' }}>
-          <Text style={{ color: '#0062A3' }}>a</Text>
-          <Text style={{ color: '#EF4444' }}>t</Text>
-        </Text>
-      </View>
-    );
-  }
-  return (
-    <View className="w-[42px] h-[26px] rounded-lg items-center justify-center bg-[#FFF7ED]">
-      <View className="w-5 h-[14px] bg-[#31973D] rounded-[3px] justify-start pt-[3px]">
-        <View className="h-[3px] mx-[2px]" style={{ backgroundColor: 'rgba(255,255,255,0.6)' }} />
-      </View>
-    </View>
-  );
-}
+import { useSubscriptionPaystackCheckout } from '../../hooks/useSubscriptionPaystackCheckout';
+import { paymentPlansService, type SubscriptionPlan } from '../../api/subscriptionService';
+import CustomAppBar from '../../components/common/CustomAppBar';
 
 export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreenProps<'ConfirmSubscription'>) {
-  const { colors, isDark } = useTheme();
-  const dispatch = useAppDispatch();
-  const customer = useAppSelector((state) => state.customer);
-  const [selectedIndex, setSelectedIndex] = React.useState(route.params?.planIndex ?? 1);
-  const [showPaymentSheet, setShowPaymentSheet] = React.useState(false);
-  const [selectedPayment, setSelectedPayment] = React.useState('credit');
-  const [subscribing, setSubscribing] = React.useState(false);
+  const { colors } = useTheme();
+  const user = useAppSelector((state) => state.auth.user);
+  const { startCheckout, isLoading } = useSubscriptionPaystackCheckout();
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+  const [selectedIndex, setSelectedIndex] = useState(route.params?.planIndex ?? 0);
 
-  const selected = PLANS[selectedIndex];
-  const alternates = PLANS.filter((_, i) => i !== selectedIndex);
+  useEffect(() => {
+    paymentPlansService
+      .getPlans()
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setPlans(res.data);
+      })
+      .finally(() => setLoadingPlans(false));
+  }, []);
 
-  const handleGooglePlaySubscribe = async () => {
-    if (subscribing) return;
-    setSubscribing(true);
-    try {
-      const purchase = await purchaseGoogleSubscription(selectedIndex);
-      const verify = await subscriptionService.verifyGoogle({
-        purchaseToken: purchase.purchaseToken,
-        productId: purchase.productId,
-        packageName: GOOGLE_PLAY_PACKAGE,
-      });
-
-      if (verify.success && verify.data.isActive) {
-        dispatch(setCustomer({
-          ...customer,
-          is_premium: true,
-        }));
-        toast.success('Gold subscription activated!');
-        navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
-      } else {
-        toast.error('Subscription could not be verified. Please try again.');
-      }
-    } catch (error: any) {
-      toast.error(error?.message ?? 'Unable to complete subscription.');
-    } finally {
-      setSubscribing(false);
-      setShowPaymentSheet(false);
+  useEffect(() => {
+    if (plans.length && route.params?.planIndex !== undefined) {
+      setSelectedIndex(Math.min(route.params.planIndex, plans.length - 1));
     }
+  }, [plans, route.params?.planIndex]);
+
+  const selected = plans[selectedIndex];
+
+  const handleSubscribe = async () => {
+    if (!selected || !user?.email) return;
+    await startCheckout({
+      planCode: selected.plan_code,
+      email: user.email,
+      amount: Number(selected.amount),
+    });
   };
 
-  const handleConfirmPress = () => {
-    if (Platform.OS === 'android') {
-      handleGooglePlaySubscribe();
-      return;
-    }
-    setShowPaymentSheet(true);
-  };
+  if (loadingPlans) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color="#31973D" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View style={{ height: 48, backgroundColor: colors.bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-          <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
-            <Text style={{ fontSize: 28, color: colors.text, lineHeight: 28, marginTop: -2 }}>‹</Text>
-          </Pressable>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>Payment</Text>
-          <View className="w-6 h-6" />
-        </View>
-
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 148 }} showsVerticalScrollIndicator={false}>
-          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, gap: 24, backgroundColor: colors.card }}>
-            <Text style={{ fontSize: 24, fontWeight: '500', color: colors.text, lineHeight: 32 }}>Confirm Subscription</Text>
-
-            <Text style={{ fontSize: 14, lineHeight: 26, color: colors.textSub }}>
-              {'You selected the '}
-              <Text style={{ fontWeight: '700', color: colors.text }}>{selected.displayName} Subscription</Text>
-              {'. Enjoy a '}
-              <Text style={{ fontWeight: '700', color: colors.text }}>free 7-day trial.</Text>
-              {" You won't be charged until your trial ends. Confirm the amount and continue."}
-            </Text>
-
-            <View style={{ height: 196, borderWidth: 1, borderColor: colors.border, borderRadius: 32, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {/* Green circle blobs rendered first — BlurView above will blur them */}
-              <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, right: -20, bottom: -20, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
-              <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, left: -40, top: -40, backgroundColor: 'rgba(89, 247, 138, 0.6)' }} />
-
-              <BlurView
-                intensity={40} tint={isDark ? 'dark' : 'light'}
-                style={StyleSheet.absoluteFill}
-              />
-
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 32, lineHeight: 32, letterSpacing: -2, color: colors.text, zIndex: 10 }}>
-                {selected.price}
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: 18, letterSpacing: 0 }}>{selected.pricePer}</Text>
+      <CustomAppBar title="Confirm Subscription" navigation={navigation} />
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
+        {!selected ? (
+          <Text style={{ color: colors.textSub }}>No subscription plans available.</Text>
+        ) : (
+          <>
+            <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 24, padding: 16, backgroundColor: colors.card, gap: 12 }}>
+              <Text style={{ fontSize: 24, fontWeight: '600', color: colors.text }}>{selected.name}</Text>
+              <Text style={{ color: colors.textSub }}>
+                {selected.description?.features?.join(' • ') ?? 'Premium benefits included'}
               </Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, lineHeight: 13, color: colors.textSub, textAlign: 'center', zIndex: 10, marginTop: 12 }}>
-                Enjoy a 7-day free trial and pay afterward.
+              <Text style={{ fontSize: 28, fontWeight: '700', color: colors.text }}>
+                GHS {Number(selected.amount).toFixed(2)}
+                <Text style={{ fontSize: 16, fontWeight: '500' }}> / {selected.interval}</Text>
               </Text>
+              {selected.amount_saved ? (
+                <Text style={{ color: '#31973D' }}>Save GHS {selected.amount_saved}</Text>
+              ) : null}
             </View>
 
-            <View className="gap-[6px]">
-              <Text className="text-sm font-medium text-[#31973D] leading-5">Choose another plan</Text>
-              <View className="flex-row gap-[10px] flex-wrap">
-                {alternates.map((plan) => (
-                  <Pressable
-                    key={plan.label}
-                    style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 53, paddingHorizontal: 10, paddingVertical: 4, height: 48, justifyContent: 'center' }}
-                    onPress={() => setSelectedIndex(PLANS.findIndex((p) => p.label === plan.label))}
-                  >
-                    <View className="flex flex-row items-end">
-                      <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, letterSpacing: -1 }}>{plan.pillText}</Text>
-                      <Text className="text-xs" style={{ color: colors.textSub }}>{plan.subText}</Text>
-                    </View>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-
-            <View className="flex-row items-center gap-[10px]">
-              <Pressable
-                className="w-10 h-10 bg-[#FFE2E2] rounded-xl items-center justify-center"
-                onPress={() => navigation.goBack()}
-              >
-                <Text className="text-sm text-[#EF4444] font-bold">✕</Text>
-              </Pressable>
-              <Pressable
-                className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center"
-                onPress={handleConfirmPress}
-                disabled={subscribing}
-                style={{ opacity: subscribing ? 0.7 : 1 }}
-              >
-                {subscribing ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <Text className="text-sm text-white leading-5">
-                    {Platform.OS === 'android' ? 'Subscribe with Google Play' : 'Confirm Subscription'}
-                  </Text>
-                )}
-              </Pressable>
-            </View>
-          </View>
-        </ScrollView>
-
-
-      </View>
-
-      <Modal
-        visible={showPaymentSheet}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowPaymentSheet(false)}
-      >
-        <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }} onPress={() => setShowPaymentSheet(false)}>
-          <Pressable style={{ backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingBottom: 32, paddingTop: 16, gap: 16 }} onPress={() => {}}>
-            <View style={{ width: 152, height: 3, backgroundColor: colors.border, borderRadius: 20, alignSelf: 'center' }} />
-
-            <View className="px-6">
-              <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, lineHeight: 28, letterSpacing: -0.48 }}>Select  a transfer method</Text>
-            </View>
-
-            <View className="px-5">
-              {PAYMENT_METHODS.map((method) => {
-                const isSelected = method.id === selectedPayment;
-                return (
-                  <Pressable
-                    key={method.id}
-                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border }}
-                    onPress={() => setSelectedPayment(method.id)}
-                  >
-                    <View className="flex-row items-center gap-4">
-                      <PaymentBadge id={method.id} />
-                      <Text style={{ fontSize: 14, color: colors.text, lineHeight: 24 }}>{method.name}</Text>
-                    </View>
-                    <View
-                      style={isSelected
-                        ? { width: 22, height: 22, borderRadius: 11, backgroundColor: '#31973D', borderWidth: 1, borderColor: '#31973D', alignItems: 'center', justifyContent: 'center' }
-                        : { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: '#8E7164', alignItems: 'center', justifyContent: 'center' }}
+            {plans.length > 1 && (
+              <View style={{ gap: 8 }}>
+                <Text style={{ color: colors.text, fontWeight: '600' }}>Choose another plan</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                  {plans.map((plan, index) => (
+                    <Pressable
+                      key={plan.id}
+                      onPress={() => setSelectedIndex(index)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: index === selectedIndex ? '#31973D' : colors.border,
+                        borderRadius: 999,
+                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                      }}
                     >
-                      {isSelected && <View className="w-2 h-2 rounded-full bg-white" />}
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
+                      <Text style={{ color: colors.text }}>{plan.name} · GHS {plan.amount}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
 
-            <View className="flex-row items-center gap-[10px] px-6">
-              <Pressable
-                className="w-10 h-10 bg-[#FFE2E2] rounded-xl items-center justify-center"
-                onPress={() => setShowPaymentSheet(false)}
-              >
-                <Text className="text-sm text-[#EF4444] font-bold">✕</Text>
-              </Pressable>
-              <Pressable
-                className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center"
-                onPress={() => {
-                  setShowPaymentSheet(false);
-                  if (selectedPayment === 'credit') {
-                    navigation.navigate('AddCard', { planIndex: selectedIndex });
-                  } else {
-                    navigation.navigate('WalletNumber');
-                  }
-                }}
-              >
-                <Text className="text-sm text-white leading-5">Continue</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+            <Pressable
+              onPress={handleSubscribe}
+              disabled={isLoading || !user?.email}
+              style={{
+                height: 48,
+                borderRadius: 999,
+                backgroundColor: isLoading ? 'rgba(49,151,61,0.6)' : '#31973D',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={{ color: '#fff', fontWeight: '600' }}>Subscribe with Paystack</Text>
+              )}
+            </Pressable>
+          </>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(225,225,225,0.3)",
-  },
-});
 
 export default ConfirmSubscriptionScreen;

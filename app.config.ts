@@ -36,6 +36,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-status-bar",
     "expo-web-browser",
     "@react-native-google-signin/google-signin",
+    "react-native-maps",
     [
       "expo-build-properties",
       {

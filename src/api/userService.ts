@@ -42,4 +42,9 @@ export const userService = {
     const { data } = await api.get<ApiResponse<{ user: User }>>("/users/me");
     return data;
   },
+
+  acceptTerms: async () => {
+    const { data } = await api.post<ApiResponse<{ user: User }>>("/users/me/accept-terms");
+    return data;
+  },
 };

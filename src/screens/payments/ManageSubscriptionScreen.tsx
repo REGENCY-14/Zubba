@@ -43,16 +43,8 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
         if (sub?.isActive) {
           setIsActive(true);
           dispatch(setCustomer({ ...customer, is_premium: true }));
-          if (sub.product_id?.includes('family')) {
-            setPlanLabel('Family Plan');
-            setPlanPrice('GHS 800.00');
-          } else if (sub.product_id?.includes('yearly')) {
-            setPlanLabel('Yearly Plan');
-            setPlanPrice('GHS 550.00');
-          } else {
-            setPlanLabel('Gold Plan');
-            setPlanPrice('GHS 50.00');
-          }
+          setPlanLabel(sub.plan_code ?? sub.product_id ?? 'Gold Plan');
+          setPlanPrice(sub.amount ? `GHS ${sub.amount}` : 'GHS 50.00');
         } else {
           setIsActive(customer.is_premium);
         }
@@ -72,7 +64,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
   const handleConfirmCancel = () => {
     setCancelModalOpen(false);
     dispatch(cancelPremium());
-    toast.info('Manage cancellation in Google Play Store.');
+    toast.info('Manage cancellation via Paystack or contact support.');
     navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   };
 

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { env } from "../utils/env";
 import { toast } from "../hooks/toast";
-import { authStorage } from "../utils/authStorage";
+import { saveAuthSession } from "../utils/resolveInitialRoute";
 import { customerService } from "../api/customerService";
 import { UserRole } from "../slices/auth/auth.types";
 import { api } from "../api/axios";
@@ -35,7 +35,7 @@ export function useGoogleLogin() {
       const { user, accessToken, refreshToken } = res.data.data;
 
       dispatch(setCredentials({ user, accessToken, refreshToken }));
-      await authStorage.save({ user, accessToken, refreshToken });
+      await saveAuthSession({ userId: user.id, accessToken, refreshToken });
 
       const customerResponse = await customerService.getCustomerById(user.id);
       if (customerResponse.success) {

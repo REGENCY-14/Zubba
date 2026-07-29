@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   Pressable,
   Text,
@@ -16,7 +16,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
 import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
-import { authStorage } from "../../utils/authStorage";
+import { saveAuthSession } from "../../utils/resolveInitialRoute";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 
@@ -32,6 +32,7 @@ export function FindAccountOtpScreen({
 
   const resendOtpMutation = useResendOtp();
   const verifyOtpMutation = useVerifyOtp();
+  const isVerifyingRef = useRef(false);
   const isResending = resendOtpMutation.isPending;
   const { colors } = useTheme();
 
@@ -41,7 +42,8 @@ export function FindAccountOtpScreen({
   );
 
   const handleVerify = async (otp: string) => {
-    if (otp.length !== 4) return;
+    if (otp.length !== 4 || isVerifyingRef.current || verifyOtpMutation.isPending) return;
+    isVerifyingRef.current = true;
 
     try {
       const result = await verifyOtpMutation.mutateAsync({
@@ -54,7 +56,7 @@ export function FindAccountOtpScreen({
         toast.error("OTP incorrect, please verify and try again.");
       const { user, accessToken, refreshToken } = result.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
-      await authStorage.save({ user, accessToken, refreshToken });
+      await saveAuthSession({ userId: user.id, accessToken, refreshToken });
 
       const customerResponse = await customerService.getCustomerById(user.id);
 
@@ -69,6 +71,8 @@ export function FindAccountOtpScreen({
       });
     } catch {
       toast.error("OTP incorrect, please verify and try again.");
+    } finally {
+      isVerifyingRef.current = false;
     }
   };
 
@@ -97,7 +101,7 @@ export function FindAccountOtpScreen({
             Enter the 4-digits code sent via SMS at {phone}
           </Text>
 
-          <View className="mb-6">
+          <View className="mb-6" pointerEvents={verifyOtpMutation.isPending ? "none" : "auto"}>
             <OTPInput
               value={codeDigits}
               onChange={setCodeDigits}
@@ -113,7 +117,7 @@ export function FindAccountOtpScreen({
           </Pressable>
 
           <Pressable
-            disabled={!isCodeComplete}
+            disabled={!isCodeComplete || verifyOtpMutation.isPending}
             onPress={() => handleVerify(codeDigits.join(""))}
             className={[
               "h-12 rounded-full items-center justify-center mb-4",
