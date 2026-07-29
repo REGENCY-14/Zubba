@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   Pressable,
   Text,
@@ -14,7 +14,7 @@ import { OTPInput } from "../../components/common/OTPInput";
 import { useVerifyOtp, useResendOtp } from "../../slices/auth/auth.hooks";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
-import { authStorage } from "../../utils/authStorage";
+import { saveAuthSession } from "../../utils/resolveInitialRoute";
 import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { useTheme } from "../../context/ThemeContext";
@@ -28,6 +28,7 @@ export function FindAccountEmailOtpScreen({
   const email = route.params?.email || "";
 
   const verifyOtpMutation = useVerifyOtp();
+  const isVerifyingRef = useRef(false);
   const resendOtpMutation = useResendOtp();
   const dispatch = useAppDispatch();
 
@@ -43,6 +44,8 @@ export function FindAccountEmailOtpScreen({
   const { colors } = useTheme();
 
   const handleVerify = async (otp: string) => {
+    if (isVerifyingRef.current || verifyOtpMutation.isPending) return;
+    isVerifyingRef.current = true;
     try {
       const result = await verifyOtpMutation.mutateAsync({
         authKey: "email",
@@ -54,7 +57,7 @@ export function FindAccountEmailOtpScreen({
         toast.error("OTP incorrect, please verify and try again.");
       const { user, accessToken, refreshToken } = result.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
-      await authStorage.save({ user, accessToken, refreshToken });
+      await saveAuthSession({ userId: user.id, accessToken, refreshToken });
 
       const customerResponse = await customerService.getCustomerById(user.id);
 
@@ -70,6 +73,8 @@ export function FindAccountEmailOtpScreen({
     } catch (err: any) {
       handleApiError(err)
       setCodeDigits(["", "", "", ""]);
+    } finally {
+      isVerifyingRef.current = false;
     }
   };
 
@@ -98,7 +103,7 @@ export function FindAccountEmailOtpScreen({
             Enter the 4-digits code sent to you at: {email}
           </Text>
 
-          <View className="mb-6">
+          <View className="mb-6" pointerEvents={verifyOtpMutation.isPending ? "none" : "auto"}>
             <OTPInput
               value={codeDigits}
               onChange={setCodeDigits}
@@ -114,7 +119,7 @@ export function FindAccountEmailOtpScreen({
           </Pressable>
 
           <Pressable
-            disabled={!isCodeComplete}
+            disabled={!isCodeComplete || verifyOtpMutation.isPending}
             onPress={() => handleVerify(codeDigits.join(""))}
             className={[
               "h-12 rounded-full items-center justify-center mb-4",

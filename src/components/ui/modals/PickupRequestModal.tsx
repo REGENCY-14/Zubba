@@ -12,7 +12,7 @@ import { callDriver, messageDriver } from "../../../utils/contactDriver";
 
 type Props = {
   visible: boolean;
-  step: "" | "found_drivers" | "customer_requests" | "driver_accepts";
+  step: "" | "found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way";
   avatar: any;
   avatarUrl?: string | null;
   name: string;
@@ -20,6 +20,8 @@ type Props = {
   code: string;
   phone?: string | null;
   cost: string;
+  distanceLabel?: string;
+  etaLabel?: string;
   onProceed: () => void;
   onCancel: () => void;
   onAssignedCancel: () => void;
@@ -37,6 +39,8 @@ export default function PickupRequestModal({
   code,
   phone,
   cost,
+  distanceLabel,
+  etaLabel,
   onProceed,
   onCancel,
   onAssignedCancel,
@@ -44,22 +48,18 @@ export default function PickupRequestModal({
   animationType,
 }: Props) {
   const { isDark, colors } = useTheme();
+  const isCompact = step === "on_the_way";
 
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType={animationType ? animationType : "fade"}
-    >
-      <View className="flex-1 justify-end items-center pb-[130px] px-4">
-        <View
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-            gap: 20,
-          }}
-          className={`border rounded-[22px] items-center p-6 w-full`}
-        >
+  const content = (
+    <View className={`flex-1 justify-end items-center ${isCompact ? "pb-[100px] px-3" : "pb-[130px] px-4"}`}>
+      <View
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          gap: isCompact ? 12 : 20,
+        }}
+        className={`border rounded-[22px] w-full ${isCompact ? "p-4" : "items-center p-6"}`}
+      >
           {step == "found_drivers" ? (
             <View className="w-full items-center gap-4">
               <View className="flex justify-between flex-row w-full">
@@ -286,6 +286,32 @@ export default function PickupRequestModal({
                 </Pressable>
               </View>
             </View>
+          ) : step == "on_the_way" ? (
+            <View className="w-full flex-row items-center gap-3">
+              <View className="w-12 h-12 rounded-full overflow-hidden bg-[#C7E0C9]">
+                <Image
+                  source={avatarUrl ? { uri: avatarUrl } : avatar}
+                  style={{ width: 48, height: 48 }}
+                  resizeMode="cover"
+                />
+              </View>
+              <View className="flex-1 gap-1">
+                <Text style={{ color: colors.text }} className="text-sm font-bold" numberOfLines={1}>
+                  {name}
+                </Text>
+                <View className="flex-row items-center gap-3">
+                  <Text style={{ color: colors.textSub }} className="text-xs">
+                    {distanceLabel ?? "—"}
+                  </Text>
+                  <Text style={{ color: "#31973D" }} className="text-xs font-semibold">
+                    {etaLabel ?? "—"}
+                  </Text>
+                </View>
+              </View>
+              <Text style={{ color: colors.text }} className="text-sm font-bold">
+                GHS {cost}
+              </Text>
+            </View>
           ) : (
             step == "driver_accepts" && (
               <View className="w-full items-center gap-4">
@@ -442,6 +468,14 @@ export default function PickupRequestModal({
           )}
         </View>
       </View>
+  );
+
+  if (!visible) return null;
+  if (isCompact) return content;
+
+  return (
+    <Modal visible transparent animationType={animationType ?? "fade"}>
+      {content}
     </Modal>
   );
 }

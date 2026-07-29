@@ -28,4 +28,9 @@ export const customerService = {
     const { data } = await api.get<ApiResponse<{ customer: RequestTakeout }>>(`/customers/requests/${id}`);
     return data;
   },
+
+  getRequestTracking: async (requestId: string) => {
+    const { data } = await api.get<ApiResponse<any>>(`/customers/requests/${requestId}/tracking`);
+    return data;
+  },
 };

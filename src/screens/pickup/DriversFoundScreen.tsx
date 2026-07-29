@@ -1,7 +1,6 @@
 import {
   Animated,
   Image,
-  ImageBackground,
   Pressable,
   ScrollView,
   Text,
@@ -19,9 +18,16 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import { useEffect, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
+import { LiveMapView } from "../../components/maps/LiveMapView";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useRoutePolyline } from "../../hooks/useRoutePolyline";
+import { interpolateCoord } from "../../components/maps/mapUtils";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { customerService } from "../../api/customerService";
+import { requestService } from "../../api/requestService";
+import { setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
 
-const mapImage = require("../../../assets/RawMap.png");
-const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const fallbackAvatar = require("../../../assets/avatar.jpg");
 
 function DriverCard({
@@ -132,10 +138,15 @@ export function DriversFoundScreen({
 }: RootStackScreenProps<"DriversFound">) {
   const drivers: NearbyDriver[] = route.params?.drivers ?? [];
   const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
+  const customer = useAppSelector((state) => state.customer);
+  const { coords } = useCurrentLocation();
   const { isDark, colors } = useTheme()
   const [selectedDriver, setSelectedDriver] = useState(0);
-  const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts">("found_drivers");
+  const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way">("found_drivers");
   const [showModal, setShowModal] = useState(false);
+  const [simProgress, setSimProgress] = useState(0);
+  const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
   const assignedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navHeight = 52 + Math.max(insets.bottom, 14) + 20;
@@ -147,27 +158,97 @@ export function DriversFoundScreen({
   };
 
   useEffect(() => {
-    if (modalStep !== "driver_accepts") return;
-    assignedTimerRef.current = setTimeout(() => {
-      assignedTimerRef.current = null;
-      setShowModal(false);
-      navigation.navigate("DriverArrives");
-    }, 5000);
     return () => {
-      if (assignedTimerRef.current) {
-        clearTimeout(assignedTimerRef.current);
-        assignedTimerRef.current = null;
-      }
+      if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
     };
-  }, [modalStep, navigation]);
+  }, []);
+
+  const driverLocation =
+    coords && driverStart
+      ? interpolateCoord(driverStart, coords, simProgress)
+      : driverStart;
+  const routeCoords = useRoutePolyline(driverLocation, coords);
+  const distanceLabel = activeDriver
+    ? `${((activeDriver.distanceM / 1000) * (1 - simProgress)).toFixed(1)} km`
+    : "—";
+  const etaLabel = activeDriver
+    ? `${Math.max(1, Math.ceil((activeDriver.etaMinutes || 5) * (1 - simProgress)))} mins`
+    : "—";
+
+  const submitRequest = async () => {
+    if (!coords || !activeDriver) return;
+    setModalStep("customer_requests");
+    setShowModal(true);
+    try {
+      const result = await customerService.requestTakeout({
+        pickup_location: [coords.latitude, coords.longitude],
+        pickup_address: "Home",
+        bags: 1,
+        driver_id: activeDriver.id,
+        distance_m: activeDriver.distanceM,
+        pickup_price: activeDriver.cost,
+        service_price: 5,
+      });
+      const requestResult = result.data.request;
+      dispatch(
+        setRequest({
+          id: requestResult.id,
+          customer_id: customer.id,
+          pickup_location: [coords.latitude, coords.longitude].toString(),
+          pickup_address: "Home",
+          payment_method: "",
+          bags: 1,
+          distance_m: activeDriver.distanceM,
+          pickup_price: activeDriver.cost,
+          service_price: 5,
+          collection_code: requestResult.collection_code,
+          scheduleRequest: false,
+          status: "pending",
+        }),
+      );
+      setTimeout(() => {
+        dispatch(
+          setRequestDriver({
+            driver_id: activeDriver.id,
+            name: activeDriver.name,
+            avatar: activeDriver.profilePicture ?? "",
+            code: activeDriver.code ?? "N/A",
+            rating: activeDriver.rating,
+            phone: requestResult.driver?.phone ?? null,
+          }),
+        );
+        dispatch(setStatus("accepted"));
+        requestService.updateRequestStatus(requestResult.id, "accepted");
+        setModalStep("driver_accepts");
+        setTimeout(() => {
+          dispatch(setStatus("en_route"));
+          requestService.updateRequestStatus(requestResult.id, "en_route");
+          setDriverStart({ latitude: coords.latitude + 0.01, longitude: coords.longitude + 0.01 });
+          setModalStep("on_the_way");
+          const started = Date.now();
+          const interval = setInterval(() => {
+            const progress = Math.min(1, (Date.now() - started) / 10000);
+            setSimProgress(progress);
+            if (progress >= 1) clearInterval(interval);
+          }, 500);
+          assignedTimerRef.current = setTimeout(() => {
+            requestService.updateRequestStatus(requestResult.id, "arrived");
+            navigation.replace("DriverArrives");
+          }, 10000);
+        }, 2000);
+      }, 3000);
+    } catch {
+      closeModal();
+    }
+  };
 
   return (
     <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right", "bottom"]}>
-      <ImageBackground
-        source={isDark ? mapDarkImage : mapImage}
+      <LiveMapView
+        userLocation={coords}
+        driverLocation={modalStep === "on_the_way" ? driverLocation : null}
+        routeCoordinates={modalStep === "on_the_way" ? routeCoords : []}
         style={{ flex: 1 }}
-        resizeMode="cover"
-        imageStyle={{ opacity: 0.8 }}
       >
         <View style={{backgroundColor: colors.bg, borderColor: colors.border}} className="h-12 flex-row items-center justify-between px-4 border-b">
           <Pressable
@@ -305,6 +386,7 @@ export function DriversFoundScreen({
                 onPress={() => {
                   setModalStep("customer_requests");
                   setShowModal(true);
+                  submitRequest();
                 }}
               >
                 <Text className="text-sm font-bold text-white">
@@ -339,6 +421,8 @@ export function DriversFoundScreen({
             rating={activeDriver.rating}
             code={activeDriver.code ?? "—"}
             cost={activeDriver.cost.toFixed(2)}
+            distanceLabel={distanceLabel}
+            etaLabel={etaLabel}
             onProceed={() => setModalStep("customer_requests")}
             onCancel={closeModal}
             onAssignedCancel={closeModal}
@@ -352,7 +436,7 @@ export function DriversFoundScreen({
           bottomOffset={8}
           navigation={navigation}
         />
-      </ImageBackground>
+      </LiveMapView>
     </SafeAreaView>
   );
 }

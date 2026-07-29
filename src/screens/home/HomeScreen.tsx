@@ -3,7 +3,6 @@ import {
   Animated,
   Easing,
   Image,
-  ImageBackground,
   Pressable,
   Text,
   TextInput,
@@ -26,9 +25,9 @@ import { useTheme } from "../../context/ThemeContext";
 import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 import { binFullService } from "../../api/binFullService";
+import { LiveMapView } from "../../components/maps/LiveMapView";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 
-const mapImage = require("../../../assets/RawMap.png");
-const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const premium = require("../../../assets/premium.png");
 const futurePlan = require("../../../assets/futurePlan.png");
 const tricycle = require("../../../assets/picktricycle.png");
@@ -43,6 +42,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const isPremium = customer.is_premium;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
+  const { coords } = useCurrentLocation();
 
   const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
 
@@ -117,11 +117,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <ImageBackground
-          source={isDark ? mapDarkImage : mapImage}
-          style={{ flex: 1 }}
-          resizeMode="cover"
-        >
+        <LiveMapView userLocation={coords} style={{ flex: 1 }}>
           <View
             style={{
               position: "absolute",
@@ -575,7 +571,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             paddingBottom={0}
             navigation={navigation}
           />
-        </ImageBackground>
+        </LiveMapView>
       </View>
       <Sidebar ref={sidebarRef} navigation={navigation} activeKey="home" />
     </SafeAreaView>

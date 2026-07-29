@@ -9,8 +9,20 @@ export type RootStackParamList = {
   Landing: undefined;
   SignUp: undefined;
   EmailSignUp: undefined;
-  SignIn: { phone?: string; email?: string } | undefined;
-  ExistingUserNotification: { phone?: string; email?: string } | undefined;
+  SignIn: {
+    phone?: string;
+    email?: string;
+    isFirstLogin?: boolean;
+    previousLogin?: { authKey: string; authValue: string } | null;
+    matchesCurrentLogin?: boolean;
+  } | undefined;
+  ExistingUserNotification: {
+    phone?: string;
+    email?: string;
+    isFirstLogin?: boolean;
+    previousLogin?: { authKey: string; authValue: string } | null;
+    matchesCurrentLogin?: boolean;
+  } | undefined;
   NewUserOnboarding: { phone?: string; email?: string } | undefined;
   KycCollection: { phone?: string; email?: string } | undefined;
   TermsAcceptance: { phone?: string; email?: string; firstname?: string; lastname?: string } | undefined;
@@ -77,6 +89,7 @@ export type RootStackParamList = {
   WalletNumber: undefined;
   SavedCards: undefined;
   DriversFound: { drivers: Array<NearbyDriver> };
+  LiveTracking: { requestId: string };
   WalletCheckout: undefined;
   PlanForLater: undefined;
   Details: { itemId: string; title: string } | undefined;

@@ -50,7 +50,13 @@ export const paymentService = {
     return data;
   },
   getSubscriptionPlans: async () => {
-    const { data } = await api.get<ApiResponse<{}>>(`payments/plans`);
+    const { data } = await api.get<ApiResponse<{}>>(`/payments/plans`);
+    return data;
+  },
+  initiateSubscriptionPayment: async (planCode: string) => {
+    const { data } = await api.post<
+      ApiResponse<{ reference: string; amount: number; email: string; plan_code: string }>
+    >("/payments/subscriptions/initiate", { planCode });
     return data;
   },
   subscribeToPlan: async (planCode: string, authorization: string) => {

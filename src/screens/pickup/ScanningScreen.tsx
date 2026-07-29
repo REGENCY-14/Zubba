@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Animated,
   Dimensions,
-  ImageBackground,
   Text,
   View,
 } from "react-native";
@@ -14,6 +13,9 @@ import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { AppBottomNav } from "../../components";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
+import { LiveMapView } from "../../components/maps/LiveMapView";
+import { useRoutePolyline } from "../../hooks/useRoutePolyline";
+import { interpolateCoord } from "../../components/maps/mapUtils";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
@@ -31,10 +33,7 @@ import { toast } from "../../hooks/toast";
 import { requestService } from "../../api/requestService";
 import { handleApiError } from "../../utils/handleApiError";
 
-const mapImage = require("../../../assets/RawMap.png");
-const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const avatar = require("../../../assets/avatar.jpg");
-
 const { width: screenW, height: screenH } = Dimensions.get("window");
 const SCAN_SIZE = 330;
 const SCAN_LEFT = (screenW - SCAN_SIZE) / 2;
@@ -63,12 +62,13 @@ export function ScanningScreen({
   const { coords } = useCurrentLocation();
   const { colors, isDark } = useTheme();
   const [modalStep, setModalStep] = useState<
-    "" | "found_drivers" | "customer_requests" | "driver_accepts"
+    "" | "found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way"
   >("");
+  const [simProgress, setSimProgress] = useState(0);
+  const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
   const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-
   useEffect(() => {
     const animation = Animated.loop(
       Animated.timing(spinValue, {
@@ -174,13 +174,27 @@ export function ScanningScreen({
           }),
         );
         dispatch(setStatus("accepted"));
-        // change to accepted on drivers side
         requestService.updateRequestStatus(requestResult.id, "accepted");
         setModalStep("driver_accepts");
+        setTimeout(() => {
+          dispatch(setStatus("en_route"));
+          requestService.updateRequestStatus(requestResult.id, "en_route");
+          if (coords) setDriverStart({ latitude: coords.latitude + 0.01, longitude: coords.longitude + 0.01 });
+          setModalStep("on_the_way");
+          const started = Date.now();
+          const interval = setInterval(() => {
+            const progress = Math.min(1, (Date.now() - started) / 10000);
+            setSimProgress(progress);
+            if (progress >= 1) clearInterval(interval);
+          }, 500);
+          assignedTimerRef.current = setTimeout(() => {
+            assignedTimerRef.current = null;
+            requestService.updateRequestStatus(request.id || requestResult.id, "arrived");
+            setShowModal(false);
+            navigation.replace("DriverArrives");
+          }, 10000);
+        }, 2000);
       }, 3000);
-      setTimeout(() => {
-        requestService.updateRequestStatus(requestResult.id, "en_route");
-      }, 2000);
     } catch (err) {
       dispatch(resetRequest());
       console.error(err);
@@ -194,19 +208,19 @@ export function ScanningScreen({
   };
 
   useEffect(() => {
-    if (modalStep !== "driver_accepts") return;
-    requestService.updateRequestStatus(request.id, "arrived");
-    assignedTimerRef.current = setTimeout(() => {
-      assignedTimerRef.current = null;
-      setShowModal(false);
-
-      navigation.replace("DriverArrives");
-    }, 5000);
     return () => {
       if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
     };
-  }, [modalStep, navigation]);
+  }, []);
 
+  const driverLocation =
+    coords && driverStart
+      ? interpolateCoord(driverStart, coords, simProgress)
+      : driverStart;
+
+  const routeCoords = useRoutePolyline(driverLocation, coords);
+  const distanceLabel = driver ? `${(driver.distanceM / 1000 * (1 - simProgress)).toFixed(1)} km` : "—";
+  const etaLabel = driver ? `${Math.max(1, Math.ceil((driver.etaMinutes || 5) * (1 - simProgress)))} mins` : "—";
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
@@ -217,13 +231,12 @@ export function ScanningScreen({
       style={{ flex: 1, backgroundColor: colors.bg }}
       edges={["top", "left", "right", "bottom"]}
     >
-      <ImageBackground
-        source={isDark ? mapDarkImage : mapImage}
-        style={{ flex: 1, width: "100%", height: "100%" }}
-        resizeMode="cover"
+      <LiveMapView
+        userLocation={coords}
+        driverLocation={modalStep === "on_the_way" ? driverLocation : null}
+        routeCoordinates={modalStep === "on_the_way" ? routeCoords : []}
       >
         <CustomAppBar title={appBarText} navigation={navigation} />
-
         <View
           style={{
             position: "absolute",
@@ -372,6 +385,8 @@ export function ScanningScreen({
             code={driver.code ?? "—"}
             phone={driverPhone ?? undefined}
             cost={driver.cost.toFixed(2)}
+            distanceLabel={distanceLabel}
+            etaLabel={etaLabel}
             onProceed={customer_requests}
             onCancel={cancelRequest}
             onAssignedCancel={() => {
@@ -382,7 +397,7 @@ export function ScanningScreen({
             }}
           />
         )}
-      </ImageBackground>
+      </LiveMapView>
     </SafeAreaView>
   );
 }

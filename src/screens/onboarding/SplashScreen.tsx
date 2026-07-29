@@ -2,6 +2,7 @@ import { Asset } from "expo-asset";
 import { useEffect, useState } from "react";
 import { Image, View, useWindowDimensions } from "react-native";
 import { RootStackScreenProps } from "../../navigation/types";
+import { resolveInitialRoute } from "../../utils/resolveInitialRoute";
 
 const zubbaLogo = require("../../../assets/zubba icon.png");
 const splashScreenLayer = require("../../../assets/splash screen layer.png");
@@ -17,14 +18,16 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
 
     const loadAssets = async () => {
       await Asset.loadAsync([zubbaLogo, splashScreenLayer]);
-
       if (!mounted) return;
 
       setReady(true);
 
+      const { route } = await resolveInitialRoute();
+
       setTimeout(() => {
-        navigation.replace("OnboardLocationAccess");
-      }, 1800);
+        if (!mounted) return;
+        navigation.replace(route as any);
+      }, 1200);
     };
 
     loadAssets();

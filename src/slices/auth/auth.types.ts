@@ -17,6 +17,7 @@ export interface User {
   role: "customer" | "driver" | "admin";
   is_active: boolean;
   verified: boolean;
+  terms_accepted_at?: string | null;
   profile_picture?: string | null;
 }
 

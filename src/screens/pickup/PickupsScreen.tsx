@@ -312,10 +312,17 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
   const handlePickupPress = (pickup: Pickup) => {
     const { raw } = pickup;
 
-    if (activeTab === "pending" && raw.status === "arrived") {
-      dispatch(setRequest(buildRequestStateFromItem(raw)));
-      navigation.navigate("DriverArrives");
-      return;
+    if (activeTab === "pending") {
+      if (raw.status === "arrived") {
+        dispatch(setRequest(buildRequestStateFromItem(raw)));
+        navigation.navigate("DriverArrives");
+        return;
+      }
+      if (["pending", "accepted", "en_route", "paid"].includes(raw.status)) {
+        dispatch(setRequest(buildRequestStateFromItem(raw)));
+        navigation.navigate("LiveTracking", { requestId: raw.id });
+        return;
+      }
     }
 
     if (activeTab === "completed" && raw.status === "completed") {
