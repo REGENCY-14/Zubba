@@ -6,7 +6,7 @@ import "react-native-gesture-handler";
 import { useEffect } from "react";
 import { Text, TextInput, StatusBar } from "react-native";
 import { Provider } from "react-redux";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   useFonts,
@@ -24,6 +24,8 @@ import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
 import { env } from "./src/utils/env";
 import { configureNotifications } from "./src/services/pushNotifications";
+import { PushNotificationManager } from "./src/components/notifications/PushNotificationManager";
+import type { RootStackParamList } from "./src/navigation/types";
 
 // Apply Poppins as the global default for unstyled Text / TextInput
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -38,17 +40,19 @@ const queryClient = new QueryClient();
 // Create a separate component for the app content that uses the theme
 function AppContent() {
   const { isDark, colors } = useTheme();
+  const navigationRef = useNavigationContainerRef<RootStackParamList>();
 
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <StatusBar
             barStyle={isDark ? "light-content" : "dark-content"}
             backgroundColor={colors.bg}
             translucent={false}
           />
           <RootNavigator />
+          <PushNotificationManager navigationRef={navigationRef} />
           <ToastManager />
         </NavigationContainer>
       </QueryClientProvider>

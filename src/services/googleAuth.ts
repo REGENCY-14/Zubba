@@ -9,7 +9,7 @@ import { UserRole } from "../slices/auth/auth.types";
 import { api } from "../api/axios";
 import { setCredentials } from "../slices/auth/authSlice";
 import { setCustomer } from "../slices/customer/customerSlice";
-import { registerForPushNotifications } from "./pushNotifications";
+import { syncPushNotifications } from "./pushNotifications";
 
 GoogleSignin.configure({
   webClientId: env.googleWebClientId,
@@ -42,7 +42,7 @@ export function useGoogleLogin() {
         dispatch(setCustomer(customerResponse.data.customer));
       }
 
-      registerForPushNotifications().catch(() => {});
+      syncPushNotifications().catch(() => {});
 
       return user;
     } catch (err: any) {

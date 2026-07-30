@@ -1,8 +1,5 @@
 import "dotenv/config";
-import { existsSync } from "fs";
 import { ExpoConfig, ConfigContext } from "expo/config";
-
-const googleServicesPath = process.env.EXPO_PUBLIC_GOOGLE_SERVICES_JSON;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -18,12 +15,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.zubbadevs.zubba",
+    infoPlist: {
+      UIBackgroundModes: ["remote-notification"],
+    },
   },
   android: {
     package: "com.zubba.app",
-    ...(googleServicesPath && existsSync(googleServicesPath)
-      ? { googleServicesFile: googleServicesPath }
-      : {}),
+    googleServicesFile: "./google-services.json",
     adaptiveIcon: {
       foregroundImage: "./assets/ic_launcher.png",
       backgroundColor: "#FFFFFF",

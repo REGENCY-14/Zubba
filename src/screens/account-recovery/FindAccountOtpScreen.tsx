@@ -17,6 +17,7 @@ import { setCredentials } from "../../slices/auth/authSlice";
 import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { saveAuthSession } from "../../utils/resolveInitialRoute";
+import { syncPushNotifications } from "../../services/pushNotifications";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 
@@ -66,6 +67,7 @@ export function FindAccountOtpScreen({
         );
       const customer = customerResponse.data.customer;
       dispatch(setCustomer(customer));
+      syncPushNotifications().catch(() => {});
       navigation.replace("ExistingUserNotification", {
         phone,
       });
