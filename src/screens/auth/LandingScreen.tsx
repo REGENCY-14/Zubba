@@ -4,7 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const zubbaLogo = require('../../../assets/zubba icon.png');
+const zubbaLogo = require('../../../assets/zubba-icon.png');
 
 export function LandingScreen({ navigation }: RootStackScreenProps<'Landing'>) {
   const { colors } = useTheme();

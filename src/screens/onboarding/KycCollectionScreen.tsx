@@ -81,7 +81,8 @@ export function KycCollectionScreen({
           <View className="mt-6">
             <View style={{backgroundColor: colors.surface, borderColor: colors.border}} className="w-full h-[56px] min-h-[56px border rounded-full px-5 justify-center">
               <TextInput
-                className="text-[15px] text-[#707579] outline-none focus:outline-none"
+                style={{color: colors.text}}
+                className="text-[15px] outline-none focus:outline-none"
                 placeholder="Please enter first name"
                 value={firstname}
                 onChangeText={setFirstname}
@@ -92,7 +93,7 @@ export function KycCollectionScreen({
 
             <View style={{backgroundColor: colors.surface, borderColor: colors.border}} className="w-full h-[56px] min-h-[56px] border rounded-full px-5 justify-center mt-4">
               <TextInput
-                style={{color: colors.textSub}}
+                style={{color: colors.text}}
                 className="text-[15px] outline-none focus:outline-none"
                 placeholder="Please enter last name"
                 value={lastname}

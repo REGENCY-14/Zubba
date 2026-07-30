@@ -95,9 +95,9 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
       </KeyboardAvoidingView>
 
       {showSuccess && (
-        <View style={StyleSheet.absoluteFillObject}>
-          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFillObject} />
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
+        <View style={StyleSheet.absoluteFill}>
+          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
 
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 32 }}>
             <View style={{ alignItems: 'center', gap: 12 }}>

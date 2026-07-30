@@ -4,8 +4,8 @@ import { Image, View, useWindowDimensions } from "react-native";
 import { RootStackScreenProps } from "../../navigation/types";
 import { resolveInitialRoute } from "../../utils/resolveInitialRoute";
 
-const zubbaLogo = require("../../../assets/zubba icon.png");
-const splashScreenLayer = require("../../../assets/splash screen layer.png");
+const zubbaLogo = require("../../../assets/zubba-icon.png");
+const splashScreenLayer = require("../../../assets/splash-screen-layer.png");
 
 export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
   const { width, height } = useWindowDimensions();

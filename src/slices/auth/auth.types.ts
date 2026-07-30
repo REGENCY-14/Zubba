@@ -6,7 +6,9 @@ export type OtpPurpose =
   | "login"
   | "password_reset"
   | "email_verification"
-  | "payment";
+  | "payment"
+  | "update_old"
+  | "update_new";
 
 export interface User {
   id: string;

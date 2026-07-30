@@ -45,12 +45,17 @@ export async function purchaseGoogleSubscription(planIndex: number): Promise<Pur
 
   await initGooglePlayBilling();
   const productId = getSubscriptionProductId(planIndex);
-  const purchase = await iap.requestSubscription({ sku: productId });
+  const purchase = await iap.requestPurchase({
+    type: "subs",
+    request: {
+      google: { skus: [productId] },
+    },
+  });
 
   const normalized = Array.isArray(purchase) ? purchase[0] : purchase;
   const purchaseToken =
     normalized?.purchaseToken ??
-    (normalized as { transactionReceipt?: string })?.transactionReceipt;
+    (normalized as { transactionReceipt?: string } | null)?.transactionReceipt;
 
   if (!purchaseToken) {
     throw new Error("Purchase completed but no token was returned.");

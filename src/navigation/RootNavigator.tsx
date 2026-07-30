@@ -29,6 +29,7 @@ import { ActiveSessionScreen } from '../screens/settings/ActiveSessionScreen';
 import { UpdateDetailsScreen } from '../screens/profile/UpdateDetailsScreen';
 import { UpdateNameScreen } from '../screens/profile/UpdateNameScreen';
 import { ScheduleScreen } from '../screens/schedule/ScheduleScreen';
+import { ScheduleFormScreen } from '../screens/schedule/ScheduleFormScreen';
 import { UpdateDetailsOtpScreen } from '../screens/profile/UpdateDetailsOtpScreen';
 import { UpdateDetailsSuccessScreen } from '../screens/profile/UpdateDetailsSuccessScreen';
 import { DetailsScreen } from '../screens/home/DetailsScreen';
@@ -135,6 +136,7 @@ export function RootNavigator() {
       <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateName" component={UpdateNameScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ScheduleForm" component={ScheduleFormScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetailsOtp" component={UpdateDetailsOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateDetailsSuccess" component={UpdateDetailsSuccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Verify" component={VerifyOtpScreen} options={{ headerShown: false }} />

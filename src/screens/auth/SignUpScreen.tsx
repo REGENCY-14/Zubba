@@ -20,7 +20,7 @@ import { useGoogleLogin } from "../../services/googleAuth";
 import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
 
-const googleIcon = require("../../../assets/Google icon.png");
+const googleIcon = require("../../../assets/google-icon.png");
 
 export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const [phoneNumber, setPhoneNumber] = useState("");

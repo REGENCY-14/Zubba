@@ -1,9 +1,9 @@
 import axios from "axios";
 import { store } from "../store";
-import { env } from "./env";
-import { authStorage } from "./authStorage";
-import { setCredentials, logout, updateAccessToken } from "../slices/auth/authSlice";
-import { authService } from "../api/authService";
+import { logout, updateAccessToken } from "../slices/auth/authSlice";
+import { env } from "../utils/env";
+import { authStorage } from "../utils/authStorage";
+import { ApiResponse } from "../types/api.types";
 
 export const api = axios.create({
   baseURL: env.apiUrl,
@@ -36,10 +36,13 @@ api.interceptors.response.use(
     }
 
     if (!refreshPromise) {
-      refreshPromise = authService
-        .refreshToken({ refreshToken })
+      refreshPromise = axios
+        .post<ApiResponse<{ accessToken: string }>>(
+          `${env.apiUrl}/auth/refresh-token`,
+          { refreshToken },
+        )
         .then((res) => {
-          const accessToken = res.data.accessToken;
+          const accessToken = res.data.data.accessToken;
           store.dispatch(updateAccessToken(accessToken));
           const stored = authStorage.get();
           return stored.then((s) => {

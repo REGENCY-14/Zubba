@@ -2,7 +2,8 @@ import Constants from "expo-constants";
 
 type AppExtra = {
   apiUrl?: string;
-  googleClientId?: string;
+  googleWebClientId?: string;
+  googleAndroidClientId?: string;
   paystackPublicKey?: string;
   supabaseUrl?: string;
   supabaseAnonKey?: string;
@@ -17,7 +18,7 @@ function readEnv(key: string, extraKey?: keyof AppExtra): string {
 
   const extra = Constants.expoConfig?.extra as AppExtra | undefined;
   if (extraKey && extra?.[extraKey]) {
-    return extra[extraKey];
+    return extra[extraKey]!;
   }
 
   return "";
@@ -25,8 +26,8 @@ function readEnv(key: string, extraKey?: keyof AppExtra): string {
 
 export const env = {
   apiUrl: readEnv("EXPO_PUBLIC_API_URL", "apiUrl"),
-  googleWebClientId: readEnv("EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID", "googleClientId"),
-  googleAndroidClientId: readEnv("EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID", "googleClientId"),
+  googleWebClientId: readEnv("EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID", "googleWebClientId"),
+  googleAndroidClientId: readEnv("EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID", "googleAndroidClientId"),
   paystackPublicKey: readEnv("EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY", "paystackPublicKey"),
   supabaseUrl: readEnv("EXPO_PUBLIC_SUPABASE_URL", "supabaseUrl"),
   supabaseAnonKey: readEnv("EXPO_PUBLIC_SUPABASE_ANON_KEY", "supabaseAnonKey"),

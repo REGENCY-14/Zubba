@@ -104,8 +104,8 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
                   {/* Primary green card — overflow:hidden only clips the card itself */}
                   <View style={{ width: 280, height: 170, borderRadius: 24, overflow: 'hidden' }}>
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#006B23' }]} />
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#31973D', opacity: 0.85 }]} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#006B23' }]} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#31973D', opacity: 0.85 }]} />
 
                     <View style={{ flex: 1, padding: 24, justifyContent: 'space-between' }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -174,8 +174,8 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                 {/* Context menu — sibling of ScrollView, not inside overflow:hidden card */}
                 {menuVisible && (
                   <View style={{ position: 'absolute', right: 0, top: 44, width: 105, height: 64, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, zIndex: 10 }}>
-                    <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: isDark ? 'rgba(20,29,43,0.7)' : 'rgba(250,250,250,0.3)' }]} />
+                    <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(20,29,43,0.7)' : 'rgba(250,250,250,0.3)' }]} />
 
                     <Pressable
                       style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8, height: 32, borderBottomWidth: 0.5, borderBottomColor: colors.border }}

@@ -117,7 +117,7 @@ export function LiveMapView({
 const styles = StyleSheet.create({
   container: { flex: 1, overflow: "hidden" },
   darkOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(10, 20, 30, 0.25)",
   },
 });

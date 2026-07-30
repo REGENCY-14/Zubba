@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
-import type { MapCoord } from "./mapUtils";
+import type { MapCoord } from "../components/maps/mapUtils";
 
 export function useRoutePolyline(from: MapCoord | null, to: MapCoord | null) {
   const [coordinates, setCoordinates] = useState<MapCoord[]>([]);

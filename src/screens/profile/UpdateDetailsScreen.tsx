@@ -63,8 +63,15 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
 
   const handleSendOtp = () => {
     const authKey = isEmailMode ? 'email' : 'phone';
-    const authValue = isEmailMode ? (isNewContactStep ? emailAddress : user?.email) : (isNewContactStep ? phoneNumber : user?.phone);
+    const authValue = isEmailMode
+      ? (isNewContactStep ? emailAddress : user?.email)
+      : (isNewContactStep ? phoneNumber : user?.phone);
     const purpose = isNewContactStep ? 'update_new' : 'update_old';
+
+    if (!authValue?.trim()) {
+      toast.error(isEmailMode ? 'Enter a valid email address' : 'Enter a valid phone number');
+      return;
+    }
 
     // First, send OTP
     resendOtp(
@@ -97,7 +104,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
     : phoneNumber.trim().length > 0;
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={['top', 'left', 'right', 'bottom']}>
       <View className="flex-1">
         <CustomAppBar title="Update Details" navigation={navigation} />
 

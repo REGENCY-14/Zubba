@@ -21,7 +21,7 @@ import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const googleIcon = require("../../../assets/Google icon.png");
+const googleIcon = require("../../../assets/google-icon.png");
 
 export function EmailSignUpScreen({
   navigation,

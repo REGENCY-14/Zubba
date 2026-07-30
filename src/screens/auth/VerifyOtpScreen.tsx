@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import {
-  KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, View,
+  KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,13 +9,12 @@ import { useResendOtp, useVerifyOtp } from "../../slices/auth/auth.hooks";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
 import { setCustomer } from "../../slices/customer/customerSlice";
-import { authStorage } from "../../utils/authStorage";
-import { saveAuthSession } from "../../utils/resolveInitialRoute";
 import { authService } from "../../api/authService";
 import { OTPInput } from "../../components/common/OTPInput";
 import { customerService } from "../../api/customerService";
 import { useTheme } from "../../context/ThemeContext";
 import { handleApiError } from "../../utils/handleApiError";
+import { saveAuthSession } from "../../utils/resolveInitialRoute";
 import { syncPushNotifications } from "../../services/pushNotifications";
 
 export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
@@ -32,7 +31,6 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
   const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
   const [resendTimer, setResendTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const [showResendModal, setShowResendModal] = useState(false);
   const isVerifyingRef = useRef(false);
 
   useEffect(() => {
@@ -58,12 +56,12 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
       };
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await saveAuthSession({ userId: user.id, accessToken, refreshToken });
-      
-      const customerResponse = await customerService.getCustomerById(user.id)
 
-      if(customerResponse.success){
+      const customerResponse = await customerService.getCustomerById(user.id);
+
+      if (customerResponse.success) {
         const customer = customerResponse.data.customer;
-        dispatch(setCustomer(customer))
+        dispatch(setCustomer(customer));
       }
 
       syncPushNotifications().catch(() => {});
@@ -94,7 +92,7 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
         });
       }
     } catch (err) {
-      handleApiError(err)
+      handleApiError(err);
       setCodeDigits(["", "", "", ""]);
     } finally {
       isVerifyingRef.current = false;
@@ -102,14 +100,19 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
   };
 
   const handleResend = async () => {
+    if (!canResend || resendOtpMutation.isPending) return;
+
     try {
-      await resendOtpMutation.mutateAsync({ authKey: email ? "email" : "phone", authValue: contact, purpose: "login" });
-      setShowResendModal(false);
+      await resendOtpMutation.mutateAsync({
+        authKey: email ? "email" : "phone",
+        authValue: contact,
+        purpose: "login",
+      });
       setCodeDigits(["", "", "", ""]);
       setResendTimer(60);
       setCanResend(false);
     } catch (err) {
-      handleApiError(err)
+      handleApiError(err);
     }
   };
 
@@ -157,9 +160,9 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
 
           <View style={{ gap: 8, marginTop: 12 }}>
             <Pressable
-              disabled={!canResend}
-              onPress={() => setShowResendModal(true)}
-              style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 28, paddingVertical: 8, alignSelf: "flex-start", opacity: canResend ? 1 : 0.4 }}
+              disabled={!canResend || resendOtpMutation.isPending}
+              onPress={handleResend}
+              style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: 28, paddingVertical: 8, alignSelf: "flex-start", opacity: canResend && !resendOtpMutation.isPending ? 1 : 0.4 }}
             >
               <Text style={{ fontSize: 12, fontWeight: "500", color: colors.text }}>Resend</Text>
             </Pressable>
@@ -170,32 +173,6 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
               </Text>
             </Pressable>
           </View>
-
-          <Modal visible={showResendModal} transparent animationType="fade">
-            <View style={{ flex: 1, backgroundColor: "rgba(31,42,51,0.3)", justifyContent: "flex-end", alignItems: "center" }}>
-              <View style={{ width: "94%", backgroundColor: colors.card, borderRadius: 16, padding: 24, marginBottom: 40, alignItems: "center" }}>
-                <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "500", marginBottom: 12, color: colors.text }}>
-                  Resend code to: {contact}
-                </Text>
-
-                <View style={{ width: "100%", gap: 12 }}>
-                  <Pressable
-                    onPress={handleResend}
-                    style={{ height: 48, backgroundColor: "#31973D", borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
-                  >
-                    <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Resend</Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => setShowResendModal(false)}
-                    style={{ height: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: "center", justifyContent: "center" }}
-                  >
-                    <Text style={{ color: colors.text, fontSize: 14 }}>Cancel</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </Modal>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

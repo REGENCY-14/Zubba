@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prebuild:android": "expo prebuild --platform android --clean",
+    "android:signing-report": "cd android && gradlew signingReport",
     "credentials:android": "eas credentials -p android"
   },
   "dependencies": {

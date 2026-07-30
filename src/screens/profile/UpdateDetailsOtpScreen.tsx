@@ -25,7 +25,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<Array<TextInput | null>>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { mutate: resendOtp, isPending: isResending } = useResendOtp();
   const { mutate: verifyOtp, isPending: isVerifying } = useVerifyOtp();
