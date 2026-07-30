@@ -33,6 +33,10 @@ Expo React Native starter project with TypeScript, React Navigation, Redux Toolk
 The project is scaffolded with placeholder screens and reusable primitives. UI implementation from screenshots will be added in the next phase.
 
 
+## After chaning icon
+1. npx expo prebuild --clean
+2. npx expo run:android
+
 ## Build android apk
 1. ```cd android```
 2. ```./gradlew clean --no-daemon```
