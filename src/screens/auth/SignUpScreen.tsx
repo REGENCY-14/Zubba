@@ -21,7 +21,6 @@ import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
 
 const googleIcon = require("../../../assets/Google icon.png");
-const ghanaFlag = require("../../../assets/ghana-flag.png");
 
 export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -94,34 +93,6 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   marginBottom: 16,
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    borderRadius: 9999,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 16,
-                    height: 48,
-                    padding: 10,
-                    backgroundColor: colors.card,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <View style={{ borderRadius: 9999, overflow: "hidden" }}>
-                    <Image
-                      source={ghanaFlag}
-                      style={{ width: 28, height: 20 }}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <MaterialCommunityIcons
-                    name="chevron-down"
-                    size={24}
-                    color={colors.iconColor}
-                  />
-                </View>
-
                 <TextInput
                   style={{
                     flex: 1,
