@@ -16,7 +16,7 @@ import { OTPInput } from "../../components/common/OTPInput";
 import { customerService } from "../../api/customerService";
 import { useTheme } from "../../context/ThemeContext";
 import { handleApiError } from "../../utils/handleApiError";
-import { registerForPushNotifications } from "../../services/pushNotifications";
+import { syncPushNotifications } from "../../services/pushNotifications";
 
 export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Verify">) {
   const phone = route.params?.phone ?? "";
@@ -66,7 +66,7 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
         dispatch(setCustomer(customer))
       }
 
-      registerForPushNotifications().catch(() => {});
+      syncPushNotifications().catch(() => {});
 
       const authKey = email ? "email" : "phone";
       let welcomeParams = {};

@@ -15,6 +15,7 @@ import { useVerifyOtp, useResendOtp } from "../../slices/auth/auth.hooks";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
 import { saveAuthSession } from "../../utils/resolveInitialRoute";
+import { syncPushNotifications } from "../../services/pushNotifications";
 import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { useTheme } from "../../context/ThemeContext";
@@ -67,6 +68,7 @@ export function FindAccountEmailOtpScreen({
         );
       const customer = customerResponse.data.customer;
       dispatch(setCustomer(customer));
+      syncPushNotifications().catch(() => {});
       navigation.replace("ExistingUserNotification", {
         email,
       });
