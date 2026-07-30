@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Animated,
   Dimensions,
@@ -15,8 +15,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
-import { paymentPlansService, type SubscriptionPlan } from '../../api/subscriptionService';
-import { ActivityIndicator } from 'react-native';
+import { type SubscriptionPlan } from '../../api/subscriptionService';
+import { ChoosePlanSkeleton } from '../../components/payments/ChoosePlanSkeleton';
+import { useSubscriptionPlans } from '../../hooks/useSubscription';
 
 const ACCENT_COLORS = ['#FE8235', '#31973D', '#2F91FB'];
 
@@ -24,16 +25,27 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const CARD_WIDTH = SCREEN_WIDTH - 48;
 const CARD_GAP = 16;
-const FEATURES = [
-  { label: 'Advanced Scheduling', free: false, gold: true },
-  { label: 'Double Eco-Points', free: false, gold: true },
-  { label: 'Priority 24/7 Support', free: false, gold: true },
-  { label: 'Faster matching', free: false, gold: true },
-  { label: 'Basic pickup', free: true, gold: true },
-  { label: 'Community Support', free: true, gold: true },
-];
 
 const INACTIVE_SHRINK = 52;
+
+function buildPlanFeatureRows(plans: SubscriptionPlan[], activePlanIndex: number) {
+  if (!plans.length) return [];
+
+  const planFeatures = plans.map((plan) => new Set(plan.description?.features ?? []));
+  const allFeatures = [
+    ...new Set(plans.flatMap((plan) => plan.description?.features ?? [])),
+  ];
+  const commonFeatures = new Set(
+    allFeatures.filter((feature) => planFeatures.every((set) => set.has(feature))),
+  );
+  const activeFeatures = planFeatures[activePlanIndex] ?? new Set<string>();
+
+  return allFeatures.map((label) => ({
+    label,
+    free: commonFeatures.has(label),
+    gold: activeFeatures.has(label),
+  }));
+}
 
 type PlanCardProps = {
   plan: SubscriptionPlan;
@@ -112,21 +124,13 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
 export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePlan'>) {
   const { colors } = useTheme();
   const plansRef = React.useRef<ScrollView>(null);
-  const [plans, setPlans] = React.useState<SubscriptionPlan[]>([]);
-  const [loadingPlans, setLoadingPlans] = React.useState(true);
+  const { data: plansData, isPending } = useSubscriptionPlans();
+  const plans = plansData ?? [];
+  const showSkeleton = isPending && plans.length === 0;
   const [activePlanIndex, setActivePlanIndex] = React.useState(0);
   const [tableHeight, setTableHeight] = React.useState(0);
   const insets = useSafeAreaInsets();
   const scrollX = React.useRef(new Animated.Value(0)).current;
-
-  React.useEffect(() => {
-    paymentPlansService
-      .getPlans()
-      .then((res) => {
-        if (res.success && Array.isArray(res.data)) setPlans(res.data);
-      })
-      .finally(() => setLoadingPlans(false));
-  }, []);
 
   React.useEffect(() => {
     if (!plans.length) return;
@@ -182,34 +186,23 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
     });
 
   const accentColor = ACCENT_COLORS[activePlanIndex % ACCENT_COLORS.length];
-
-  if (loadingPlans) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color="#31973D" />
-      </SafeAreaView>
-    );
-  }
-
-  if (!plans.length) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-        <CustomAppBar title="Choose your plan" navigation={navigation} />
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <Text style={{ color: colors.textSub, textAlign: 'center' }}>
-            No subscription plans are available right now. Please try again later.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const featureRows = buildPlanFeatureRows(plans, activePlanIndex);
+  const activePlanLabel = plans[activePlanIndex]?.name ?? 'GOLD';
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
+        <CustomAppBar title="Choose your plan" navigation={navigation} />
 
-        <CustomAppBar title="Choose your plan" navigation={navigation}/>
-
+        {showSkeleton ? (
+          <ChoosePlanSkeleton />
+        ) : !plans.length ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+            <Text style={{ color: colors.textSub, textAlign: 'center' }}>
+              No subscription plans are available right now. Please try again later.
+            </Text>
+          </View>
+        ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Comparison table */}
@@ -232,14 +225,16 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
                 <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.text }}>FREE</Text>
               </View>
               <View className="w-[72px] items-center">
-                <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }}>GOLD</Text>
+                <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }} numberOfLines={1}>
+                  {activePlanLabel}
+                </Text>
               </View>
             </View>
 
-            {FEATURES.map((f, i) => (
+            {featureRows.map((f, i) => (
               <View
-                key={i}
-                style={{ flexDirection: 'row', alignItems: 'center', height: 45, borderBottomWidth: i < FEATURES.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
+                key={f.label}
+                style={{ flexDirection: 'row', alignItems: 'center', height: 45, borderBottomWidth: i < featureRows.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
               >
                 <View className="flex-1">
                   <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>{f.label}</Text>
@@ -283,6 +278,7 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
         </View>
 
         </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );

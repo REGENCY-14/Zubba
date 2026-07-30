@@ -56,9 +56,9 @@ export default function PickupRequestModal({
         style={{
           backgroundColor: colors.surface,
           borderColor: colors.border,
-          gap: isCompact ? 12 : 20,
+          gap: isCompact ? 12 : 16,
         }}
-        className={`border rounded-[22px] w-full ${isCompact ? "p-4" : "items-center p-6"}`}
+        className={`border rounded-[22px] w-full p-4 ${isCompact ? "" : "items-center"}`}
       >
           {step == "found_drivers" ? (
             <View className="w-full items-center gap-4">

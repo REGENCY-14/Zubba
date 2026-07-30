@@ -19,6 +19,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TextAvatar } from "../onboarding/TextAvatar";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useNavigateToChoosePlan } from "../../hooks/useSubscription";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
 import { bottom_sidebar_items, isPremiumSidebarItems, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -47,6 +48,7 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
   const customer = useAppSelector((state) => state.customer);
+  const navigateToChoosePlan = useNavigateToChoosePlan();
   const profilePicture =
     customer.profile_picture ?? user?.profile_picture ?? null;
 
@@ -135,7 +137,11 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
 
   const handleNavigate = (item: SidebarMenuItem) => {
     setActive(item.key);
-    close(); // close first
+    close();
+    if (item.navigate === "ChoosePlan") {
+      void navigateToChoosePlan();
+      return;
+    }
     navigation.navigate(item.navigate);
   };
 

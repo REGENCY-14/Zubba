@@ -6,25 +6,18 @@ import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useSubscriptionPaystackCheckout } from '../../hooks/useSubscriptionPaystackCheckout';
-import { paymentPlansService, type SubscriptionPlan } from '../../api/subscriptionService';
+import { useSubscriptionPlans } from '../../hooks/useSubscription';
 import CustomAppBar from '../../components/common/CustomAppBar';
+import { ConfirmSubscriptionSkeleton } from '../../components/payments/ConfirmSubscriptionSkeleton';
 
 export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreenProps<'ConfirmSubscription'>) {
   const { colors } = useTheme();
   const user = useAppSelector((state) => state.auth.user);
   const { startCheckout, isLoading } = useSubscriptionPaystackCheckout();
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [loadingPlans, setLoadingPlans] = useState(true);
+  const { data: plansData, isPending } = useSubscriptionPlans();
+  const plans = plansData ?? [];
+  const showSkeleton = isPending && plans.length === 0;
   const [selectedIndex, setSelectedIndex] = useState(route.params?.planIndex ?? 0);
-
-  useEffect(() => {
-    paymentPlansService
-      .getPlans()
-      .then((res) => {
-        if (res.success && Array.isArray(res.data)) setPlans(res.data);
-      })
-      .finally(() => setLoadingPlans(false));
-  }, []);
 
   useEffect(() => {
     if (plans.length && route.params?.planIndex !== undefined) {
@@ -43,10 +36,11 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
     });
   };
 
-  if (loadingPlans) {
+  if (showSkeleton) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color="#31973D" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+        <CustomAppBar title="Confirm Subscription" navigation={navigation} />
+        <ConfirmSubscriptionSkeleton />
       </SafeAreaView>
     );
   }

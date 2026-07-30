@@ -25,6 +25,7 @@ import { ScheduleIllustration } from "../../components/schedule/ScheduleIllustra
 import { ScheduleCard } from "../../components/schedule/ScheduleCard";
 import { ScheduleFilterModal } from "../../components/schedule/ScheduleFilterModal";
 import { DeleteScheduleModal } from "../../components/schedule/DeleteScheduleModal";
+import { ScheduleFormDrawer } from "../../components/schedule/ScheduleFormDrawer";
 import {
   useSchedules,
   useInvalidateSchedules,
@@ -57,6 +58,8 @@ export function ScheduleScreen({
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editScheduleId, setEditScheduleId] = useState<string | null>(null);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterYear, setFilterYear] = useState(todayDate.getFullYear());
@@ -183,6 +186,21 @@ export function ScheduleScreen({
     }
   };
 
+  const openCreateSheet = () => {
+    setEditScheduleId(null);
+    setSheetOpen(true);
+  };
+
+  const openEditSheet = (scheduleId: string) => {
+    setEditScheduleId(scheduleId);
+    setSheetOpen(true);
+  };
+
+  const closeSheet = () => {
+    setSheetOpen(false);
+    setEditScheduleId(null);
+  };
+
   const filterPrevMonth = () => {
     if (filterMonth === 0) {
       setFilterMonth(11);
@@ -232,14 +250,14 @@ export function ScheduleScreen({
 
   return (
     <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      edges={["top", "left", "right", "bottom"]}
     >
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <View className="w-full h-12 flex-row items-center justify-between px-4 z-10">
-        <Pressable className="w-8 h-8 items-center justify-center">
+        <Pressable onPress={() => navigation.goBack()} className="w-8 h-8 items-center justify-center">
           <MaterialCommunityIcons
-            name="menu"
+            name="chevron-left"
             size={20}
             color={colors.iconColor}
           />
@@ -374,9 +392,7 @@ export function ScheduleScreen({
                     onMenuClose={() => setOpenMenuId(null)}
                     onEdit={() => {
                       setOpenMenuId(null);
-                      navigation.navigate("ScheduleForm", {
-                        scheduleId: item.id,
-                      });
+                      openEditSheet(item.id);
                     }}
                     onDelete={() => {
                       setOpenMenuId(null);
@@ -403,7 +419,7 @@ export function ScheduleScreen({
           shadowRadius: 8,
           elevation: 6,
         }}
-        onPress={() => navigation.navigate("ScheduleForm")}
+        onPress={openCreateSheet}
       >
         <MaterialCommunityIcons name="plus" size={16} color="#FFFFFF" />
       </Pressable>
@@ -412,6 +428,13 @@ export function ScheduleScreen({
         activeTab="calendar"
         paddingBottom={0}
         navigation={navigation}
+      />
+      </View>
+
+      <ScheduleFormDrawer
+        visible={sheetOpen}
+        onClose={closeSheet}
+        scheduleId={editScheduleId}
       />
 
       <DeleteScheduleModal

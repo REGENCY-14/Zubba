@@ -12,9 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import type { RootStackScreenProps } from "../../navigation/types";
-import CustomAppBar from "../../components/common/CustomAppBar";
-import { TimePickerColumn } from "../../components/schedule/TimePickerColumn";
+import { TimePickerColumn } from "./TimePickerColumn";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { scheduleService } from "../../api/scheduleService";
@@ -42,16 +40,22 @@ import {
 
 const avatar = require("../../../assets/avatar.jpg");
 
-export function ScheduleFormScreen({
-  route,
-  navigation,
-}: RootStackScreenProps<"ScheduleForm">) {
+type ScheduleFormDrawerProps = {
+  visible: boolean;
+  onClose: () => void;
+  scheduleId?: string | null;
+};
+
+export function ScheduleFormDrawer({
+  visible,
+  onClose,
+  scheduleId = null,
+}: ScheduleFormDrawerProps) {
   const { colors } = useTheme();
   const customer = useAppSelector((state) => state.customer);
   const isPremium = customer.is_premium;
   const { coords } = useCurrentLocation();
   const todayDate = new Date();
-  const scheduleId = route.params?.scheduleId;
   const isEditMode = !!scheduleId;
 
   const { data: scheduleData } = useSchedules();
@@ -142,13 +146,13 @@ export function ScheduleFormScreen({
   };
 
   useEffect(() => {
-    if (coords) {
+    if (visible && coords) {
       fetchNearbyDrivers();
     }
-  }, [coords, isPremium]);
+  }, [coords, isPremium, visible]);
 
   useEffect(() => {
-    if (!isEditMode || !scheduleId || !scheduleData || formPopulated) return;
+    if (!visible || !isEditMode || !scheduleId || !scheduleData || formPopulated) return;
     const item = scheduleData.find((s: ScheduleItem) => s.id === scheduleId);
     if (!item) return;
 
@@ -163,7 +167,38 @@ export function ScheduleFormScreen({
     setPhone("");
     setNote("");
     setFormPopulated(true);
-  }, [isEditMode, scheduleId, scheduleData, formPopulated]);
+  }, [isEditMode, scheduleId, scheduleData, formPopulated, visible]);
+
+  const resetForm = () => {
+    setSelectedDriver(null);
+    setLocation("");
+    setPhone("");
+    setNote("");
+    setStartTime("");
+    setEndTime("");
+    setSelectedDate(null);
+    setSelectedFrequency("One time pickup");
+    setFormPopulated(false);
+    setDriverListOpen(false);
+    setSearchMode(false);
+    setSearchQuery("");
+    setFrequencyOpen(false);
+    setCalendarOpen(false);
+    setTimePickerFor(null);
+    setConfirmOpen(false);
+    setCalendarYear(todayDate.getFullYear());
+    setCalendarMonth(todayDate.getMonth());
+  };
+
+  useEffect(() => {
+    if (!visible) {
+      setFormPopulated(false);
+      return;
+    }
+    if (!scheduleId) {
+      resetForm();
+    }
+  }, [visible, scheduleId]);
 
   const createSchedule = async () => {
     if (!selectedDriver || !location || !selectedDate) {
@@ -198,7 +233,8 @@ export function ScheduleFormScreen({
         showToast("Schedule created successfully", "success");
         await invalidateSchedules();
         setConfirmOpen(false);
-        navigation.navigate("Schedule");
+        resetForm();
+        onClose();
       }
     } catch (error: any) {
       console.error("Error creating schedule:", error);
@@ -243,7 +279,8 @@ export function ScheduleFormScreen({
       if (response.success) {
         showToast("Schedule updated successfully", "success");
         await invalidateSchedules();
-        navigation.navigate("Schedule");
+        resetForm();
+        onClose();
       }
     } catch (error: any) {
       console.error("Error updating schedule:", error);
@@ -334,27 +371,51 @@ export function ScheduleFormScreen({
   const selectedDriverInfo = getDriverById(selectedDriver);
   const driverRating = selectedDriverInfo?.rating ?? "";
 
-  return (
-    <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
-    >
-      <CustomAppBar
-        title={isEditMode ? "Edit schedule" : "Schedule details"}
-        navigation={navigation}
-      />
+  const handleClose = () => {
+    closeOverlays();
+    setDriverListOpen(false);
+    onClose();
+  };
 
-      <View className="flex-1">
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerClassName="gap-4 pb-6"
-          keyboardShouldPersistTaps="handled"
-          scrollEnabled={timePickerFor === null}
-        >
-          <View className="flex-row justify-end items-center px-6">
-            <Pressable
+  return (
+    <>
+      <Modal
+        visible={visible}
+        transparent
+        animationType="slide"
+        onRequestClose={handleClose}
+      >
+        <View className="flex-1 bg-[rgba(69,71,69,0.15)] justify-end">
+          <Pressable
+            className="absolute top-0 left-0 right-0 bottom-0"
+            onPress={handleClose}
+          />
+
+          <SafeAreaView
+            edges={["bottom"]}
+            style={{ backgroundColor: colors.bg }}
+            className="rounded-t-[32px] pt-4 pb-2 h-[82%] justify-between relative"
+          >
+            <ScrollView
+              className="flex-1"
+              showsVerticalScrollIndicator={false}
+              contentContainerClassName="gap-4 pb-6"
+              keyboardShouldPersistTaps="handled"
+              scrollEnabled={timePickerFor === null}
+            >
+              <View
+                style={{ backgroundColor: colors.textMuted }}
+                className="w-[152px] h-[3px] rounded-[20px] self-center"
+              />
+
+              <View className="flex-row justify-between items-center px-6">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-lg font-medium tracking-[-0.54px]"
+                >
+                  {isEditMode ? "Edit schedule" : "Schedule details"}
+                </Text>
+                <Pressable
               style={{ borderColor: colors.border }}
               className="flex-row items-center gap-2 px-3 py-1.5 border rounded-full"
               onPress={() => {
@@ -958,6 +1019,13 @@ export function ScheduleFormScreen({
 
         <View className="flex-row items-center px-6 gap-2.5 pb-6">
           <Pressable
+            className="w-8 h-8 rounded-xl bg-[#FFE2E2] items-center justify-center"
+            onPress={handleClose}
+            disabled={isSubmitting}
+          >
+            <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
+          </Pressable>
+          <Pressable
             className={`flex-1 h-10 rounded-full items-center justify-center ${
               canSchedule ? "bg-[#31973D]" : "bg-[rgba(52,168,83,0.5)]"
             }`}
@@ -980,7 +1048,9 @@ export function ScheduleFormScreen({
             )}
           </Pressable>
         </View>
-      </View>
+          </SafeAreaView>
+        </View>
+      </Modal>
 
       <Modal
         visible={confirmOpen}
@@ -1100,8 +1170,6 @@ export function ScheduleFormScreen({
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </>
   );
 }
-
-export default ScheduleFormScreen;

@@ -27,6 +27,7 @@ import { binFullService } from "../../api/binFullService";
 import { LiveMapView } from "../../components/maps/LiveMapView";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { useLocationSearch } from "../../hooks/useLocationSearch";
+import { useNavigateToChoosePlan, usePrefetchSubscriptionPlans } from "../../hooks/useSubscription";
 import { LocationSearchDropdown } from "../../components/location/LocationSearchDropdown";
 import type { PickupLocation } from "../../types/location.types";
 import { buildPickupParams } from "../../utils/pickupLocation";
@@ -48,6 +49,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
   const { coords } = useCurrentLocation();
+  const prefetchPlans = usePrefetchSubscriptionPlans();
+  const navigateToChoosePlan = useNavigateToChoosePlan();
   const locationSearchEnabled = !isPremium || activePill === 0;
   const { results: locationResults, isLoading: locationLoading, error: locationError } =
     useLocationSearch(searchQuery, locationSearchEnabled);
@@ -89,6 +92,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       useNativeDriver: true,
     }).start();
   }, [isBinFull]);
+
+  useEffect(() => {
+    prefetchPlans();
+  }, [prefetchPlans]);
 
   useEffect(() => {
     if (!isPremium) return;
@@ -617,14 +624,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <RoundedButton
                     title="Premium Tier"
                     variant="premium"
-                    onPress={() => navigation.navigate("ChoosePlan")}
+                    onPress={navigateToChoosePlan}
                   />
                 )}
               </View>
 
               {!isPremium && (
                 <Pressable
-                  onPress={() => navigation.navigate("ChoosePlan")}
+                  onPress={navigateToChoosePlan}
                   className="flex-row items-center justify-center gap-1"
                 >
                   <MaterialCommunityIcons

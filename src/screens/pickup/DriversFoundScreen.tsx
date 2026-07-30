@@ -41,7 +41,7 @@ function DriverCard({
   onPress: () => void;
 }) {
   const distanceLabel = `${(driver.distanceM / 1000).toFixed(1)}km away`;
-  const etaLabel = `${driver.etaMinutes} mins`;
+  const etaLabel = `${driver.etaMinutes} min${driver.etaMinutes !== 1 ? "s" : ""}`;
   const { colors, isDark } = useTheme()
 
   return (
@@ -315,7 +315,7 @@ export function DriversFoundScreen({
               borderRadius: 22,
               padding: 16,
               marginHorizontal: 8,
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.surface,
               paddingTop: 12,
               gap: 16,
               shadowColor: "#000",
@@ -325,14 +325,14 @@ export function DriversFoundScreen({
               elevation: 12,
             }}
           >
-            <View className="w-10 h-1 rounded-full bg-[#E2E8F0] self-center" />
+            <View style={{backgroundColor: colors.bg}} className="w-10 h-1 rounded-full self-center" />
 
-            <View className="gap-6 py-6 rounded-2xl border border-[#E2E8F0]">
+            <View style={{borderColor: colors.border}} className="gap-6 py-6 rounded-2xl border">
               <View className="flex-row justify-between items-center px-6">
-                <Text className="text-lg font-bold text-[#1F2A33]">
+                <Text style={{color: colors.text}} className="text-lg font-bold">
                   Nearby Drivers
                 </Text>
-                <View className="flex-row items-center gap-2 bg-[#006B23]/10 border border-[#E2E8F0] rounded-2xl px-3 py-1.5">
+                <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
                   <View className="w-2 h-2 rounded-full bg-[#31973D]" />
                   <Text className="text-[13px] font-bold text-[#31973D]">
                     Live view
@@ -342,7 +342,7 @@ export function DriversFoundScreen({
 
               {drivers.length === 0 ? (
                 <View className="items-center px-6 py-4">
-                  <Text className="text-sm text-[#64748A]">
+                  <Text style={{color: colors.textSub}} className="text-sm">
                     No drivers found nearby right now.
                   </Text>
                 </View>
@@ -371,7 +371,8 @@ export function DriversFoundScreen({
                   : "Tap the selected driver again to confirm and request pickup"}
               </Text>
               <Pressable
-                className="h-12 rounded-full border border-[#E2E8F0] flex-row items-center justify-center gap-2 bg-white"
+                style={{borderColor: colors.border, backgroundColor: colors.bg}}
+                className="h-12 rounded-full border flex-row items-center justify-center gap-2"
                 onPress={() => navigation.navigate("Home")}
               >
                 <MaterialCommunityIcons

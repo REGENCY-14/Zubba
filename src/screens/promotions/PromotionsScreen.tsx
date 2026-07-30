@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useTheme, ThemeColors } from '../../context/ThemeContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useNavigateToChoosePlan } from '../../hooks/useSubscription';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 type Promo = {
@@ -86,6 +87,7 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
 export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotions'>) {
   const { colors } = useTheme();
   const customer = useAppSelector((state) => state.customer);
+  const navigateToChoosePlan = useNavigateToChoosePlan();
   const [promoCode, setPromoCode] = useState('');
   const [redeemMessage, setRedeemMessage] = useState<{ text: string; success: boolean } | null>(null);
 
@@ -148,7 +150,7 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
       description: 'Upgrade to Gold for double Eco-Points, priority support, and scheduled pickups.',
       badge: 'Popular',
       cta: 'Upgrade',
-      onPress: () => navigation.navigate('ChoosePlan'),
+      onPress: navigateToChoosePlan,
       premiumOnly: true,
     },
   ];

@@ -11,12 +11,14 @@ import { setCustomer } from "../slices/customer/customerSlice";
 import { useAppSelector } from "./useAppSelector";
 import { handleApiError } from "../utils/handleApiError";
 import { toast } from "./toast";
+import { useInvalidateSubscription } from "./useSubscription";
 
 export function useSubscriptionPaystackCheckout() {
   const { popup } = usePaystack();
   const dispatch = useAppDispatch();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const customer = useAppSelector((state) => state.customer);
+  const invalidateSubscription = useInvalidateSubscription();
   const [isLoading, setIsLoading] = useState(false);
 
   const startCheckout = useCallback(
@@ -52,6 +54,7 @@ export function useSubscriptionPaystackCheckout() {
               });
               if (activate.success) {
                 dispatch(setCustomer({ ...customer, is_premium: true }));
+                invalidateSubscription();
                 toast.success("Gold subscription activated!");
                 navigation.reset({ index: 0, routes: [{ name: "Home" }] });
               }
@@ -70,7 +73,7 @@ export function useSubscriptionPaystackCheckout() {
         setIsLoading(false);
       }
     },
-    [customer, dispatch, navigation, popup],
+    [customer, dispatch, invalidateSubscription, navigation, popup],
   );
 
   return { startCheckout, isLoading };

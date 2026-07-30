@@ -9,7 +9,7 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { cancelPremium, upgradeToPremium } from '../../slices/customer/customerSlice';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { toast } from '../../hooks/toast';
-import { useMySubscription } from '../../hooks/useSubscription';
+import { useMySubscription, useNavigateToChoosePlan, usePrefetchSubscriptionPlans } from '../../hooks/useSubscription';
 import { SubscriptionSkeleton } from '../../components/payments/SubscriptionSkeleton';
 
 const GOLD_FEATURES = [
@@ -25,12 +25,18 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
   const customer = useAppSelector((state) => state.customer);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
-  const { data: subscription, isLoading, isFetching } = useMySubscription(customer.is_premium);
-  const showSkeleton = isLoading && !subscription;
+  const { data: subscription, isPending } = useMySubscription(customer.is_premium);
+  const prefetchPlans = usePrefetchSubscriptionPlans();
+  const navigateToChoosePlan = useNavigateToChoosePlan();
+  const showSkeleton = isPending && subscription == null;
   const isActive = subscription?.isActive ?? customer.is_premium;
   const planLabel = subscription?.planLabel ?? 'Gold Plan';
   const planPrice = subscription?.planPrice ?? 'GHS 50.00';
   const renewalDate = subscription?.renewalDate ?? '';
+
+  useEffect(() => {
+    prefetchPlans();
+  }, [prefetchPlans]);
 
   useEffect(() => {
     if (subscription?.isActive && !customer.is_premium) {
@@ -46,7 +52,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right', 'bottom']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
@@ -70,7 +76,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
                 You do not have an active Gold subscription.
               </Text>
               <Pressable
-                onPress={() => navigation.navigate('ChoosePlan')}
+                onPress={navigateToChoosePlan}
                 className="h-12 bg-[#31973D] rounded-full items-center justify-center px-8"
               >
                 <Text className="text-white text-sm">View plans</Text>
@@ -78,7 +84,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
             </View>
           ) : (
             <>
-              <View style={{ backgroundColor: '#31973D', borderRadius: 20, padding: 20, gap: 16, overflow: 'hidden', opacity: isFetching ? 0.85 : 1 }}>
+              <View style={{ backgroundColor: '#31973D', borderRadius: 20, padding: 20, gap: 16, overflow: 'hidden' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                     <MaterialCommunityIcons name="crown" size={20} color="#FFE088" />
@@ -165,7 +171,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
               </View>
 
               <Pressable
-                onPress={() => navigation.navigate('ChoosePlan')}
+                onPress={navigateToChoosePlan}
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
