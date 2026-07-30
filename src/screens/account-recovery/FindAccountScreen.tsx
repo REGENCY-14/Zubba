@@ -17,8 +17,6 @@ import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
 
-const ghanaFlag = require("../../../assets/ghana-flag.png");
-
 export function FindAccountScreen({
   route,
   navigation,
@@ -73,17 +71,6 @@ export function FindAccountScreen({
           </Text>
 
           <View className="flex-row items-center gap-2 h-12">
-            <View style={{ flexDirection: 'row', borderRadius: 9999, alignItems: 'center', justifyContent: 'space-between', gap: 16, height: 48, padding: 10, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
-              <View className="rounded-full overflow-hidden">
-                <Image
-                  source={ghanaFlag}
-                  style={{ width: 28, height: 20 }}
-                  resizeMode="contain"
-                />
-              </View>
-              <MaterialCommunityIcons name="chevron-down" size={24} color={colors.iconColor} />
-            </View>
-
             <View
               style={{ flex: 1, height: 48, justifyContent: 'center', paddingHorizontal: 16, borderRadius: 9999, borderWidth: 1, backgroundColor: colors.card, borderColor: isFocused || isPhoneValid ? colors.text : colors.border }}
             >

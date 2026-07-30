@@ -11,8 +11,6 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { useResendOtp } from '../../slices/auth/auth.hooks';
 import { toast } from '../../hooks/toast';
 
-const ghanaFlag = require('../../../assets/ghana-flag.png');
-
 export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<'UpdateDetails'>) {
   const { isDark, colors } = useTheme();
   const user = useAppSelector((state) => state.auth.user);
@@ -145,15 +143,6 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
               <Text className="text-[15px] leading-[22px]" style={{ color: colors.text, fontFamily: 'Poppins' }}>{contactLabel}</Text>
 
               <View className="flex-row items-center gap-2">
-                {!isEmailMode ? (
-                  <View style={{borderColor: colors.border}} className="h-12 p-[10px] gap-2 border rounded-full flex-row items-center justify-between">
-                    <View className="rounded-full overflow-hidden">
-                      <Image source={ghanaFlag} style={{ width: 28, height: 20 }} resizeMode="contain" />
-                    </View>
-                    <MaterialCommunityIcons name="menu-down" size={24} color={colors.text} />
-                  </View>
-                ) : null}
-
                 <TextInput
                   style={{borderColor: colors.border, color: colors.text}}
                   className="flex-1 h-12 rounded-full px-4 text-[15px] border"

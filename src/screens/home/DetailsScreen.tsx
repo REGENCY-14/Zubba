@@ -7,8 +7,6 @@ import { Card } from "../../components/Card";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 
-const ghanaFlag = require("../../../assets/ghana-flag.png");
-
 export function DetailsScreen({
   route,
   navigation,
@@ -33,21 +31,6 @@ export function DetailsScreen({
             </Text>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, height: 48 }}>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 94, height: 48, paddingHorizontal: 10, borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.card }}>
-                <Image
-                  source={ghanaFlag}
-                  style={{ width: 28, height: 20 }}
-                  resizeMode="contain"
-                />
-
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={22}
-                  color={colors.iconColor}
-                />
-              </View>
-
               <TextInput
                 style={{
                   flex: 1,
