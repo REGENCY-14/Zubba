@@ -1,76 +1,86 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
 
 import { useTheme } from "../../context/ThemeContext";
 import {
+  DEFAULT_MAP_REGION,
   MAP_DARK_STYLE,
+  MAP_EDGE_PADDING,
   OSM_TILE_URL,
+  regionForCoord,
   type MapCoord,
 } from "./mapUtils";
 import { useOsmTiles } from "../../hooks/useRoutePolyline";
 
 type Props = {
+  pickupLocation?: MapCoord | null;
+  /** @deprecated use pickupLocation */
   userLocation?: MapCoord | null;
   driverLocation?: MapCoord | null;
   routeCoordinates?: MapCoord[];
+  centerOn?: MapCoord | null;
+  fitToLocations?: MapCoord[];
   style?: object;
   children?: React.ReactNode;
 };
 
 export function LiveMapView({
+  pickupLocation,
   userLocation,
   driverLocation,
   routeCoordinates = [],
+  centerOn,
+  fitToLocations,
   style,
   children,
 }: Props) {
   const { isDark } = useTheme();
   const useOsm = useOsmTiles();
+  const mapRef = useRef<MapView>(null);
+  const pickup = pickupLocation ?? userLocation ?? null;
 
-  const region = useMemo(() => {
-    const points = [userLocation, driverLocation].filter(Boolean) as MapCoord[];
-    if (!points.length) {
-      return {
-        latitude: 5.6037,
-        longitude: -0.187,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      };
-    }
+  const initialRegion = useMemo(() => {
+    if (pickup) return regionForCoord(pickup);
+    if (driverLocation) return regionForCoord(driverLocation);
+    return DEFAULT_MAP_REGION;
+  }, []);
+
+  useEffect(() => {
+    if (!centerOn || !mapRef.current) return;
+    mapRef.current.animateToRegion(regionForCoord(centerOn), 600);
+  }, [centerOn?.latitude, centerOn?.longitude]);
+
+  useEffect(() => {
+    const points = fitToLocations?.filter(Boolean) as MapCoord[] | undefined;
+    if (!points?.length || !mapRef.current) return;
+
     if (points.length === 1) {
-      return {
-        ...points[0],
-        latitudeDelta: 0.02,
-        longitudeDelta: 0.02,
-      };
+      mapRef.current.animateToRegion(regionForCoord(points[0]), 600);
+      return;
     }
-    const lats = points.map((p) => p.latitude);
-    const lngs = points.map((p) => p.longitude);
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLng = Math.min(...lngs);
-    const maxLng = Math.max(...lngs);
-    return {
-      latitude: (minLat + maxLat) / 2,
-      longitude: (minLng + maxLng) / 2,
-      latitudeDelta: Math.max(0.02, (maxLat - minLat) * 1.8),
-      longitudeDelta: Math.max(0.02, (maxLng - minLng) * 1.8),
-    };
-  }, [userLocation, driverLocation]);
+
+    mapRef.current.fitToCoordinates(points, {
+      edgePadding: MAP_EDGE_PADDING,
+      animated: true,
+    });
+  }, [fitToLocations?.[0]?.latitude, fitToLocations?.[0]?.longitude, fitToLocations?.[1]?.latitude, fitToLocations?.[1]?.longitude, fitToLocations?.length]);
 
   return (
     <View style={[styles.container, style]}>
       <MapView
+        ref={mapRef}
         style={StyleSheet.absoluteFill}
         provider={PROVIDER_DEFAULT}
-        initialRegion={region}
-        region={region}
+        initialRegion={initialRegion}
         customMapStyle={isDark && !useOsm ? MAP_DARK_STYLE : undefined}
         userInterfaceStyle={isDark ? "dark" : "light"}
         showsUserLocation={false}
         showsMyLocationButton={false}
         rotateEnabled={false}
+        scrollEnabled
+        zoomEnabled
+        pitchEnabled={false}
       >
         {useOsm && (
           <UrlTile
@@ -89,8 +99,8 @@ export function LiveMapView({
           />
         )}
 
-        {userLocation && (
-          <Marker coordinate={userLocation} title="You" pinColor="#31973D" />
+        {pickup && (
+          <Marker coordinate={pickup} title="Pickup" pinColor="#31973D" />
         )}
 
         {driverLocation && (

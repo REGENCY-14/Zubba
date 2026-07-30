@@ -61,9 +61,13 @@ export function LiveTrackingScreen({
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
       <View style={{ flex: 1 }}>
         <LiveMapView
-          userLocation={effectiveUser}
+          pickupLocation={effectiveUser}
+          centerOn={effectiveUser}
           driverLocation={driverLocation}
-          routeCoordinates={routeCoords}
+          routeCoordinates={routeCoords.length > 1 ? routeCoords : []}
+          fitToLocations={
+            effectiveUser && driverLocation ? [effectiveUser, driverLocation] : undefined
+          }
         >
           <CustomAppBar title="On the way" navigation={navigation} />
         </LiveMapView>

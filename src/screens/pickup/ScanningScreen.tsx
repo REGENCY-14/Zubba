@@ -32,6 +32,7 @@ import {
 import { toast } from "../../hooks/toast";
 import { requestService } from "../../api/requestService";
 import { handleApiError } from "../../utils/handleApiError";
+import { buildPickupParams, getDriverCoord } from "../../utils/pickupLocation";
 
 const avatar = require("../../../assets/avatar.jpg");
 const { width: screenW, height: screenH } = Dimensions.get("window");
@@ -49,17 +50,21 @@ const TRICYCLES: { top: number; left: number; rotate: string }[] = [
 
 export function ScanningScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"Scanning">) {
   const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request);
   const spinValue = React.useRef(new Animated.Value(0)).current;
   const [showModal, setShowModal] = useState(false);
   const [appBarText, setAppBarText] = useState("Scanning...");
+  const [scanComplete, setScanComplete] = useState(false);
   const customer = useAppSelector((state) => state.customer);
   const [driver, setDriver] = useState<NearbyDriver | null>(null);
   const [driverPhone, setDriverPhone] = React.useState<string | null>(null);
   const isPremium = customer.is_premium;
-  const { coords } = useCurrentLocation();
+  const { coords: gpsCoords } = useCurrentLocation();
+  const pickupCoords = route.params?.pickupLocation ?? gpsCoords;
+  const pickupAddress = route.params?.pickupAddress ?? "Selected location";
   const { colors, isDark } = useTheme();
   const [modalStep, setModalStep] = useState<
     "" | "found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way"
@@ -82,21 +87,25 @@ export function ScanningScreen({
     let cancelled = false;
 
     const scan = async () => {
-      if (!coords) return;
+      if (!pickupCoords) return;
       try {
         const res = await driverService.getNearbyDrivers({
-          lat: coords.latitude,
-          lng: coords.longitude,
+          lat: pickupCoords.latitude,
+          lng: pickupCoords.longitude,
           isPremium,
         });
         if (cancelled) return;
 
         const drivers = res.data.drivers;
         animation.stop();
+        setScanComplete(true);
         setAppBarText(drivers.length ? "Driver Found" : "No drivers nearby");
 
         if (isPremium) {
-          navigation.replace("DriversFound", { drivers });
+          navigation.replace("DriversFound", {
+            drivers,
+            ...buildPickupParams(pickupCoords, pickupAddress),
+          });
         } else if (drivers.length > 0) {
           setDriver(drivers[0]);
           setModalStep("found_drivers");
@@ -122,15 +131,15 @@ export function ScanningScreen({
       cancelled = true;
       animation.stop();
     };
-  }, [coords]);
+  }, [pickupCoords, isPremium, navigation, pickupAddress]);
 
   const customer_requests = async () => {
     try {
-      if (!coords || !driver) return;
+      if (!pickupCoords || !driver) return;
       setModalStep("customer_requests");
       const requestTakeout: RequestTakeout = {
-        pickup_location: [coords.latitude, coords.longitude],
-        pickup_address: "Home",
+        pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
+        pickup_address: pickupAddress,
         bags: 1,
         driver_id: driver.id,
         distance_m: driver.distanceM,
@@ -179,7 +188,15 @@ export function ScanningScreen({
         setTimeout(() => {
           dispatch(setStatus("en_route"));
           requestService.updateRequestStatus(requestResult.id, "en_route");
-          if (coords) setDriverStart({ latitude: coords.latitude + 0.01, longitude: coords.longitude + 0.01 });
+          if (pickupCoords) {
+            const driverCoord = getDriverCoord(driver);
+            setDriverStart(
+              driverCoord ?? {
+                latitude: pickupCoords.latitude + 0.01,
+                longitude: pickupCoords.longitude + 0.01,
+              },
+            );
+          }
           setModalStep("on_the_way");
           const started = Date.now();
           const interval = setInterval(() => {
@@ -213,12 +230,25 @@ export function ScanningScreen({
     };
   }, []);
 
+  const previewDriverCoord = getDriverCoord(driver);
   const driverLocation =
-    coords && driverStart
-      ? interpolateCoord(driverStart, coords, simProgress)
-      : driverStart;
+    pickupCoords && driverStart
+      ? interpolateCoord(driverStart, pickupCoords, simProgress)
+      : driverStart ?? previewDriverCoord;
 
-  const routeCoords = useRoutePolyline(driverLocation, coords);
+  const showPreviewRoute = scanComplete && driver && modalStep === "found_drivers";
+  const showEnRouteRoute = modalStep === "on_the_way";
+  const routeCoords = useRoutePolyline(
+    showEnRouteRoute || showPreviewRoute ? driverLocation : null,
+    pickupCoords,
+  );
+
+  const mapFitLocations =
+    showPreviewRoute && pickupCoords && previewDriverCoord
+      ? [pickupCoords, previewDriverCoord]
+      : showEnRouteRoute && pickupCoords && driverLocation
+        ? [pickupCoords, driverLocation]
+        : undefined;
   const distanceLabel = driver ? `${(driver.distanceM / 1000 * (1 - simProgress)).toFixed(1)} km` : "—";
   const etaLabel = driver ? `${Math.max(1, Math.ceil((driver.etaMinutes || 5) * (1 - simProgress)))} mins` : "—";
   const spin = spinValue.interpolate({
@@ -232,11 +262,19 @@ export function ScanningScreen({
       edges={["top", "left", "right", "bottom"]}
     >
       <LiveMapView
-        userLocation={coords}
-        driverLocation={modalStep === "on_the_way" ? driverLocation : null}
-        routeCoordinates={modalStep === "on_the_way" ? routeCoords : []}
+        pickupLocation={pickupCoords}
+        centerOn={pickupCoords}
+        driverLocation={
+          showPreviewRoute || showEnRouteRoute ? driverLocation ?? previewDriverCoord : null
+        }
+        routeCoordinates={
+          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+        }
+        fitToLocations={mapFitLocations}
       >
         <CustomAppBar title={appBarText} navigation={navigation} />
+        {!scanComplete && (
+        <>
         <View
           style={{
             position: "absolute",
@@ -372,6 +410,8 @@ export function ScanningScreen({
             <Text style={{ fontSize: 22 }}>🛺</Text>
           </View>
         ))}
+        </>
+        )}
 
         <AppBottomNav activeTab="home" navigation={navigation} />
         {driver && (

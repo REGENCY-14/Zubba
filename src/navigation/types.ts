@@ -41,7 +41,10 @@ export type RootStackParamList = {
     methodLabel: string;
     channel?: "mobile_money" | "card";
   };
-  Scanning: undefined;
+  Scanning: {
+    pickupLocation?: { latitude: number; longitude: number };
+    pickupAddress?: string;
+  } | undefined;
   DriverArrives: undefined;
   Payment: undefined;
   PaymentMethod: {
@@ -88,7 +91,11 @@ export type RootStackParamList = {
   PremiumPayment: undefined;
   WalletNumber: undefined;
   SavedCards: undefined;
-  DriversFound: { drivers: Array<NearbyDriver> };
+  DriversFound: {
+    drivers: Array<NearbyDriver>;
+    pickupLocation?: { latitude: number; longitude: number };
+    pickupAddress?: string;
+  };
   LiveTracking: { requestId: string };
   WalletCheckout: undefined;
   PlanForLater: undefined;

@@ -27,6 +27,10 @@ import { toast } from "../../hooks/toast";
 import { binFullService } from "../../api/binFullService";
 import { LiveMapView } from "../../components/maps/LiveMapView";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useLocationSearch } from "../../hooks/useLocationSearch";
+import { LocationSearchDropdown } from "../../components/location/LocationSearchDropdown";
+import type { PickupLocation } from "../../types/location.types";
+import { buildPickupParams } from "../../utils/pickupLocation";
 
 const premium = require("../../../assets/premium.png");
 const futurePlan = require("../../../assets/futurePlan.png");
@@ -34,6 +38,8 @@ const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedPickup, setSelectedPickup] = useState<PickupLocation | null>(null);
+  const [mapCenterOn, setMapCenterOn] = useState<{ latitude: number; longitude: number } | null>(null);
   const sidebarRef = useRef<SidebarHandle>(null);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
@@ -43,6 +49,36 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
   const { coords } = useCurrentLocation();
+  const locationSearchEnabled = !isPremium || activePill === 0;
+  const { results: locationResults, isLoading: locationLoading, error: locationError } =
+    useLocationSearch(searchQuery, locationSearchEnabled);
+  const showLocationDropdown =
+    locationSearchEnabled && searchQuery.trim().length >= 3 && !selectedPickup;
+
+  const handleLocationSelect = (result: { label: string; latitude: number; longitude: number }) => {
+    const pickup: PickupLocation = {
+      label: result.label,
+      latitude: result.latitude,
+      longitude: result.longitude,
+    };
+    setSelectedPickup(pickup);
+    setSearchQuery(result.label);
+    setMapCenterOn({ latitude: result.latitude, longitude: result.longitude });
+  };
+
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+    if (selectedPickup && text !== selectedPickup.label) {
+      setSelectedPickup(null);
+      setMapCenterOn(null);
+    }
+  };
+
+  const navigateToScanning = () => {
+    navigation.navigate("Scanning", {
+      ...buildPickupParams(selectedPickup, selectedPickup?.label ?? (searchQuery || undefined)),
+    });
+  };
 
   const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
 
@@ -67,16 +103,23 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
     setBinFullLoading(true);
     try {
       let pickupLocation: { type: "Point"; coordinates: [number, number] } | undefined;
-      let pickupAddress = searchQuery || "Current location";
+      let pickupAddress = selectedPickup?.label ?? (searchQuery || "Current location");
 
       if (value) {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status === "granted") {
-          const loc = await Location.getCurrentPositionAsync({});
+        if (selectedPickup) {
           pickupLocation = {
             type: "Point",
-            coordinates: [loc.coords.longitude, loc.coords.latitude],
+            coordinates: [selectedPickup.longitude, selectedPickup.latitude],
           };
+        } else {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status === "granted") {
+            const loc = await Location.getCurrentPositionAsync({});
+            pickupLocation = {
+              type: "Point",
+              coordinates: [loc.coords.longitude, loc.coords.latitude],
+            };
+          }
         }
       }
 
@@ -117,7 +160,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <LiveMapView userLocation={coords} style={{ flex: 1 }}>
+        <LiveMapView
+          pickupLocation={selectedPickup ?? coords}
+          centerOn={mapCenterOn}
+          style={{ flex: 1 }}
+        >
           <View
             style={{
               position: "absolute",
@@ -275,6 +322,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 </View>
 
                 {/* Search bar */}
+                <View style={{ position: "relative", zIndex: 20 }}>
                 <View
                   style={{
                     height: 54,
@@ -316,11 +364,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     }
                     placeholderTextColor={colors.textMuted}
                     value={searchQuery}
-                    onChangeText={setSearchQuery}
+                    onChangeText={activePill === 0 ? handleSearchChange : setSearchQuery}
                   />
                   {searchQuery.length > 0 && (
                     <Pressable
-                      onPress={() => setSearchQuery("")}
+                      onPress={() => {
+                        setSearchQuery("");
+                        setSelectedPickup(null);
+                        setMapCenterOn(null);
+                      }}
                       className="w-8 h-8 items-center justify-center"
                     >
                       <MaterialCommunityIcons
@@ -330,6 +382,16 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                       />
                     </Pressable>
                   )}
+                </View>
+                {activePill === 0 && (
+                  <LocationSearchDropdown
+                    visible={showLocationDropdown}
+                    results={locationResults}
+                    loading={locationLoading}
+                    error={locationError}
+                    onSelect={handleLocationSelect}
+                  />
+                )}
                 </View>
 
                 <View className="flex-row justify-between gap-3">
@@ -370,6 +432,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               </View>
             ) : (
               /* Non-premium search bar */
+              <View style={{ position: "relative", zIndex: 20 }}>
               <View
                 style={{
                   height: 54,
@@ -407,11 +470,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   placeholder="Where is your waste?"
                   placeholderTextColor={colors.textMuted}
                   value={searchQuery}
-                  onChangeText={setSearchQuery}
+                  onChangeText={handleSearchChange}
                 />
                 {searchQuery.length > 0 && (
                   <Pressable
-                    onPress={() => setSearchQuery("")}
+                    onPress={() => {
+                      setSearchQuery("");
+                      setSelectedPickup(null);
+                      setMapCenterOn(null);
+                    }}
                     className="w-8 h-8 items-center justify-center"
                   >
                     <MaterialCommunityIcons
@@ -421,6 +488,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     />
                   </Pressable>
                 )}
+              </View>
+              <LocationSearchDropdown
+                visible={showLocationDropdown}
+                results={locationResults}
+                loading={locationLoading}
+                error={locationError}
+                onSelect={handleLocationSelect}
+              />
               </View>
             )}
 
@@ -482,7 +557,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <RoundedButton
                   title="Request now"
                   variant="primary"
-                  onPress={() => navigation.navigate("Scanning")}
+                  onPress={navigateToScanning}
                 />
               </View>
 
