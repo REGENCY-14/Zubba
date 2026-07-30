@@ -15,7 +15,7 @@ import {
 import { AppBottomNav } from "../../components";
 import type { RootStackScreenProps } from "../../navigation/types";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
 import { LiveMapView } from "../../components/maps/LiveMapView";
@@ -27,6 +27,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { customerService } from "../../api/customerService";
 import { requestService } from "../../api/requestService";
 import { setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
+import { getDriverCoord } from "../../utils/pickupLocation";
 
 const fallbackAvatar = require("../../../assets/avatar.jpg");
 
@@ -140,9 +141,11 @@ export function DriversFoundScreen({
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const customer = useAppSelector((state) => state.customer);
-  const { coords } = useCurrentLocation();
+  const { coords: gpsCoords } = useCurrentLocation();
+  const pickupCoords = route.params?.pickupLocation ?? gpsCoords;
+  const pickupAddress = route.params?.pickupAddress ?? "Selected location";
   const { isDark, colors } = useTheme()
-  const [selectedDriver, setSelectedDriver] = useState(0);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way">("found_drivers");
   const [showModal, setShowModal] = useState(false);
   const [simProgress, setSimProgress] = useState(0);
@@ -150,7 +153,17 @@ export function DriversFoundScreen({
   const assignedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navHeight = 52 + Math.max(insets.bottom, 14) + 20;
-  const activeDriver = drivers[selectedDriver];
+  const activeDriver = previewIndex != null ? drivers[previewIndex] : null;
+  const previewDriverCoord = getDriverCoord(activeDriver);
+  const isPreviewing = previewIndex != null && !showModal;
+
+  const handleDriverPress = (index: number) => {
+    if (previewIndex === index) {
+      submitRequest();
+      return;
+    }
+    setPreviewIndex(index);
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -164,10 +177,21 @@ export function DriversFoundScreen({
   }, []);
 
   const driverLocation =
-    coords && driverStart
-      ? interpolateCoord(driverStart, coords, simProgress)
-      : driverStart;
-  const routeCoords = useRoutePolyline(driverLocation, coords);
+    pickupCoords && driverStart
+      ? interpolateCoord(driverStart, pickupCoords, simProgress)
+      : driverStart ?? previewDriverCoord;
+  const showPreviewRoute = isPreviewing && previewDriverCoord != null;
+  const showEnRouteRoute = modalStep === "on_the_way";
+  const routeCoords = useRoutePolyline(
+    showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null,
+    pickupCoords,
+  );
+  const mapFitLocations = useMemo(() => {
+    if (!pickupCoords) return undefined;
+    if (showPreviewRoute && previewDriverCoord) return [pickupCoords, previewDriverCoord];
+    if (showEnRouteRoute && driverLocation) return [pickupCoords, driverLocation];
+    return undefined;
+  }, [pickupCoords, previewDriverCoord, driverLocation, showPreviewRoute, showEnRouteRoute, previewIndex]);
   const distanceLabel = activeDriver
     ? `${((activeDriver.distanceM / 1000) * (1 - simProgress)).toFixed(1)} km`
     : "—";
@@ -176,13 +200,13 @@ export function DriversFoundScreen({
     : "—";
 
   const submitRequest = async () => {
-    if (!coords || !activeDriver) return;
+    if (!pickupCoords || !activeDriver) return;
     setModalStep("customer_requests");
     setShowModal(true);
     try {
       const result = await customerService.requestTakeout({
-        pickup_location: [coords.latitude, coords.longitude],
-        pickup_address: "Home",
+        pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
+        pickup_address: pickupAddress,
         bags: 1,
         driver_id: activeDriver.id,
         distance_m: activeDriver.distanceM,
@@ -194,8 +218,8 @@ export function DriversFoundScreen({
         setRequest({
           id: requestResult.id,
           customer_id: customer.id,
-          pickup_location: [coords.latitude, coords.longitude].toString(),
-          pickup_address: "Home",
+          pickup_location: [pickupCoords.latitude, pickupCoords.longitude].toString(),
+          pickup_address: pickupAddress,
           payment_method: "",
           bags: 1,
           distance_m: activeDriver.distanceM,
@@ -223,7 +247,13 @@ export function DriversFoundScreen({
         setTimeout(() => {
           dispatch(setStatus("en_route"));
           requestService.updateRequestStatus(requestResult.id, "en_route");
-          setDriverStart({ latitude: coords.latitude + 0.01, longitude: coords.longitude + 0.01 });
+          const startCoord = getDriverCoord(activeDriver);
+          setDriverStart(
+            startCoord ?? {
+              latitude: pickupCoords.latitude + 0.01,
+              longitude: pickupCoords.longitude + 0.01,
+            },
+          );
           setModalStep("on_the_way");
           const started = Date.now();
           const interval = setInterval(() => {
@@ -245,9 +275,15 @@ export function DriversFoundScreen({
   return (
     <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right", "bottom"]}>
       <LiveMapView
-        userLocation={coords}
-        driverLocation={modalStep === "on_the_way" ? driverLocation : null}
-        routeCoordinates={modalStep === "on_the_way" ? routeCoords : []}
+        pickupLocation={pickupCoords}
+        centerOn={pickupCoords}
+        driverLocation={
+          showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null
+        }
+        routeCoordinates={
+          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+        }
+        fitToLocations={mapFitLocations}
         style={{ flex: 1 }}
       >
         <View style={{backgroundColor: colors.bg, borderColor: colors.border}} className="h-12 flex-row items-center justify-between px-4 border-b">
@@ -267,55 +303,7 @@ export function DriversFoundScreen({
           <View className="w-7" />
         </View>
 
-        <View style={{ flex: 1 }}>
-          <View
-            className="absolute items-center gap-1"
-            style={{ left: "13%", top: "12%" }}
-          >
-            <Text style={{color: colors.textSub}} className="text-sm font-bold text-[#1F2A33]">5mins</Text>
-            <MaterialCommunityIcons
-              name="map-marker"
-              size={32}
-              color="#31973D"
-            />
-          </View>
-
-          <View
-            className="absolute w-[34px] h-[34px] rounded-full items-center justify-center bg-[rgba(49,151,61,0.25)]"
-            style={{ left: "14%", top: "42%" }}
-          >
-            <View style={{borderColor: colors.border}} className="w-[17px] h-[17px] rounded-full bg-[#31973D] border-2" />
-          </View>
-
-          <View
-            style={{
-              position: "absolute",
-              left: "18%",
-              top: "48%",
-              width: 160,
-              borderTopWidth: 2,
-              borderColor: "#31973D",
-              borderStyle: "dashed",
-              transform: [{ rotate: "18deg" }],
-            }}
-          />
-          <View
-            style={{
-              position: "absolute",
-              left: "52%",
-              top: "46%",
-              width: 110,
-              borderTopWidth: 2,
-              borderColor: "#31973D",
-              borderStyle: "dashed",
-              transform: [{ rotate: "-20deg" }],
-            }}
-          />
-
-          <View className="absolute" style={{ right: "8%", top: "52%" }}>
-            <Text style={{ fontSize: 30 }}>🛺</Text>
-          </View>
-        </View>
+        <View style={{ flex: 1 }} />
 
         {!showModal && (
           <Animated.View
@@ -368,8 +356,8 @@ export function DriversFoundScreen({
                     <DriverCard
                       key={driver.id}
                       driver={driver}
-                      selected={selectedDriver === i}
-                      onPress={() => setSelectedDriver(i)}
+                      selected={previewIndex === i}
+                      onPress={() => handleDriverPress(i)}
                     />
                   ))}
                 </ScrollView>
@@ -377,22 +365,11 @@ export function DriversFoundScreen({
             </View>
 
             <View className="gap-3">
-              <Pressable
-                className="h-12 rounded-full items-center justify-center"
-                style={{
-                  backgroundColor: activeDriver ? "#31973D" : "#9CA3AF",
-                }}
-                disabled={!activeDriver}
-                onPress={() => {
-                  setModalStep("customer_requests");
-                  setShowModal(true);
-                  submitRequest();
-                }}
-              >
-                <Text className="text-sm font-bold text-white">
-                  Proceed to request
-                </Text>
-              </Pressable>
+              <Text style={{ color: colors.textSub, textAlign: "center", fontSize: 13 }}>
+                {previewIndex == null
+                  ? "Tap a driver to preview route on the map"
+                  : "Tap the selected driver again to confirm and request pickup"}
+              </Text>
               <Pressable
                 className="h-12 rounded-full border border-[#E2E8F0] flex-row items-center justify-center gap-2 bg-white"
                 onPress={() => navigation.navigate("Home")}

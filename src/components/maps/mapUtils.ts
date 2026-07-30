@@ -10,6 +10,48 @@ export const OSM_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 export type MapCoord = { latitude: number; longitude: number };
 
+export const DEFAULT_MAP_REGION = {
+  latitude: 5.6037,
+  longitude: -0.187,
+  latitudeDelta: 0.05,
+  longitudeDelta: 0.05,
+};
+
+export const MAP_EDGE_PADDING = {
+  top: 100,
+  right: 48,
+  bottom: 280,
+  left: 48,
+};
+
+export function regionForCoord(coord: MapCoord, delta = 0.02) {
+  return {
+    latitude: coord.latitude,
+    longitude: coord.longitude,
+    latitudeDelta: delta,
+    longitudeDelta: delta,
+  };
+}
+
+export function regionForCoords(coords: MapCoord[], paddingFactor = 1.8, minDelta = 0.02) {
+  if (!coords.length) return DEFAULT_MAP_REGION;
+  if (coords.length === 1) return regionForCoord(coords[0]);
+
+  const lats = coords.map((p) => p.latitude);
+  const lngs = coords.map((p) => p.longitude);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+
+  return {
+    latitude: (minLat + maxLat) / 2,
+    longitude: (minLng + maxLng) / 2,
+    latitudeDelta: Math.max(minDelta, (maxLat - minLat) * paddingFactor || minDelta),
+    longitudeDelta: Math.max(minDelta, (maxLng - minLng) * paddingFactor || minDelta),
+  };
+}
+
 export function parseGeoPoint(input: unknown): MapCoord | null {
   if (!input) return null;
   if (typeof input === "object" && input !== null && "latitude" in input && "longitude" in input) {

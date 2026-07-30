@@ -9,6 +9,8 @@ export interface NearbyDriver {
   distanceM: number;
   etaMinutes: number;
   cost: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface NearbyDriversParams {
