@@ -19,7 +19,6 @@ import RoundedButton from "../../components/common/RoundedButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
-import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
 import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";

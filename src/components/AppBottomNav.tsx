@@ -74,7 +74,11 @@ export function AppBottomNav({
   return (
     <View
       className="absolute left-0 bottom-0 right-0 items-center px-2"
-      style={{ bottom: bottomOffset, paddingBottom: paddingBottom }}
+      style={{
+        bottom: bottomOffset,
+        paddingBottom: paddingBottom,
+        marginHorizontal: 16
+      }}
     >
       <View
         style={{

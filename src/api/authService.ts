@@ -44,8 +44,8 @@ export const authService = {
   },
 
   refreshToken: async (payload: RefreshTokenDto) => {
-    const { data } = await api.post<ApiResponse<{ accessToken: string }>>(
-      "/auth/refresh-token",
+    const { data } = await axios.post<ApiResponse<{ accessToken: string }>>(
+      `${env.apiUrl}/auth/refresh-token`,
       payload,
     );
     return data;

@@ -11,9 +11,19 @@ import { setCredentials } from "../slices/auth/authSlice";
 import { setCustomer } from "../slices/customer/customerSlice";
 import { syncPushNotifications } from "./pushNotifications";
 
-GoogleSignin.configure({
-  webClientId: env.googleWebClientId,
-});
+let isConfigured = false;
+
+function ensureGoogleSignInConfigured() {
+  if (isConfigured) return;
+
+  const webClientId = env.googleWebClientId;
+  if (!webClientId) {
+    throw new Error("Missing EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID");
+  }
+
+  GoogleSignin.configure({ webClientId });
+  isConfigured = true;
+}
 
 export function useGoogleLogin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +32,7 @@ export function useGoogleLogin() {
   async function signInWithGoogle(role: UserRole = "customer") {
     setIsLoading(true);
     try {
+      ensureGoogleSignInConfigured();
       await GoogleSignin.hasPlayServices();
       const { data } = await GoogleSignin.signIn();
       const idToken = data?.idToken;
@@ -46,9 +57,15 @@ export function useGoogleLogin() {
 
       return user;
     } catch (err: any) {
+      console.log(err);
       if (err.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user dismissed the picker
       } else if (err.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         toast.error("Google Play Services not available.");
+      } else if (err.message?.includes("DEVELOPER_ERROR")) {
+        toast.error(
+          "Google Sign-In is not configured for this build. Add SHA-1 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25 to your Android OAuth client in Google Cloud Console (package: com.zubba.app), then rebuild.",
+        );
       } else {
         toast.error(err?.response?.data?.message ?? "Something went wrong signing in with Google.");
       }

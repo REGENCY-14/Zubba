@@ -22,6 +22,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
 import { bottom_sidebar_items, isPremiumSidebarItems, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getFocusedRouteName, getSidebarKeyForRoute } from "../../utils/sidebarRouteMap";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.7);
@@ -56,6 +57,24 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState<string>(activeKey ?? "");
+
+  useEffect(() => {
+    const syncActiveFromRoute = () => {
+      const state = navigation.getState?.();
+      if (!state) return;
+      const routeName = getFocusedRouteName(state);
+      const key = getSidebarKeyForRoute(routeName);
+      if (key) setActive(key);
+    };
+
+    syncActiveFromRoute();
+    const unsubscribe = navigation.addListener("state", syncActiveFromRoute);
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    if (activeKey) setActive(activeKey);
+  }, [activeKey]);
 
   const sidebarItems = [
     ...top_sidebar_items,

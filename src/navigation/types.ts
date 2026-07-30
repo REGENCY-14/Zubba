@@ -30,6 +30,7 @@ export type RootStackParamList = {
   Profile: { updatedAt?: number; newPhone?: string; newEmail?: string; newFullName?: string } | undefined;
   UpdateName: undefined;
   Schedule: undefined;
+  ScheduleForm: { scheduleId?: string } | undefined;
   Pickups: undefined;
   Promotions: undefined;
   PremiumHome: undefined;

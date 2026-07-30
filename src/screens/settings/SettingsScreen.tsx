@@ -113,7 +113,7 @@ export function SettingsScreen({
   const dispatch = useAppDispatch();
 
   const zubbaText = require("../../../assets/zubbaText.png");
-  const tricycleImage = require("../../../assets/tricycle image.png");
+  const tricycleImage = require("../../../assets/tricycle-image.png");
 
   const handleSignout = async () => {
     dispatch(logout());

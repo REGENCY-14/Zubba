@@ -132,7 +132,9 @@ export function TermsAcceptanceScreen({
             onPress={async () => {
               setSubmitting(true);
               try {
+                console.log("accepting terms");
                 const res = await userService.acceptTerms();
+                console.log(res);
                 if (res.success) {
                   dispatch(updateUser(res.data.user));
                   navigation.dispatch(

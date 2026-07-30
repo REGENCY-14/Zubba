@@ -34,7 +34,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-status-bar",
     "expo-web-browser",
     "@react-native-google-signin/google-signin",
-    "react-native-maps",
+    [
+      "react-native-maps",
+      {
+        androidGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+        iosGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+      },
+    ],
     [
       "expo-build-properties",
       {

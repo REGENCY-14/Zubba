@@ -1,7 +1,7 @@
 import { api } from "../api/axios";
 
 class PaymentPollingService {
-  private intervals: Map<string, NodeJS.Timeout> = new Map();
+  private intervals: Map<string, ReturnType<typeof setInterval>> = new Map();
 
   startPolling(
     reference: string,

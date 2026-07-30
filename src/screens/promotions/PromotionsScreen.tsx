@@ -155,7 +155,7 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
   const promos = allPromos.filter((promo) => !promo.premiumOnly || !customer.is_premium);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right', 'bottom']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
         {/* Header */}
