@@ -32,7 +32,7 @@ function formatDate(date: Date) {
 
 function mapSubscription(sub: MySubscription | null | undefined, isPremiumFallback: boolean): SubscriptionView {
   const isActive = sub?.isActive ?? isPremiumFallback;
-  const planLabel = sub?.plan_code ?? sub?.product_id ?? "Gold Plan";
+  const planLabel = sub?.product_id ?? sub?.plan_code ?? "Gold Plan";
   const amount = sub?.amount;
   const planPrice = amount != null ? `GHS ${amount}` : "GHS 50.00";
 

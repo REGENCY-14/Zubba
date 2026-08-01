@@ -126,22 +126,22 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           <View className='flex-row items-center justify-center'>
             <View style={{backgroundColor: colors.surface}} className="flex-row justify-center items-center py-2 px-1.5 rounded-full gap-2">
               <Pressable
-                style={{backgroundColor: selectedTab === 'number' ? colors.card : ''}}
+                style={{backgroundColor: selectedTab === 'number' ? colors.bg : colors.surface}}
                 className={`flex-row items-center gap-1 px-2 py-[6px] rounded-full`}
                 onPress={() => setSelectedTab('number')}
-                disabled={!isNewContactStep}
+                disabled={isNewContactStep}
               >
-                <MaterialCommunityIcons name="phone" size={moderateScale(16)} color={selectedTab === 'number' ? '#64748A' : '#94A3B8'} />
+                <MaterialCommunityIcons name="phone" size={moderateScale(16)} color={colors.iconColor} />
                 <Text className={`text-xs leading-4`} style={{ color: colors.textSub }}>Update number</Text>
               </Pressable>
 
               <Pressable
-                style={{backgroundColor: selectedTab === 'email' ? colors.card : ''}}
+                style={{backgroundColor: selectedTab === 'email' ? colors.bg : colors.surface}}
                 className={`flex-row items-center gap-1 px-2 py-[6px] rounded-full`}
                 onPress={() => setSelectedTab('email')}
-                disabled={!isNewContactStep}
+                disabled={isNewContactStep}
               >
-                <MaterialCommunityIcons name="email-outline" size={moderateScale(16)} color={selectedTab === 'email' ? '#64748A' : '#94A3B8'} />
+                <MaterialCommunityIcons name="email-outline" size={moderateScale(16)} color={colors.iconColor} />
                 <Text className="text-xs leading-4" style={{ color: colors.textSub }}>Update email</Text>
               </Pressable>
             </View>

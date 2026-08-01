@@ -7,6 +7,7 @@ import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { useNotifications, useDeleteNotification } from '../../hooks/useNotifications';
+import { NotificationsListSkeleton } from '../../components/notifications/NotificationsListSkeleton';
 
 type NotificationItem = {
   id: string;
@@ -142,7 +143,7 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
           }
         >
           {isLoading && !refreshing ? (
-            <ActivityIndicator color="#31973D" />
+            <NotificationsListSkeleton />
           ) : hasItems ? (
             <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), paddingVertical: verticalScale(11), gap: moderateScale(16) }}>
               <View style={{ paddingHorizontal: scale(16), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>

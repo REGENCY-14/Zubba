@@ -19,6 +19,9 @@ import { scheduleService } from "../../api/scheduleService";
 import { handleApiError } from "../../utils/handleApiError";
 import { toast } from "../../hooks/toast";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useLocationSearch } from "../../hooks/useLocationSearch";
+import { LocationSearchDropdown } from "../../components/location/LocationSearchDropdown";
+import type { PickupLocation } from "../../types/location.types";
 import { driverService } from "../../api/driverService";
 import { NearbyDriver } from "../../types/driver.types";
 import {
@@ -69,6 +72,8 @@ export function ScheduleFormDrawer({
   const [driverListOpen, setDriverListOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
   const [location, setLocation] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
+  const [selectedPickup, setSelectedPickup] = useState<PickupLocation | null>(null);
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
   const [searchMode, setSearchMode] = useState(false);
@@ -94,9 +99,43 @@ export function ScheduleFormDrawer({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [formPopulated, setFormPopulated] = useState(false);
 
+  const {
+    results: locationResults,
+    isLoading: locationLoading,
+    error: locationError,
+  } = useLocationSearch(locationQuery, visible);
+  const showLocationDropdown =
+    locationQuery.trim().length >= 3 && !selectedPickup;
+
   const getPickupCoordinates = (): [number, number] => {
+    if (selectedPickup) {
+      return [selectedPickup.longitude, selectedPickup.latitude];
+    }
     if (coords) return [coords.longitude, coords.latitude];
     return [-0.187, 5.6037];
+  };
+
+  const handleLocationSelect = (result: {
+    label: string;
+    latitude: number;
+    longitude: number;
+  }) => {
+    const pickup: PickupLocation = {
+      label: result.label,
+      latitude: result.latitude,
+      longitude: result.longitude,
+    };
+    setSelectedPickup(pickup);
+    setLocation(result.label);
+    setLocationQuery(result.label);
+  };
+
+  const handleLocationQueryChange = (text: string) => {
+    setLocationQuery(text);
+    setLocation(text);
+    if (selectedPickup && text !== selectedPickup.label) {
+      setSelectedPickup(null);
+    }
   };
 
   const showToast = (
@@ -128,12 +167,13 @@ export function ScheduleFormDrawer({
   };
 
   const fetchNearbyDrivers = async () => {
-    if (!coords) return;
+    const searchCoords = selectedPickup ?? coords;
+    if (!searchCoords) return;
     setDriversLoading(true);
     try {
       const res = await driverService.getNearbyDrivers({
-        lat: coords.latitude,
-        lng: coords.longitude,
+        lat: searchCoords.latitude,
+        lng: searchCoords.longitude,
         isPremium,
       });
       if (res.success) {
@@ -147,32 +187,58 @@ export function ScheduleFormDrawer({
   };
 
   useEffect(() => {
-    if (visible && coords) {
+    if (visible && (selectedPickup || coords)) {
       fetchNearbyDrivers();
     }
-  }, [coords, isPremium, visible]);
+  }, [coords, selectedPickup, isPremium, visible]);
 
   useEffect(() => {
-    if (!visible || !isEditMode || !scheduleId || !scheduleData || formPopulated) return;
-    const item = scheduleData.find((s: ScheduleItem) => s.id === scheduleId);
-    if (!item) return;
+    if (!visible || !isEditMode || !scheduleId || formPopulated) return;
 
-    setSelectedDriver(item.driverId ?? null);
-    setLocation(item.location);
-    setStartTime(item.rawStartTime);
-    setEndTime(item.rawEndTime);
-    setSelectedFrequency(item.frequency);
-    setCalendarYear(item.rawYear);
-    setCalendarMonth(item.rawMonth);
-    setSelectedDate(item.rawDay);
-    setPhone("");
-    setNote("");
-    setFormPopulated(true);
+    const populateForm = async () => {
+      const item = scheduleData?.find((s: ScheduleItem) => s.id === scheduleId);
+      if (item) {
+        setSelectedDriver(item.driverId ?? null);
+        setLocation(item.location);
+        setLocationQuery(item.location);
+        setStartTime(item.rawStartTime);
+        setEndTime(item.rawEndTime);
+        setSelectedFrequency(item.frequency);
+        setCalendarYear(item.rawYear);
+        setCalendarMonth(item.rawMonth);
+        setSelectedDate(item.rawDay);
+        setPhone("");
+        setNote("");
+      }
+
+      try {
+        const response = await scheduleService.getSchedule(scheduleId);
+        const schedule = response.data?.schedule;
+        const coordinates = schedule?.pickup_location?.coordinates;
+        if (schedule && coordinates?.length === 2) {
+          setSelectedPickup({
+            label: schedule.pickup_address,
+            longitude: coordinates[0],
+            latitude: coordinates[1],
+          });
+          setLocation(schedule.pickup_address);
+          setLocationQuery(schedule.pickup_address);
+        }
+      } catch (error) {
+        console.error("Failed to load schedule location:", error);
+      }
+
+      setFormPopulated(true);
+    };
+
+    populateForm();
   }, [isEditMode, scheduleId, scheduleData, formPopulated, visible]);
 
   const resetForm = () => {
     setSelectedDriver(null);
     setLocation("");
+    setLocationQuery("");
+    setSelectedPickup(null);
     setPhone("");
     setNote("");
     setStartTime("");
@@ -202,8 +268,8 @@ export function ScheduleFormDrawer({
   }, [visible, scheduleId]);
 
   const createSchedule = async () => {
-    if (!selectedDriver || !location || !selectedDate) {
-      showToast("Please fill all required fields", "warning");
+    if (!selectedDriver || !location || !selectedDate || !selectedPickup) {
+      showToast("Please select a pickup location from the suggestions", "warning");
       return;
     }
 
@@ -244,8 +310,8 @@ export function ScheduleFormDrawer({
   };
 
   const updateSchedule = async () => {
-    if (!scheduleId || !selectedDriver || !location || !selectedDate) {
-      showToast("Please fill all required fields", "warning");
+    if (!scheduleId || !selectedDriver || !location || !selectedDate || !selectedPickup) {
+      showToast("Please select a pickup location from the suggestions", "warning");
       return;
     }
 
@@ -287,7 +353,7 @@ export function ScheduleFormDrawer({
     }
   };
 
-  const canSchedule = !!selectedDriver && !!location && !!selectedDate;
+  const canSchedule = !!selectedDriver && !!location && !!selectedDate && !!selectedPickup;
 
   const closeOverlays = () => {
     setFrequencyOpen(false);
@@ -482,7 +548,7 @@ export function ScheduleFormDrawer({
               </View>
             ) : (
               <Pressable
-                className="flex-row items-center justify-center gap-2 h-10 bg-[#31973D] rounded-2xl"
+                className="flex-row items-center justify-center gap-2 h-12 bg-[#31973D] rounded-full"
                 onPress={() => {
                   setDriverListOpen(true);
                   closeOverlays();
@@ -628,29 +694,49 @@ export function ScheduleFormDrawer({
               <Text style={{ color: colors.textSub }} className="text-sm">
                 Location
               </Text>
-              <View
-                style={{ backgroundColor: colors.surface }}
-                className="flex-row items-center h-12 rounded-3xl px-3 gap-2"
-              >
-                <TextInput
-                  style={{ color: colors.textSub }}
-                  className="flex-1 text-sm text-[#1F2A33] p-0  outline-none"
-                  placeholder="Tarkwa, UMaT Campus, Hall 3"
-                  placeholderTextColor="#94A3B7"
-                  value={location}
-                  onChangeText={setLocation}
-                  onFocus={closeOverlays}
-                  editable={!isSubmitting}
+              <View style={{ position: "relative", zIndex: 30 }}>
+                <View
+                  style={{ backgroundColor: colors.surface }}
+                  className="flex-row items-center h-12 rounded-3xl px-3 gap-2"
+                >
+                  <MaterialCommunityIcons
+                    name="magnify"
+                    size={16}
+                    color={colors.iconColor}
+                  />
+                  <TextInput
+                    style={{ color: colors.textSub }}
+                    className="flex-1 text-sm text-[#1F2A33] p-0 outline-none"
+                    placeholder="Tarkwa, UMaT Campus, Hall 3"
+                    placeholderTextColor="#94A3B7"
+                    value={locationQuery}
+                    onChangeText={handleLocationQueryChange}
+                    onFocus={closeOverlays}
+                    editable={!isSubmitting}
+                  />
+                  {locationQuery.length > 0 && (
+                    <Pressable
+                      onPress={() => {
+                        setLocationQuery("");
+                        setLocation("");
+                        setSelectedPickup(null);
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name="close-circle-outline"
+                        size={16}
+                        color="#EF4444"
+                      />
+                    </Pressable>
+                  )}
+                </View>
+                <LocationSearchDropdown
+                  visible={showLocationDropdown}
+                  results={locationResults}
+                  loading={locationLoading}
+                  error={locationError}
+                  onSelect={handleLocationSelect}
                 />
-                {location.length > 0 && (
-                  <Pressable onPress={() => setLocation("")}>
-                    <MaterialCommunityIcons
-                      name="close-circle-outline"
-                      size={16}
-                      color="#EF4444"
-                    />
-                  </Pressable>
-                )}
               </View>
             </View>
 
@@ -1016,14 +1102,14 @@ export function ScheduleFormDrawer({
 
         <View className="flex-row items-center px-6 gap-2.5 pb-6">
           <Pressable
-            className="w-8 h-8 rounded-xl bg-[#FFE2E2] items-center justify-center"
+            className="w-9 h-9 rounded-xl bg-[#FFE2E2] items-center justify-center"
             onPress={handleClose}
             disabled={isSubmitting}
           >
             <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
           </Pressable>
           <Pressable
-            className={`flex-1 h-10 rounded-full items-center justify-center ${
+            className={`flex-1 h-12 rounded-full items-center justify-center ${
               canSchedule ? "bg-[#31973D]" : "bg-[rgba(52,168,83,0.5)]"
             }`}
             disabled={!canSchedule || isSubmitting}

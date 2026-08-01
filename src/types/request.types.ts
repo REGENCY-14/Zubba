@@ -30,6 +30,14 @@ export interface RequestDriverInfo {
   rating_count: number;
 }
 
+export interface RequestTransactionInfo {
+  reference: string;
+  payment_method: string | null;
+  phone: string | null;
+  provider_name: string | null;
+  paid_at: string | null;
+}
+
 export interface CustomerRequestItem {
   id: string;
   customer_id: string;
@@ -43,11 +51,14 @@ export interface CustomerRequestItem {
   pickup_price: string;
   service_price: string;
   collection_code: number;
+  transaction_reference: string | null;
+  payment_date: string | null;
   created_at: string;
   accepted_at: string | null;
   completed_at: string | null;
   cancelled_at: string | null;
   cancel_reason: string | null;
   schedule_id: string | null;
+  transaction: RequestTransactionInfo | null;
   driver: RequestDriverInfo | null;
 }

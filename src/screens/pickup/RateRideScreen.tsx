@@ -1,16 +1,27 @@
 import React, { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
 
 import type { RootStackScreenProps } from "../../navigation/types";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { resetRequest } from "../../slices/request/requestSlice";
-import { api } from "../../api/axios";
+import { requestService } from "../../api/requestService";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { completePickupAfterPayment } from "../../services/pickupCompletion";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const PROFESSIONALISM_LABELS: Record<number, string> = {
@@ -80,7 +91,10 @@ export function RateRideScreen({
   const [isLoading, setIsLoading] = useState(false);
   
   const request = useAppSelector((state) => state.request);
+  const customer = useAppSelector((state) => state.customer);
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
+  const drawerMaxHeight = Dimensions.get("window").height * 0.72;
 
   const paymentSummary = {
     reference: route.params?.reference || request.transaction_reference || undefined,
@@ -115,6 +129,14 @@ export function RateRideScreen({
     setIsLoading(true);
 
     try {
+      if (request.status === "paid") {
+        await completePickupAfterPayment(
+          request.id,
+          request.customer_id || customer.id,
+          dispatch,
+        );
+      }
+
       const payload = {
         serviceRating: serviceRating,
         professionalism: proRating,
@@ -122,9 +144,9 @@ export function RateRideScreen({
         comment: comment.trim() || undefined,
       };
 
-      const response = await api.post(`/ratings/rate-request/${request.id}`, payload);
+      const response = await requestService.rateRequest(request.id, payload);
 
-      if (response.data.success) {
+      if (response.success) {
         toast.success(
           "Thank You!\nYour feedback helps us improve our service.",
         );
@@ -146,11 +168,10 @@ export function RateRideScreen({
 
   return (
     <SafeAreaView
-      style={{ backgroundColor: colors.bg }}
-      className="flex-1"
-      edges={["top", "left", "right", "bottom"]}
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      edges={["top", "left", "right"]}
     >
-      <View style={{ backgroundColor: colors.bg }} className="flex-1">
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <View className="h-12 flex-row items-center justify-between px-4">
           <Pressable
             onPress={() => navigation.goBack()}
@@ -170,7 +191,7 @@ export function RateRideScreen({
             Success
           </Text>
 
-          <Pressable onPress={handleSkip} className="w-6 h-6 items-center justify-center">
+          <Pressable onPress={handleSkip} hitSlop={8}>
             <Text style={{ color: colors.textSub }} className="text-sm">Skip</Text>
           </Pressable>
         </View>
@@ -204,20 +225,44 @@ export function RateRideScreen({
         <View className="absolute inset-0 bg-black/40" pointerEvents="none" />
 
         <View
-          style={{ backgroundColor: colors.bg }}
-          className="absolute bottom-0 left-0 right-0 rounded-t-[32px] pt-4 pb-6 px-4 gap-4 max-h-[70%]"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            maxHeight: drawerMaxHeight,
+          }}
         >
           <View
-            style={{ backgroundColor: colors.border }}
-            className="w-36 h-1 rounded-full self-center"
-          />
-
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            contentContainerClassName="gap-3 pb-2"
+            style={{
+              backgroundColor: colors.bg,
+              borderTopLeftRadius: 32,
+              borderTopRightRadius: 32,
+              paddingTop: verticalScale(16),
+              paddingHorizontal: scale(16),
+              paddingBottom: Math.max(insets.bottom, verticalScale(16)),
+              maxHeight: drawerMaxHeight,
+              overflow: "hidden",
+            }}
           >
+            <View
+              style={{ backgroundColor: colors.border }}
+              className="w-36 h-1 rounded-full self-center mb-4"
+            />
+
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+              keyboardVerticalOffset={insets.top + verticalScale(48)}
+            >
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+                contentContainerStyle={{
+                  gap: verticalScale(12),
+                  paddingBottom: verticalScale(24),
+                }}
+              >
             <View className="items-center gap-1">
               <Text
                 style={{ color: colors.text }}
@@ -410,8 +455,9 @@ export function RateRideScreen({
                 )}
               </Pressable>
             </View>
-          </ScrollView>
-          </KeyboardAvoidingView>
+            </ScrollView>
+            </KeyboardAvoidingView>
+          </View>
         </View>
       </View>
     </SafeAreaView>

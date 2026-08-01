@@ -456,7 +456,6 @@ export function ZubbaWalletScreen({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingHorizontal: scale(16),
                 height: verticalScale(40),
                 borderRadius: moderateScale(8),
                 gap: scale(8),

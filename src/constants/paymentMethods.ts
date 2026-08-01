@@ -2,7 +2,6 @@ const airtelTigo = require("../../assets/airtelTigo.png");
 
 export const paymentMethods = [
   {
-    
     id: "momo" as const,
     title: "MTN MoMo",
     badge: "MTN",
@@ -33,7 +32,6 @@ export const paymentMethods = [
 
 export const creditMethods = [
   {
-    
     id: "momo" as const,
     title: "MTN MoMo",
     badge: "MTN",

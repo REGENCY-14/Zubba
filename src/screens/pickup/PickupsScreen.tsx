@@ -21,6 +21,7 @@ import { setRequest } from "../../slices/request/requestSlice";
 import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { getPaymentDetailsFromRequest } from "../../utils/paymentProviders";
 
 const tricycle = require("../../../assets/pickup_tricycle.png");
 
@@ -140,6 +141,7 @@ function PickupRow({
   onPress?: () => void;
 }) {
   const isCancelled = pickup.raw.status === "cancelled";
+  const isCompleted = pickup.raw.status === "completed";
 
   const content = (
     <View
@@ -198,24 +200,25 @@ function PickupRow({
         </Text>
       </View>
 
-      <Pressable
-        hitSlop={8}
-        style={{
-          width: moderateScale(32),
-          height: moderateScale(32),
-          borderRadius: moderateScale(16),
-          borderWidth: 1,
-          borderColor: colors.border,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <MaterialCommunityIcons
-          name="refresh"
-          size={moderateScale(18)}
-          color={colors.textSub}
-        />
-      </Pressable>
+      {!isCancelled && (
+        <View
+          style={{
+            width: moderateScale(32),
+            height: moderateScale(32),
+            borderRadius: moderateScale(16),
+            borderWidth: 1,
+            borderColor: colors.border,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <MaterialCommunityIcons
+            name={isCompleted ? "receipt-text-outline" : "refresh"}
+            size={moderateScale(18)}
+            color={colors.textSub}
+          />
+        </View>
+      )}
     </View>
   );
 
@@ -236,7 +239,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
   const fetchCustomerRequests = useCallback(async () => {
     try {
       const result = await customerService.getCustomerRequests({
-        limit: 1000,
+        limit: 2000,
         current_page: 1,
         offset: 0,
       });
@@ -277,8 +280,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     };
   }, [requests]);
 
-  const sections =
-    activeTab === "completed" ? completedSections : pendingSections;
+  const sections = activeTab === "completed" ? completedSections : pendingSections;
 
   const buildRequestStateFromItem = (item: CustomerRequestItem) => ({
     id: item.id,
@@ -309,6 +311,13 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     date_created: new Date(item.created_at),
     collection_code: item.collection_code,
     scheduleRequest: !!item.schedule_id,
+    transaction_reference:
+      item.transaction?.reference ?? item.transaction_reference ?? null,
+    payment_date: item.transaction?.paid_at
+      ? new Date(item.transaction.paid_at)
+      : item.payment_date
+        ? new Date(item.payment_date)
+        : null,
   });
 
   const handlePickupPress = (pickup: Pickup) => {
@@ -329,8 +338,13 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
 
     if (activeTab === "completed" && raw.status === "completed") {
       dispatch(setRequest(buildRequestStateFromItem(raw)));
+      const payment = getPaymentDetailsFromRequest(raw);
       navigation.navigate("PaymentSuccess", {
-        phone: raw.payment_method ?? "",
+        phone: payment.phone,
+        amount: payment.amount,
+        provider: payment.provider,
+        reference: payment.reference,
+        paymentMethodLabel: payment.paymentMethodLabel,
       });
       return;
     }

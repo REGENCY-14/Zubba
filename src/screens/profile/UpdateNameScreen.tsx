@@ -90,7 +90,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
             style={{
               fontSize: moderateScale(14),
               fontWeight: '400',
-              color: colors.textSub,
+              color: colors.text,
               lineHeight: moderateScale(20),
               textAlign: 'center',
               width: scale(284),
@@ -113,7 +113,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
           }}
         >
           {/* Instruction */}
-          <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.textSub, letterSpacing: 0.15 }}>
+          <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.text, letterSpacing: 0.15 }}>
             Enter your name as it appears on your ID or passport
           </Text>
 
@@ -126,7 +126,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
               gap: moderateScale(8),
             }}
           >
-            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.textSub, letterSpacing: 0.15 }}>
+            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.text, letterSpacing: 0.15 }}>
               First Name
             </Text>
 
@@ -140,7 +140,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
                 paddingHorizontal: scale(12),
                 fontSize: moderateScale(14),
                 lineHeight: moderateScale(20),
-                color: colors.textSub,
+                color: colors.text,
               }}
               value={firstName}
               onChangeText={setFirstName}
@@ -160,7 +160,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
               gap: moderateScale(8),
             }}
           >
-            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.textSub, letterSpacing: 0.15 }}>
+            <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(22), color: colors.text, letterSpacing: 0.15 }}>
               Last Name
             </Text>
 
@@ -174,7 +174,7 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
                 paddingHorizontal: scale(12),
                 fontSize: moderateScale(14),
                 lineHeight: moderateScale(20),
-                color: colors.textSub,
+                color: colors.text,
               }}
               value={lastName}
               onChangeText={setLastName}
