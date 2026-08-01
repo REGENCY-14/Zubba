@@ -150,24 +150,12 @@ export function WalletCheckoutScreen({
         </View>
 
         <View style={{ marginTop: verticalScale(-10), flex: 1 }}>
-          <View className="flex-row items-center px-6 pt-10 pb-6 gap-[10px]">
+          <View className="flex-row items-center px-6 pt-10 pb-6">
             <Pressable
               className="w-9 h-9 bg-[#FFE2E2] rounded-xl items-center justify-center"
               onPress={() => navigation.navigate("Home")}
             >
               <MaterialCommunityIcons name="close" size={moderateScale(16)} color="#EF4444" />
-            </Pressable>
-            <Pressable
-              className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center"
-              style={{ opacity: loading ? 0.6 : 1 }}
-              disabled={loading}
-              onPress={handlePay}
-            >
-              {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text className="text-sm text-white leading-5">Pay</Text>
-              )}
             </Pressable>
           </View>
 
@@ -396,6 +384,19 @@ export function WalletCheckoutScreen({
                   </View>
                 </View>
               </View>
+
+              <Pressable
+                className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+                style={{ opacity: loading ? 0.6 : 1 }}
+                disabled={loading}
+                onPress={handlePay}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text className="text-sm text-white leading-5">Pay</Text>
+                )}
+              </Pressable>
             </ScrollView>
           </View>
         </View>
