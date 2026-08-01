@@ -7,6 +7,7 @@ import type { NavigationContainerRefWithCurrent } from "@react-navigation/native
 import { deviceService } from "../api/deviceService";
 import type { RootStackParamList } from "../navigation/types";
 import { store } from "../store";
+import { notificationService } from "../api/notificationService";
 
 const PENDING_PUSH_TOKEN_KEY = "@zubba/pendingExpoPushToken";
 const REGISTERED_PUSH_TOKEN_KEY = "@zubba/registeredExpoPushToken";
@@ -102,7 +103,7 @@ const registerTokenWithBackend = async (token: string) => {
   await deviceService.registerPushToken({
     expoPushToken: token,
     platform: Platform.OS,
-    deviceName: Platform.OS === "ios" ? "iPhone" : "Android Device",
+    deviceName: notificationService.getDeviceName(),
     appVersion: Constants.expoConfig?.version,
   });
 
