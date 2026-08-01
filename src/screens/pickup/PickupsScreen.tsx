@@ -21,7 +21,7 @@ import { setRequest } from "../../slices/request/requestSlice";
 import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { formatProviderLabel } from "../../utils/paymentProviders";
+import { getPaymentDetailsFromRequest } from "../../utils/paymentProviders";
 
 const tricycle = require("../../../assets/pickup_tricycle.png");
 
@@ -309,6 +309,13 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     date_created: new Date(item.created_at),
     collection_code: item.collection_code,
     scheduleRequest: !!item.schedule_id,
+    transaction_reference:
+      item.transaction?.reference ?? item.transaction_reference ?? null,
+    payment_date: item.transaction?.paid_at
+      ? new Date(item.transaction.paid_at)
+      : item.payment_date
+        ? new Date(item.payment_date)
+        : null,
   });
 
   const handlePickupPress = (pickup: Pickup) => {
@@ -329,12 +336,13 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
 
     if (activeTab === "completed" && raw.status === "completed") {
       dispatch(setRequest(buildRequestStateFromItem(raw)));
+      const payment = getPaymentDetailsFromRequest(raw);
       navigation.navigate("PaymentSuccess", {
-        phone: raw.payment_method ?? "",
-        amount: Number(raw.pickup_price ?? 0) + Number(raw.service_price ?? 0),
-        provider: raw.payment_method ?? "",
-        reference: raw.id,
-        paymentMethodLabel: formatProviderLabel(raw.payment_method ?? undefined),
+        phone: payment.phone,
+        amount: payment.amount,
+        provider: payment.provider,
+        reference: payment.reference,
+        paymentMethodLabel: payment.paymentMethodLabel,
       });
       return;
     }

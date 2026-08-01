@@ -60,12 +60,18 @@ export function PaymentVerificationScreen({
           dispatch(setTransactionReference(reference));
           dispatch(markRequestPaid());
 
+          let completionSucceeded = true;
           try {
             if (request.id && request.customer_id) {
               await completePickupAfterPayment(request.id, request.customer_id, dispatch);
             }
           } catch (error) {
+            completionSucceeded = false;
             handleApiError(error);
+          }
+
+          if (!completionSucceeded) {
+            return;
           }
 
           setTimeout(() => {

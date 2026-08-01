@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -8,9 +8,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { resetRequest } from "../../slices/request/requestSlice";
-import { api } from "../../api/axios";
+import { requestService } from "../../api/requestService";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
+import { completePickupAfterPayment } from "../../services/pickupCompletion";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const PROFESSIONALISM_LABELS: Record<number, string> = {
@@ -80,6 +81,7 @@ export function RateRideScreen({
   const [isLoading, setIsLoading] = useState(false);
   
   const request = useAppSelector((state) => state.request);
+  const customer = useAppSelector((state) => state.customer);
   const dispatch = useAppDispatch();
 
   const paymentSummary = {
@@ -115,6 +117,14 @@ export function RateRideScreen({
     setIsLoading(true);
 
     try {
+      if (request.status === "paid") {
+        await completePickupAfterPayment(
+          request.id,
+          request.customer_id || customer.id,
+          dispatch,
+        );
+      }
+
       const payload = {
         serviceRating: serviceRating,
         professionalism: proRating,
@@ -122,9 +132,9 @@ export function RateRideScreen({
         comment: comment.trim() || undefined,
       };
 
-      const response = await api.post(`/ratings/rate-request/${request.id}`, payload);
+      const response = await requestService.rateRequest(request.id, payload);
 
-      if (response.data.success) {
+      if (response.success) {
         toast.success(
           "Thank You!\nYour feedback helps us improve our service.",
         );

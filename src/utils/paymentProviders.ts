@@ -1,4 +1,5 @@
 import { creditMethods, paymentMethods } from "../constants/paymentMethods";
+import type { CustomerRequestItem } from "../types/request.types";
 
 export type PaymentMethodId =
   | "wallet"
@@ -73,6 +74,28 @@ export function formatAuthPhone(phone?: string): string {
 
 export function isWalletMethod(method: PaymentMethodId): boolean {
   return method === "wallet";
+}
+
+export function getPaymentDetailsFromRequest(item: CustomerRequestItem) {
+  const txn = item.transaction;
+  const amount = Number(item.pickup_price ?? 0) + Number(item.service_price ?? 0);
+  const reference =
+    txn?.reference ?? item.transaction_reference ?? item.id;
+  const phone = txn?.phone ?? "";
+  const provider = txn?.provider_name ?? item.payment_method ?? undefined;
+  const paymentMethod = txn?.payment_method ?? item.payment_method ?? undefined;
+  const paymentMethodLabel = formatProviderLabel(
+    paymentMethod === "mobile_money" ? provider : paymentMethod,
+  );
+
+  return {
+    reference,
+    amount,
+    phone,
+    provider,
+    paymentMethodLabel,
+    paymentDate: txn?.paid_at ?? item.payment_date ?? item.completed_at ?? item.created_at,
+  };
 }
 
 export const pickupPaymentMethods = paymentMethods;
