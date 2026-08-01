@@ -1,74 +1,29 @@
-import { supabase } from "./supabaseClient";
-import { env } from "../utils/env";
+import { ApiResponse } from "../types/api.types";
+import { User } from "../slices/auth/auth.types";
+import { api } from "../api/axios";
 
-function getAvatarPath(userId: string) {
-  return `${userId}/avatar.jpg`;
+function guessMimeType(uri: string): string {
+  const lower = uri.toLowerCase();
+  if (lower.endsWith(".png")) return "image/png";
+  if (lower.endsWith(".webp")) return "image/webp";
+  return "image/jpeg";
 }
 
-export function getStoragePathFromPublicUrl(url?: string | null): string | null {
-  if (!url || !env.supabaseUrl || !env.supabaseAvatarBucket) return null;
+export async function uploadAvatar(fileUri: string): Promise<string> {
+  const formData = new FormData();
+  formData.append("avatar", {
+    uri: fileUri,
+    name: "avatar.jpg",
+    type: guessMimeType(fileUri),
+  } as unknown as Blob);
 
-  const marker = `/storage/v1/object/public/${env.supabaseAvatarBucket}/`;
-  const idx = url.indexOf(marker);
-  if (idx === -1) return null;
+  const { data } = await api.post<
+    ApiResponse<{ user: User; profile_picture: string }>
+  >("/users/me/avatar", formData);
 
-  return decodeURIComponent(url.slice(idx + marker.length).split("?")[0] ?? "");
-}
-
-async function removeStorageObject(path: string) {
-  if (!supabase || !env.supabaseAvatarBucket) return;
-
-  const { error } = await supabase.storage
-    .from(env.supabaseAvatarBucket)
-    .remove([path]);
-
-  if (error && !error.message?.toLowerCase().includes("not found")) {
-    throw error;
-  }
-}
-
-export async function uploadAvatar(
-  userId: string,
-  fileUri: string,
-  previousUrl?: string | null,
-): Promise<string> {
-  if (!supabase || !env.supabaseAvatarBucket) {
-    throw new Error("Supabase storage is not configured.");
+  if (!data.success || !data.data?.profile_picture) {
+    throw new Error("Failed to upload profile photo");
   }
 
-  const path = getAvatarPath(userId);
-  const previousPath = getStoragePathFromPublicUrl(previousUrl);
-
-  if (previousPath && previousPath !== path) {
-    await removeStorageObject(previousPath);
-  } else if (previousPath === path) {
-    await removeStorageObject(path);
-  }
-
-  const response = await fetch(fileUri);
-  const arrayBuffer = await response.arrayBuffer();
-  const contentType = response.headers.get("Content-Type") ?? "image/jpeg";
-
-  const { error: uploadError } = await supabase.storage
-    .from(env.supabaseAvatarBucket)
-    .upload(path, arrayBuffer, {
-      upsert: true,
-      contentType,
-    });
-
-  if (uploadError) {
-    throw uploadError;
-  }
-
-  const { data } = supabase.storage
-    .from(env.supabaseAvatarBucket)
-    .getPublicUrl(path);
-
-  return `${data.publicUrl}?v=${Date.now()}`;
-}
-
-export async function deleteUploadedAvatar(publicUrl: string) {
-  const path = getStoragePathFromPublicUrl(publicUrl);
-  if (!path) return;
-  await removeStorageObject(path);
+  return data.data.profile_picture;
 }

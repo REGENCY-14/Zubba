@@ -84,7 +84,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     paystackPublicKey: process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY,
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
-    supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
-    supabaseAvatarBucket: process.env.EXPO_PUBLIC_SUPABASE_AVATAR_BUCKET,
   },
 });

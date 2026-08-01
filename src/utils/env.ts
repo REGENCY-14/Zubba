@@ -30,6 +30,4 @@ export const env = {
   googleAndroidClientId: readEnv("EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID", "googleAndroidClientId"),
   paystackPublicKey: readEnv("EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY", "paystackPublicKey"),
   supabaseUrl: readEnv("EXPO_PUBLIC_SUPABASE_URL", "supabaseUrl"),
-  supabaseAnonKey: readEnv("EXPO_PUBLIC_SUPABASE_ANON_KEY", "supabaseAnonKey"),
-  supabaseAvatarBucket: readEnv("EXPO_PUBLIC_SUPABASE_AVATAR_BUCKET", "supabaseAvatarBucket"),
 };

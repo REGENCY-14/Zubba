@@ -19,13 +19,9 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { userService } from "../../api/userService";
 import { updateUser } from "../../slices/auth/authSlice";
 import { updateProfilePicture } from "../../slices/customer/customerSlice";
-import {
-  deleteUploadedAvatar,
-  uploadAvatar,
-} from "../../services/profileImageService";
+import { uploadAvatar } from "../../services/profileImageService";
 
 function InfoCard({
   label,
@@ -143,27 +139,14 @@ export function ProfileScreen({
     setLocalPreview(uri);
     setUploading(true);
 
-    let uploadedUrl: string | null = null;
     try {
-      const previousUrl = customer.profile_picture ?? user?.profile_picture ?? null;
-      uploadedUrl = await uploadAvatar(user.id, uri, previousUrl);
+      const uploadedUrl = await uploadAvatar(uri);
 
-      const response = await userService.updateUser(user.id, {
-        profile_picture: uploadedUrl,
-      });
-
-      if (response.success) {
-        dispatch(updateUser({ profile_picture: uploadedUrl }));
-        dispatch(updateProfilePicture(uploadedUrl));
-        toast.success("Profile photo updated");
-      } else {
-        throw new Error("Failed to save profile photo");
-      }
+      dispatch(updateUser({ profile_picture: uploadedUrl }));
+      dispatch(updateProfilePicture(uploadedUrl));
+      toast.success("Profile photo updated");
     } catch (err) {
       setLocalPreview(null);
-      if (uploadedUrl) {
-        await deleteUploadedAvatar(uploadedUrl).catch(() => {});
-      }
       toast.error(
         err instanceof Error ? err.message : "Could not update profile photo",
       );
