@@ -205,7 +205,12 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                 justifyContent: "center",
               }}
             >
-              <View style={{ width: moderateScale(54), height: moderateScale(54) }}>
+              <View style={{
+                width: moderateScale(54),
+                height: moderateScale(54),
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
                 {profilePicture ? (
                   <Image
                     source={{ uri: profilePicture }}

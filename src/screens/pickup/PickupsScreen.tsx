@@ -141,6 +141,7 @@ function PickupRow({
   onPress?: () => void;
 }) {
   const isCancelled = pickup.raw.status === "cancelled";
+  const isCompleted = pickup.raw.status === "completed";
 
   const content = (
     <View
@@ -199,24 +200,25 @@ function PickupRow({
         </Text>
       </View>
 
-      <Pressable
-        hitSlop={8}
-        style={{
-          width: moderateScale(32),
-          height: moderateScale(32),
-          borderRadius: moderateScale(16),
-          borderWidth: 1,
-          borderColor: colors.border,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <MaterialCommunityIcons
-          name="refresh"
-          size={moderateScale(18)}
-          color={colors.textSub}
-        />
-      </Pressable>
+      {!isCancelled && (
+        <View
+          style={{
+            width: moderateScale(32),
+            height: moderateScale(32),
+            borderRadius: moderateScale(16),
+            borderWidth: 1,
+            borderColor: colors.border,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <MaterialCommunityIcons
+            name={isCompleted ? "receipt-text-outline" : "refresh"}
+            size={moderateScale(18)}
+            color={colors.textSub}
+          />
+        </View>
+      )}
     </View>
   );
 
