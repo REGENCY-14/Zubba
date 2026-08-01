@@ -2,13 +2,15 @@ import { Pressable, Text, View, ScrollView, Share, ActivityIndicator } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { formatProviderLabel } from "../../utils/paymentProviders";
-import { buildTransactionReceipt } from "../../utils/transactionReceipt";
+import { buildTransactionReceiptHtml } from "../../utils/transactionReceipt";
 import { toast } from "../../hooks/toast";
 
 
@@ -44,11 +46,18 @@ export function PaymentSuccessScreen({
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const receipt = buildTransactionReceipt(details);
-      await Share.share({
-        title: "Zubba Transaction Receipt",
-        message: receipt,
-      });
+      const html = buildTransactionReceiptHtml(details);
+      const { uri } = await Print.printToFileAsync({ html, base64: false });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: "application/pdf",
+          UTI: "com.adobe.pdf",
+          dialogTitle: "Zubba Transaction Receipt",
+        });
+      } else {
+        await Share.share({ url: uri, title: "Zubba Transaction Receipt" });
+      }
     } catch (error) {
       console.error("Failed to share transaction receipt:", error);
       toast.error("Could not download transaction. Please try again.");
