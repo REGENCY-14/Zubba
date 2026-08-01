@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   DEFAULT_TOAST_DURATION,
@@ -96,16 +96,24 @@ export default function ToastManager() {
   if (toasts.length === 0) return null;
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
-      {toasts.map((item, index) => (
-        <ToastItemView
-          key={item.id}
-          toast={item}
-          isFirst={index === 0}
-          onDismiss={() => hide(item.id)}
-        />
-      ))}
-    </View>
+    <Modal
+      transparent
+      visible
+      animationType="none"
+      statusBarTranslucent
+      onRequestClose={() => {}}
+    >
+      <View style={styles.container} pointerEvents="box-none">
+        {toasts.map((item, index) => (
+          <ToastItemView
+            key={item.id}
+            toast={item}
+            isFirst={index === 0}
+            onDismiss={() => hide(item.id)}
+          />
+        ))}
+      </View>
+    </Modal>
   );
 }
 
