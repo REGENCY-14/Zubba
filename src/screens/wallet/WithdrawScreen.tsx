@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dimensions, Pressable, ScrollView, Text, TextInput, View, ActivityIndicator } from "react-native";
+import { Dimensions, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
@@ -62,6 +62,10 @@ export function WithdrawScreen({
     >
       <CustomAppBar title="Debit Account" navigation={navigation} />
 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, padding: moderateScale(12) }}
@@ -238,6 +242,7 @@ export function WithdrawScreen({
           </View>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

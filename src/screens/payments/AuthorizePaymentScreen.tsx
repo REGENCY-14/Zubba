@@ -5,6 +5,8 @@ import {
   Text,
   TextInput,
   View,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -30,6 +32,7 @@ export function AuthorizePaymentScreen({
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 
@@ -108,6 +111,7 @@ export function AuthorizePaymentScreen({
           </Pressable>
         </ScrollView>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

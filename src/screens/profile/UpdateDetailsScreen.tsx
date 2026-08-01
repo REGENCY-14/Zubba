@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -101,6 +101,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
 
   return (
     <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View className="flex-1">
         <CustomAppBar title="Update Details" navigation={navigation} />
 
@@ -222,6 +223,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           navigation={navigation}
         />
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -72,6 +74,10 @@ export function HelpCenterScreen({
       edges={["top", "left", "right"]}
     >
       <CustomAppBar title="Help Center" navigation={navigation} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <ScrollView
           contentContainerStyle={{
@@ -297,6 +303,7 @@ export function HelpCenterScreen({
           navigation={navigation}
         />
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

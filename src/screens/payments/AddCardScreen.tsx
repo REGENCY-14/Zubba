@@ -6,6 +6,8 @@ import {
   Text,
   TextInput,
   View,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -57,6 +59,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ height: verticalScale(48), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: scale(16) }}>
           <Pressable className="w-6 h-6 items-center justify-center" onPress={() => navigation.goBack()}>
@@ -182,6 +185,7 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
           </View>
         </ScrollView>
       </View>
+      </KeyboardAvoidingView>
 
       {/* ── Celebration overlay ── replaces the old Modal ── */}
       {showSuccess && (

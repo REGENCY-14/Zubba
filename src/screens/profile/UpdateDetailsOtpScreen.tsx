@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Pressable, Text, TextInput, View, Alert } from 'react-native';
+import { Pressable, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -177,6 +177,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ height: verticalScale(48), paddingHorizontal: scale(16), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.bg }}>
           <Pressable style={{ width: moderateScale(24), height: moderateScale(24), alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.goBack()}>
@@ -297,6 +298,7 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
           <View style={{ width: scale(108), height: verticalScale(4), borderRadius: moderateScale(12), backgroundColor: colors.border }} />
         </View>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

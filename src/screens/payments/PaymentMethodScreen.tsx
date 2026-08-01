@@ -7,6 +7,8 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -73,6 +75,7 @@ export function PaymentMethodScreen({
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment" />
 
@@ -167,6 +170,7 @@ export function PaymentMethodScreen({
           </View>
         </ScrollView>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

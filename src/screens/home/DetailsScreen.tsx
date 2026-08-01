@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View, Image, Pressable, TextInput } from "react-native";
+import { Text, View, Image, Pressable, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -25,6 +25,7 @@ export function DetailsScreen({
   if (isFindAccount) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingHorizontal: scale(23), paddingTop: verticalScale(40), paddingBottom: verticalScale(24), justifyContent: 'space-between' }}>
 
           <View style={{ gap: moderateScale(16) }}>
@@ -96,6 +97,7 @@ export function DetailsScreen({
           </View>
 
         </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }

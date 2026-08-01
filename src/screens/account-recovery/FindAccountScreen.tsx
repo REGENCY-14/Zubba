@@ -6,6 +6,8 @@ import {
   TextInput,
   Image,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -67,6 +69,7 @@ export function FindAccountScreen({
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View className="flex-1 p-5 pt-10 pb-6 justify-between">
         <View className="gap-4">
           <Text style={{ fontSize: moderateScale(15), color: colors.text }}>
@@ -139,6 +142,7 @@ export function FindAccountScreen({
           </Pressable>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

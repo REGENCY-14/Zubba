@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, Alert, ActivityIndicator } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -197,6 +197,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
             className="w-36 h-1 rounded-full self-center"
           />
 
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
@@ -395,6 +396,7 @@ export function RateRideScreen({ navigation }: RootStackScreenProps<"RateRide">)
               </Pressable>
             </View>
           </ScrollView>
+          </KeyboardAvoidingView>
         </View>
       </View>
     </SafeAreaView>

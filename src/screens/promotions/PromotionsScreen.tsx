@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, Share, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Share, Text, TextInput, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -157,6 +157,7 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
         {/* Header */}
@@ -257,6 +258,7 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
           </View>
         </ScrollView>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

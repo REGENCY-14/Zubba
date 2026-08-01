@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -61,6 +61,10 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
       <View className="flex-1 bg-white">
 
         {/* Header */}
@@ -286,6 +290,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
           navigation={navigation}
         />
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

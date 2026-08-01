@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -1213,7 +1215,10 @@ export function ScheduleScreen({
               </Text>
             </View>
             {/* List */}
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: verticalScale(140) }}
+            >
               {visibleSchedules.map((item, index) => (
                 <React.Fragment key={item.id}>
                   {index > 0 && (
@@ -1276,6 +1281,10 @@ export function ScheduleScreen({
         animationType="slide"
         onRequestClose={() => setSheetOpen(false)}
       >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
         <View className="flex-1 bg-[rgba(69,71,69,0.15)] justify-end">
           <Pressable
             className="absolute top-0 left-0 right-0 bottom-0"
@@ -1966,6 +1975,7 @@ export function ScheduleScreen({
             </View>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* ══ Confirmation card ══ */}

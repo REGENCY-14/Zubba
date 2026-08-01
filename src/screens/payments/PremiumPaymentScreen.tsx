@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { AppBottomNav } from '../../components';
-import { moderateScale } from '../../utils/scale';
+import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 type MethodId = 'wallet' | 'mtn' | 'telecel' | 'airtel';
 
@@ -29,7 +29,7 @@ export function PremiumPaymentScreen({ navigation }: RootStackScreenProps<'Premi
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 16, paddingBottom: 120, gap: 24 }}
+          contentContainerStyle={{ paddingHorizontal: scale(12), paddingTop: verticalScale(16), paddingBottom: verticalScale(120), gap: verticalScale(24) }}
           showsVerticalScrollIndicator={false}
         >
           <View className="border border-[#E2E8F0] rounded-3xl p-6 gap-4 bg-white">

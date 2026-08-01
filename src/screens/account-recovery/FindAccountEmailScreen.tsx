@@ -5,6 +5,8 @@ import {
   Pressable,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -63,6 +65,7 @@ export function FindAccountEmailScreen({
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View className="flex-1 p-5 pb-6 justify-between">
         <View className="gap-4">
           <Text style={{ fontSize: moderateScale(15), color: colors.text, marginBottom: verticalScale(8) }}>
@@ -119,6 +122,7 @@ export function FindAccountEmailScreen({
           </Pressable>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
