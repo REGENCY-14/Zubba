@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { usePaystack } from "react-native-paystack-webview";
+import { usePaystackCheckout } from "../context/PaystackCheckoutContext";
 
 import { paymentService } from "../api/paymentService";
 import type { RootStackParamList } from "../navigation/types";
@@ -21,7 +21,7 @@ import { useAppDispatch } from "./useAppDispatch";
 import type { PaymentChannel } from "../utils/paymentProviders";
 
 export function usePickupPaystackCheckout() {
-  const { popup } = usePaystack();
+  const { checkout } = usePaystackCheckout();
   const dispatch = useAppDispatch();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -115,62 +115,65 @@ export function usePickupPaystackCheckout() {
         const { reference } = initRes.data;
         setIsLoading(false);
 
-        popup.checkout({
-          email,
-          amount: totalAmount,
-          reference,
-          metadata: {
-            request_id: request.id,
-            phone: cleanedPhone,
-            provider,
-            custom_fields: [
-              {
-                display_name: "Pickup Request",
-                variable_name: "request_id",
-                value: request.id,
-              },
-              ...(cleanedPhone
-                ? [
-                    {
-                      display_name: "Payment Phone",
-                      variable_name: "payment_phone",
-                      value: cleanedPhone,
-                    },
-                  ]
-                : []),
-            ],
+        checkout(
+          {
+            email,
+            amount: totalAmount,
+            reference,
+            metadata: {
+              request_id: request.id,
+              phone: cleanedPhone,
+              provider,
+              custom_fields: [
+                {
+                  display_name: "Pickup Request",
+                  variable_name: "request_id",
+                  value: request.id,
+                },
+                ...(cleanedPhone
+                  ? [
+                      {
+                        display_name: "Payment Phone",
+                        variable_name: "payment_phone",
+                        value: cleanedPhone,
+                      },
+                    ]
+                  : []),
+              ],
+            },
+            onSuccess: async () => {
+              setIsLoading(true);
+              try {
+                await finalizePayment(
+                  reference,
+                  totalAmount,
+                  provider,
+                  cleanedPhone,
+                  paymentMethodLabel,
+                  request,
+                );
+              } catch (error) {
+                handleApiError(error);
+              } finally {
+                setIsLoading(false);
+              }
+            },
+            onCancel: () => {
+              toast.error("Payment cancelled");
+            },
+            onError: () => {
+              toast.error("Payment error. Please try again.");
+            },
           },
-          onSuccess: async () => {
-            setIsLoading(true);
-            try {
-              await finalizePayment(
-                reference,
-                totalAmount,
-                provider,
-                cleanedPhone,
-                paymentMethodLabel,
-                request,
-              );
-            } catch (error) {
-              handleApiError(error);
-            } finally {
-              setIsLoading(false);
-            }
-          },
-          onCancel: () => {
-            toast.error("Payment cancelled");
-          },
-          onError: () => {
-            toast.error("Payment error. Please try again.");
-          },
-        });
+          [channel],
+        );
       } catch (error) {
         handleApiError(error);
       } finally {
         setIsLoading(false);
       }
     },
-    [finalizePayment, popup],
+    [finalizePayment, checkout],
   );
 
   return { startCheckout, isLoading };

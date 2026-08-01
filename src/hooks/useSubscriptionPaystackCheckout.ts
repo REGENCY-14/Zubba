@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { usePaystack } from "react-native-paystack-webview";
+import { usePaystackCheckout } from "../context/PaystackCheckoutContext";
 
 import { paymentService } from "../api/paymentService";
 import { subscriptionService } from "../api/subscriptionService";
@@ -14,7 +14,7 @@ import { toast } from "./toast";
 import { useInvalidateSubscription } from "./useSubscription";
 
 export function useSubscriptionPaystackCheckout() {
-  const { popup } = usePaystack();
+  const { checkout } = usePaystackCheckout();
   const dispatch = useAppDispatch();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const customer = useAppSelector((state) => state.customer);
@@ -40,7 +40,7 @@ export function useSubscriptionPaystackCheckout() {
         const { reference } = initRes.data;
         setIsLoading(false);
 
-        popup.checkout({
+        checkout({
           email,
           amount,
           reference,
@@ -73,7 +73,7 @@ export function useSubscriptionPaystackCheckout() {
         setIsLoading(false);
       }
     },
-    [customer, dispatch, invalidateSubscription, navigation, popup],
+    [customer, dispatch, invalidateSubscription, navigation, checkout],
   );
 
   return { startCheckout, isLoading };

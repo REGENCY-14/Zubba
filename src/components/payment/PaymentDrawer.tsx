@@ -3,7 +3,7 @@ import { Modal, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PaymentOption } from "./PaymentOption";
 import { useTheme } from "../../context/ThemeContext";
-import { creditMethods, paymentMethods } from "../../constants/paymentMethods";
+import { paymentMethods, walletMethod } from "../../constants/paymentMethods";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -14,15 +14,19 @@ type Props = {
   onClose: () => void;
   onContinue: (method: PaymentMethodId) => void;
   initialMethod?: PaymentMethodId;
-  isCreditPage?: boolean;
+  /** Only pass true when the user is paying for something (not topping up/withdrawing the wallet itself). */
+  allowWallet?: boolean;
+  /** Zubba wallet only ever shows when allowWallet AND the customer is premium. */
+  isPremium?: boolean;
 };
 
 export function PaymentMethodDrawer({
   visible,
   onClose,
   onContinue,
-  initialMethod = "wallet",
-  isCreditPage = false,
+  initialMethod = "momo",
+  allowWallet = false,
+  isPremium = false,
 }: Props) {
   const [selectedMethod, setSelectedMethod] =
     useState<PaymentMethodId>(initialMethod);
@@ -32,7 +36,8 @@ export function PaymentMethodDrawer({
   useEffect(() => {
     if (visible) setSelectedMethod(initialMethod);
   }, [visible, initialMethod]);
-  const itemList = isCreditPage ? paymentMethods : creditMethods;
+  const itemList =
+    allowWallet && isPremium ? [...paymentMethods, walletMethod] : paymentMethods;
 
   return (
     <Modal

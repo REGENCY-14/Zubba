@@ -16,8 +16,8 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 
-import { PaystackProvider } from "react-native-paystack-webview";
 import * as SplashScreen from "expo-splash-screen";
+import { PaystackCheckoutProvider } from "./src/context/PaystackCheckoutContext";
 
 import { store } from "./src/store";
 import { RootNavigator } from "./src/navigation/RootNavigator";
@@ -89,14 +89,13 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <PaystackProvider
+      <PaystackCheckoutProvider
         publicKey={env.paystackPublicKey}
         currency="GHS"
-        defaultChannels={["mobile_money", "card"]}
         debug={__DEV__}
       >
         <AppContent />
-      </PaystackProvider>
+      </PaystackCheckoutProvider>
     </ThemeProvider>
   );
 }

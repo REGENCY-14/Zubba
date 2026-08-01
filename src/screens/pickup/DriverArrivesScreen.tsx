@@ -24,6 +24,7 @@ export function DriverArrivesScreen({
 }: RootStackScreenProps<"DriverArrives">) {
   const { colors } = useTheme();
   const request = useAppSelector((state) => state.request)
+  const customer = useAppSelector((state) => state.customer);
   const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
 
   return (
@@ -156,7 +157,8 @@ export function DriverArrivesScreen({
         <PaymentMethodDrawer
           visible={showPaymentDrawer}
           onClose={() => setShowPaymentDrawer(false)}
-          isCreditPage={true}
+          allowWallet
+          isPremium={customer.is_premium}
           onContinue={(method) => {
             setShowPaymentDrawer(false);
             if (isWalletMethod(method)) {
