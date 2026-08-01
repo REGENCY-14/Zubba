@@ -36,6 +36,7 @@ import {
   MONTH_NAMES,
   PERIODS,
   SERVICE_FEE,
+  toLocalDateString,
 } from "../../constants/scheduleConstants";
 
 const avatar = require("../../../assets/avatar.jpg");
@@ -209,8 +210,6 @@ export function ScheduleFormDrawer({
     setIsSubmitting(true);
 
     try {
-      const scheduledDate = new Date(calendarYear, calendarMonth, selectedDate);
-
       const payload = {
         driver_id: selectedDriver,
         pickup_address: location,
@@ -221,7 +220,7 @@ export function ScheduleFormDrawer({
         phone: phone || null,
         note: note || null,
         frequency: frequencyMap[selectedFrequency] || "one_time",
-        scheduled_date: scheduledDate.toISOString().split("T")[0],
+        scheduled_date: toLocalDateString(calendarYear, calendarMonth, selectedDate),
         start_time: startTime || null,
         end_time: endTime || null,
         estimated_price: getEstimatedPrice(),
@@ -253,8 +252,6 @@ export function ScheduleFormDrawer({
     setIsSubmitting(true);
 
     try {
-      const scheduledDate = new Date(calendarYear, calendarMonth, selectedDate);
-
       const payload = {
         driver_id: selectedDriver,
         pickup_address: location,
@@ -265,7 +262,7 @@ export function ScheduleFormDrawer({
         phone: phone || null,
         note: note || null,
         frequency: frequencyMap[selectedFrequency] || "one_time",
-        scheduled_date: scheduledDate.toISOString().split("T")[0],
+        scheduled_date: toLocalDateString(calendarYear, calendarMonth, selectedDate),
         start_time: startTime || null,
         end_time: endTime || null,
         estimated_price: getEstimatedPrice(),

@@ -36,12 +36,12 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
     <View className="flex-1 h-44">
       <View
         pointerEvents="none"
-        className="absolute top-11 left-0.5 right-0.5 h-11 bg-[#F1F5F9] rounded-[14px]"
+        className="absolute top-[66px] left-0.5 right-0.5 h-11 bg-[#F1F5F9] rounded-[14px]"
       />
       <ScrollView
         ref={scrollRef}
         className="h-44 bg-transparent"
-        contentContainerClassName="pt-11 pb-22"
+        contentContainerClassName="pt-[66px] pb-[66px]"
         snapToInterval={TIME_PICKER_ITEM_H}
         decelerationRate="fast"
         showsVerticalScrollIndicator={false}
