@@ -5,10 +5,9 @@ import { RootStackScreenProps } from "../../navigation/types";
 import { resolveInitialRoute } from "../../utils/resolveInitialRoute";
 
 const zubbaLogo = require("../../../assets/zubba-icon.png");
-const splashScreenLayer = require("../../../assets/splash-screen-layer.png");
 
 export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const [ready, setReady] = useState(false);
 
   const logoSize = Math.min(Math.max(width * 0.55, 180), 320);
@@ -17,7 +16,7 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
     let mounted = true;
 
     const loadAssets = async () => {
-      await Asset.loadAsync([zubbaLogo, splashScreenLayer]);
+      await Asset.loadAsync([zubbaLogo]);
       if (!mounted) return;
 
       setReady(true);
@@ -38,26 +37,15 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
   }, [navigation]);
 
   if (!ready) {
-    return <View className="flex-1 bg-[#2EA043]" />;
+    return <View className="flex-1 bg-white" />;
   }
 
   return (
-    <View className="flex-1 items-center justify-center bg-[#2EA043]">
-      <View
-        className="absolute left-0 right-0 top-0"
-        style={{ height: height * 0.4 }}
-      >
-        <Image
-          source={splashScreenLayer}
-          resizeMode="cover"
-          className="h-full w-full opacity-75"
-        />
-      </View>
-
+    <View className="flex-1 items-center justify-center bg-white">
       <Image
         source={zubbaLogo}
         resizeMode="contain"
-        tintColor="#FFFFFF"
+        tintColor="#31973D"
         style={{
           width: logoSize,
           height: logoSize,

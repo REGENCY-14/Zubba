@@ -722,7 +722,6 @@ export function ZubbaWalletScreen({
       <PaymentMethodDrawer
         visible={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        isCreditPage={activeSheet !== "withdraw"}
         onContinue={(method: PaymentMethodId) => {
           const dest =
             activeSheet === "withdraw" ? "Withdraw" : "CreditAccount";

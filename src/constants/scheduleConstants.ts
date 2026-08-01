@@ -48,6 +48,19 @@ export const reverseFrequencyMap: Record<string, string> = {
   monthly: "Monthly",
 };
 
+export function toLocalDateString(year: number, month: number, day: number) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+// `new Date("YYYY-MM-DD")` parses the string as UTC midnight, which then reads
+// back as the wrong calendar day through local getters (getDate/getMonth/etc.)
+// once the device timezone is behind UTC. Parsing the components directly and
+// building a local-midnight Date keeps the calendar day intact everywhere.
+export function parseLocalDateString(dateStr: string) {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function getCalendarDays(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();

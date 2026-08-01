@@ -3,7 +3,10 @@ import {
   scheduleService,
   Schedule as ApiSchedule,
 } from "../api/scheduleService";
-import { reverseFrequencyMap } from "../constants/scheduleConstants";
+import {
+  parseLocalDateString,
+  reverseFrequencyMap,
+} from "../constants/scheduleConstants";
 
 export type ScheduleItem = {
   id: string;
@@ -30,7 +33,7 @@ export const scheduleKeys = {
 };
 
 export function mapApiScheduleToItem(s: ApiSchedule): ScheduleItem {
-  const date = new Date(s.scheduled_date);
+  const date = parseLocalDateString(s.scheduled_date);
 
   let status: ScheduleItem["status"] = "scheduled";
   if (s.status === "completed") status = "completed";

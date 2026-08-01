@@ -1,4 +1,3 @@
-import { creditMethods, paymentMethods } from "../constants/paymentMethods";
 import type { CustomerRequestItem } from "../types/request.types";
 
 export type PaymentMethodId =
@@ -97,6 +96,3 @@ export function getPaymentDetailsFromRequest(item: CustomerRequestItem) {
     paymentDate: txn?.paid_at ?? item.payment_date ?? item.completed_at ?? item.created_at,
   };
 }
-
-export const pickupPaymentMethods = paymentMethods;
-export const creditPaymentMethods = creditMethods;

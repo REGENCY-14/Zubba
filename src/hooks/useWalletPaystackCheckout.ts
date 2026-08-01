@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { usePaystack } from "react-native-paystack-webview";
+import { usePaystackCheckout } from "../context/PaystackCheckoutContext";
 
 import { walletService } from "../api/walletService";
 import type { RootStackParamList } from "../navigation/types";
@@ -11,7 +11,7 @@ import type { PaymentChannel } from "../utils/paymentProviders";
 import { toast } from "./toast";
 
 export function useWalletPaystackCheckout() {
-  const { popup } = usePaystack();
+  const { checkout } = usePaystackCheckout();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [isLoading, setIsLoading] = useState(false);
@@ -64,40 +64,43 @@ export function useWalletPaystackCheckout() {
         const { reference } = initRes.data;
         setIsLoading(false);
 
-        popup.checkout({
-          email,
-          amount,
-          reference,
-          metadata: {
-            purpose: "wallet_deposit",
-            phone: cleanedPhone,
-            provider,
+        checkout(
+          {
+            email,
+            amount,
+            reference,
+            metadata: {
+              purpose: "wallet_deposit",
+              phone: cleanedPhone,
+              provider,
+            },
+            onSuccess: async () => {
+              setIsLoading(true);
+              try {
+                await waitForPaymentSuccess(reference);
+                navigation.replace("ZubbaWallet", { credited: true });
+              } catch (error) {
+                handleApiError(error);
+              } finally {
+                setIsLoading(false);
+              }
+            },
+            onCancel: () => {
+              toast.error("Payment cancelled");
+            },
+            onError: () => {
+              toast.error("Payment error. Please try again.");
+            },
           },
-          onSuccess: async () => {
-            setIsLoading(true);
-            try {
-              await waitForPaymentSuccess(reference);
-              navigation.replace("ZubbaWallet", { credited: true });
-            } catch (error) {
-              handleApiError(error);
-            } finally {
-              setIsLoading(false);
-            }
-          },
-          onCancel: () => {
-            toast.error("Payment cancelled");
-          },
-          onError: () => {
-            toast.error("Payment error. Please try again.");
-          },
-        });
+          [channel],
+        );
       } catch (error) {
         handleApiError(error);
       } finally {
         setIsLoading(false);
       }
     },
-    [navigation, popup],
+    [navigation, checkout],
   );
 
   return { startDeposit, isLoading };
