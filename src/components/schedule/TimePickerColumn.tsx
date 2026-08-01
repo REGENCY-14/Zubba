@@ -30,6 +30,14 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
     const idx = getIdx(y);
     indexRef.current = idx;
     setActiveIndex(idx);
+
+    // Android's snapToInterval can rest a few pixels off the exact snap
+    // point, which would visually decouple the highlighted row from the
+    // value it represents. Force an exact re-snap so the two always match.
+    const snappedY = idx * TIME_PICKER_ITEM_H;
+    if (snappedY !== y) {
+      scrollRef.current?.scrollTo({ y: snappedY, animated: true });
+    }
   };
 
   return (
