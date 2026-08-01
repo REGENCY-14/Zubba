@@ -1,34 +1,26 @@
 import type { CustomerRequestItem } from "../types/request.types";
 
-export type PaymentMethodId =
-  | "wallet"
-  | "momo"
-  | "telecel"
-  | "airtel"
-  | "credit_card";
+export type PaymentMethodId = "wallet" | "mobile_money" | "credit_card";
 
 export type PaymentChannel = "mobile_money" | "card";
 
 const METHOD_LABELS: Record<PaymentMethodId, string> = {
   wallet: "Zubba Wallet",
-  momo: "MTN MoMo",
-  telecel: "Telecel Cash",
-  airtel: "Airtel Money",
+  mobile_money: "Mobile Money",
   credit_card: "Credit Card",
 };
 
+// Paystack's own checkout UI handles picking the specific mobile money
+// network (MTN/Vodafone/AirtelTigo) -- the app only needs to tell it the
+// channel (mobile_money vs card), not a specific provider upfront.
 export function mapMethodToProvider(method: PaymentMethodId): string {
   switch (method) {
-    case "momo":
-      return "mtn";
-    case "telecel":
-      return "telecel";
-    case "airtel":
-      return "airtel";
     case "credit_card":
       return "card";
+    case "wallet":
+      return "wallet";
     default:
-      return "mtn";
+      return "mobile_money";
   }
 }
 

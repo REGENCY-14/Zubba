@@ -28,54 +28,6 @@ import {
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
 
-type PaymentKey = "mtn" | "telecel" | "airtel" | "card";
-
-const PAYMENT_METHODS: {
-  key: PaymentKey;
-  name: string;
-  badgeBg: string;
-  badgeLabel: string;
-  badgeLabelColor: string;
-  badgeFontWeight: "600" | "700";
-  badgeIcon?: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
-  badgeIconColor?: string;
-}[] = [
-  {
-    key: "mtn",
-    name: "MTN MoMo",
-    badgeBg: "#FFCC00",
-    badgeLabel: "MTN",
-    badgeLabelColor: "#000000",
-    badgeFontWeight: "600",
-  },
-  {
-    key: "telecel",
-    name: "Telecel Cash",
-    badgeBg: "#DC2626",
-    badgeLabel: "T.cash",
-    badgeLabelColor: "#FFFFFF",
-    badgeFontWeight: "700",
-  },
-  {
-    key: "airtel",
-    name: "Airtel Money",
-    badgeBg: "#FFFFFF",
-    badgeLabel: "Airtel",
-    badgeLabelColor: "#EF0000",
-    badgeFontWeight: "700",
-  },
-  {
-    key: "card",
-    name: "Credit Card",
-    badgeBg: "#FFF7ED",
-    badgeLabel: "",
-    badgeLabelColor: "#000000",
-    badgeFontWeight: "600",
-    badgeIcon: "credit-card-outline",
-    badgeIconColor: "#31973D",
-  },
-];
-
 type TxStatus = "SUCCESS" | "CREDITED" | "PENDING" | "FAILED";
 
 type Transaction = {

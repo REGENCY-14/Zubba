@@ -6,8 +6,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { paymentMethods, walletMethod } from "../../constants/paymentMethods";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel" | "credit_card";
+import type { PaymentMethodId } from "../../utils/paymentProviders";
 
 type Props = {
   visible: boolean;
@@ -24,7 +23,7 @@ export function PaymentMethodDrawer({
   visible,
   onClose,
   onContinue,
-  initialMethod = "momo",
+  initialMethod = "mobile_money",
   allowWallet = false,
   isPremium = false,
 }: Props) {
@@ -82,11 +81,8 @@ export function PaymentMethodDrawer({
                   key={method.id}
                   selected={selectedMethod === method.id}
                   title={method.title}
-                  badge={method.badge}
-                  image={method.image}
                   iconName={method.iconName}
                   badgeBg={method.badgeBg}
-                  badgeTextColor={method.badgeTextColor}
                   showBorder={index !== itemList.length - 1}
                   onPress={() => setSelectedMethod(method.id)}
                 />
