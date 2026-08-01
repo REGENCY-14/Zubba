@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View, ActivityIndicator } from "react-native";
+import { Pressable, ScrollView, Text, View, ActivityIndicator, Platform, UIManager, LayoutAnimation } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,6 +9,7 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { deviceService, DeviceSession } from "../../api/deviceService";
+import { toast } from "../../hooks/toast";
 
 type DeviceCardProps = {
   iconName: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -196,6 +197,11 @@ function InfoCard({
   );
 }
 
+
+if (Platform.OS === "android") {
+  UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
+
 export function ActiveSessionScreen({
   navigation,
 }: RootStackScreenProps<"ActiveSession">) {
@@ -219,10 +225,13 @@ export function ActiveSessionScreen({
   }, []);
 
   const handleRevoke = async (sessionId: string) => {
-    setRevokingId(sessionId);
+  setRevokingId(sessionId);
     try {
       await deviceService.revokeSession(sessionId);
-      await loadSessions();
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+    } catch (err) {
+      toast.error("Couldn't revoke that device. Try again.")
     } finally {
       setRevokingId(null);
     }
@@ -231,7 +240,7 @@ export function ActiveSessionScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar title="Active Sessions" navigation={navigation} />

@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Zubba Frontend",
+    "name": "Zubba Customer",
     "slug": "zubba-frontend",
     "owner": "andyaa",
-    "scheme": "zubbafrontend",
+    "scheme": "com.zubba.app",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -15,7 +15,8 @@
       "bundleIdentifier": "com.zubbadevs.zubba"
     },
     "android": {
-      "package": "com.zubba.app"
+      "package": "com.zubba.app",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {},
     "plugins": [

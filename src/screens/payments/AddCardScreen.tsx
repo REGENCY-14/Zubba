@@ -9,16 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { upgradeToPremium } from '../../slices/customer/customerSlice';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
-
-const PLAN_TOTALS = ['800/year', '50/month', '550/year'] as const;
 
 function LockIcon() {
   return (
@@ -45,17 +40,23 @@ function Toggle({ value, onValueChange }: ToggleProps) {
 
 export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCard'>) {
   const { colors } = useTheme();
-  const dispatch = useAppDispatch();
   const planIndex = route.params?.planIndex ?? 1;
   const [cardName, setCardName] = React.useState('');
   const [cardNumber, setCardNumber] = React.useState('');
   const [cvv, setCvv] = React.useState('');
   const [expiry, setExpiry] = React.useState('');
   const [saveCard, setSaveCard] = React.useState(true);
-  const [showSuccess, setShowSuccess] = React.useState(false);
 
   const displayName = cardName.trim() || 'Card Holder';
   const displayNumber = cardNumber || '•••• •••••• ••••••';
+
+  const handleProceed = () => {
+    if (saveCard) {
+      navigation.navigate('SavedCards');
+      return;
+    }
+    navigation.navigate('ConfirmSubscription', { planIndex });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
@@ -172,11 +173,11 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
             <View className="flex-row justify-between items-center gap-[10px]">
               <View>
                 <Text style={{ fontSize: moderateScale(13), fontWeight: '500', color: colors.text, lineHeight: moderateScale(24) }}>Total</Text>
-                <Text style={{ fontSize: moderateScale(20), fontWeight: '700', color: colors.text, lineHeight: moderateScale(24) }}>{PLAN_TOTALS[planIndex]}</Text>
+                <Text style={{ fontSize: moderateScale(20), fontWeight: '700', color: colors.text, lineHeight: moderateScale(24) }}>See plan summary</Text>
               </View>
               <Pressable
                 className="flex-row items-center justify-center gap-2 h-12 flex-1 max-w-[210px] bg-[#31973D] rounded-full px-4"
-                onPress={() => saveCard ? navigation.navigate('SavedCards') : setShowSuccess(true)}
+                onPress={handleProceed}
               >
                 <LockIcon />
                 <Text className="text-sm text-white leading-5">Proceed to pay</Text>
@@ -186,57 +187,6 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
         </ScrollView>
       </View>
       </KeyboardAvoidingView>
-
-      {/* ── Celebration overlay ── replaces the old Modal ── */}
-      {showSuccess && (
-        <View style={StyleSheet.absoluteFillObject}>
-          {/* Layer 1: blur the screen behind */}
-          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFillObject} />
-
-          {/* Layer 2: frosted white tint (rgba(255,255,255,0.3) from Figma) */}
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
-
-          {/* Layer 3: content */}
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: scale(24), gap: moderateScale(32) }}>
-            <View style={{ alignItems: 'center', gap: moderateScale(12) }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(36), lineHeight: moderateScale(44), letterSpacing: -1.08, textAlign: 'center', color: '#0F1621' }}>
-                Successful
-              </Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(16), lineHeight: moderateScale(20), letterSpacing: -0.32, textAlign: 'center', color: '#1F2A33' }}>
-                Enjoy double Eco-Points, priority support, and a cleaner tomorrow.
-              </Text>
-            </View>
-
-            <View style={{ width: '100%', gap: moderateScale(12) }}>
-              <Pressable
-                style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
-                onPress={() => {
-                  dispatch(upgradeToPremium());
-                  setShowSuccess(false);
-                  navigation.navigate('Home');
-                }}
-              >
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: '#FFFFFF' }}>
-                  Proceed to Premium
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={{ height: verticalScale(48), backgroundColor: '#FFFFFF', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}
-                onPress={() => {
-                  dispatch(upgradeToPremium());
-                  setShowSuccess(false);
-                  navigation.navigate('Home');
-                }}
-              >
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), color: '#1F2A33' }}>
-                  Set Package expiry alert
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      )}
     </SafeAreaView>
   );
 }

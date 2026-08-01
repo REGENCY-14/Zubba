@@ -1,16 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, View, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useTheme } from '../../context/ThemeContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { cancelPremium, setCustomer } from '../../slices/customer/customerSlice';
+import { cancelPremium, upgradeToPremium } from '../../slices/customer/customerSlice';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
-import { subscriptionService } from '../../api/subscriptionService';
 import { toast } from '../../hooks/toast';
+import { useMySubscription, useNavigateToChoosePlan, usePrefetchSubscriptionPlans } from '../../hooks/useSubscription';
+import { SubscriptionSkeleton } from '../../components/payments/SubscriptionSkeleton';
 
 const GOLD_FEATURES = [
   { icon: 'flash-outline', label: 'Double Eco-Points on every pickup' },
@@ -19,92 +20,40 @@ const GOLD_FEATURES = [
   { icon: 'truck-fast-outline', label: 'Faster driver matching' },
 ] as const;
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-
 export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'ManageSubscription'>) {
   const { colors } = useTheme();
   const dispatch = useAppDispatch();
   const customer = useAppSelector((state) => state.customer);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [planLabel, setPlanLabel] = useState('Gold Plan');
-  const [planPrice, setPlanPrice] = useState('GHS 50.00');
-  const [isActive, setIsActive] = useState(customer.is_premium);
+
+  const { data: subscription, isPending } = useMySubscription(customer.is_premium);
+  const prefetchPlans = usePrefetchSubscriptionPlans();
+  const navigateToChoosePlan = useNavigateToChoosePlan();
+  const showSkeleton = isPending && subscription == null;
+  const isActive = subscription?.isActive ?? customer.is_premium;
+  const planLabel = subscription?.planLabel ?? 'Gold Plan';
+  const planPrice = subscription?.planPrice ?? 'GHS 50.00';
+  const renewalDate = subscription?.renewalDate ?? '';
 
   useEffect(() => {
-    subscriptionService.getMySubscription()
-      .then((res) => {
-        const sub = res.data?.subscription as {
-          product_id?: string;
-          isActive?: boolean;
-          expires_at?: string;
-        } | null;
-        if (sub?.isActive) {
-          setIsActive(true);
-          dispatch(setCustomer({ ...customer, is_premium: true }));
-          if (sub.product_id?.includes('family')) {
-            setPlanLabel('Family Plan');
-            setPlanPrice('GHS 800.00');
-          } else if (sub.product_id?.includes('yearly')) {
-            setPlanLabel('Yearly Plan');
-            setPlanPrice('GHS 550.00');
-          } else {
-            setPlanLabel('Gold Plan');
-            setPlanPrice('GHS 50.00');
-          }
-        } else {
-          setIsActive(customer.is_premium);
-        }
-      })
-      .catch(() => {
-        setIsActive(customer.is_premium);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    prefetchPlans();
+  }, [prefetchPlans]);
 
-  const renewalDate = useMemo(() => {
-    const next = new Date();
-    next.setMonth(next.getMonth() + 1);
-    return formatDate(next);
-  }, []);
+  useEffect(() => {
+    if (subscription?.isActive && !customer.is_premium) {
+      dispatch(upgradeToPremium());
+    }
+  }, [subscription?.isActive, customer.is_premium, dispatch]);
 
   const handleConfirmCancel = () => {
     setCancelModalOpen(false);
     dispatch(cancelPremium());
-    toast.info('Manage cancellation in Google Play Store.');
+    toast.info('Manage cancellation via Paystack or contact support.');
     navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   };
 
-  if (loading) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color="#31973D" />
-      </SafeAreaView>
-    );
-  }
-
-  if (!isActive) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: moderateScale(24), gap: verticalScale(16) }}>
-          <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(16), color: colors.text, textAlign: 'center' }}>
-            You do not have an active Gold subscription.
-          </Text>
-          <Pressable
-            onPress={() => navigation.navigate('ChoosePlan')}
-            className="h-12 bg-[#31973D] rounded-full items-center justify-center px-8"
-          >
-            <Text className="text-white text-sm">View plans</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right', 'bottom']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 
         {/* Header */}
@@ -122,127 +71,140 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: scale(16), paddingTop: verticalScale(12), paddingBottom: verticalScale(40), gap: verticalScale(20) }}
         >
-          {/* Current plan */}
-          <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(16), overflow: 'hidden' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
-                <MaterialCommunityIcons name="crown" size={moderateScale(20)} color="#FFE088" />
-                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(18), fontWeight: '700', color: '#FFFFFF' }}>{planLabel}</Text>
-              </View>
-              <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: scale(10), paddingVertical: verticalScale(4) }}>
-                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(11), fontWeight: '600', color: '#FFFFFF' }}>ACTIVE</Text>
-              </View>
+          {showSkeleton ? (
+            <SubscriptionSkeleton />
+          ) : !isActive ? (
+            <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: verticalScale(48), gap: verticalScale(16) }}>
+              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(16), color: colors.text, textAlign: 'center' }}>
+                You do not have an active Gold subscription.
+              </Text>
+              <Pressable
+                onPress={navigateToChoosePlan}
+                className="h-12 bg-[#31973D] rounded-full items-center justify-center px-8"
+              >
+                <Text className="text-white text-sm">View plans</Text>
+              </Pressable>
             </View>
+          ) : (
+            <>
+              <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(16), overflow: 'hidden' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                    <MaterialCommunityIcons name="crown" size={moderateScale(20)} color="#FFE088" />
+                    <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(18), fontWeight: '700', color: '#FFFFFF' }}>{planLabel}</Text>
+                  </View>
+                  <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: scale(10), paddingVertical: verticalScale(4) }}>
+                    <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(11), fontWeight: '600', color: '#FFFFFF' }}>ACTIVE</Text>
+                  </View>
+                </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: scale(4) }}>
-              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(28), fontWeight: '700', color: '#FFFFFF' }}>{planPrice}</Text>
-              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: 'rgba(255,255,255,0.85)' }}>/month</Text>
-            </View>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: scale(4) }}>
+                  <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(28), fontWeight: '700', color: '#FFFFFF' }}>{planPrice}</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: 'rgba(255,255,255,0.85)' }}>/month</Text>
+                </View>
 
-            <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.2)' }} />
+                <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.2)' }} />
 
-            <View style={{ gap: verticalScale(4) }}>
-              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), color: 'rgba(255,255,255,0.85)' }}>Next billing date</Text>
-              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>{renewalDate}</Text>
-            </View>
-          </View>
-
-          {/* Payment method */}
-          <View style={{ gap: verticalScale(8) }}>
-            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
-              Payment Method
-            </Text>
-            <Pressable
-              onPress={() => navigation.navigate('SavedCards')}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: scale(12),
-                backgroundColor: colors.card,
-                borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: moderateScale(16),
-                padding: moderateScale(16),
-              }}
-            >
-              <View style={{ width: moderateScale(40), height: moderateScale(40), borderRadius: moderateScale(10), backgroundColor: colors.iconBg, alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialCommunityIcons name="wallet-outline" size={moderateScale(20)} color={colors.iconColor} />
+                <View style={{ gap: verticalScale(4) }}>
+                  <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), color: 'rgba(255,255,255,0.85)' }}>Next billing date</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>{renewalDate}</Text>
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text }}>Zubba Wallet</Text>
-                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), color: colors.textSub }}>Charged automatically each cycle</Text>
-              </View>
-              <MaterialCommunityIcons name="chevron-right" size={moderateScale(20)} color={colors.textMuted} />
-            </Pressable>
-          </View>
 
-          {/* Extra features */}
-          <View style={{ gap: verticalScale(8) }}>
-            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
-              Your Gold Benefits
-            </Text>
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: moderateScale(16),
-                overflow: 'hidden',
-              }}
-            >
-              {GOLD_FEATURES.map((feature, index) => (
-                <View
-                  key={feature.label}
+              <View style={{ gap: verticalScale(8) }}>
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
+                  Payment Method
+                </Text>
+                <Pressable
+                  onPress={() => navigation.navigate('SavedCards')}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: scale(12),
+                    backgroundColor: colors.card,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: moderateScale(16),
                     padding: moderateScale(16),
-                    borderBottomWidth: index === GOLD_FEATURES.length - 1 ? 0 : 1,
-                    borderBottomColor: colors.borderLight,
                   }}
                 >
-                  <View style={{ width: moderateScale(32), height: moderateScale(32), borderRadius: moderateScale(16), backgroundColor: 'rgba(49,151,61,0.12)', alignItems: 'center', justifyContent: 'center' }}>
-                    <MaterialCommunityIcons name={feature.icon} size={moderateScale(16)} color="#31973D" />
+                  <View style={{ width: moderateScale(40), height: moderateScale(40), borderRadius: moderateScale(10), backgroundColor: colors.iconBg, alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialCommunityIcons name="wallet-outline" size={moderateScale(20)} color={colors.iconColor} />
                   </View>
-                  <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, flex: 1 }}>{feature.label}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text }}>Zubba Wallet</Text>
+                    <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), color: colors.textSub }}>Charged automatically each cycle</Text>
+                  </View>
+                  <MaterialCommunityIcons name="chevron-right" size={moderateScale(20)} color={colors.textMuted} />
+                </Pressable>
+              </View>
+
+              <View style={{ gap: verticalScale(8) }}>
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
+                  Your Gold Benefits
+                </Text>
+                <View
+                  style={{
+                    backgroundColor: colors.card,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: moderateScale(16),
+                    overflow: 'hidden',
+                  }}
+                >
+                  {GOLD_FEATURES.map((feature, index) => (
+                    <View
+                      key={feature.label}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: scale(12),
+                        padding: moderateScale(16),
+                        borderBottomWidth: index === GOLD_FEATURES.length - 1 ? 0 : 1,
+                        borderBottomColor: colors.borderLight,
+                      }}
+                    >
+                      <View style={{ width: moderateScale(32), height: moderateScale(32), borderRadius: moderateScale(16), backgroundColor: 'rgba(49,151,61,0.12)', alignItems: 'center', justifyContent: 'center' }}>
+                        <MaterialCommunityIcons name={feature.icon} size={moderateScale(16)} color="#31973D" />
+                      </View>
+                      <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, flex: 1 }}>{feature.label}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
-          </View>
+              </View>
 
-          {/* Change plan */}
-          <Pressable
-            onPress={() => navigation.navigate('ChoosePlan')}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: verticalScale(52),
-              borderRadius: 999,
-              backgroundColor: '#31973D',
-            }}
-          >
-            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>
-              Change Plan
-            </Text>
-          </Pressable>
+              <Pressable
+                onPress={navigateToChoosePlan}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: verticalScale(52),
+                  borderRadius: 999,
+                  backgroundColor: '#31973D',
+                }}
+              >
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>
+                  Change Plan
+                </Text>
+              </Pressable>
 
-          {/* Cancel subscription */}
-          <Pressable
-            onPress={() => setCancelModalOpen(true)}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: verticalScale(52),
-              borderRadius: 999,
-              borderWidth: 1,
-              borderColor: '#EF4444',
-            }}
-          >
-            <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#EF4444' }}>
-              Cancel Subscription
-            </Text>
-          </Pressable>
+              <Pressable
+                onPress={() => setCancelModalOpen(true)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: verticalScale(52),
+                  borderRadius: 999,
+                  borderWidth: 1,
+                  borderColor: '#EF4444',
+                }}
+              >
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#EF4444' }}>
+                  Cancel Subscription
+                </Text>
+              </Pressable>
+            </>
+          )}
         </ScrollView>
       </View>
 
@@ -257,7 +219,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
               Cancel Gold subscription?
             </Text>
             <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.textSub }}>
-              You'll keep Gold benefits until {renewalDate}, then your account moves to the free plan — no more double Eco-Points, priority support, or scheduled pickups.
+              You'll keep Gold benefits until {renewalDate || 'your next billing date'}, then your account moves to the free plan — no more double Eco-Points, priority support, or scheduled pickups.
             </Text>
 
             <Pressable

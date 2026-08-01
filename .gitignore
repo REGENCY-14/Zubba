@@ -9,3 +9,6 @@ android
 ios
 web-build
 .env
+credentials.json
+google-services.json
+**/google-services.json

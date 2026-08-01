@@ -16,64 +16,41 @@ import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import CustomAppBar from '../../components/common/CustomAppBar';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
+import { type SubscriptionPlan } from '../../api/subscriptionService';
+import { ChoosePlanSkeleton } from '../../components/payments/ChoosePlanSkeleton';
+import { useSubscriptionPlans } from '../../hooks/useSubscription';
+
+const ACCENT_COLORS = ['#FE8235', '#31973D', '#2F91FB'];
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const CARD_WIDTH = SCREEN_WIDTH - 48;
 const CARD_GAP = 16;
 
-const PLANS = [
-  {
-    label: 'FAMILY',
-    trial: '7-Day Free Trial',
-    saveLabel: 'Save 10%',
-    price: 'GHS 800.00',
-    pricePer: '/year',
-    billing: 'Billed annually after trial',
-    ctaSub: 'after 7 days Ghs 800/year',
-    activeColor: '#FE8235',
-    inactiveColor: 'rgba(254, 130, 53, 0.3)',
-    accentColor: '#FE8235',
-  },
-  {
-    label: 'MONTHLY',
-    trial: '7-Day Free Trial',
-    saveLabel: 'Unlock your gold',
-    price: 'GHS 50.00',
-    pricePer: '/month',
-    billing: 'Billed monthly after trial',
-    ctaSub: 'after 7 days Ghs 50/month',
-    activeColor: '#31973D',
-    inactiveColor: 'rgba(49, 151, 61, 0.3)',
-    accentColor: '#16CE2C',
-  },
-  {
-    label: 'YEARLY',
-    trial: '7-Day Free Trial',
-    saveLabel: 'Save 25%',
-    price: 'GHS 550.00',
-    pricePer: '/year',
-    billing: 'Billed annually after trial',
-    ctaSub: 'after 7 days Ghs 550/year',
-    activeColor: '#2F91FB',
-    inactiveColor: 'rgba(47, 145, 251, 0.3)',
-    accentColor: '#2F91FB',
-  },
-] as const;
-
-const FEATURES = [
-  { label: 'Advanced Scheduling', free: false, gold: true },
-  { label: 'Double Eco-Points', free: false, gold: true },
-  { label: 'Priority 24/7 Support', free: false, gold: true },
-  { label: 'Faster matching', free: false, gold: true },
-  { label: 'Basic pickup', free: true, gold: true },
-  { label: 'Community Support', free: true, gold: true },
-];
-
 const INACTIVE_SHRINK = 52;
 
+function buildPlanFeatureRows(plans: SubscriptionPlan[], activePlanIndex: number) {
+  if (!plans.length) return [];
+
+  const planFeatures = plans.map((plan) => new Set(plan.description?.features ?? []));
+  const allFeatures = [
+    ...new Set(plans.flatMap((plan) => plan.description?.features ?? [])),
+  ];
+  const commonFeatures = new Set(
+    allFeatures.filter((feature) => planFeatures.every((set) => set.has(feature))),
+  );
+  const activeFeatures = planFeatures[activePlanIndex] ?? new Set<string>();
+
+  return allFeatures.map((label) => ({
+    label,
+    free: commonFeatures.has(label),
+    gold: activeFeatures.has(label),
+  }));
+}
+
 type PlanCardProps = {
-  plan: (typeof PLANS)[number];
+  plan: SubscriptionPlan;
+  planIndex: number;
   isActive: boolean;
   recommended?: boolean;
   cardHeight: Animated.AnimatedInterpolation<number>;
@@ -81,7 +58,12 @@ type PlanCardProps = {
   onPress: () => void;
 };
 
-function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPress }: PlanCardProps) {
+function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarginTop, onPress }: PlanCardProps) {
+  const activeColor = ACCENT_COLORS[planIndex % ACCENT_COLORS.length];
+  const inactiveColor = `${activeColor}4D`;
+  const price = `GHS ${Number(plan.amount).toFixed(2)}`;
+  const pricePer = `/${plan.interval}`;
+
   return (
     <Animated.View style={{ width: CARD_WIDTH, height: cardHeight, marginTop: cardMarginTop }}>
       {recommended && (
@@ -97,24 +79,24 @@ function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPr
       <View
         className="flex-1 p-8 gap-6 justify-between"
         style={{
-          backgroundColor: isActive ? plan.activeColor : plan.inactiveColor,
+          backgroundColor: isActive ? activeColor : inactiveColor,
           borderTopLeftRadius: moderateScale(32),
           borderTopRightRadius: moderateScale(32),
         }}
       >
-
       <View className="gap-1">
-        <Text className="text-2xl font-extrabold italic uppercase text-white" style={{ letterSpacing: -1.2 }}>{plan.label}</Text>
-        <Text className="text-sm leading-5 text-white">{plan.trial}</Text>
+        <Text className="text-2xl font-extrabold italic uppercase text-white" style={{ letterSpacing: -1.2 }}>{plan.name}</Text>
+        <Text className="text-sm leading-5 text-white">{plan.description?.features?.[0] ?? 'Premium access'}</Text>
       </View>
 
       <View className="gap-1">
-        <Text className="text-xs font-semibold text-white leading-4">{plan.saveLabel}</Text>
+        {plan.amount_saved ? (
+          <Text className="text-xs font-semibold text-white leading-4">Save GHS {plan.amount_saved}</Text>
+        ) : null}
         <View className="flex-row items-baseline gap-1">
-          <Text className="text-[30px] font-extrabold text-white leading-9">{plan.price}</Text>
-          <Text className="text-xl font-bold text-white leading-7">{plan.pricePer}</Text>
+          <Text className="text-[30px] font-extrabold text-white leading-9">{price}</Text>
+          <Text className="text-xl font-bold text-white leading-7">{pricePer}</Text>
         </View>
-        <Text className="text-[10px] text-white leading-[15px]">{plan.billing}</Text>
       </View>
 
       <Pressable
@@ -132,7 +114,7 @@ function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPr
           >
             START MY FREE WEEK TRIAL
           </Text>
-          <Text className="text-[9px] font-medium text-[#9CA3AF] text-center">{plan.ctaSub}</Text>
+          <Text className="text-[9px] font-medium text-[#9CA3AF] text-center">{price}{pricePer}</Text>
         </View>
       </Pressable>
       </View>
@@ -143,17 +125,23 @@ function PlanCard({ plan, isActive, recommended, cardHeight, cardMarginTop, onPr
 export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePlan'>) {
   const { colors } = useTheme();
   const plansRef = React.useRef<ScrollView>(null);
-  const [activePlanIndex, setActivePlanIndex] = React.useState(1);
+  const { data: plansData, isPending } = useSubscriptionPlans();
+  const plans = plansData ?? [];
+  const showSkeleton = isPending && plans.length === 0;
+  const [activePlanIndex, setActivePlanIndex] = React.useState(0);
   const [tableHeight, setTableHeight] = React.useState(0);
   const insets = useSafeAreaInsets();
-  const scrollX = React.useRef(new Animated.Value(CARD_WIDTH + CARD_GAP)).current;
+  const scrollX = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
+    if (!plans.length) return;
     const timer = setTimeout(() => {
-      plansRef.current?.scrollTo({ x: CARD_WIDTH + CARD_GAP, animated: false });
+      const index = Math.min(1, plans.length - 1);
+      plansRef.current?.scrollTo({ x: index * (CARD_WIDTH + CARD_GAP), animated: false });
+      setActivePlanIndex(index);
     }, 50);
     return () => clearTimeout(timer);
-  }, []);
+  }, [plans.length]);
 
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
@@ -162,10 +150,18 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
       listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         const x = e.nativeEvent.contentOffset.x;
         const index = Math.round(x / (CARD_WIDTH + CARD_GAP));
-        const clamped = Math.max(0, Math.min(PLANS.length - 1, index));
+        const clamped = Math.max(0, Math.min(plans.length - 1, index));
         setActivePlanIndex(clamped);
       },
     },
+  );
+
+  const HEADER = 48;
+  const TABLE_TOP_MARGIN = 16;
+  const CARDS_TOP_MARGIN = 24;
+  const cardsMinHeight = Math.max(
+    300,
+    SCREEN_HEIGHT - insets.top - insets.bottom - HEADER - TABLE_TOP_MARGIN - tableHeight - CARDS_TOP_MARGIN,
   );
 
   const getCardHeight = (index: number) =>
@@ -190,23 +186,24 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
       extrapolate: 'clamp',
     });
 
-  const accentColor = PLANS[activePlanIndex].accentColor;
-
-  // Cards fill the remaining screen height after the header, safe area and table
-  const HEADER = 48;
-  const TABLE_TOP_MARGIN = 16;
-  const CARDS_TOP_MARGIN = 24;
-  const cardsMinHeight = Math.max(
-    300,
-    SCREEN_HEIGHT - insets.top - insets.bottom - HEADER - TABLE_TOP_MARGIN - tableHeight - CARDS_TOP_MARGIN,
-  );
+  const accentColor = ACCENT_COLORS[activePlanIndex % ACCENT_COLORS.length];
+  const featureRows = buildPlanFeatureRows(plans, activePlanIndex);
+  const activePlanLabel = plans[activePlanIndex]?.name ?? 'GOLD';
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
+        <CustomAppBar title="Choose your plan" navigation={navigation} />
 
-        <CustomAppBar title="Choose your plan" navigation={navigation}/>
-
+        {showSkeleton ? (
+          <ChoosePlanSkeleton />
+        ) : !plans.length ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+            <Text style={{ color: colors.textSub, textAlign: 'center' }}>
+              No subscription plans are available right now. Please try again later.
+            </Text>
+          </View>
+        ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Comparison table */}
@@ -229,14 +226,16 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
                 <Text style={{ fontSize: moderateScale(10), fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.text }}>FREE</Text>
               </View>
               <View className="w-[72px] items-center">
-                <Text style={{ fontSize: moderateScale(10), fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }}>GOLD</Text>
+                <Text style={{ fontSize: moderateScale(10), fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: accentColor }} numberOfLines={1}>
+                  {activePlanLabel}
+                </Text>
               </View>
             </View>
 
-            {FEATURES.map((f, i) => (
+            {featureRows.map((f, i) => (
               <View
-                key={i}
-                style={{ flexDirection: 'row', alignItems: 'center', height: verticalScale(45), borderBottomWidth: i < FEATURES.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
+                key={f.label}
+                style={{ flexDirection: 'row', alignItems: 'center', height: verticalScale(45), borderBottomWidth: i < featureRows.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
               >
                 <View className="flex-1">
                   <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.text }}>{f.label}</Text>
@@ -264,12 +263,13 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
             scrollEventThrottle={16}
             contentContainerStyle={{ paddingHorizontal: 24, gap: CARD_GAP }}
           >
-            {PLANS.map((plan, i) => (
+            {plans.map((plan, i) => (
               <PlanCard
-                key={plan.label}
+                key={plan.id}
                 plan={plan}
+                planIndex={i}
                 isActive={i === activePlanIndex}
-                recommended={plan.label === 'MONTHLY'}
+                recommended={i === 1}
                 cardHeight={getCardHeight(i)}
                 cardMarginTop={getCardMarginTop(i)}
                 onPress={() => navigation.navigate('ConfirmSubscription', { planIndex: i })}
@@ -279,6 +279,7 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
         </View>
 
         </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );

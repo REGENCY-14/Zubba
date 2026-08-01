@@ -1,6 +1,8 @@
 import { api } from './axios';
+import * as Device from "expo-device";
 import { ApiResponse } from '../types/api.types';
 import { Notification, NotificationPreferences, UpdatePreferencesDto } from '../types/notification.types';
+import { Platform } from 'react-native';
 
 export const notificationService = {
   // Preferences
@@ -9,6 +11,14 @@ export const notificationService = {
       '/notifications/preferences'
     );
     return data.data;
+  },
+
+  getDeviceName : () => {
+    return (
+      Device.deviceName ??
+      Device.modelName ??
+      (Platform.OS === "ios" ? "iPhone" : "Android Device")
+    );
   },
 
   updatePreferences: async (payload: UpdatePreferencesDto): Promise<NotificationPreferences> => {

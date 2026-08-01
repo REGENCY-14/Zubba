@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   Text,
   View,
-  Modal,
-  ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,11 +14,11 @@ import { OTPInput } from "../../components/common/OTPInput";
 import { useVerifyOtp, useResendOtp } from "../../slices/auth/auth.hooks";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { setCredentials } from "../../slices/auth/authSlice";
-import { authStorage } from "../../utils/authStorage";
+import { saveAuthSession } from "../../utils/resolveInitialRoute";
+import { syncPushNotifications } from "../../services/pushNotifications";
 import { customerService } from "../../api/customerService";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { useTheme } from "../../context/ThemeContext";
-import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
@@ -31,19 +31,25 @@ export function FindAccountEmailOtpScreen({
   const verifyOtpMutation = useVerifyOtp();
   const resendOtpMutation = useResendOtp();
   const dispatch = useAppDispatch();
-
-  const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
-  const [showResendModal, setShowResendModal] = useState(false);
-
-  const isCodeComplete = useMemo(
-    () => codeDigits.every((d) => d !== ""),
-    [codeDigits],
-  );
-
-  const isResending = resendOtpMutation.isPending;
   const { colors } = useTheme();
 
+  const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
+  const [resendTimer, setResendTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const isVerifyingRef = useRef(false);
+
+  useEffect(() => {
+    if (resendTimer === 0) { setCanResend(true); return; }
+    const interval = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const isValid = useMemo(() => codeDigits.every((d) => d.length === 1), [codeDigits]);
+
   const handleVerify = async (otp: string) => {
+    if (isVerifyingRef.current || verifyOtpMutation.isPending) return;
+    isVerifyingRef.current = true;
+
     try {
       const result = await verifyOtpMutation.mutateAsync({
         authKey: "email",
@@ -51,31 +57,28 @@ export function FindAccountEmailOtpScreen({
         otp,
         purpose: "login",
       });
-      if (!result.success)
-        toast.error("OTP incorrect, please verify and try again.");
+
       const { user, accessToken, refreshToken } = result.data;
       dispatch(setCredentials({ user, accessToken, refreshToken }));
-      await authStorage.save({ user, accessToken, refreshToken });
+      await saveAuthSession({ userId: user.id, accessToken, refreshToken });
 
       const customerResponse = await customerService.getCustomerById(user.id);
+      if (customerResponse.success) {
+        dispatch(setCustomer(customerResponse.data.customer));
+      }
 
-      if (!customerResponse.success)
-        toast.error(
-          "Could not find your account, please verify and try again.",
-        );
-      const customer = customerResponse.data.customer;
-      dispatch(setCustomer(customer));
-      navigation.replace("ExistingUserNotification", {
-        email,
-      });
-    } catch (err: any) {
-      handleApiError(err)
+      syncPushNotifications().catch(() => {});
+      navigation.replace("ExistingUserNotification", { email });
+    } catch (err) {
+      handleApiError(err);
       setCodeDigits(["", "", "", ""]);
+    } finally {
+      isVerifyingRef.current = false;
     }
   };
 
   const handleResend = async () => {
-    if (isResending) return;
+    if (!canResend || resendOtpMutation.isPending) return;
 
     try {
       await resendOtpMutation.mutateAsync({
@@ -83,23 +86,24 @@ export function FindAccountEmailOtpScreen({
         authValue: email,
         purpose: "login",
       });
-
-      setShowResendModal(false);
       setCodeDigits(["", "", "", ""]);
+      setResendTimer(60);
+      setCanResend(false);
     } catch (err) {
-      toast.error("Failed to resend otp, please try again later");
+      handleApiError(err);
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 p-5 pb-6">
-          <Text style={{ fontSize: moderateScale(15), color: colors.text, marginBottom: verticalScale(8) }}>
-            Enter the 4-digits code sent to you at: {email}
-          </Text>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1, padding: moderateScale(20) }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <View style={{ gap: moderateScale(8), marginBottom: verticalScale(12) }}>
+            <Text style={{ fontSize: moderateScale(18), color: colors.text }}>Enter the 4-digits code sent to you at:</Text>
+            <Text style={{ fontSize: moderateScale(16), color: colors.text }}>{email}</Text>
+          </View>
 
-          <View className="mb-6">
+          <View style={{ marginTop: 20 }} pointerEvents={verifyOtpMutation.isPending ? "none" : "auto"}>
             <OTPInput
               value={codeDigits}
               onChange={setCodeDigits}
@@ -108,75 +112,63 @@ export function FindAccountEmailOtpScreen({
             />
           </View>
 
-          <Pressable className="mb-6">
-            <Text style={{ fontSize: moderateScale(13), textDecorationLine: 'underline', color: colors.text }}>
-              changed my email address?
-            </Text>
-          </Pressable>
+          <Text style={{ fontSize: moderateScale(12), textDecorationLine: "underline", color: colors.text, marginTop: verticalScale(16) }}>
+            Tip: Be sure to check your inbox and spam folders
+          </Text>
 
           <Pressable
-            disabled={!isCodeComplete}
+            disabled={!isValid || verifyOtpMutation.isPending}
+            style={{
+              height: 48,
+              borderRadius: 9999,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 20,
+              backgroundColor: isValid && !verifyOtpMutation.isPending ? "#34A853" : "rgba(52,168,83,0.5)",
+            }}
             onPress={() => handleVerify(codeDigits.join(""))}
-            className={[
-              "h-12 rounded-full items-center justify-center mb-4",
-              isCodeComplete ? "bg-[#34A853]" : "bg-[#34A85380]",
-            ].join(" ")}
           >
-            <Text className="text-white text-sm">Verify</Text>
+            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>Verify</Text>
           </Pressable>
 
-          <Pressable
-            disabled={isResending}
-            onPress={() => setShowResendModal(true)}
-            style={{ alignSelf: 'flex-start', paddingHorizontal: scale(20), height: verticalScale(32), borderWidth: 1, borderColor: colors.border, borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Text style={{ fontSize: moderateScale(12), fontWeight: '500', color: colors.text }}>
-              Resend code
-            </Text>
-          </Pressable>
-        </View>
+          <Text style={{ fontSize: moderateScale(12), color: colors.text, marginTop: verticalScale(8) }}>
+            {canResend ? "You can resend OTP now via email" : `Resend OTP in ${resendTimer}s via email`}
+          </Text>
 
-        <Modal
-          visible={showResendModal}
-          transparent
-          animationType="fade"
-          onRequestClose={() => {
-            if (!isResending) {
-              setShowResendModal(false);
-            }
-          }}
-        >
-          <View className="flex-1 bg-[#1F2A334D] justify-end items-center">
-            <View style={{ width: '94%', backgroundColor: colors.card, borderRadius: moderateScale(16), padding: moderateScale(24), marginBottom: verticalScale(40), alignItems: 'center' }}>
-              <Text style={{ textAlign: 'center', fontSize: moderateScale(18), fontWeight: '500', marginBottom: verticalScale(12), color: colors.text }}>
-                Resend code to: {email}
+          <View style={{ gap: moderateScale(8), marginTop: verticalScale(12) }}>
+            <Pressable
+              disabled={!canResend || resendOtpMutation.isPending}
+              onPress={handleResend}
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: 9999,
+                paddingHorizontal: scale(28),
+                paddingVertical: verticalScale(8),
+                alignSelf: "flex-start",
+                opacity: canResend && !resendOtpMutation.isPending ? 1 : 0.4,
+              }}
+            >
+              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: colors.text }}>Resend</Text>
+            </Pressable>
+
+            <Pressable
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: 9999,
+                paddingHorizontal: scale(28),
+                paddingVertical: verticalScale(8),
+                alignSelf: "flex-start",
+              }}
+            >
+              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: colors.text }}>
+                Send code to another email
               </Text>
-
-              <View className="w-full gap-3">
-                <Pressable
-                  disabled={isResending}
-                  onPress={handleResend}
-                  className={`h-12 bg-[#31973D] rounded-xl items-center justify-center ${isResending && "opacity-50"}`}
-                >
-                  {isResending ? (
-                    <ActivityIndicator color="#FFFFFF" />
-                  ) : (
-                    <Text className="text-white text-sm">Resend</Text>
-                  )}
-                </Pressable>
-
-                <Pressable
-                  disabled={isResending}
-                  onPress={() => setShowResendModal(false)}
-                  style={{ height: verticalScale(48), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <Text style={{ color: colors.text, fontSize: moderateScale(14) }}>Cancel</Text>
-                </Pressable>
-              </View>
-            </View>
+            </Pressable>
           </View>
-        </Modal>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

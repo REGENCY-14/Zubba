@@ -64,6 +64,7 @@ import { customerService } from '../api/customerService';
 import { setCustomer } from '../slices/customer/customerSlice';
 import NotificationsListScreen from '../screens/home/NotificationsListScreen';
 import DriversFoundScreen from '../screens/pickup/DriversFoundScreen';
+import LiveTrackingScreen from '../screens/pickup/LiveTrackingScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -74,17 +75,16 @@ export function RootNavigator() {
 
   useEffect(() => {
     const getCustomer = async () => {
-      if(user && !customer){
-        const customerResponse = await customerService.getCustomerById(user.id)
-        if(customerResponse.success){
-          const customer = customerResponse.data.customer;
-          dispatch(setCustomer(customer))
+      if (user?.id && !customer.id) {
+        const customerResponse = await customerService.getCustomerById(user.id);
+        if (customerResponse.success) {
+          dispatch(setCustomer(customerResponse.data.customer));
         }
       }
-    }
+    };
 
-    getCustomer()
-  }, [])
+    getCustomer();
+  }, [user?.id]);
 
   return (
     <Stack.Navigator
@@ -148,6 +148,7 @@ export function RootNavigator() {
       <Stack.Screen name="PremiumPayment" component={PremiumPaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletNumber" component={WalletNumberScreen} options={{ headerShown: false }} />
       <Stack.Screen name="DriversFound" component={DriversFoundScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="LiveTracking" component={LiveTrackingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletCheckout" component={WalletCheckoutScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SavedCards" component={SavedCardsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PlanForLater" component={PlanForLaterScreen} options={{ headerShown: false }} />

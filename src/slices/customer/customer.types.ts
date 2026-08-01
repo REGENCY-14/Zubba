@@ -3,4 +3,5 @@ export interface Customer {
     points: number;
     bags_recycled: number;
     is_premium: boolean;
+    profile_picture?: string | null;
 }

@@ -1,7 +1,6 @@
 import {
   Animated,
   Image,
-  ImageBackground,
   Pressable,
   ScrollView,
   Text,
@@ -16,13 +15,21 @@ import {
 import { AppBottomNav } from "../../components";
 import type { RootStackScreenProps } from "../../navigation/types";
 import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { LiveMapView } from "../../components/maps/LiveMapView";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useRoutePolyline } from "../../hooks/useRoutePolyline";
+import { interpolateCoord } from "../../components/maps/mapUtils";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { customerService } from "../../api/customerService";
+import { requestService } from "../../api/requestService";
+import { setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
+import { getDriverCoord } from "../../utils/pickupLocation";
 
-const mapImage = require("../../../assets/RawMap.png");
-const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const fallbackAvatar = require("../../../assets/avatar.jpg");
 
 function DriverCard({
@@ -35,7 +42,7 @@ function DriverCard({
   onPress: () => void;
 }) {
   const distanceLabel = `${(driver.distanceM / 1000).toFixed(1)}km away`;
-  const etaLabel = `${driver.etaMinutes} mins`;
+  const etaLabel = `${driver.etaMinutes} min${driver.etaMinutes !== 1 ? "s" : ""}`;
   const { colors, isDark } = useTheme()
 
   return (
@@ -133,14 +140,31 @@ export function DriversFoundScreen({
 }: RootStackScreenProps<"DriversFound">) {
   const drivers: NearbyDriver[] = route.params?.drivers ?? [];
   const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
+  const customer = useAppSelector((state) => state.customer);
+  const { coords: gpsCoords } = useCurrentLocation();
+  const pickupCoords = route.params?.pickupLocation ?? gpsCoords;
+  const pickupAddress = route.params?.pickupAddress ?? "Selected location";
   const { isDark, colors } = useTheme()
-  const [selectedDriver, setSelectedDriver] = useState(0);
-  const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts">("found_drivers");
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way">("found_drivers");
   const [showModal, setShowModal] = useState(false);
+  const [simProgress, setSimProgress] = useState(0);
+  const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
   const assignedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navHeight = 52 + Math.max(insets.bottom, 14) + 20;
-  const activeDriver = drivers[selectedDriver];
+  const activeDriver = previewIndex != null ? drivers[previewIndex] : null;
+  const previewDriverCoord = getDriverCoord(activeDriver);
+  const isPreviewing = previewIndex != null && !showModal;
+
+  const handleDriverPress = (index: number) => {
+    if (previewIndex === index) {
+      submitRequest();
+      return;
+    }
+    setPreviewIndex(index);
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -148,27 +172,120 @@ export function DriversFoundScreen({
   };
 
   useEffect(() => {
-    if (modalStep !== "driver_accepts") return;
-    assignedTimerRef.current = setTimeout(() => {
-      assignedTimerRef.current = null;
-      setShowModal(false);
-      navigation.navigate("DriverArrives");
-    }, 5000);
     return () => {
-      if (assignedTimerRef.current) {
-        clearTimeout(assignedTimerRef.current);
-        assignedTimerRef.current = null;
-      }
+      if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
     };
-  }, [modalStep, navigation]);
+  }, []);
+
+  const driverLocation =
+    pickupCoords && driverStart
+      ? interpolateCoord(driverStart, pickupCoords, simProgress)
+      : driverStart ?? previewDriverCoord;
+  const showPreviewRoute = isPreviewing && previewDriverCoord != null;
+  const showEnRouteRoute = modalStep === "on_the_way";
+  const routeCoords = useRoutePolyline(
+    showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null,
+    pickupCoords,
+  );
+  const mapFitLocations = useMemo(() => {
+    if (!pickupCoords) return undefined;
+    if (showPreviewRoute && previewDriverCoord) return [pickupCoords, previewDriverCoord];
+    if (showEnRouteRoute && driverLocation) return [pickupCoords, driverLocation];
+    return undefined;
+  }, [pickupCoords, previewDriverCoord, driverLocation, showPreviewRoute, showEnRouteRoute, previewIndex]);
+  const distanceLabel = activeDriver
+    ? `${((activeDriver.distanceM / 1000) * (1 - simProgress)).toFixed(1)} km`
+    : "—";
+  const etaLabel = activeDriver
+    ? `${Math.max(1, Math.ceil((activeDriver.etaMinutes || 5) * (1 - simProgress)))} mins`
+    : "—";
+
+  const submitRequest = async () => {
+    if (!pickupCoords || !activeDriver) return;
+    setModalStep("customer_requests");
+    setShowModal(true);
+    try {
+      const result = await customerService.requestTakeout({
+        pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
+        pickup_address: pickupAddress,
+        bags: 1,
+        driver_id: activeDriver.id,
+        distance_m: activeDriver.distanceM,
+        pickup_price: activeDriver.cost,
+        service_price: 5,
+      });
+      const requestResult = result.data.request;
+      dispatch(
+        setRequest({
+          id: requestResult.id,
+          customer_id: customer.id,
+          pickup_location: [pickupCoords.latitude, pickupCoords.longitude].toString(),
+          pickup_address: pickupAddress,
+          payment_method: "",
+          bags: 1,
+          distance_m: activeDriver.distanceM,
+          pickup_price: activeDriver.cost,
+          service_price: 5,
+          collection_code: requestResult.collection_code,
+          scheduleRequest: false,
+          status: "pending",
+        }),
+      );
+      setTimeout(() => {
+        dispatch(
+          setRequestDriver({
+            driver_id: activeDriver.id,
+            name: activeDriver.name,
+            avatar: activeDriver.profilePicture ?? "",
+            code: activeDriver.code ?? "N/A",
+            rating: activeDriver.rating,
+            phone: requestResult.driver?.phone ?? null,
+          }),
+        );
+        dispatch(setStatus("accepted"));
+        requestService.updateRequestStatus(requestResult.id, "accepted");
+        setModalStep("driver_accepts");
+        setTimeout(() => {
+          dispatch(setStatus("en_route"));
+          requestService.updateRequestStatus(requestResult.id, "en_route");
+          const startCoord = getDriverCoord(activeDriver);
+          setDriverStart(
+            startCoord ?? {
+              latitude: pickupCoords.latitude + 0.01,
+              longitude: pickupCoords.longitude + 0.01,
+            },
+          );
+          setModalStep("on_the_way");
+          const started = Date.now();
+          const interval = setInterval(() => {
+            const progress = Math.min(1, (Date.now() - started) / 10000);
+            setSimProgress(progress);
+            if (progress >= 1) clearInterval(interval);
+          }, 500);
+          assignedTimerRef.current = setTimeout(() => {
+            requestService.updateRequestStatus(requestResult.id, "arrived");
+            navigation.replace("DriverArrives");
+          }, 10000);
+        }, 2000);
+      }, 3000);
+    } catch {
+      closeModal();
+    }
+  };
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right"]}>
-      <ImageBackground
-        source={isDark ? mapDarkImage : mapImage}
+    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={["top", "left", "right", "bottom"]}>
+      <LiveMapView
+        pickupLocation={pickupCoords}
+        centerOn={pickupCoords}
+        driverLocation={
+          showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null
+        }
+        routeCoordinates={
+          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+        }
+        fitToLocations={mapFitLocations}
         style={{ flex: 1 }}
-        resizeMode="cover"
-        imageStyle={{ opacity: 0.8 }}
       >
         <View style={{backgroundColor: colors.bg, borderColor: colors.border}} className="h-12 flex-row items-center justify-between px-4 border-b">
           <Pressable
@@ -187,55 +304,7 @@ export function DriversFoundScreen({
           <View className="w-7" />
         </View>
 
-        <View style={{ flex: 1 }}>
-          <View
-            className="absolute items-center gap-1"
-            style={{ left: "13%", top: "12%" }}
-          >
-            <Text style={{color: colors.textSub}} className="text-sm font-bold text-[#1F2A33]">5mins</Text>
-            <MaterialCommunityIcons
-              name="map-marker"
-              size={32}
-              color="#31973D"
-            />
-          </View>
-
-          <View
-            className="absolute w-[34px] h-[34px] rounded-full items-center justify-center bg-[rgba(49,151,61,0.25)]"
-            style={{ left: "14%", top: "42%" }}
-          >
-            <View style={{borderColor: colors.border}} className="w-[17px] h-[17px] rounded-full bg-[#31973D] border-2" />
-          </View>
-
-          <View
-            style={{
-              position: "absolute",
-              left: "18%",
-              top: "48%",
-              width: scale(160),
-              borderTopWidth: 2,
-              borderColor: "#31973D",
-              borderStyle: "dashed",
-              transform: [{ rotate: "18deg" }],
-            }}
-          />
-          <View
-            style={{
-              position: "absolute",
-              left: "52%",
-              top: "46%",
-              width: scale(110),
-              borderTopWidth: 2,
-              borderColor: "#31973D",
-              borderStyle: "dashed",
-              transform: [{ rotate: "-20deg" }],
-            }}
-          />
-
-          <View className="absolute" style={{ right: "8%", top: "52%" }}>
-            <Text style={{ fontSize: moderateScale(30) }}>🛺</Text>
-          </View>
-        </View>
+        <View style={{ flex: 1 }} />
 
         {!showModal && (
           <Animated.View
@@ -247,7 +316,7 @@ export function DriversFoundScreen({
               borderRadius: moderateScale(22),
               padding: moderateScale(16),
               marginHorizontal: scale(8),
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.surface,
               paddingTop: verticalScale(12),
               gap: moderateScale(16),
               shadowColor: "#000",
@@ -257,14 +326,14 @@ export function DriversFoundScreen({
               elevation: 12,
             }}
           >
-            <View className="w-10 h-1 rounded-full bg-[#E2E8F0] self-center" />
+            <View style={{backgroundColor: colors.bg}} className="w-10 h-1 rounded-full self-center" />
 
-            <View className="gap-6 py-6 rounded-2xl border border-[#E2E8F0]">
+            <View style={{borderColor: colors.border}} className="gap-6 py-6 rounded-2xl border">
               <View className="flex-row justify-between items-center px-6">
-                <Text className="text-lg font-bold text-[#1F2A33]">
+                <Text style={{color: colors.text}} className="text-lg font-bold">
                   Nearby Drivers
                 </Text>
-                <View className="flex-row items-center gap-2 bg-[#006B23]/10 border border-[#E2E8F0] rounded-2xl px-3 py-1.5">
+                <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
                   <View className="w-2 h-2 rounded-full bg-[#31973D]" />
                   <Text className="text-[13px] font-bold text-[#31973D]">
                     Live view
@@ -274,7 +343,7 @@ export function DriversFoundScreen({
 
               {drivers.length === 0 ? (
                 <View className="items-center px-6 py-4">
-                  <Text className="text-sm text-[#64748A]">
+                  <Text style={{color: colors.textSub}} className="text-sm">
                     No drivers found nearby right now.
                   </Text>
                 </View>
@@ -288,8 +357,8 @@ export function DriversFoundScreen({
                     <DriverCard
                       key={driver.id}
                       driver={driver}
-                      selected={selectedDriver === i}
-                      onPress={() => setSelectedDriver(i)}
+                      selected={previewIndex === i}
+                      onPress={() => handleDriverPress(i)}
                     />
                   ))}
                 </ScrollView>
@@ -297,23 +366,14 @@ export function DriversFoundScreen({
             </View>
 
             <View className="gap-3">
+              <Text style={{ color: colors.textSub, textAlign: "center", fontSize: 13 }}>
+                {previewIndex == null
+                  ? "Tap a driver to preview route on the map"
+                  : "Tap the selected driver again to confirm and request pickup"}
+              </Text>
               <Pressable
-                className="h-12 rounded-full items-center justify-center"
-                style={{
-                  backgroundColor: activeDriver ? "#31973D" : "#9CA3AF",
-                }}
-                disabled={!activeDriver}
-                onPress={() => {
-                  setModalStep("customer_requests");
-                  setShowModal(true);
-                }}
-              >
-                <Text className="text-sm font-bold text-white">
-                  Proceed to request
-                </Text>
-              </Pressable>
-              <Pressable
-                className="h-12 rounded-full border border-[#E2E8F0] flex-row items-center justify-center gap-2 bg-white"
+                style={{borderColor: colors.border, backgroundColor: colors.bg}}
+                className="h-12 rounded-full border flex-row items-center justify-center gap-2"
                 onPress={() => navigation.navigate("Home")}
               >
                 <MaterialCommunityIcons
@@ -340,6 +400,8 @@ export function DriversFoundScreen({
             rating={activeDriver.rating}
             code={activeDriver.code ?? "—"}
             cost={activeDriver.cost.toFixed(2)}
+            distanceLabel={distanceLabel}
+            etaLabel={etaLabel}
             onProceed={() => setModalStep("customer_requests")}
             onCancel={closeModal}
             onAssignedCancel={closeModal}
@@ -353,7 +415,7 @@ export function DriversFoundScreen({
           bottomOffset={8}
           navigation={navigation}
         />
-      </ImageBackground>
+      </LiveMapView>
     </SafeAreaView>
   );
 }

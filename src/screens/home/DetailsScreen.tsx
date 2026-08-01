@@ -8,8 +8,6 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
-const ghanaFlag = require("../../../assets/ghana-flag.png");
-
 export function DetailsScreen({
   route,
   navigation,
@@ -35,21 +33,6 @@ export function DetailsScreen({
             </Text>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), height: verticalScale(48) }}>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: scale(94), height: verticalScale(48), paddingHorizontal: scale(10), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(12), backgroundColor: colors.card }}>
-                <Image
-                  source={ghanaFlag}
-                  style={{ width: scale(28), height: verticalScale(20) }}
-                  resizeMode="contain"
-                />
-
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={moderateScale(22)}
-                  color={colors.iconColor}
-                />
-              </View>
-
               <TextInput
                 style={{
                   flex: 1,

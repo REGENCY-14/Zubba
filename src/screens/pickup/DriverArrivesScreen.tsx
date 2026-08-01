@@ -9,6 +9,13 @@ import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import {
+  getMethodLabel,
+  isWalletMethod,
+  mapMethodToChannel,
+  mapMethodToProvider,
+} from "../../utils/paymentProviders";
+import { callDriver, messageDriver } from "../../utils/contactDriver";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -20,7 +27,7 @@ export function DriverArrivesScreen({
   const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
       <View style={{ flex: 1, backgroundColor: colors.surface }}>
         <CustomAppBar title="Driver Arrives" navigation={navigation} />
 
@@ -33,7 +40,7 @@ export function DriverArrivesScreen({
             <View>
               <View style={{ width: moderateScale(54), height: moderateScale(54), borderRadius: moderateScale(12), overflow: 'hidden' }}>
                 <Image
-                  source={request.driver.avatar ? request.driver.avatar : avatar}
+                  source={request.driver.avatar ? { uri: request.driver.avatar } : avatar}
                   style={{ width: moderateScale(54), height: moderateScale(54) }}
                   resizeMode="cover"
                 />
@@ -51,22 +58,30 @@ export function DriverArrivesScreen({
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(24) }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                <Pressable
+                  onPress={() => callDriver(request.driver.phone)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), opacity: request.driver.phone ? 1 : 0.5 }}
+                  disabled={!request.driver.phone}
+                >
                   <MaterialCommunityIcons
                     name="phone-outline"
                     size={moderateScale(16)}
                     color={colors.textMuted}
                   />
                   <Text style={{ marginLeft: scale(4), color: colors.textMuted, fontSize: moderateScale(14) }}>Call</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                </Pressable>
+                <Pressable
+                  onPress={() => messageDriver(request.driver.phone)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), opacity: request.driver.phone ? 1 : 0.5 }}
+                  disabled={!request.driver.phone}
+                >
                   <MaterialCommunityIcons
                     name="message-outline"
                     size={moderateScale(16)}
                     color={colors.textMuted}
                   />
                   <Text style={{ marginLeft: scale(4), color: colors.textMuted, fontSize: moderateScale(14) }}>Message</Text>
-                </View>
+                </Pressable>
               </View>
             </View>
           </View>
@@ -141,13 +156,19 @@ export function DriverArrivesScreen({
         <PaymentMethodDrawer
           visible={showPaymentDrawer}
           onClose={() => setShowPaymentDrawer(false)}
+          isCreditPage={true}
           onContinue={(method) => {
             setShowPaymentDrawer(false);
-            if (method === "wallet") {
+            if (isWalletMethod(method)) {
               navigation.navigate("WalletCheckout");
-            } else {
-              navigation.navigate("PaymentMethod");
+              return;
             }
+
+            navigation.navigate("PaymentMethod", {
+              provider: mapMethodToProvider(method),
+              methodLabel: getMethodLabel(method),
+              channel: mapMethodToChannel(method),
+            });
           }}
         />
       </View>

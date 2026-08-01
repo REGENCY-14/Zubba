@@ -105,8 +105,8 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
                   {/* Primary green card — overflow:hidden only clips the card itself */}
                   <View style={{ width: scale(280), height: verticalScale(170), borderRadius: moderateScale(24), overflow: 'hidden' }}>
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#006B23' }]} />
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#31973D', opacity: 0.85 }]} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#006B23' }]} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#31973D', opacity: 0.85 }]} />
 
                     <View style={{ flex: 1, padding: moderateScale(24), justifyContent: 'space-between' }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -175,8 +175,8 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                 {/* Context menu — sibling of ScrollView, not inside overflow:hidden card */}
                 {menuVisible && (
                   <View style={{ position: 'absolute', right: scale(0), top: verticalScale(44), width: scale(105), height: verticalScale(64), borderRadius: moderateScale(12), overflow: 'hidden', borderWidth: 1, borderColor: colors.border, zIndex: 10 }}>
-                    <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFillObject} />
-                    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: isDark ? 'rgba(20,29,43,0.7)' : 'rgba(250,250,250,0.3)' }]} />
+                    <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(20,29,43,0.7)' : 'rgba(250,250,250,0.3)' }]} />
 
                     <Pressable
                       style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingHorizontal: scale(8), height: verticalScale(32), borderBottomWidth: 0.5, borderBottomColor: colors.border }}

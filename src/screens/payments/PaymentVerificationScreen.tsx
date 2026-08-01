@@ -27,7 +27,7 @@ export function PaymentVerificationScreen({
   route,
   navigation,
 }: RootStackScreenProps<"PaymentVerification">) {
-  const { phone, reference, amount, provider = 'mtn' } = route.params;
+  const { phone, reference, amount, provider = 'mtn', purpose = 'pickup' } = route.params;
   const dispatch = useAppDispatch();
   const { colors } = useTheme();
   const request = useAppSelector((state) => state.request);
@@ -43,15 +43,22 @@ export function PaymentVerificationScreen({
         if (paymentStatus === 'success') {
           setStatus('success');
           
-          dispatch(setPaymentStatus('success'));
-          dispatch(setPaymentDate(new Date()));
-          dispatch(setTransactionReference(reference));
-          dispatch(markRequestPaid());
-
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current);
             pollingInterval.current = null;
           }
+
+          if (purpose === 'wallet_deposit') {
+            setTimeout(() => {
+              navigation.replace("ZubbaWallet", { credited: true });
+            }, 1500);
+            return;
+          }
+
+          dispatch(setPaymentStatus('success'));
+          dispatch(setPaymentDate(new Date()));
+          dispatch(setTransactionReference(reference));
+          dispatch(markRequestPaid());
 
           try {
             if (request.id && request.customer_id) {
@@ -86,10 +93,10 @@ export function PaymentVerificationScreen({
         pollingInterval.current = null;
       }
     };
-  }, [reference]);
+  }, [reference, purpose]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar navigation={navigation} title="Payment Verification" />
 

@@ -19,12 +19,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TextAvatar } from "../onboarding/TextAvatar";
 import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useNavigateToChoosePlan } from "../../hooks/useSubscription";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
-import { bottom_sidebar_items, isPremiumSidebarItem, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
+import { bottom_sidebar_items, isPremiumSidebarItems, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getFocusedRouteName, getSidebarKeyForRoute } from "../../utils/sidebarRouteMap";
 
-const avatarUrl = require("../../../assets/avatar.jpg");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.7);
 
@@ -48,6 +49,9 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
   const customer = useAppSelector((state) => state.customer);
+  const navigateToChoosePlan = useNavigateToChoosePlan();
+  const profilePicture =
+    customer.profile_picture ?? user?.profile_picture ?? null;
 
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -57,9 +61,27 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState<string>(activeKey ?? "");
 
+  useEffect(() => {
+    const syncActiveFromRoute = () => {
+      const state = navigation.getState?.();
+      if (!state) return;
+      const routeName = getFocusedRouteName(state);
+      const key = getSidebarKeyForRoute(routeName);
+      if (key) setActive(key);
+    };
+
+    syncActiveFromRoute();
+    const unsubscribe = navigation.addListener("state", syncActiveFromRoute);
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    if (activeKey) setActive(activeKey);
+  }, [activeKey]);
+
   const sidebarItems = [
     ...top_sidebar_items,
-    ...(customer.is_premium ? [isPremiumSidebarItem] : [noPlanSidebarItem]),
+    ...(customer.is_premium ? isPremiumSidebarItems : [noPlanSidebarItem]),
     ...bottom_sidebar_items,
     ...menuItems,
   ];
@@ -116,7 +138,11 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
 
   const handleNavigate = (item: SidebarMenuItem) => {
     setActive(item.key);
-    close(); // close first
+    close();
+    if (item.navigate === "ChoosePlan") {
+      void navigateToChoosePlan();
+      return;
+    }
     navigation.navigate(item.navigate);
   };
 
@@ -180,9 +206,9 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               }}
             >
               <View style={{ width: moderateScale(54), height: moderateScale(54) }}>
-                {avatarUrl ? (
+                {profilePicture ? (
                   <Image
-                    source={avatarUrl}
+                    source={{ uri: profilePicture }}
                     style={{
                       width: moderateScale(54),
                       height: moderateScale(54),

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Image,
   Platform,
   Pressable,
   RefreshControl,
@@ -20,6 +21,8 @@ import { setRequest } from "../../slices/request/requestSlice";
 import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+
+const tricycle = require("../../../assets/pickup_tricycle.png");
 
 type Pickup = {
   id: string;
@@ -161,10 +164,10 @@ function PickupRow({
           opacity: isCancelled ? 0.5 : 1,
         }}
       >
-        <MaterialCommunityIcons
-          name="truck-outline"
-          size={moderateScale(20)}
-          color={colors.iconColor}
+        <Image
+          source={tricycle}
+          style={{ width: moderateScale(30), height: moderateScale(20) }}
+          resizeMode="contain"
         />
       </View>
 
@@ -288,8 +291,9 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
             .join(" ")
         : "",
       avatar: item.driver?.profile_picture ?? "",
-      code: item.driver?.vehicle_plate ?? "",
+      code: item.driver?.vehicle_plate ?? item.driver?.code ?? "",
       rating: item.driver?.rating ?? 0,
+      phone: item.driver?.phone ?? null,
     },
     pickup_location:
       typeof item.pickup_location === "string"
@@ -310,10 +314,17 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
   const handlePickupPress = (pickup: Pickup) => {
     const { raw } = pickup;
 
-    if (activeTab === "pending" && raw.status === "arrived") {
-      dispatch(setRequest(buildRequestStateFromItem(raw)));
-      navigation.navigate("DriverArrives");
-      return;
+    if (activeTab === "pending") {
+      if (raw.status === "arrived") {
+        dispatch(setRequest(buildRequestStateFromItem(raw)));
+        navigation.navigate("DriverArrives");
+        return;
+      }
+      if (["pending", "accepted", "en_route", "paid"].includes(raw.status)) {
+        dispatch(setRequest(buildRequestStateFromItem(raw)));
+        navigation.navigate("LiveTracking", { requestId: raw.id });
+        return;
+      }
     }
 
     if (activeTab === "completed" && raw.status === "completed") {
@@ -328,7 +339,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         {/* Header */}

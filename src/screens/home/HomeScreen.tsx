@@ -3,7 +3,6 @@ import {
   Animated,
   Easing,
   Image,
-  ImageBackground,
   Pressable,
   Text,
   TextInput,
@@ -20,22 +19,28 @@ import RoundedButton from "../../components/common/RoundedButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
-import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
 import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { binFullService } from "../../api/binFullService";
+import { LiveMapView } from "../../components/maps/LiveMapView";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useLocationSearch } from "../../hooks/useLocationSearch";
+import { useNavigateToChoosePlan, usePrefetchSubscriptionPlans } from "../../hooks/useSubscription";
+import { LocationSearchDropdown } from "../../components/location/LocationSearchDropdown";
+import type { PickupLocation } from "../../types/location.types";
+import { buildPickupParams } from "../../utils/pickupLocation";
 
-const mapImage = require("../../../assets/RawMap.png");
-const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const premium = require("../../../assets/premium.png");
 const futurePlan = require("../../../assets/futurePlan.png");
 const tricycle = require("../../../assets/picktricycle.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedPickup, setSelectedPickup] = useState<PickupLocation | null>(null);
+  const [mapCenterOn, setMapCenterOn] = useState<{ latitude: number; longitude: number } | null>(null);
   const sidebarRef = useRef<SidebarHandle>(null);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
@@ -44,6 +49,39 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const isPremium = customer.is_premium;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
+  const { coords } = useCurrentLocation();
+  const prefetchPlans = usePrefetchSubscriptionPlans();
+  const navigateToChoosePlan = useNavigateToChoosePlan();
+  const locationSearchEnabled = !isPremium || activePill === 0;
+  const { results: locationResults, isLoading: locationLoading, error: locationError } =
+    useLocationSearch(searchQuery, locationSearchEnabled);
+  const showLocationDropdown =
+    locationSearchEnabled && searchQuery.trim().length >= 3 && !selectedPickup;
+
+  const handleLocationSelect = (result: { label: string; latitude: number; longitude: number }) => {
+    const pickup: PickupLocation = {
+      label: result.label,
+      latitude: result.latitude,
+      longitude: result.longitude,
+    };
+    setSelectedPickup(pickup);
+    setSearchQuery(result.label);
+    setMapCenterOn({ latitude: result.latitude, longitude: result.longitude });
+  };
+
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+    if (selectedPickup && text !== selectedPickup.label) {
+      setSelectedPickup(null);
+      setMapCenterOn(null);
+    }
+  };
+
+  const navigateToScanning = () => {
+    navigation.navigate("Scanning", {
+      ...buildPickupParams(selectedPickup, selectedPickup?.label ?? (searchQuery || undefined)),
+    });
+  };
 
   const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
 
@@ -57,6 +95,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   }, [isBinFull]);
 
   useEffect(() => {
+    prefetchPlans();
+  }, [prefetchPlans]);
+
+  useEffect(() => {
     if (!isPremium) return;
     binFullService.getStatus().then((res) => {
       if (res.success) setIsBinFull(res.data.is_active);
@@ -68,16 +110,23 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
     setBinFullLoading(true);
     try {
       let pickupLocation: { type: "Point"; coordinates: [number, number] } | undefined;
-      let pickupAddress = searchQuery || "Current location";
+      let pickupAddress = selectedPickup?.label ?? (searchQuery || "Current location");
 
       if (value) {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status === "granted") {
-          const loc = await Location.getCurrentPositionAsync({});
+        if (selectedPickup) {
           pickupLocation = {
             type: "Point",
-            coordinates: [loc.coords.longitude, loc.coords.latitude],
+            coordinates: [selectedPickup.longitude, selectedPickup.latitude],
           };
+        } else {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status === "granted") {
+            const loc = await Location.getCurrentPositionAsync({});
+            pickupLocation = {
+              type: "Point",
+              coordinates: [loc.coords.longitude, loc.coords.latitude],
+            };
+          }
         }
       }
 
@@ -115,13 +164,13 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <ImageBackground
-          source={isDark ? mapDarkImage : mapImage}
+        <LiveMapView
+          pickupLocation={selectedPickup ?? coords}
+          centerOn={mapCenterOn}
           style={{ flex: 1 }}
-          resizeMode="cover"
         >
           <View
             style={{
@@ -280,6 +329,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 </View>
 
                 {/* Search bar */}
+                <View style={{ position: "relative", zIndex: 20 }}>
                 <View
                   style={{
                     height: verticalScale(54),
@@ -321,11 +371,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     }
                     placeholderTextColor={colors.textMuted}
                     value={searchQuery}
-                    onChangeText={setSearchQuery}
+                    onChangeText={activePill === 0 ? handleSearchChange : setSearchQuery}
                   />
                   {searchQuery.length > 0 && (
                     <Pressable
-                      onPress={() => setSearchQuery("")}
+                      onPress={() => {
+                        setSearchQuery("");
+                        setSelectedPickup(null);
+                        setMapCenterOn(null);
+                      }}
                       className="w-8 h-8 items-center justify-center"
                     >
                       <MaterialCommunityIcons
@@ -335,6 +389,16 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                       />
                     </Pressable>
                   )}
+                </View>
+                {activePill === 0 && (
+                  <LocationSearchDropdown
+                    visible={showLocationDropdown}
+                    results={locationResults}
+                    loading={locationLoading}
+                    error={locationError}
+                    onSelect={handleLocationSelect}
+                  />
+                )}
                 </View>
 
                 <View className="flex-row justify-between gap-3">
@@ -375,6 +439,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               </View>
             ) : (
               /* Non-premium search bar */
+              <View style={{ position: "relative", zIndex: 20 }}>
               <View
                 style={{
                   height: verticalScale(54),
@@ -412,11 +477,15 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   placeholder="Where is your waste?"
                   placeholderTextColor={colors.textMuted}
                   value={searchQuery}
-                  onChangeText={setSearchQuery}
+                  onChangeText={handleSearchChange}
                 />
                 {searchQuery.length > 0 && (
                   <Pressable
-                    onPress={() => setSearchQuery("")}
+                    onPress={() => {
+                      setSearchQuery("");
+                      setSelectedPickup(null);
+                      setMapCenterOn(null);
+                    }}
                     className="w-8 h-8 items-center justify-center"
                   >
                     <MaterialCommunityIcons
@@ -426,6 +495,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     />
                   </Pressable>
                 )}
+              </View>
+              <LocationSearchDropdown
+                visible={showLocationDropdown}
+                results={locationResults}
+                loading={locationLoading}
+                error={locationError}
+                onSelect={handleLocationSelect}
+              />
               </View>
             )}
 
@@ -487,7 +564,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <RoundedButton
                   title="Request now"
                   variant="primary"
-                  onPress={() => navigation.navigate("Scanning")}
+                  onPress={navigateToScanning}
                 />
               </View>
 
@@ -548,14 +625,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <RoundedButton
                     title="Premium Tier"
                     variant="premium"
-                    onPress={() => navigation.navigate("ChoosePlan")}
+                    onPress={navigateToChoosePlan}
                   />
                 )}
               </View>
 
               {!isPremium && (
                 <Pressable
-                  onPress={() => navigation.navigate("ChoosePlan")}
+                  onPress={navigateToChoosePlan}
                   className="flex-row items-center justify-center gap-1"
                 >
                   <MaterialCommunityIcons
@@ -576,7 +653,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             paddingBottom={0}
             navigation={navigation}
           />
-        </ImageBackground>
+        </LiveMapView>
       </View>
       <Sidebar ref={sidebarRef} navigation={navigation} activeKey="home" />
     </SafeAreaView>

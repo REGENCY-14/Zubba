@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Pressable,
   ScrollView,
   Text,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+  RefreshControl,
+  Dimensions,
+  Modal,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import type { RootStackScreenProps } from '../../navigation/types';
-import { useTheme } from '../../context/ThemeContext';
-import CustomAppBar from '../../components/common/CustomAppBar';
-import { scale, verticalScale, moderateScale } from '../../utils/scale';
+import type { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from "../../context/ThemeContext";
+import CustomAppBar from "../../components/common/CustomAppBar";
+import { walletService } from "../../api/walletService";
+import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
-type TxStatus = 'SUCCESS' | 'CREDITED' | 'PENDING' | 'FAILED';
-type FilterKey = 'All' | 'Incoming' | 'Expenses' | 'Success' | 'Failed';
+type TxStatus = "SUCCESS" | "CREDITED" | "PENDING" | "FAILED";
+type FilterKey = "All" | "Incoming" | "Expenses" | "Success" | "Failed";
 
 type Transaction = {
   id: string;
@@ -23,126 +27,52 @@ type Transaction = {
   amount: string;
   amountColor: string;
   status: TxStatus;
-  type: 'incoming' | 'expense';
+  type: "incoming" | "expense";
   iconBg: string;
-  iconName: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+  iconName: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
   iconColor: string;
 };
 
 const STATUS_COLOR: Record<TxStatus, string> = {
-  SUCCESS: '#31973D',
-  CREDITED: '#31973D',
-  PENDING: '#555E59',
-  FAILED: '#FF383C',
+  SUCCESS: "#31973D",
+  CREDITED: "#31973D",
+  PENDING: "#555E59",
+  FAILED: "#FF383C",
 };
 
-const ALL_TRANSACTIONS: Transaction[] = [
-  {
-    id: '1',
-    title: 'Weekly Pickup Fee',
-    date: 'Oct 24, 2023 • 08:45 AM',
-    amount: '- GHS 45.00',
-    amountColor: '#FF383C',
-    status: 'SUCCESS',
-    type: 'expense',
-    iconBg: 'rgba(0, 107, 35, 0.1)',
-    iconName: 'receipt-text-outline',
-    iconColor: '#31973D',
-  },
-  {
-    id: '2',
-    title: 'MoMo Top-up',
-    date: 'Oct 20, 2023 • 11:30 AM',
-    amount: '+ GHS 200.00',
-    amountColor: '#31973D',
-    status: 'PENDING',
-    type: 'incoming',
-    iconBg: 'rgba(20, 135, 50, 0.1)',
-    iconName: 'cellphone',
-    iconColor: '#31973D',
-  },
-  {
-    id: '3',
-    title: 'MoMo Top-up',
-    date: 'Oct 20, 2023 • 11:30 AM',
-    amount: '+ GHS 200.00',
-    amountColor: '#31973D',
-    status: 'PENDING',
-    type: 'incoming',
-    iconBg: 'rgba(20, 135, 50, 0.1)',
-    iconName: 'cellphone',
-    iconColor: '#31973D',
-  },
-  {
-    id: '4',
-    title: 'MoMo Top-up',
-    date: 'Oct 20, 2023 • 11:30 AM',
-    amount: '+ GHS 200.00',
-    amountColor: '#31973D',
-    status: 'PENDING',
-    type: 'incoming',
-    iconBg: 'rgba(20, 135, 50, 0.1)',
-    iconName: 'cellphone',
-    iconColor: '#31973D',
-  },
-  {
-    id: '5',
-    title: 'MoMo Top-up',
-    date: 'Oct 20, 2023 • 11:30 AM',
-    amount: '+ GHS 200.00',
-    amountColor: '#31973D',
-    status: 'PENDING',
-    type: 'incoming',
-    iconBg: 'rgba(20, 135, 50, 0.1)',
-    iconName: 'cellphone',
-    iconColor: '#31973D',
-  },
-  {
-    id: '6',
-    title: 'MoMo Top-up',
-    date: 'Oct 20, 2023 • 11:30 AM',
-    amount: '+ GHS 200.00',
-    amountColor: '#31973D',
-    status: 'PENDING',
-    type: 'incoming',
-    iconBg: 'rgba(20, 135, 50, 0.1)',
-    iconName: 'cellphone',
-    iconColor: '#31973D',
-  },
-  {
-    id: '7',
-    title: 'MoMo Top-up',
-    date: 'Oct 20, 2023 • 11:30 AM',
-    amount: '+ GHS 200.00',
-    amountColor: '#31973D',
-    status: 'PENDING',
-    type: 'incoming',
-    iconBg: 'rgba(20, 135, 50, 0.1)',
-    iconName: 'cellphone',
-    iconColor: '#31973D',
-  },
+const FILTERS: FilterKey[] = [
+  "All",
+  "Incoming",
+  "Expenses",
+  "Success",
+  "Failed",
 ];
-
-const FILTERS: FilterKey[] = ['All', 'Incoming', 'Expenses', 'Success', 'Failed'];
 
 function applyFilter(txs: Transaction[], filter: FilterKey): Transaction[] {
   switch (filter) {
-    case 'Incoming': return txs.filter((t) => t.type === 'incoming');
-    case 'Expenses': return txs.filter((t) => t.type === 'expense');
-    case 'Success':  return txs.filter((t) => t.status === 'SUCCESS' || t.status === 'CREDITED');
-    case 'Failed':   return txs.filter((t) => t.status === 'FAILED');
-    default:         return txs;
+    case "Incoming":
+      return txs.filter((t) => t.type === "incoming");
+    case "Expenses":
+      return txs.filter((t) => t.type === "expense");
+    case "Success":
+      return txs.filter(
+        (t) => t.status === "SUCCESS" || t.status === "CREDITED",
+      );
+    case "Failed":
+      return txs.filter((t) => t.status === "FAILED");
+    default:
+      return txs;
   }
 }
 
 function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
-  const { colors } = useTheme()
+  const { colors } = useTheme();
 
   return (
     <View
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingHorizontal: scale(16),
         paddingVertical: verticalScale(16),
         gap: moderateScale(16),
@@ -156,32 +86,59 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
           height: moderateScale(40),
           borderRadius: 9999,
           backgroundColor: tx.iconBg,
-          alignItems: 'center',
-          justifyContent: 'center',
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <MaterialCommunityIcons name={tx.iconName} size={moderateScale(20)} color={tx.iconColor} />
+        <MaterialCommunityIcons
+          name={tx.iconName}
+          size={moderateScale(20)}
+          color={tx.iconColor}
+        />
       </View>
 
       <View style={{ flex: 1, gap: moderateScale(4) }}>
-        <Text style={{ fontSize: moderateScale(14), fontWeight: '500', letterSpacing: 0.28, color: colors.text, lineHeight: moderateScale(17) }}>
+        <Text
+          style={{
+            fontSize: moderateScale(14),
+            fontWeight: "500",
+            letterSpacing: 0.28,
+            color: colors.text,
+            lineHeight: moderateScale(17),
+          }}
+        >
           {tx.title}
         </Text>
-        <Text style={{ fontSize: moderateScale(13), fontWeight: '400', color: colors.textSub, lineHeight: moderateScale(21) }}>
+        <Text
+          style={{
+            fontSize: moderateScale(13),
+            fontWeight: "400",
+            color: colors.textSub,
+            lineHeight: moderateScale(21),
+          }}
+        >
           {tx.date}
         </Text>
       </View>
 
-      <View style={{ alignItems: 'flex-end', gap: moderateScale(4) }}>
-        <Text style={{ fontSize: moderateScale(14), fontWeight: '600', letterSpacing: 0.28, color: tx.amountColor, lineHeight: moderateScale(17) }}>
+      <View style={{ alignItems: "flex-end", gap: moderateScale(4) }}>
+        <Text
+          style={{
+            fontSize: moderateScale(14),
+            fontWeight: "600",
+            letterSpacing: 0.28,
+            color: tx.amountColor,
+            lineHeight: moderateScale(17),
+          }}
+        >
           {tx.amount}
         </Text>
         <Text
           style={{
             fontSize: moderateScale(10),
-            fontWeight: '600',
+            fontWeight: "600",
             letterSpacing: -0.5,
-            textTransform: 'uppercase',
+            textTransform: "uppercase",
             color: STATUS_COLOR[tx.status],
             lineHeight: moderateScale(15),
           }}
@@ -193,22 +150,111 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
   );
 }
 
-export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transactions'>) {
-  const { colors } = useTheme()
+export function TransactionsScreen({
+  navigation,
+}: RootStackScreenProps<"Transactions">) {
+  const { colors } = useTheme();
 
-  const [activeFilter, setActiveFilter] = useState<FilterKey>('All');
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("All");
   const [showFilter, setShowFilter] = useState(false);
+  const [filterAnchor, setFilterAnchor] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
+  const filterButtonRef = useRef<View>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const filtered = applyFilter(ALL_TRANSACTIONS, activeFilter);
+  const openFilter = useCallback(() => {
+    filterButtonRef.current?.measureInWindow((x, y, width, height) => {
+      const screenWidth = Dimensions.get("window").width;
+      setFilterAnchor({
+        top: y + height + 6,
+        right: screenWidth - (x + width),
+      });
+      setShowFilter(true);
+    });
+  }, []);
+
+  const mapTransaction = (item: any): Transaction => {
+    const isExpense =
+      item.transaction_type === "withdrawal" || item.transaction_type === "fee";
+    const amount = Number(item.amount) || 0;
+
+    return {
+      id: item.id ?? String(Date.now()),
+      title: item.transaction_type ?? "Transaction",
+      date: item.created_at
+        ? new Date(item.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "Unknown date",
+      amount: isExpense
+        ? `- GHS ${amount.toFixed(2)}`
+        : `+ GHS ${amount.toFixed(2)}`,
+      amountColor: isExpense ? "#FF383C" : "#31973D",
+      status: item.status || "SUCCESS",
+      type: isExpense ? "expense" : "incoming",
+      iconBg: isExpense ? "rgba(255, 56, 60, 0.1)" : "rgba(0, 107, 35, 0.1)",
+      iconName: isExpense ? "receipt-text-outline" : "cellphone",
+      iconColor: isExpense ? "#FF383C" : "#31973D",
+    };
+  };
+
+  const loadTransactions = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await walletService.getTransactions({ limit: 50 });
+
+      if (response.success && Array.isArray(response.data.items)) {
+        const mapped = response.data.items.map(mapTransaction);
+        setTransactions(mapped);
+      } else {
+        setTransactions([]);
+      }
+    } catch (error) {
+      console.error("Failed to load transactions:", error);
+      setTransactions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadTransactions();
+    setRefreshing(false);
+  }, [loadTransactions]);
+
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
+
+  const filtered = applyFilter(transactions, activeFilter);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
-
-      <CustomAppBar title="Transactions" navigation={navigation}/>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      edges={["top", "left", "right"]}
+    >
+      <CustomAppBar title="Transactions" navigation={navigation} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: moderateScale(12), paddingBottom: verticalScale(40) }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.text}
+            colors={["#31973D"]}
+          />
+        }
       >
         {/* Main card */}
         <View
@@ -223,107 +269,159 @@ export function TransactionsScreen({ navigation }: RootStackScreenProps<'Transac
           }}
         >
           {/* Section header */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: scale(5) }}>
-            <Text style={{ fontSize: moderateScale(20), fontWeight: '500', color: colors.text, lineHeight: moderateScale(28) }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: scale(5),
+            }}
+          >
+            <Text
+              style={{
+                fontSize: moderateScale(20),
+                fontWeight: "500",
+                color: colors.text,
+                lineHeight: moderateScale(28),
+              }}
+            >
               Recent Activity
             </Text>
             <Pressable
-              onPress={() => setShowFilter((v) => !v)}
-              style={{ width: moderateScale(32), height: moderateScale(32), alignItems: 'center', justifyContent: 'center' }}
+              ref={filterButtonRef}
+              onPress={openFilter}
+              style={{
+                width: moderateScale(32),
+                height: moderateScale(32),
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <MaterialCommunityIcons name="tune-variant" size={moderateScale(18)} color={colors.iconColor} />
+              <MaterialCommunityIcons
+                name="tune-variant"
+                size={moderateScale(18)}
+                color={colors.iconColor}
+              />
             </Pressable>
           </View>
 
+          {/* Loading state */}
+          {loading && !refreshing && (
+            <View style={{ padding: 32, alignItems: "center" }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: colors.textSub,
+                  textAlign: "center",
+                }}
+              >
+                Loading transactions...
+              </Text>
+            </View>
+          )}
+
           {/* Transactions list */}
-          <View
-            style={{
-              backgroundColor: colors.surface,
-              borderWidth: 1,
-              borderColor: colors.border,
-              borderRadius: moderateScale(24),
-              overflow: 'hidden',
-            }}
-          >
-            {filtered.length > 0 ? (
-              filtered.map((tx, i) => (
-                <TransactionRow key={tx.id + i} tx={tx} isLast={i === filtered.length - 1} />
-              ))
-            ) : (
-              <View style={{ padding: moderateScale(32), alignItems: 'center' }}>
-                <Text style={{ fontSize: moderateScale(14), color: colors.text, textAlign: 'center' }}>
-                  No transactions found
-                </Text>
-              </View>
-            )}
-          </View>
+          {!loading && (
+            <View
+              style={{
+                backgroundColor: colors.surface,
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: moderateScale(24),
+                overflow: "hidden",
+              }}
+            >
+              {filtered.length > 0 ? (
+                filtered.map((tx, i) => (
+                  <TransactionRow
+                    key={tx.id + i}
+                    tx={tx}
+                    isLast={i === filtered.length - 1}
+                  />
+                ))
+              ) : (
+                <View style={{ padding: moderateScale(32), alignItems: "center" }}>
+                  <Text
+                    style={{
+                      fontSize: moderateScale(14),
+                      color: colors.textSub,
+                      textAlign: "center",
+                    }}
+                  >
+                    No transactions found
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
         </View>
       </ScrollView>
 
       {/* Filter dropdown overlay */}
-      {showFilter && (
-        <>
-          {/* Tap-outside backdrop */}
-          <Pressable
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onPress={() => setShowFilter(false)}
-          />
-
-          {/* Dropdown panel */}
-          <View
-            style={{
-              position: 'absolute',
-              top: verticalScale(154),
-              right: scale(16),
-              width: scale(161),
-              backgroundColor: colors.bg,
-              borderWidth: 1,
-              borderColor: colors.borderLight,
-              borderRadius: moderateScale(24),
-              padding: moderateScale(8),
-              gap: moderateScale(4),
-              shadowColor: 'rgba(69, 71, 69, 0.15)',
-              shadowOffset: { width: 0, height: -4 },
-              shadowOpacity: 1,
-              shadowRadius: 8,
-              elevation: 8,
-            }}
-          >
-            {FILTERS.map((filter) => {
-              const isActive = filter === activeFilter;
-              return (
-                <Pressable
-                  key={filter}
-                  onPress={() => {
-                    setActiveFilter(filter);
-                    setShowFilter(false);
-                  }}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: scale(8),
-                    height: verticalScale(32),
-                    borderRadius: moderateScale(16),
-                    backgroundColor: isActive ? colors.surface : 'transparent',
-                  }}
-                >
-                  <Text
+      <Modal
+        transparent
+        visible={showFilter}
+        animationType="fade"
+        onRequestClose={() => setShowFilter(false)}
+      >
+        <Pressable style={{ flex: 1 }} onPress={() => setShowFilter(false)}>
+          {filterAnchor && (
+            <View
+              style={{
+                position: "absolute",
+                top: filterAnchor.top,
+                right: filterAnchor.right,
+                width: scale(161),
+                backgroundColor: colors.bg,
+                borderWidth: 1,
+                borderColor: colors.borderLight,
+                borderRadius: moderateScale(24),
+                padding: moderateScale(8),
+                gap: moderateScale(4),
+                shadowColor: "rgba(69, 71, 69, 0.15)",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 1,
+                shadowRadius: 8,
+                elevation: 8,
+              }}
+            >
+              {FILTERS.map((filter) => {
+                const isActive = filter === activeFilter;
+                return (
+                  <Pressable
+                    key={filter}
+                    onPress={() => {
+                      setActiveFilter(filter);
+                      setShowFilter(false);
+                    }}
                     style={{
-                      fontSize: moderateScale(14),
-                      fontWeight: '400',
-                      color: isActive ? colors.text : colors.textMuted,
-                      lineHeight: moderateScale(20),
+                      flexDirection: "row",
+                      alignItems: "center",
+                      paddingHorizontal: scale(8),
+                      height: verticalScale(32),
+                      borderRadius: moderateScale(16),
+                      backgroundColor: isActive
+                        ? colors.surface
+                        : "transparent",
                     }}
                   >
-                    {filter}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </>
-      )}
-
+                    <Text
+                      style={{
+                        fontSize: moderateScale(14),
+                        fontWeight: "400",
+                        color: isActive ? colors.text : colors.textMuted,
+                        lineHeight: moderateScale(20),
+                      }}
+                    >
+                      {filter}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

@@ -8,15 +8,22 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { walletService } from "../../api/walletService";
 import { handleApiError } from "../../utils/handleApiError";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { formatAuthPhone } from "../../utils/paymentProviders";
+import { toast } from "../../hooks/toast";
 
 const QUICK_AMOUNTS = [10, 20, 50, 100, 200];
 
 export function WithdrawScreen({
   navigation,
+  route,
 }: RootStackScreenProps<"Withdraw">) {
   const { colors, isDark } = useTheme();
+  const user = useAppSelector((state) => state.auth.user);
 
-  const [phone, setPhone] = useState("055 123 4567");
+  const { provider = "mtn", methodLabel = "Mobile Money" } = route.params ?? {};
+
+  const [phone, setPhone] = useState(formatAuthPhone(user?.phone) || "055 123 4567");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
   const [customAmount, setCustomAmount] = useState("GHS 50.00");
   const [loading, setLoading] = useState(false);
@@ -32,12 +39,18 @@ export function WithdrawScreen({
     if (amount <= 0 || loading) return;
     setLoading(true);
     try {
-      await walletService.withdraw({
+      const res = await walletService.withdraw({
         amount,
         phone: phone.replace(/\s/g, ""),
-        provider: "mtn",
+        provider,
+        name: `${user?.firstname ?? ""} ${user?.lastname ?? ""}`.trim() || "Zubba User",
       });
-      navigation.navigate("ZubbaWallet", { debited: true });
+      if (res.success) {
+        toast.success(
+          `Withdrawal initiated${res.data.reference ? `\nRef: ${res.data.reference}` : ""}`,
+        );
+        navigation.navigate("ZubbaWallet", { debited: true });
+      }
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -58,7 +71,7 @@ export function WithdrawScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <CustomAppBar title="Debit Account" navigation={navigation} />
 
@@ -71,7 +84,6 @@ export function WithdrawScreen({
         contentContainerStyle={{ flexGrow: 1, padding: moderateScale(12) }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Form card */}
         <View
           className="flex justify-between"
           style={{
@@ -85,7 +97,12 @@ export function WithdrawScreen({
           }}
         >
           <View>
-            {/* Wallet Phone Number */}
+            <View style={{ marginBottom: moderateScale(12) }}>
+              <Text style={{ fontSize: moderateScale(14), color: colors.textSub }}>
+                Payout method: {methodLabel}
+              </Text>
+            </View>
+
             <View style={{ gap: moderateScale(8) }}>
               <Text
                 style={{
@@ -125,17 +142,17 @@ export function WithdrawScreen({
                   lineHeight: moderateScale(16),
                 }}
               >
-                Enter your mobile money number
+                Enter the mobile money number to receive funds
               </Text>
             </View>
 
-            {/* Amount to top up */}
             <View
               style={{
                 borderTopWidth: 1,
                 borderTopColor: colors.borderLight,
                 paddingTop: verticalScale(8),
                 gap: moderateScale(8),
+                marginTop: verticalScale(8),
               }}
             >
               <Text
@@ -147,7 +164,7 @@ export function WithdrawScreen({
                   lineHeight: moderateScale(22),
                 }}
               >
-                Amount to top up
+                Amount to withdraw
               </Text>
 
               <TextInput
@@ -168,7 +185,6 @@ export function WithdrawScreen({
                 }}
               />
 
-              {/* Quick select chips */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -196,7 +212,7 @@ export function WithdrawScreen({
                           fontSize: moderateScale(16),
                           fontWeight: "400",
                           lineHeight: moderateScale(24),
-                          color: isSelected ? colors.text : colors.textMuted,
+                          color: isSelected ? colors.bg : colors.textMuted,
                         }}
                       >
                         GHS {amount}
@@ -208,14 +224,7 @@ export function WithdrawScreen({
             </View>
           </View>
 
-          <View
-            style={{
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingVertical: verticalScale(12),
-            }}
-          >
+          <View style={{ paddingVertical: verticalScale(12) }}>
             <Pressable
               style={{
                 height: verticalScale(48),
@@ -228,16 +237,20 @@ export function WithdrawScreen({
               onPress={handleWithdraw}
               disabled={loading}
             >
-              <Text
-                style={{
-                  fontSize: moderateScale(14),
-                  fontWeight: "400",
-                  color: "#FFFFFF",
-                  lineHeight: moderateScale(20),
-                }}
-              >
-                Top up
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: moderateScale(14),
+                    fontWeight: "400",
+                    color: "#FFFFFF",
+                    lineHeight: moderateScale(20),
+                  }}
+                >
+                  Withdraw
+                </Text>
+              )}
             </Pressable>
           </View>
         </View>

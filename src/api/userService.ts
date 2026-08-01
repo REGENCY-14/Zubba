@@ -21,7 +21,7 @@ export const userService = {
   },
 
   updateUser: async (id: string, payload: UpdateUserDto) => {
-    const { data } = await api.patch<ApiResponse<{ message: string }>>(
+    const { data } = await api.patch<ApiResponse<{ user: User }>>(
       `/users/${id}`,
       payload,
     );
@@ -40,6 +40,11 @@ export const userService = {
 
   getMe: async () => {
     const { data } = await api.get<ApiResponse<{ user: User }>>("/users/me");
+    return data;
+  },
+
+  acceptTerms: async () => {
+    const { data } = await api.post<ApiResponse<{ user: User }>>("/users/me/accept-terms");
     return data;
   },
 };

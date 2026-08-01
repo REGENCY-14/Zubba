@@ -24,6 +24,7 @@ export interface RequestDriverInfo {
   code: string | null;
   profile_picture: string | null;
   vehicle_plate: string | null;
+  phone?: string | null;
   is_premium: boolean;
   rating: number;
   rating_count: number;

@@ -18,6 +18,12 @@ import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { walletService } from "../../api/walletService";
+import {
+  getMethodLabel,
+  mapMethodToChannel,
+  mapMethodToProvider,
+  type PaymentMethodId,
+} from "../../utils/paymentProviders";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
@@ -165,7 +171,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
             fontSize: moderateScale(14),
             fontWeight: "500",
             letterSpacing: 0.28,
-            color: colors.textMuted,
+            color: colors.text,
             lineHeight: moderateScale(17),
           }}
         >
@@ -285,7 +291,7 @@ export function ZubbaWalletScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       {/* Header */}
       <View
@@ -600,14 +606,18 @@ export function ZubbaWalletScreen({
               >
                 Recent Activity
               </Text>
-              <MaterialCommunityIcons
-                name="tune-variant"
-                size={moderateScale(18)}
-                color="#ACB5BB"
-              />
+              <Pressable
+                onPress={() => navigation.navigate("Transactions")}
+              >
+                <MaterialCommunityIcons
+                  name="tune-variant"
+                  size={moderateScale(18)}
+                  color="#ACB5BB"
+                />
+              </Pressable>
             </View>
 
-            {!hasTransactions ? (
+            {hasTransactions ? (
               /* Transactions list */
               <View>
                 <View
@@ -619,7 +629,7 @@ export function ZubbaWalletScreen({
                     overflow: "hidden",
                   }}
                 >
-                  {transactions.map((tx, i) => (
+                  {transactions.slice(0,5).map((tx, i) => (
                     <TransactionRow
                       key={tx.id}
                       tx={tx}
@@ -713,11 +723,18 @@ export function ZubbaWalletScreen({
       <PaymentMethodDrawer
         visible={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        onContinue={() => {
+        isCreditPage={activeSheet !== "withdraw"}
+        onContinue={(method: PaymentMethodId) => {
           const dest =
             activeSheet === "withdraw" ? "Withdraw" : "CreditAccount";
           setSheetOpen(false);
-          navigation.navigate(dest);
+          navigation.navigate(dest, {
+            provider: mapMethodToProvider(method),
+            methodLabel: getMethodLabel(method),
+            ...(dest === "CreditAccount"
+              ? { channel: mapMethodToChannel(method) }
+              : {}),
+          });
         }}
       />
     </SafeAreaView>

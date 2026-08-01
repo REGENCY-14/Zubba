@@ -6,6 +6,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { formatProviderLabel } from "../../utils/paymentProviders";
 
 export function PaymentSuccessScreen({
   navigation,
@@ -14,14 +15,19 @@ export function PaymentSuccessScreen({
   const { colors } = useTheme();
   const request = useAppSelector((state) => state.request);
   const user = useAppSelector((state) => state.auth.user);
-  const { reference, amount, provider, phone } = route.params || {};
-  const transactionReference = request.transaction_reference || reference || "N/A";
-  const totalAmount = amount || request.pickup_price + request.service_price || 0;
+  const { reference, amount, provider, phone, paymentMethodLabel } = route.params || {};
+  const transactionReference =
+    reference || request.transaction_reference || "N/A";
+  const totalAmount =
+    amount ?? (request.pickup_price + request.service_price || 0);
+  const paymentPhone = phone || request.payment_method || "";
+  const methodLabel =
+    paymentMethodLabel || formatProviderLabel(provider || request.payment_method);
 
   const details = [
     { label: "Transaction Reference", value: transactionReference },
-    { label: "Payment Method", value: provider || request.payment_method || "Mobile Money" },
-    { label: "Account Number", value: phone || user?.phone || "" },
+    { label: "Payment Method", value: methodLabel },
+    { label: "Account Number", value: paymentPhone || "N/A" },
     { label: "Account Name", value: `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || "N/A" },
     { label: "Amount Paid", value: `GHS ${totalAmount.toFixed(2)}` },
     { label: "Bin Bags", value: `${request.bags || 0} Bag${request.bags !== 1 ? "s" : ""}` },
@@ -31,14 +37,20 @@ export function PaymentSuccessScreen({
   ];
 
   const handleDone = () => {
-    navigation.navigate("RateRide");
+    navigation.navigate("RateRide", {
+      reference: transactionReference,
+      amount: totalAmount,
+      provider: provider || request.payment_method,
+      phone: paymentPhone,
+      paymentMethodLabel: methodLabel,
+    });
   };
 
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
       className="flex-1"
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ backgroundColor: colors.bg }} className="flex-1">
         <CustomAppBar navigation={() => navigation.goBack()} title="Success" />

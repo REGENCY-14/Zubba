@@ -4,7 +4,6 @@ import {
   View,
   Pressable,
   TextInput,
-  Image,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -19,8 +18,6 @@ import { useTheme } from "../../context/ThemeContext";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-
-const ghanaFlag = require("../../../assets/ghana-flag.png");
 
 export function FindAccountScreen({
   route,
@@ -77,17 +74,6 @@ export function FindAccountScreen({
           </Text>
 
           <View className="flex-row items-center gap-2 h-12">
-            <View style={{ flexDirection: 'row', borderRadius: 9999, alignItems: 'center', justifyContent: 'space-between', gap: scale(16), height: verticalScale(48), padding: moderateScale(10), backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
-              <View className="rounded-full overflow-hidden">
-                <Image
-                  source={ghanaFlag}
-                  style={{ width: scale(28), height: verticalScale(20) }}
-                  resizeMode="contain"
-                />
-              </View>
-              <MaterialCommunityIcons name="chevron-down" size={moderateScale(24)} color={colors.iconColor} />
-            </View>
-
             <View
               style={{ flex: 1, height: verticalScale(48), justifyContent: 'center', paddingHorizontal: scale(16), borderRadius: 9999, borderWidth: 1, backgroundColor: colors.card, borderColor: isFocused || isPhoneValid ? colors.text : colors.border }}
             >

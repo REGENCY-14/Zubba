@@ -7,7 +7,7 @@ import RoundedButton from "../../components/common/RoundedButton";
 import { toast } from "../../hooks/toast";
 import { useTheme } from "../../context/ThemeContext";
 import { scale, verticalScale } from "../../utils/scale";
-import { registerForPushNotifications } from "../../services/pushNotifications";
+import { requestNotificationPermissionOnly } from "../../services/pushNotifications";
 
 export const OnboardNotificationsAccessScreen = ({
   navigation,
@@ -19,8 +19,8 @@ export const OnboardNotificationsAccessScreen = ({
   const enableNotifications = async () => {
     setLoading(true);
     try {
-      const token = await registerForPushNotifications();
-      if (token) {
+      const granted = await requestNotificationPermissionOnly();
+      if (granted) {
         toast.success("Success\nNotifications enabled!");
       } else {
         toast.info("Permission denied\nYou can enable notifications later in settings.");
@@ -64,6 +64,13 @@ export const OnboardNotificationsAccessScreen = ({
             onPress={enableNotifications}
             disabled={loading}
             style={{ opacity: loading ? 0.6 : 1 }}
+          />
+          <RoundedButton
+            title="Maybe later"
+            variant="secondary"
+            onPress={() =>
+              navigation.navigate("SignUp")
+            }
           />
         </View>
       </ScrollView>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+    ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -21,7 +22,7 @@ import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const googleIcon = require("../../../assets/Google icon.png");
+const googleIcon = require("../../../assets/google-icon.png");
 
 export function EmailSignUpScreen({
   navigation,
@@ -30,14 +31,18 @@ export function EmailSignUpScreen({
   const registerMutation = useRegister();
   const { colors } = useTheme();
 
-  const { request, promptAsync, response } = useGoogleLogin();
+  const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleLogin();
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const idToken = response.params.id_token;
-      authService.googleLogin(idToken);
+  const handleGoogleContinue = async () => {
+    const user = await signInWithGoogle("customer");
+    if (!user) return;
+
+    if (!user.email || !user.phone) {
+      navigation.replace("NewUserOnboarding", { email: user.email });
+    } else {
+      navigation.replace("ExistingUserNotification", { email: user.email });
     }
-  }, [response]);
+  };
 
   const isEmailValid = useMemo(() => EMAIL_REGEX.test(email.trim()), [email]);
 
@@ -144,7 +149,8 @@ export function EmailSignUpScreen({
             </View>
 
             <Pressable
-              onPress={() => promptAsync()}
+              onPress={handleGoogleContinue}
+              disabled={isGoogleLoading}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -156,18 +162,25 @@ export function EmailSignUpScreen({
                 height: verticalScale(48),
                 backgroundColor: colors.card,
                 marginBottom: verticalScale(12),
+                opacity: isGoogleLoading ? 0.6 : 1,
               }}
             >
-              <Image
-                source={googleIcon}
-                style={{ width: moderateScale(16), height: moderateScale(16) }}
-                resizeMode="contain"
-              />
-              <Text
-                style={{ fontSize: moderateScale(14), color: colors.text, fontWeight: "500" }}
-              >
-                Continue with Google
-              </Text>
+              {isGoogleLoading ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <>
+                  <Image
+                    source={googleIcon}
+                    style={{ width: moderateScale(20), height: moderateScale(20) }}
+                    resizeMode="contain"
+                  />
+                  <Text
+                    style={{ fontSize: moderateScale(14), color: colors.text, fontWeight: "500" }}
+                  >
+                    Continue with Google
+                  </Text>
+                </>
+              )}
             </Pressable>
 
             <Pressable

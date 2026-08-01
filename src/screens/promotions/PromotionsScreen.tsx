@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useTheme, ThemeColors } from '../../context/ThemeContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useNavigateToChoosePlan } from '../../hooks/useSubscription';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
@@ -87,6 +88,7 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
 export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotions'>) {
   const { colors } = useTheme();
   const customer = useAppSelector((state) => state.customer);
+  const navigateToChoosePlan = useNavigateToChoosePlan();
   const [promoCode, setPromoCode] = useState('');
   const [redeemMessage, setRedeemMessage] = useState<{ text: string; success: boolean } | null>(null);
 
@@ -149,14 +151,14 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
       description: 'Upgrade to Gold for double Eco-Points, priority support, and scheduled pickups.',
       badge: 'Popular',
       cta: 'Upgrade',
-      onPress: () => navigation.navigate('ChoosePlan'),
+      onPress: navigateToChoosePlan,
       premiumOnly: true,
     },
   ];
   const promos = allPromos.filter((promo) => !promo.premiumOnly || !customer.is_premium);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right', 'bottom']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
 

@@ -12,7 +12,17 @@ export const top_sidebar_items: SidebarMenuItem[] = [
     label: "Profile",
     icon: "account-outline",
     navigate: "Profile",
-  },
+  }
+];
+
+export const noPlanSidebarItem: SidebarMenuItem = {
+  key: "subscription",
+  label: "Subscription",
+  icon: "account-star-outline",
+  navigate: "ChoosePlan",
+};
+
+export const isPremiumSidebarItems: SidebarMenuItem[] = [
   {
     key: "wallet",
     label: "Zubba Wallet",
@@ -20,28 +30,20 @@ export const top_sidebar_items: SidebarMenuItem[] = [
     navigate: "ZubbaWallet",
   },
   {
+    key: "chooseplan",
+    label: "Subscription",
+    icon: "crown-outline",
+    navigate: "ManageSubscription",
+  },
+];
+
+export const bottom_sidebar_items: SidebarMenuItem[] = [
+  {
     key: "settings",
     label: "Settings",
     icon: "cog-outline",
     navigate: "Settings",
   },
-];
-
-export const noPlanSidebarItem: SidebarMenuItem = {
-  key: "subscription",
-  label: "Subscription",
-  icon: "account-star-outline",
-  navigate: "ManageSubscription",
-};
-
-export const isPremiumSidebarItem: SidebarMenuItem = {
-  key: "chooseplan",
-  label: "Subscription",
-  icon: "crown-outline",
-  navigate: "ConfirmSubscription",
-};
-
-export const bottom_sidebar_items: SidebarMenuItem[] = [
   {
     key: "support",
     label: "Support",

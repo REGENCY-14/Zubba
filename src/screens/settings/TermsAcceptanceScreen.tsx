@@ -14,13 +14,19 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import { scale, moderateScale } from "../../utils/scale";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { updateUser } from "../../slices/auth/authSlice";
+import { userService } from "../../api/userService";
+import { toast } from "../../hooks/toast";
 
 export function TermsAcceptanceScreen({
   route,
   navigation,
 }: RootStackScreenProps<"TermsAcceptance">) {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   return (
     <SafeAreaView
@@ -123,15 +129,28 @@ export function TermsAcceptanceScreen({
           </Pressable>
 
           <Pressable
-            disabled={!agreedToTerms}
-            onPress={() =>
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: "Home" }],
-                }),
-              )
-            }
+            disabled={!agreedToTerms || submitting}
+            onPress={async () => {
+              setSubmitting(true);
+              try {
+                console.log("accepting terms");
+                const res = await userService.acceptTerms();
+                console.log(res);
+                if (res.success) {
+                  dispatch(updateUser(res.data.user));
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [{ name: "Home" }],
+                    }),
+                  );
+                }
+              } catch {
+                toast.error("Could not accept terms. Please try again.");
+              } finally {
+                setSubmitting(false);
+              }
+            }}
             style={[
               {
                 width: scale(96),
@@ -140,7 +159,7 @@ export function TermsAcceptanceScreen({
                 alignItems: "center",
                 justifyContent: "center",
               },
-              agreedToTerms
+              agreedToTerms && !submitting
                 ? { backgroundColor: "#34A853" }
                 : { backgroundColor: "rgba(52, 168, 83, 0.5)" },
             ]}

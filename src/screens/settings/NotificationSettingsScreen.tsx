@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
@@ -13,6 +14,11 @@ import {
   useUpdatePreferences
 } from "../../hooks/useNotifications";
 import { toast } from "../../hooks/toast";
+import {
+  getNotificationPermissionStatus,
+  openNotificationSettings,
+  registerForPushNotifications,
+} from "../../services/pushNotifications";
 
 const FREQUENCIES = ["Daily", "Weekly", "Monthly", "Never"];
 
@@ -135,7 +141,17 @@ export function NotificationSettingsScreen({
 
   const [frequencyOpen, setFrequencyOpen] = useState(false);
   const [anchor, setAnchor] = useState({ top: 0, right: 0, width: 0 });
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
   const buttonRef = useRef<View>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      getNotificationPermissionStatus().then((status) => {
+        setPushEnabled(status === "granted");
+      });
+    }, []),
+  );
 
   // Load preferences when fetched
   useEffect(() => {
@@ -173,8 +189,7 @@ export function NotificationSettingsScreen({
 
   const savePreferences = (updates: any) => {
     const payload: any = {};
-    
-    // Map frontend values to backend keys
+
     Object.entries(updates).forEach(([key, value]) => {
       payload[key] = value;
     });
@@ -187,6 +202,31 @@ export function NotificationSettingsScreen({
         toast.success('Preferences saved successfully');
       },
     });
+  };
+
+  const handlePushToggle = async (value: boolean) => {
+    if (pushLoading) return;
+
+    if (value) {
+      setPushLoading(true);
+      try {
+        const token = await registerForPushNotifications();
+        setPushEnabled(Boolean(token));
+        if (token) {
+          toast.success("Push notifications enabled");
+        } else {
+          toast.info("Permission denied. Enable notifications in your device settings.");
+        }
+      } catch {
+        toast.error("Unable to enable push notifications");
+      } finally {
+        setPushLoading(false);
+      }
+      return;
+    }
+
+    toast.info("Turn off notifications in your device settings.");
+    await openNotificationSettings();
   };
 
   const handleFrequencyChange = (freq: string) => {
@@ -217,7 +257,7 @@ export function NotificationSettingsScreen({
 
   if (isLoadingPrefs) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
         <CustomAppBar title="Notifications" navigation={navigation} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#31973D" />
@@ -229,7 +269,7 @@ export function NotificationSettingsScreen({
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      edges={["top", "left", "right"]}
+      edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <CustomAppBar title="Notifications" navigation={navigation} />
@@ -304,6 +344,23 @@ export function NotificationSettingsScreen({
                 }}
                 className="rounded-2xl border overflow-hidden"
               >
+                <View
+                  style={{ borderColor: colors.border }}
+                  className="flex-row items-center justify-between border-b px-4 py-4"
+                >
+                  <View className="flex-1 gap-1 pr-4">
+                    <Text className="text-sm font-semibold" style={{ color: colors.text }}>
+                      Push Notifications
+                    </Text>
+                    <Text style={{ color: colors.textSub }} className="text-xs">
+                      Receive alerts on this device for driver updates and promos
+                    </Text>
+                  </View>
+                  <AnimatedSwitch
+                    value={pushEnabled}
+                    onChange={handlePushToggle}
+                  />
+                </View>
                 {DELIVERY_METHODS.map((item, i) => (
                   <ToggleListItem
                     key={item.key}

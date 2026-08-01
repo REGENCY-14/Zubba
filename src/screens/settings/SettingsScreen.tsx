@@ -12,6 +12,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slices/auth/authSlice";
+import { clearCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
@@ -113,10 +114,11 @@ export function SettingsScreen({
   const dispatch = useAppDispatch();
 
   const zubbaText = require("../../../assets/zubbaText.png");
-  const tricycleImage = require("../../../assets/tricycle image.png");
+  const tricycleImage = require("../../../assets/tricycle-image.png");
 
   const handleSignout = async () => {
     dispatch(logout());
+    dispatch(clearCustomer());
     await authStorage.clear();
     navigation.reset({
       index: 0,
@@ -136,7 +138,7 @@ export function SettingsScreen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: scale(12),
-            paddingBottom: verticalScale(148),
+            paddingBottom: verticalScale(90),
             gap: verticalScale(24),
           }}
         >

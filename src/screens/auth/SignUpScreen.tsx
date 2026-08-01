@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+    ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -20,8 +21,7 @@ import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
-const googleIcon = require("../../../assets/Google icon.png");
-const ghanaFlag = require("../../../assets/ghana-flag.png");
+const googleIcon = require("../../../assets/google-icon.png");
 
 export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -31,7 +31,18 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const digitsOnly = phoneNumber.replace(/\D/g, "");
   const canContinue = digitsOnly.length >= 6;
 
-  const { request, promptAsync, response } = useGoogleLogin();
+  const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleLogin();
+
+  const handleGoogleContinue = async () => {
+    const user = await signInWithGoogle("customer");
+    if (!user) return;
+
+    if (!user.email || !user.phone) {
+      navigation.replace("NewUserOnboarding", { email: user.email });
+    } else {
+      navigation.replace("ExistingUserNotification", { email: user.email });
+    }
+  };
 
   const handleRegister = async () => {
     try {
@@ -49,13 +60,6 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
       handleApiError(err)
     }
   };
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const idToken = response.params.id_token;
-      authService.googleLogin(idToken);
-    }
-  }, [response]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -90,34 +94,6 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   marginBottom: verticalScale(16),
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    borderRadius: 9999,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: scale(16),
-                    height: verticalScale(48),
-                    padding: moderateScale(10),
-                    backgroundColor: colors.card,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <View style={{ borderRadius: 9999, overflow: "hidden" }}>
-                    <Image
-                      source={ghanaFlag}
-                      style={{ width: scale(28), height: verticalScale(20) }}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <MaterialCommunityIcons
-                    name="chevron-down"
-                    size={moderateScale(24)}
-                    color={colors.iconColor}
-                  />
-                </View>
-
                 <TextInput
                   style={{
                     flex: 1,
@@ -195,7 +171,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               </View>
 
               <Pressable
-                onPress={() => promptAsync()}
+                onPress={handleGoogleContinue}
+                disabled={isGoogleLoading}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -207,22 +184,29 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   height: verticalScale(48),
                   backgroundColor: colors.card,
                   marginBottom: verticalScale(12),
+                  opacity: isGoogleLoading ? 0.6 : 1,
                 }}
               >
-                <Image
-                  source={googleIcon}
-                  style={{ width: moderateScale(16), height: moderateScale(16) }}
-                  resizeMode="contain"
-                />
-                <Text
-                  style={{
-                    fontSize: moderateScale(14),
-                    color: colors.text,
-                    fontWeight: "500",
-                  }}
-                >
-                  Continue with Google
-                </Text>
+                {isGoogleLoading ? (
+                  <ActivityIndicator size="small" color={colors.text} />
+                ) : (
+                  <>
+                    <Image
+                      source={googleIcon}
+                      style={{ width: moderateScale(20), height: moderateScale(20) }}
+                      resizeMode="contain"
+                    />
+                    <Text
+                      style={{
+                        fontSize: moderateScale(14),
+                        color: colors.text,
+                        fontWeight: "500",
+                      }}
+                    >
+                      Continue with Google
+                    </Text>
+                  </>
+                )}
               </Pressable>
 
               <Pressable

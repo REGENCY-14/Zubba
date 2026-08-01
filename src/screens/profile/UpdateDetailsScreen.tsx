@@ -12,8 +12,6 @@ import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { useResendOtp } from '../../slices/auth/auth.hooks';
 import { toast } from '../../hooks/toast';
 
-const ghanaFlag = require('../../../assets/ghana-flag.png');
-
 export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<'UpdateDetails'>) {
   const { isDark, colors } = useTheme();
   const user = useAppSelector((state) => state.auth.user);
@@ -66,8 +64,15 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
 
   const handleSendOtp = () => {
     const authKey = isEmailMode ? 'email' : 'phone';
-    const authValue = isEmailMode ? (isNewContactStep ? emailAddress : user?.email) : (isNewContactStep ? phoneNumber : user?.phone);
+    const authValue = isEmailMode
+      ? (isNewContactStep ? emailAddress : user?.email)
+      : (isNewContactStep ? phoneNumber : user?.phone);
     const purpose = isNewContactStep ? 'update_new' : 'update_old';
+
+    if (!authValue?.trim()) {
+      toast.error(isEmailMode ? 'Enter a valid email address' : 'Enter a valid phone number');
+      return;
+    }
 
     // First, send OTP
     resendOtp(
@@ -100,7 +105,7 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
     : phoneNumber.trim().length > 0;
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{backgroundColor: colors.bg}} className="flex-1" edges={['top', 'left', 'right', 'bottom']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View className="flex-1">
         <CustomAppBar title="Update Details" navigation={navigation} />
@@ -147,15 +152,6 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
               <Text className="text-[15px] leading-[22px]" style={{ color: colors.text, fontFamily: 'Poppins' }}>{contactLabel}</Text>
 
               <View className="flex-row items-center gap-2">
-                {!isEmailMode ? (
-                  <View style={{borderColor: colors.border}} className="h-12 p-[10px] gap-2 border rounded-full flex-row items-center justify-between">
-                    <View className="rounded-full overflow-hidden">
-                      <Image source={ghanaFlag} style={{ width: scale(28), height: verticalScale(20) }} resizeMode="contain" />
-                    </View>
-                    <MaterialCommunityIcons name="menu-down" size={moderateScale(24)} color={colors.text} />
-                  </View>
-                ) : null}
-
                 <TextInput
                   style={{borderColor: colors.border, color: colors.text}}
                   className="flex-1 h-12 rounded-full px-4 text-[15px] border"

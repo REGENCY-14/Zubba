@@ -9,10 +9,11 @@ import {
 } from "../slices/auth/auth.types";
 import { ApiResponse } from "../types/api.types";
 import axios from "axios";
+import { env } from "../utils/env";
 
 export const authService = {
   googleLogin: (idToken: string) => {
-    return axios.post(`${process.env.EXPO_PUBLIC_API_URL}/auth/google`, {
+    return axios.post(`${env.apiUrl}/auth/google`, {
       idToken, role: "customer"
     });
   },
@@ -43,10 +44,25 @@ export const authService = {
   },
 
   refreshToken: async (payload: RefreshTokenDto) => {
-    const { data } = await api.post<ApiResponse<{ accessToken: string }>>(
-      "/auth/refresh-token",
+    const { data } = await axios.post<ApiResponse<{ accessToken: string }>>(
+      `${env.apiUrl}/auth/refresh-token`,
       payload,
     );
+    return data;
+  },
+
+  getWelcomeContext: async (params: {
+    authKey: string;
+    authValue: string;
+    sessionId?: string;
+  }) => {
+    const { data } = await api.get<
+      ApiResponse<{
+        isFirstLogin: boolean;
+        previousLogin: { authKey: string; authValue: string } | null;
+        matchesCurrentLogin: boolean;
+      }>
+    >("/auth/welcome-context", { params });
     return data;
   },
 };
