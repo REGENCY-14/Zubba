@@ -344,7 +344,7 @@ export function ActiveSessionScreen({
               sessions.map((session, index) => (
                 <DeviceCard
                   key={session.id}
-                  iconName={session.platform === "ios" ? "cellphone" : "laptop"}
+                  iconName={"cellphone"}
                   title={session.device_name ?? "Unknown device"}
                   location={session.ip_address ?? "Unknown location"}
                   status={`Last active ${new Date(session.last_active_at).toLocaleString()}`}

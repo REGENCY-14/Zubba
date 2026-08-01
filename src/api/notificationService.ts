@@ -15,8 +15,8 @@ export const notificationService = {
 
   getDeviceName : () => {
     return (
-      Device.deviceName ??
       Device.modelName ??
+      Device.deviceName ??
       (Platform.OS === "ios" ? "iPhone" : "Android Device")
     );
   },
