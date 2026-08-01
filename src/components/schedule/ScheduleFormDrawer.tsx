@@ -359,6 +359,7 @@ export function ScheduleFormDrawer({
     setFrequencyOpen(false);
     setCalendarOpen(false);
     setTimePickerFor(null);
+    setDriverListOpen(false);
   };
 
   const openTimePicker = (which: "start" | "end") => {
@@ -457,10 +458,10 @@ export function ScheduleFormDrawer({
           <SafeAreaView
             edges={["bottom"]}
             style={{ backgroundColor: colors.bg }}
-            className="rounded-t-[32px] pt-4 pb-2 h-[82%] justify-between relative"
+            className="rounded-t-[32px] pt-4 pb-2 max-h-[82%] relative"
           >
             <ScrollView
-              className="flex-1"
+              className="shrink"
               showsVerticalScrollIndicator={false}
               contentContainerClassName="gap-4 pb-6"
               keyboardShouldPersistTaps="handled"
@@ -550,8 +551,8 @@ export function ScheduleFormDrawer({
               <Pressable
                 className="flex-row items-center justify-center gap-2 h-12 bg-[#31973D] rounded-full"
                 onPress={() => {
-                  setDriverListOpen(true);
                   closeOverlays();
+                  setDriverListOpen(true);
                 }}
                 disabled={isSubmitting}
                 style={{ opacity: isSubmitting ? 0.8 : 1 }}
@@ -565,6 +566,20 @@ export function ScheduleFormDrawer({
                   Select available driver
                 </Text>
               </Pressable>
+            )}
+
+            {driverListOpen && (
+              <Pressable
+                style={{
+                  position: "absolute",
+                  top: -1000,
+                  left: -1000,
+                  right: -1000,
+                  bottom: -1000,
+                  zIndex: 10,
+                }}
+                onPress={() => setDriverListOpen(false)}
+              />
             )}
 
             {driverListOpen && (
