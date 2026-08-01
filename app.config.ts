@@ -30,7 +30,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {},
   plugins: [
     "expo-font",
-    "expo-splash-screen",
+    [
+      "expo-splash-screen",
+      {
+        image: "./assets/ic_launcher.png",
+        imageWidth: 220,
+        resizeMode: "contain",
+        backgroundColor: "#FFFFFF",
+      },
+    ],
     "expo-status-bar",
     "expo-web-browser",
     "@react-native-google-signin/google-signin",

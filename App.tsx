@@ -17,6 +17,7 @@ import {
 } from "@expo-google-fonts/poppins";
 
 import { PaystackProvider } from "react-native-paystack-webview";
+import * as SplashScreen from "expo-splash-screen";
 
 import { store } from "./src/store";
 import { RootNavigator } from "./src/navigation/RootNavigator";
@@ -34,6 +35,8 @@ if ((TextInput as any).defaultProps == null) (TextInput as any).defaultProps = {
 (TextInput as any).defaultProps.style = { fontFamily: 'Poppins_400Regular' };
 import "./global.css";
 import ToastManager from "./src/components/ui/ToastManager";
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const queryClient = new QueryClient();
 
@@ -73,6 +76,12 @@ export default function App() {
     configureNotifications();
     hydrateAuth();
   }, []);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;
