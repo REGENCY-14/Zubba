@@ -21,6 +21,7 @@ import { setRequest } from "../../slices/request/requestSlice";
 import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { formatProviderLabel } from "../../utils/paymentProviders";
 
 const tricycle = require("../../../assets/pickup_tricycle.png");
 
@@ -236,7 +237,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
   const fetchCustomerRequests = useCallback(async () => {
     try {
       const result = await customerService.getCustomerRequests({
-        limit: 1000,
+        limit: 2000,
         current_page: 1,
         offset: 0,
       });
@@ -277,8 +278,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     };
   }, [requests]);
 
-  const sections =
-    activeTab === "completed" ? completedSections : pendingSections;
+  const sections = activeTab === "completed" ? completedSections : pendingSections;
 
   const buildRequestStateFromItem = (item: CustomerRequestItem) => ({
     id: item.id,
@@ -331,6 +331,10 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
       dispatch(setRequest(buildRequestStateFromItem(raw)));
       navigation.navigate("PaymentSuccess", {
         phone: raw.payment_method ?? "",
+        amount: Number(raw.pickup_price ?? 0) + Number(raw.service_price ?? 0),
+        provider: raw.payment_method ?? "",
+        reference: raw.id,
+        paymentMethodLabel: formatProviderLabel(raw.payment_method ?? undefined),
       });
       return;
     }

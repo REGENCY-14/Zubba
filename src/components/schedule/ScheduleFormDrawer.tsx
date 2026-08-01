@@ -485,7 +485,7 @@ export function ScheduleFormDrawer({
               </View>
             ) : (
               <Pressable
-                className="flex-row items-center justify-center gap-2 h-10 bg-[#31973D] rounded-2xl"
+                className="flex-row items-center justify-center gap-2 h-12 bg-[#31973D] rounded-full"
                 onPress={() => {
                   setDriverListOpen(true);
                   closeOverlays();
@@ -1019,14 +1019,14 @@ export function ScheduleFormDrawer({
 
         <View className="flex-row items-center px-6 gap-2.5 pb-6">
           <Pressable
-            className="w-8 h-8 rounded-xl bg-[#FFE2E2] items-center justify-center"
+            className="w-9 h-9 rounded-xl bg-[#FFE2E2] items-center justify-center"
             onPress={handleClose}
             disabled={isSubmitting}
           >
             <MaterialCommunityIcons name="close" size={16} color="#EF4444" />
           </Pressable>
           <Pressable
-            className={`flex-1 h-10 rounded-full items-center justify-center ${
+            className={`flex-1 h-12 rounded-full items-center justify-center ${
               canSchedule ? "bg-[#31973D]" : "bg-[rgba(52,168,83,0.5)]"
             }`}
             disabled={!canSchedule || isSubmitting}

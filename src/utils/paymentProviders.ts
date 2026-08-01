@@ -52,6 +52,8 @@ export function formatProviderLabel(provider?: string): string {
       return "Zubba Wallet";
     case "card":
       return "Credit Card";
+    case "mobile_money":
+      return "Mobile Money";
     default:
       return provider || "Mobile Money";
   }

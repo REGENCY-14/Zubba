@@ -16,13 +16,10 @@ export function PaymentSuccessScreen({
   const request = useAppSelector((state) => state.request);
   const user = useAppSelector((state) => state.auth.user);
   const { reference, amount, provider, phone, paymentMethodLabel } = route.params || {};
-  const transactionReference =
-    reference || request.transaction_reference || "N/A";
-  const totalAmount =
-    amount ?? (request.pickup_price + request.service_price || 0);
+  const transactionReference = reference || request.transaction_reference || "N/A";
+  const totalAmount = amount ?? (request.pickup_price + request.service_price || 0);
   const paymentPhone = phone || request.payment_method || "";
-  const methodLabel =
-    paymentMethodLabel || formatProviderLabel(provider || request.payment_method);
+  const methodLabel = paymentMethodLabel || formatProviderLabel(provider || request.payment_method);
 
   const details = [
     { label: "Transaction Reference", value: transactionReference },

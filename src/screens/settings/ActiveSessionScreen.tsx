@@ -363,11 +363,9 @@ export function ActiveSessionScreen({
             <Pressable
               style={{
                 height: verticalScale(48),
-                borderRadius: moderateScale(12),
                 backgroundColor: "#31973D",
-                alignItems: "center",
-                justifyContent: "center",
               }}
+              className="rounded-full h-12 items-center justify-center"
               onPress={() => navigation.navigate("Settings")}
             >
               <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14), lineHeight: moderateScale(20) }}>
