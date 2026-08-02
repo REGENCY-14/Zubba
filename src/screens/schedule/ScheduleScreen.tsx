@@ -255,181 +255,210 @@ export function ScheduleScreen({
       edges={["top", "left", "right", "bottom"]}
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View className="w-full h-12 flex-row items-center justify-between px-4 z-10">
-        <Pressable onPress={() => navigation.goBack()} className="w-8 h-8 items-center justify-center">
-          <MaterialCommunityIcons
-            name="chevron-left"
-            size={moderateScale(20)}
-            color={colors.iconColor}
-          />
-        </Pressable>
-
-        <View className="flex-row gap-2 items-center justify-center">
-          {isPremium && (
-            <View className="flex-row gap-2 items-center justify-center">
-              <Text className="text-xs" style={{ color: colors.textSub }}>
-                Bin Full?
-              </Text>
-              <AnimatedSwitch
-                value={isBinFull}
-                onChange={handleBinFullToggle}
-              />
-            </View>
-          )}
+        <View className="w-full h-12 flex-row items-center justify-between px-4 z-10">
           <Pressable
-            onPress={() => {
-              navigation.navigate("NotificationsList");
-            }}
-            className="w-10 h-10 p-1 border rounded-lg items-center justify-center"
-            style={{
-              borderColor: colors.border,
-              backgroundColor: colors.iconBg,
-            }}
+            onPress={() => navigation.goBack()}
+            className="w-8 h-8 items-center justify-center"
           >
             <MaterialCommunityIcons
-              name="bell-outline"
+              name="chevron-left"
               size={moderateScale(20)}
               color={colors.iconColor}
             />
           </Pressable>
-        </View>
-      </View>
 
-      <View
-        className="h-11 flex-row items-center justify-between px-5"
-        style={{ backgroundColor: colors.surface }}
-      >
-        <View className="flex-row items-center gap-2">
-          <Text className="text-sm font-medium" style={{ color: colors.text }}>
-            {filterLabel}
-          </Text>
-          <Pressable
-            style={{ backgroundColor: colors.iconBg }}
-            className="w-7 h-7 rounded-xl items-center justify-center"
-            onPress={openFilterSheet}
-          >
-            <MaterialCommunityIcons
-              name="calendar"
-              size={moderateScale(16)}
-              color={"#31973D"}
-            />
-          </Pressable>
-          <Pressable onPress={handleRefresh}>
-            <MaterialCommunityIcons
-              name="refresh"
-              size={moderateScale(16)}
-              color={colors.iconColor}
-            />
-          </Pressable>
-        </View>
-      </View>
-
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ flexGrow: 1, padding: 20, paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={handleRefresh}
-            colors={["#31973D"]}
-            tintColor="#31973D"
-          />
-        }
-        keyboardShouldPersistTaps="handled"
-      >
-        {showSkeleton ? (
-          <ScheduleListSkeleton />
-        ) : showEmpty ? (
-          <View
-            style={{ borderColor: colors.border }}
-            className="border rounded-[20px] h-[360px] items-center justify-end px-6 pb-10 gap-5"
-          >
-            <ScheduleIllustration />
-            <View className="items-center gap-[5px]">
-              <Text
-                style={{ color: colors.text }}
-                className="text-base font-medium"
-              >
-                No Schedules
-              </Text>
-              <Text
-                style={{ color: colors.textMuted }}
-                className="text-sm font-normal text-center "
-              >
-                Hit the plus icon to plan for later
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <Pressable onPress={() => setOpenMenuId(null)}>
-            <View
-              style={{ borderColor: colors.border, backgroundColor: colors.bg }}
-              className="border rounded-2xl overflow-hidden"
+          <View className="flex-row gap-2 items-center justify-center">
+            {isPremium && (
+              <View className="flex-row gap-2 items-center justify-center">
+                <Text style={{ fontSize: moderateScale(12), color: colors.textSub }}>
+                  Bin Full?
+                </Text>
+                <AnimatedSwitch
+                  value={isBinFull}
+                  onChange={handleBinFullToggle}
+                />
+              </View>
+            )}
+            <Pressable
+              onPress={() => {
+                navigation.navigate("NotificationsList");
+              }}
+              style={{
+                width: moderateScale(40),
+                height: moderateScale(40),
+                padding: moderateScale(4),
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.iconBg,
+                borderRadius: moderateScale(8),
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <View
-                style={{ backgroundColor: colors.surface }}
-                className="h-12 justify-center px-3"
-              >
+              <MaterialCommunityIcons
+                name="bell-outline"
+                size={moderateScale(20)}
+                color={colors.iconColor}
+              />
+            </Pressable>
+          </View>
+        </View>
+
+        <View
+          className="h-11 flex-row items-center justify-between px-5"
+          style={{ backgroundColor: colors.surface }}
+        >
+          <View className="flex-row items-center gap-2">
+            <Text
+              className="text-sm font-medium"
+              style={{ color: colors.text }}
+            >
+              {filterLabel}
+            </Text>
+            <Pressable
+              style={{ backgroundColor: colors.iconBg }}
+              className="w-7 h-7 rounded-xl items-center justify-center"
+              onPress={openFilterSheet}
+            >
+              <MaterialCommunityIcons
+                name="calendar"
+                size={moderateScale(16)}
+                color={"#31973D"}
+              />
+            </Pressable>
+            <Pressable onPress={handleRefresh}>
+              <MaterialCommunityIcons
+                name="refresh"
+                size={moderateScale(16)}
+                color={colors.iconColor}
+              />
+            </Pressable>
+          </View>
+        </View>
+
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            padding: 20,
+            paddingBottom: 120,
+          }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={handleRefresh}
+              colors={["#31973D"]}
+              tintColor="#31973D"
+            />
+          }
+          keyboardShouldPersistTaps="handled"
+        >
+          {showSkeleton ? (
+            <ScheduleListSkeleton />
+          ) : showEmpty ? (
+            <View
+              style={{ borderColor: colors.border }}
+              className="border rounded-[20px] h-[360px] items-center justify-end px-6 pb-10 gap-5"
+            >
+              <ScheduleIllustration />
+              <View className="items-center gap-[5px]">
                 <Text
                   style={{ color: colors.text }}
                   className="text-base font-medium"
                 >
-                  Schedules
+                  No Schedules
+                </Text>
+                <Text
+                  style={{ color: colors.textMuted }}
+                  className="text-sm font-normal text-center "
+                >
+                  Hit the plus icon to plan for later
                 </Text>
               </View>
-              {visibleSchedules.map((item: ScheduleItem, index: number) => (
-                <React.Fragment key={item.id}>
-                  {index > 0 && (
-                    <View
-                      style={{ borderColor: colors.border }}
-                      className="border mx-3 m-2"
-                    />
-                  )}
-                  <ScheduleCard
-                    item={item}
-                    menuOpen={openMenuId === item.id}
-                    onMenuOpen={() => setOpenMenuId(item.id)}
-                    onMenuClose={() => setOpenMenuId(null)}
-                    onEdit={() => {
-                      setOpenMenuId(null);
-                      openEditSheet(item.id);
-                    }}
-                    onDelete={() => {
-                      setOpenMenuId(null);
-                      setDeleteTargetId(item.id);
-                    }}
-                    onRetry={() => {
-                      setOpenMenuId(null);
-                      handleRetrySchedule(item.id);
-                    }}
-                  />
-                </React.Fragment>
-              ))}
             </View>
-          </Pressable>
-        )}
-      </ScrollView>
+          ) : (
+            <Pressable onPress={() => setOpenMenuId(null)}>
+              <View
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.bg,
+                }}
+                className="border rounded-2xl overflow-hidden"
+              >
+                <View
+                  style={{ backgroundColor: colors.surface }}
+                  className="h-12 justify-center px-3"
+                >
+                  <Text
+                    style={{ color: colors.text }}
+                    className="text-base font-medium"
+                  >
+                    Schedules
+                  </Text>
+                </View>
+                <View className="gap-3 py-4">
+                  {visibleSchedules.map((item: ScheduleItem, index: number) => (
+                    <React.Fragment key={item.id}>
+                      {index > 0 && (
+                        <View
+                          style={{ borderColor: colors.border }}
+                          className="border mx-3 m-2"
+                        />
+                      )}
+                      <ScheduleCard
+                        item={item}
+                        menuOpen={openMenuId === item.id}
+                        onMenuOpen={() => setOpenMenuId(item.id)}
+                        onMenuClose={() => setOpenMenuId(null)}
+                        onEdit={() => {
+                          setOpenMenuId(null);
+                          openEditSheet(item.id);
+                        }}
+                        onDelete={() => {
+                          setOpenMenuId(null);
+                          setDeleteTargetId(item.id);
+                        }}
+                        onRetry={() => {
+                          setOpenMenuId(null);
+                          handleRetrySchedule(item.id);
+                        }}
+                        onCardPress={() => {
+                          setOpenMenuId(null);
+                          openEditSheet(item.id);
+                        }}
+                      />
+                    </React.Fragment>
+                  ))}
+                </View>
+              </View>
+            </Pressable>
+          )}
+        </ScrollView>
 
-      <Pressable
-        className="absolute right-5 bottom-[102px] w-12 h-12 rounded-full bg-[#31973D] items-center justify-center"
-        style={{
-          shadowColor: "#000",
-          shadowOffset: { width: -1, height: 2 },
-          shadowOpacity: 0.15,
-          shadowRadius: 8,
-          elevation: 6,
-        }}
-        onPress={openCreateSheet}
-      >
-        <MaterialCommunityIcons name="plus" size={moderateScale(16)} color="#FFFFFF" />
-      </Pressable>
+        <Pressable
+          className="absolute right-5 bottom-[102px] w-12 h-12 rounded-full bg-[#31973D] items-center justify-center"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: -1, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 6,
+          }}
+          onPress={openCreateSheet}
+        >
+          <MaterialCommunityIcons
+            name="plus"
+            size={moderateScale(16)}
+            color="#FFFFFF"
+          />
+        </Pressable>
 
-      <AppBottomNav
-        activeTab="calendar"
-        paddingBottom={0}
-        navigation={navigation}
-      />
+        <AppBottomNav
+          activeTab="calendar"
+          paddingBottom={0}
+          navigation={navigation}
+        />
       </View>
 
       <ScheduleFormDrawer

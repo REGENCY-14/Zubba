@@ -401,7 +401,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 )}
                 </View>
 
-                <View className="flex-row justify-between gap-3">
+                {/* <View className="flex-row justify-between gap-3">
                   <View className="flex-row gap-3 items-center justify-center">
                     <View className="flex-row items-center">
                       {closeDrivers.slice(0, 2).map((driver, index) => (
@@ -434,7 +434,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <View className="rounded-full bg-[#148732] py-0.5 px-2">
                     <Text className="text-sm text-white">New</Text>
                   </View>
-                </View>
+                </View> */}
                 <StatCardsRow bags={customer.bags_recycled} points={customer.points} />
               </View>
             ) : (

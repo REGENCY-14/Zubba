@@ -1,21 +1,20 @@
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
-import { ThemeColors } from "../../context/ThemeContext";
+import type { ThemeColors } from "../../context/ThemeContext";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import {
   getMethodLabel,
   isWalletMethod,
   mapMethodToChannel,
   mapMethodToProvider,
+  type PaymentMethodId,
 } from "../../utils/paymentProviders";
-
-type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel";
 
 type RowProps = {
   selected: boolean;
@@ -50,18 +49,18 @@ function PaymentRow({ selected, onPress, badge, label, last, colors }: RowProps)
   );
 }
 
-function MtnBadge() {
+function MobileMoneyBadge() {
   return (
     <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: "#FFCC00", borderRadius: moderateScale(8), alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: moderateScale(12), color: "#000000" }}>MTN</Text>
+      <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: moderateScale(12), color: "#000000" }}>MOMO</Text>
     </View>
   );
 }
 
-function TelecelBadge() {
+function CardBadge() {
   return (
-    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: "#DC2626", borderRadius: moderateScale(8), alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: moderateScale(12), color: "#FFFFFF" }}>T.cash</Text>
+    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: "#E8F2E8", borderRadius: moderateScale(8), alignItems: "center", justifyContent: "center" }}>
+      <MaterialCommunityIcons name="credit-card-outline" size={moderateScale(16)} color="#31973D" />
     </View>
   );
 }
@@ -74,26 +73,15 @@ function WalletBadge() {
   );
 }
 
-const airtelTigo = require("../../../assets/airtelTigo.png");
-
-function AirtelBadge({ colors }: { colors: ThemeColors }) {
-  return (
-    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: colors.card, borderRadius: moderateScale(8), borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}>
-      <Image source={airtelTigo} style={{ width: scale(22), height: verticalScale(14) }} resizeMode="contain" />
-    </View>
-  );
-}
-
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
   const isPremium = useAppSelector((state) => state.customer.is_premium);
   const { colors } = useTheme();
-  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(isPremium ? "wallet" : "momo");
+  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(isPremium ? "wallet" : "mobile_money");
 
   const rows: { id: PaymentMethodId; badge: React.ReactNode; label: string }[] = [
-    ...(isPremium ? [{ id: "wallet" as PaymentMethodId, badge: <WalletBadge />, label: "Zubba Wallet" }] : []),
-    { id: "momo", badge: <MtnBadge />, label: "MTN MoMo" },
-    { id: "telecel", badge: <TelecelBadge />, label: "Telecel cash" },
-    { id: "airtel", badge: <AirtelBadge colors={colors} />, label: "Airtel money" },
+    ...(isPremium ? [{ id: "wallet" as PaymentMethodId, badge: <WalletBadge />, label: getMethodLabel("wallet") }] : []),
+    { id: "mobile_money", badge: <MobileMoneyBadge />, label: getMethodLabel("mobile_money") },
+    { id: "card", badge: <CardBadge />, label: getMethodLabel("card") },
   ];
 
   return (

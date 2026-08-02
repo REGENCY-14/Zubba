@@ -1,39 +1,28 @@
 import type { CustomerRequestItem } from "../types/request.types";
 
-export type PaymentMethodId =
-  | "wallet"
-  | "momo"
-  | "telecel"
-  | "airtel"
-  | "credit_card";
+export type PaymentMethodId = "wallet" | "mobile_money" | "card";
 
 export type PaymentChannel = "mobile_money" | "card";
 
 const METHOD_LABELS: Record<PaymentMethodId, string> = {
   wallet: "Zubba Wallet",
-  momo: "MTN MoMo",
-  telecel: "Telecel Cash",
-  airtel: "Airtel Money",
-  credit_card: "Credit Card",
+  mobile_money: "Mobile Money",
+  card: "Credit Card",
 };
 
 export function mapMethodToProvider(method: PaymentMethodId): string {
   switch (method) {
-    case "momo":
-      return "mtn";
-    case "telecel":
-      return "telecel";
-    case "airtel":
-      return "airtel";
-    case "credit_card":
+    case "card":
       return "card";
+    case "wallet":
+      return "wallet";
     default:
       return "mtn";
   }
 }
 
 export function mapMethodToChannel(method: PaymentMethodId): PaymentChannel {
-  return method === "credit_card" ? "card" : "mobile_money";
+  return method === "card" ? "card" : "mobile_money";
 }
 
 export function getMethodLabel(method: PaymentMethodId): string {
@@ -78,8 +67,7 @@ export function isWalletMethod(method: PaymentMethodId): boolean {
 export function getPaymentDetailsFromRequest(item: CustomerRequestItem) {
   const txn = item.transaction;
   const amount = Number(item.pickup_price ?? 0) + Number(item.service_price ?? 0);
-  const reference =
-    txn?.reference ?? item.transaction_reference ?? item.id;
+  const reference = txn?.reference ?? item.transaction_reference ?? item.id;
   const phone = txn?.phone ?? "";
   const provider = txn?.provider_name ?? item.payment_method ?? undefined;
   const paymentMethod = txn?.payment_method ?? item.payment_method ?? undefined;

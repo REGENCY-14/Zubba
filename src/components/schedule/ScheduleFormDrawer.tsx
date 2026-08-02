@@ -199,30 +199,39 @@ export function ScheduleFormDrawer({
       const item = scheduleData?.find((s: ScheduleItem) => s.id === scheduleId);
       if (item) {
         setSelectedDriver(item.driverId ?? null);
-        setLocation(item.location);
-        setLocationQuery(item.location);
-        setStartTime(item.rawStartTime);
-        setEndTime(item.rawEndTime);
-        setSelectedFrequency(item.frequency);
-        setCalendarYear(item.rawYear);
-        setCalendarMonth(item.rawMonth);
-        setSelectedDate(item.rawDay);
+        setLocation(item.location ?? "");
+        setLocationQuery(item.location ?? "");
+        setStartTime(item.rawStartTime ?? "");
+        setEndTime(item.rawEndTime ?? "");
+        setSelectedFrequency(item.frequency ?? "One time pickup");
+        setCalendarYear(item.rawYear ?? todayDate.getFullYear());
+        setCalendarMonth(item.rawMonth ?? todayDate.getMonth());
+        setSelectedDate(item.rawDay ?? null);
         setPhone("");
         setNote("");
       }
 
       try {
         const response = await scheduleService.getSchedule(scheduleId);
-        const schedule = response.data?.schedule;
+        const schedule = response?.data?.schedule;
         const coordinates = schedule?.pickup_location?.coordinates;
-        if (schedule && coordinates?.length === 2) {
-          setSelectedPickup({
-            label: schedule.pickup_address,
-            longitude: coordinates[0],
-            latitude: coordinates[1],
-          });
-          setLocation(schedule.pickup_address);
-          setLocationQuery(schedule.pickup_address);
+        if (schedule) {
+          if (coordinates?.length === 2) {
+            setSelectedPickup({
+              label: schedule.pickup_address ?? "",
+              longitude: coordinates[0],
+              latitude: coordinates[1],
+            });
+            setLocation(schedule.pickup_address ?? "");
+            setLocationQuery(schedule.pickup_address ?? "");
+          }
+
+          if (schedule.start_time) {
+            setStartTime(schedule.start_time);
+          }
+          if (schedule.end_time) {
+            setEndTime(schedule.end_time);
+          }
         }
       } catch (error) {
         console.error("Failed to load schedule location:", error);
@@ -295,11 +304,11 @@ export function ScheduleFormDrawer({
       const response = await scheduleService.createSchedule(payload);
 
       if (response.success) {
-        showToast("Schedule created successfully", "success");
-        await invalidateSchedules();
         setConfirmOpen(false);
         resetForm();
         onClose();
+        showToast("Schedule created successfully", "success");
+        void invalidateSchedules();
       }
     } catch (error: any) {
       console.error("Error creating schedule:", error);
@@ -340,10 +349,10 @@ export function ScheduleFormDrawer({
       );
 
       if (response.success) {
-        showToast("Schedule updated successfully", "success");
-        await invalidateSchedules();
         resetForm();
         onClose();
+        showToast("Schedule updated successfully", "success");
+        void invalidateSchedules();
       }
     } catch (error: any) {
       console.error("Error updating schedule:", error);
@@ -418,11 +427,23 @@ export function ScheduleFormDrawer({
     return `${days[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()].slice(0, 3)} ${d.getFullYear()}`;
   })();
 
-  const fmtTime = (t: string) => {
+  const fmtTime = (t?: string | null) => {
     if (!t) return "";
-    const [tp, period] = t.split(" ");
-    const [h, m] = tp.split(":");
-    return `${parseInt(h)}:${m}${period.toLowerCase()}`;
+
+    const normalized = t.trim();
+    const hasSpace = normalized.includes(" ");
+    const [timePart, period] = hasSpace ? normalized.split(/\s+/) : [normalized, ""];
+    const [h, m] = timePart.split(":");
+
+    if (!h || !m) return normalized;
+
+    const hour = Number.parseInt(h, 10);
+    const minute = m;
+
+    if (!Number.isFinite(hour)) return normalized;
+
+    const periodLabel = period ? period.toLowerCase() : "";
+    return `${hour}:${minute}${periodLabel}`;
   };
 
   const confirmTimeRange =

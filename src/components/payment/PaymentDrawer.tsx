@@ -6,17 +6,14 @@ import { useTheme } from "../../context/ThemeContext";
 import { paymentMethods, walletMethod } from "../../constants/paymentMethods";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-type PaymentMethodId = "wallet" | "momo" | "telecel" | "airtel" | "credit_card";
+import type { PaymentMethodId } from "../../utils/paymentProviders";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   onContinue: (method: PaymentMethodId) => void;
   initialMethod?: PaymentMethodId;
-  /** Only pass true when the user is paying for something (not topping up/withdrawing the wallet itself). */
   allowWallet?: boolean;
-  /** Zubba wallet only ever shows when allowWallet AND the customer is premium. */
   isPremium?: boolean;
 };
 
@@ -24,7 +21,7 @@ export function PaymentMethodDrawer({
   visible,
   onClose,
   onContinue,
-  initialMethod = "momo",
+  initialMethod = "mobile_money",
   allowWallet = false,
   isPremium = false,
 }: Props) {
@@ -36,8 +33,7 @@ export function PaymentMethodDrawer({
   useEffect(() => {
     if (visible) setSelectedMethod(initialMethod);
   }, [visible, initialMethod]);
-  const itemList =
-    allowWallet && isPremium ? [...paymentMethods, walletMethod] : paymentMethods;
+  const itemList = allowWallet && isPremium ? [...paymentMethods, walletMethod] : paymentMethods;
 
   return (
     <Modal
