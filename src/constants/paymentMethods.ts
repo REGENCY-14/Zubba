@@ -2,6 +2,8 @@ export type PaymentMethodOption = {
   id: "mobile_money" | "card" | "wallet";
   title: string;
   badgeBg: string;
+  badgeTextColor?: string;
+  badge?: string;
   iconName?: string;
 };
 

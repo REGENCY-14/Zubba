@@ -9,6 +9,7 @@ import {
   MAP_EDGE_PADDING,
   OSM_TILE_URL,
   regionForCoord,
+  regionForCoords,
   type MapCoord,
 } from "./mapUtils";
 import { useOsmTiles } from "../../hooks/useRoutePolyline";
@@ -40,11 +41,31 @@ export function LiveMapView({
   const mapRef = useRef<MapView>(null);
   const pickup = pickupLocation ?? userLocation ?? null;
 
-  const initialRegion = useMemo(() => {
+  const mapRegion = useMemo(() => {
+    if (centerOn) return regionForCoord(centerOn);
+
+    const points = fitToLocations?.filter(Boolean) as MapCoord[] | undefined;
+    if (points?.length) {
+      if (points.length === 1) return regionForCoord(points[0]);
+      return regionForCoords(points);
+    }
+
     if (pickup) return regionForCoord(pickup);
     if (driverLocation) return regionForCoord(driverLocation);
     return DEFAULT_MAP_REGION;
-  }, []);
+  }, [
+    centerOn?.latitude,
+    centerOn?.longitude,
+    driverLocation?.latitude,
+    driverLocation?.longitude,
+    fitToLocations?.[0]?.latitude,
+    fitToLocations?.[0]?.longitude,
+    fitToLocations?.[1]?.latitude,
+    fitToLocations?.[1]?.longitude,
+    fitToLocations?.length,
+    pickup?.latitude,
+    pickup?.longitude,
+  ]);
 
   useEffect(() => {
     if (!centerOn || !mapRef.current) return;
@@ -72,7 +93,8 @@ export function LiveMapView({
         ref={mapRef}
         style={StyleSheet.absoluteFill}
         provider={PROVIDER_DEFAULT}
-        initialRegion={initialRegion}
+        initialRegion={mapRegion}
+        region={mapRegion}
         customMapStyle={isDark && !useOsm ? MAP_DARK_STYLE : undefined}
         userInterfaceStyle={isDark ? "dark" : "light"}
         showsUserLocation={false}
