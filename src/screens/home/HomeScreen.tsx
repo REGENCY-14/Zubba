@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Easing,
   Image,
+  ImageBackground,
   Pressable,
   Text,
   TextInput,
@@ -24,11 +23,13 @@ import { useTheme } from "../../context/ThemeContext";
 import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { binFullService } from "../../api/binFullService";
-import { LiveMapView } from "../../components/maps/LiveMapView";
+import { binFullService, normalizeBinFullStatus } from "../../api/binFullService";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { useLocationSearch } from "../../hooks/useLocationSearch";
-import { useNavigateToChoosePlan, usePrefetchSubscriptionPlans } from "../../hooks/useSubscription";
+import {
+  useNavigateToChoosePlan,
+  usePrefetchSubscriptionPlans,
+} from "../../hooks/useSubscription";
 import { LocationSearchDropdown } from "../../components/location/LocationSearchDropdown";
 import type { PickupLocation } from "../../types/location.types";
 import { buildPickupParams } from "../../utils/pickupLocation";
@@ -36,29 +37,44 @@ import { buildPickupParams } from "../../utils/pickupLocation";
 const premium = require("../../../assets/premium.png");
 const futurePlan = require("../../../assets/futurePlan.png");
 const tricycle = require("../../../assets/picktricycle.png");
+const mapImage = require("../../../assets/RawMap.png");
+const mapDarkImage = require("../../../assets/RawMapDark1.png");
 
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedPickup, setSelectedPickup] = useState<PickupLocation | null>(null);
-  const [mapCenterOn, setMapCenterOn] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [selectedPickup, setSelectedPickup] = useState<PickupLocation | null>(
+    null,
+  );
+  const [mapCenterOn, setMapCenterOn] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const [shouldResetHomeOnFocus, setShouldResetHomeOnFocus] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
   const [binFullLoading, setBinFullLoading] = useState(false);
   const isPremium = customer.is_premium;
-  const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
   const { coords } = useCurrentLocation();
+  const request = useAppSelector((state) => state.request);
   const prefetchPlans = usePrefetchSubscriptionPlans();
   const navigateToChoosePlan = useNavigateToChoosePlan();
   const locationSearchEnabled = !isPremium || activePill === 0;
-  const { results: locationResults, isLoading: locationLoading, error: locationError } =
-    useLocationSearch(searchQuery, locationSearchEnabled);
+  const {
+    results: locationResults,
+    isLoading: locationLoading,
+    error: locationError,
+  } = useLocationSearch(searchQuery, locationSearchEnabled);
   const showLocationDropdown =
     locationSearchEnabled && searchQuery.trim().length >= 3 && !selectedPickup;
 
-  const handleLocationSelect = (result: { label: string; latitude: number; longitude: number }) => {
+  const handleLocationSelect = (result: {
+    label: string;
+    latitude: number;
+    longitude: number;
+  }) => {
     const pickup: PickupLocation = {
       label: result.label,
       latitude: result.latitude,
@@ -79,20 +95,39 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
 
   const navigateToScanning = () => {
     navigation.navigate("Scanning", {
-      ...buildPickupParams(selectedPickup, selectedPickup?.label ?? (searchQuery || undefined)),
+      ...buildPickupParams(
+        selectedPickup,
+        selectedPickup?.label ?? (searchQuery || undefined),
+      ),
     });
+    setShouldResetHomeOnFocus(true);
   };
 
-  const translateX = useRef(new Animated.Value(isBinFull ? 16 : 0)).current;
-
   useEffect(() => {
-    Animated.timing(translateX, {
-      toValue: isBinFull ? 14 : 0,
-      duration: 220,
-      easing: Easing.out(Easing.circle),
-      useNativeDriver: true,
-    }).start();
-  }, [isBinFull]);
+    const unsubscribe = navigation.addListener("focus", () => {
+      if (coords) {
+        setMapCenterOn(coords);
+      }
+      if (shouldResetHomeOnFocus) {
+        setSelectedPickup(null);
+        setSearchQuery("");
+        setMapCenterOn(coords ?? null);
+        setShouldResetHomeOnFocus(false);
+      }
+      if (isPremium) {
+        binFullService
+          .getStatus()
+          .then((res) => {
+            if (res.success) {
+              setIsBinFull(normalizeBinFullStatus(res.data).is_active);
+            }
+          })
+          .catch(() => {});
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation, coords, shouldResetHomeOnFocus, isPremium]);
 
   useEffect(() => {
     prefetchPlans();
@@ -100,13 +135,21 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
 
   useEffect(() => {
     if (!isPremium) return;
-    binFullService.getStatus().then((res) => {
-      if (res.success) setIsBinFull(res.data.is_active);
-    }).catch(() => {});
+    binFullService
+      .getStatus()
+      .then((res) => {
+        if (res.success) {
+          setIsBinFull(normalizeBinFullStatus(res.data).is_active);
+        }
+      })
+      .catch(() => {});
   }, [isPremium]);
 
   const handleBinFullToggle = async (value: boolean) => {
     if (!isPremium || binFullLoading) return;
+
+    const previousValue = isBinFull;
+    setIsBinFull(value);
     setBinFullLoading(true);
     try {
       let pickupLocation: { type: "Point"; coordinates: [number, number] } | undefined;
@@ -118,15 +161,45 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             type: "Point",
             coordinates: [selectedPickup.longitude, selectedPickup.latitude],
           };
+        } else if (coords) {
+          pickupLocation = {
+            type: "Point",
+            coordinates: [coords.longitude, coords.latitude],
+          };
         } else {
           const { status } = await Location.requestForegroundPermissionsAsync();
           if (status === "granted") {
             const loc = await Location.getCurrentPositionAsync({});
+            const longitude = loc?.coords?.longitude;
+            const latitude = loc?.coords?.latitude;
+
+            if (typeof longitude !== "number" || typeof latitude !== "number") {
+              throw new Error(
+                "Unable to determine your current location. Please try again or choose a pickup location.",
+              );
+            }
+
             pickupLocation = {
               type: "Point",
-              coordinates: [loc.coords.longitude, loc.coords.latitude],
+              coordinates: [longitude, latitude],
             };
+          } else {
+            throw new Error(
+              "Location permission is required to enable bin-full signal. Please allow location access or choose a pickup location.",
+            );
           }
+        }
+
+        if (
+          !pickupLocation ||
+          pickupLocation.coordinates.length !== 2 ||
+          pickupLocation.coordinates.some(
+            (coord) => typeof coord !== "number" || Number.isNaN(coord),
+          )
+        ) {
+          throw new Error(
+            "Unable to determine your location. Please select a pickup location or enable location access.",
+          );
         }
       }
 
@@ -136,18 +209,25 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
         pickupLocation,
       });
 
-      setIsBinFull(value);
+      if (!res.success) {
+        throw new Error("Unable to update bin-full signal.");
+      }
+
+      const status = normalizeBinFullStatus(res.data);
+      setIsBinFull(status.is_active);
+
       if (value) {
-        const immediate = (res.data as { immediateResult?: { assigned?: boolean } })?.immediateResult;
-        if (immediate?.assigned) {
+        if (res.data.immediateResult?.assigned) {
           toast.success("Driver found!\nA driver has been assigned.");
-          setIsBinFull(false);
-        } else {
-          toast.info("Bin signal sent.\nWe'll notify you when a driver is found.");
+        } else if (status.is_active) {
+          toast.info(
+            "Bin signal sent.\nWe'll notify you when a driver is found.",
+          );
         }
       }
-    } catch {
-      toast.error("Unable to update bin-full signal.");
+    } catch (err: any) {
+      setIsBinFull(previousValue);
+      toast.error(err?.message || "Unable to update bin-full signal.");
     } finally {
       setBinFullLoading(false);
     }
@@ -166,12 +246,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       style={{ flex: 1, backgroundColor: colors.bg }}
       edges={["top", "left", "right", "bottom"]}
     >
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <LiveMapView
-          pickupLocation={selectedPickup ?? coords}
-          centerOn={mapCenterOn}
-          style={{ flex: 1 }}
-        >
+      <ImageBackground
+        source={isDark ? mapDarkImage : mapImage}
+        resizeMode="cover"
+        style={{ flex: 1, width: "100%", height: "100%" }}
+      >
           <View
             style={{
               position: "absolute",
@@ -202,15 +281,28 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             <View className="flex-row gap-2 items-center justify-center">
               {isPremium && (
                 <View className="flex-row gap-2 items-center justify-center">
-                  <Text style={{ fontSize: moderateScale(12), color: colors.textSub }}>
+                  <Text
+                    style={{
+                      fontSize: moderateScale(12),
+                      color: colors.textSub,
+                    }}
+                  >
                     Bin Full?
                   </Text>
-                <View style={{ opacity: binFullLoading ? 0.5 : 1 }}>
-                  <AnimatedSwitch value={isBinFull} onChange={handleBinFullToggle} />
-                  {binFullLoading && (
-                    <ActivityIndicator size="small" color="#31973D" style={{ position: "absolute", right: -28, top: 8 }} />
-                  )}
-                </View>
+                  <View style={{ opacity: binFullLoading ? 0.5 : 1 }}>
+                    <AnimatedSwitch
+                      value={isBinFull}
+                      onChange={handleBinFullToggle}
+                      disabled={binFullLoading}
+                    />
+                    {binFullLoading && (
+                      <ActivityIndicator
+                        size="small"
+                        color="#31973D"
+                        style={{ position: "absolute", right: -28, top: 8 }}
+                      />
+                    )}
+                  </View>
                 </View>
               )}
               <Pressable
@@ -330,75 +422,77 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
 
                 {/* Search bar */}
                 <View style={{ position: "relative", zIndex: 20 }}>
-                <View
-                  style={{
-                    height: verticalScale(54),
-                    backgroundColor: colors.card,
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    paddingHorizontal: scale(12),
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: scale(8),
-                  }}
-                >
-                  <Pressable
-                    onPress={() =>
-                      navigation.navigate("Details", {
-                        itemId: "search",
-                        title: "Search",
-                      })
-                    }
-                  >
-                    <MaterialCommunityIcons
-                      name="magnify"
-                      size={moderateScale(24)}
-                      color={colors.iconColor}
-                    />
-                  </Pressable>
-                  <TextInput
+                  <View
                     style={{
-                      flex: 1,
-                      fontSize: moderateScale(14),
-                      color: colors.text,
-                      padding: 0,
+                      height: verticalScale(54),
+                      backgroundColor: colors.card,
+                      borderRadius: 999,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      paddingHorizontal: scale(12),
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: scale(8),
                     }}
-                    placeholder={
-                      activePill == 0
-                        ? "Tarkwa, UMaT Campus, Hall 3"
-                        : "Search driver by name ..."
-                    }
-                    placeholderTextColor={colors.textMuted}
-                    value={searchQuery}
-                    onChangeText={activePill === 0 ? handleSearchChange : setSearchQuery}
-                  />
-                  {searchQuery.length > 0 && (
+                  >
                     <Pressable
-                      onPress={() => {
-                        setSearchQuery("");
-                        setSelectedPickup(null);
-                        setMapCenterOn(null);
-                      }}
-                      className="w-8 h-8 items-center justify-center"
+                      onPress={() =>
+                        navigation.navigate("Details", {
+                          itemId: "search",
+                          title: "Search",
+                        })
+                      }
                     >
                       <MaterialCommunityIcons
-                        name="close-circle"
-                        size={moderateScale(22)}
-                        color="#EF4444"
+                        name="magnify"
+                        size={moderateScale(24)}
+                        color={colors.iconColor}
                       />
                     </Pressable>
+                    <TextInput
+                      style={{
+                        flex: 1,
+                        fontSize: moderateScale(14),
+                        color: colors.text,
+                        padding: 0,
+                      }}
+                      placeholder={
+                        activePill == 0
+                          ? "Tarkwa, UMaT Campus, Hall 3"
+                          : "Search driver by name ..."
+                      }
+                      placeholderTextColor={colors.textMuted}
+                      value={searchQuery}
+                      onChangeText={
+                        activePill === 0 ? handleSearchChange : setSearchQuery
+                      }
+                    />
+                    {searchQuery.length > 0 && (
+                      <Pressable
+                        onPress={() => {
+                          setSearchQuery("");
+                          setSelectedPickup(null);
+                          setMapCenterOn(null);
+                        }}
+                        className="w-8 h-8 items-center justify-center"
+                      >
+                        <MaterialCommunityIcons
+                          name="close-circle"
+                          size={moderateScale(22)}
+                          color="#EF4444"
+                        />
+                      </Pressable>
+                    )}
+                  </View>
+                  {activePill === 0 && (
+                    <LocationSearchDropdown
+                      visible={showLocationDropdown}
+                      results={locationResults}
+                      loading={locationLoading}
+                      error={locationError}
+                      onSelect={handleLocationSelect}
+                    />
                   )}
-                </View>
-                {activePill === 0 && (
-                  <LocationSearchDropdown
-                    visible={showLocationDropdown}
-                    results={locationResults}
-                    loading={locationLoading}
-                    error={locationError}
-                    onSelect={handleLocationSelect}
-                  />
-                )}
                 </View>
 
                 {/* <View className="flex-row justify-between gap-3">
@@ -435,79 +529,85 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     <Text className="text-sm text-white">New</Text>
                   </View>
                 </View> */}
-                <StatCardsRow bags={customer.bags_recycled} points={customer.points} />
+                <StatCardsRow
+                  bags={customer.bags_recycled}
+                  points={customer.points}
+                />
               </View>
             ) : (
               /* Non-premium search bar */
               <View style={{ position: "relative", zIndex: 20 }}>
-              <View
-                style={{
-                  height: verticalScale(54),
-                  backgroundColor: isDark ? colors.card : colors.bg,
-                  borderRadius: 999,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  paddingHorizontal: scale(12),
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: scale(8),
-                }}
-              >
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("Details", {
-                      itemId: "search",
-                      title: "Search",
-                    })
-                  }
-                >
-                  <MaterialCommunityIcons
-                    name="magnify"
-                    size={moderateScale(24)}
-                    color={colors.iconColor}
-                  />
-                </Pressable>
-                <TextInput
+                <View
                   style={{
-                    flex: 1,
-                    fontSize: moderateScale(14),
-                    color: colors.text,
-                    padding: 0,
+                    height: verticalScale(54),
+                    backgroundColor: isDark ? colors.card : colors.bg,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    paddingHorizontal: scale(12),
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: scale(8),
                   }}
-                  placeholder="Where is your waste?"
-                  placeholderTextColor={colors.textMuted}
-                  value={searchQuery}
-                  onChangeText={handleSearchChange}
-                />
-                {searchQuery.length > 0 && (
+                >
                   <Pressable
-                    onPress={() => {
-                      setSearchQuery("");
-                      setSelectedPickup(null);
-                      setMapCenterOn(null);
-                    }}
-                    className="w-8 h-8 items-center justify-center"
+                    onPress={() =>
+                      navigation.navigate("Details", {
+                        itemId: "search",
+                        title: "Search",
+                      })
+                    }
                   >
                     <MaterialCommunityIcons
-                      name="close-circle"
-                      size={moderateScale(22)}
-                      color="#EF4444"
+                      name="magnify"
+                      size={moderateScale(24)}
+                      color={colors.iconColor}
                     />
                   </Pressable>
-                )}
-              </View>
-              <LocationSearchDropdown
-                visible={showLocationDropdown}
-                results={locationResults}
-                loading={locationLoading}
-                error={locationError}
-                onSelect={handleLocationSelect}
-              />
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      fontSize: moderateScale(14),
+                      color: colors.text,
+                      padding: 0,
+                    }}
+                    placeholder="Where is your waste?"
+                    placeholderTextColor={colors.textMuted}
+                    value={searchQuery}
+                    onChangeText={handleSearchChange}
+                  />
+                  {searchQuery.length > 0 && (
+                    <Pressable
+                      onPress={() => {
+                        setSearchQuery("");
+                        setSelectedPickup(null);
+                        setMapCenterOn(null);
+                      }}
+                      className="w-8 h-8 items-center justify-center"
+                    >
+                      <MaterialCommunityIcons
+                        name="close-circle"
+                        size={moderateScale(22)}
+                        color="#EF4444"
+                      />
+                    </Pressable>
+                  )}
+                </View>
+                <LocationSearchDropdown
+                  visible={showLocationDropdown}
+                  results={locationResults}
+                  loading={locationLoading}
+                  error={locationError}
+                  onSelect={handleLocationSelect}
+                />
               </View>
             )}
 
             {!isPremium && (
-              <StatCardsRow bags={customer.bags_recycled} points={customer.points} />
+              <StatCardsRow
+                bags={customer.bags_recycled}
+                points={customer.points}
+              />
             )}
           </View>
 
@@ -653,8 +753,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             paddingBottom={0}
             navigation={navigation}
           />
-        </LiveMapView>
-      </View>
+        </ImageBackground>
       <Sidebar ref={sidebarRef} navigation={navigation} activeKey="home" />
     </SafeAreaView>
   );

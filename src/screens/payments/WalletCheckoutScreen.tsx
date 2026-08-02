@@ -62,8 +62,12 @@ export function WalletCheckoutScreen({
     if (!request.id || loading) return;
     setLoading(true);
     try {
-      await walletService.payForRequest(request.id);
-      const reference = `wallet_${request.id}`;
+      const res = await walletService.payForRequest(request.id);
+      if (!res.success || !res.data.reference) {
+        throw new Error("Wallet payment did not return a transaction reference.");
+      }
+
+      const reference = res.data.reference;
       dispatch(setPaymentStatus("success"));
       dispatch(setPaymentDate(new Date()));
       dispatch(setTransactionReference(reference));

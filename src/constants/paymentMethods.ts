@@ -12,7 +12,8 @@ export const paymentMethods: PaymentMethodOption[] = [
     id: "mobile_money",
     title: "Mobile Money",
     badge: "MOMO",
-    badgeBg: "bg-[#FFCC00]",
+    iconName: "cellphone",
+    badgeBg: "",
     badgeTextColor: "text-black",
   },
   {

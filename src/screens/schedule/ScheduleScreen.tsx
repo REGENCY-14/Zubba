@@ -20,7 +20,7 @@ import { handleApiError } from "../../utils/handleApiError";
 import { toast } from "../../hooks/toast";
 import { moderateScale } from "../../utils/scale";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
-import { binFullService } from "../../api/binFullService";
+import { binFullService, normalizeBinFullStatus } from "../../api/binFullService";
 import { ScheduleListSkeleton } from "../../components/schedule/ScheduleCardSkeleton";
 import { ScheduleIllustration } from "../../components/schedule/ScheduleIllustration";
 import { ScheduleCard } from "../../components/schedule/ScheduleCard";
@@ -97,13 +97,18 @@ export function ScheduleScreen({
     binFullService
       .getStatus()
       .then((res) => {
-        if (res.success) setIsBinFull(res.data.is_active);
+        if (res.success) {
+          setIsBinFull(normalizeBinFullStatus(res.data).is_active);
+        }
       })
       .catch(() => {});
   }, [isPremium]);
 
   const handleBinFullToggle = async (value: boolean) => {
     if (!isPremium || binFullLoading) return;
+
+    const previousValue = isBinFull;
+    setIsBinFull(value);
     setBinFullLoading(true);
     try {
       let pickupLocation:
@@ -115,30 +120,59 @@ export function ScheduleScreen({
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status === "granted") {
           const loc = await Location.getCurrentPositionAsync({});
-          pickupLocation = {
-            type: "Point",
-            coordinates: [loc.coords.longitude, loc.coords.latitude],
-          };
+          const longitude = loc?.coords?.longitude;
+          const latitude = loc?.coords?.latitude;
+          if (typeof longitude === "number" && typeof latitude === "number") {
+            pickupLocation = {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            };
+          }
         } else if (coords) {
           pickupLocation = {
             type: "Point",
             coordinates: [coords.longitude, coords.latitude],
           };
         }
+
+        if (
+          !pickupLocation ||
+          pickupLocation.coordinates.length !== 2 ||
+          pickupLocation.coordinates.some(
+            (coord) => typeof coord !== "number" || Number.isNaN(coord),
+          )
+        ) {
+          throw new Error(
+            "Unable to determine your location. Please try again later.",
+          );
+        }
       }
 
-      await binFullService.setSignal({
+      const res = await binFullService.setSignal({
         isActive: value,
         pickupAddress,
         pickupLocation,
       });
-      setIsBinFull(value);
-      showToast(
-        value ? "Bin-full signal enabled" : "Bin-full signal disabled",
-        "success",
-      );
-    } catch {
-      showToast("Unable to update bin-full signal", "error");
+
+      if (!res.success) {
+        throw new Error("Unable to update bin-full signal.");
+      }
+
+      const status = normalizeBinFullStatus(res.data);
+      setIsBinFull(status.is_active);
+
+      if (value) {
+        if (res.data.immediateResult?.assigned) {
+          showToast("Driver found! A driver has been assigned.", "success");
+        } else if (status.is_active) {
+          showToast("Bin-full signal enabled", "success");
+        }
+      } else {
+        showToast("Bin-full signal disabled", "success");
+      }
+    } catch (err: any) {
+      setIsBinFull(previousValue);
+      showToast(err?.message || "Unable to update bin-full signal", "error");
     } finally {
       setBinFullLoading(false);
     }
@@ -276,6 +310,7 @@ export function ScheduleScreen({
                 <AnimatedSwitch
                   value={isBinFull}
                   onChange={handleBinFullToggle}
+                  disabled={binFullLoading}
                 />
               </View>
             )}

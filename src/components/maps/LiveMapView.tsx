@@ -7,7 +7,7 @@ import {
   DEFAULT_MAP_REGION,
   MAP_DARK_STYLE,
   MAP_EDGE_PADDING,
-  OSM_TILE_URL,
+  getMapTileUrl,
   regionForCoord,
   regionForCoords,
   type MapCoord,
@@ -24,6 +24,8 @@ type Props = {
   fitToLocations?: MapCoord[];
   style?: object;
   children?: React.ReactNode;
+  locked?: boolean;
+  showCenteredUserMarker?: boolean;
 };
 
 export function LiveMapView({
@@ -35,6 +37,8 @@ export function LiveMapView({
   fitToLocations,
   style,
   children,
+  locked = false,
+  showCenteredUserMarker = false,
 }: Props) {
   const { isDark } = useTheme();
   const useOsm = useOsmTiles();
@@ -99,14 +103,15 @@ export function LiveMapView({
         userInterfaceStyle={isDark ? "dark" : "light"}
         showsUserLocation={false}
         showsMyLocationButton={false}
-        rotateEnabled={false}
-        scrollEnabled
-        zoomEnabled
-        pitchEnabled={false}
+        rotateEnabled={!locked && false}
+        scrollEnabled={!locked}
+        zoomEnabled={!locked}
+        pitchEnabled={!locked}
       >
         {useOsm && (
           <UrlTile
-            urlTemplate={OSM_TILE_URL}
+            key={isDark ? "dark" : "light"}
+            urlTemplate={getMapTileUrl(isDark)}
             maximumZ={19}
             flipY={Platform.OS === "ios"}
             opacity={isDark ? 0.65 : 1}
@@ -127,6 +132,13 @@ export function LiveMapView({
 
         {driverLocation && (
           <Marker coordinate={driverLocation} title="Driver" pinColor="#FE8235" />
+        )}
+        {locked && showCenteredUserMarker && (centerOn ?? pickup) && (
+          <Marker
+            coordinate={centerOn ?? (pickup as MapCoord)}
+            title="You"
+            pinColor="#31973D"
+          />
         )}
       </MapView>
 

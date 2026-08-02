@@ -264,7 +264,10 @@ export function ScanningScreen({
     >
       <LiveMapView
         pickupLocation={pickupCoords}
-        centerOn={pickupCoords}
+        // Lock interactions while no driver is selected; keep map centered on user's pickup
+        locked={!(request?.driver?.driver_id)}
+        showCenteredUserMarker={true}
+        centerOn={!(request?.driver?.driver_id) ? pickupCoords : pickupCoords}
         driverLocation={
           showPreviewRoute || showEnRouteRoute ? driverLocation ?? previewDriverCoord : null
         }

@@ -36,11 +36,12 @@ export function usePickupPaystackCheckout() {
       paymentMethodLabel: string,
       request: RequestState,
     ) => {
-      await waitForPaymentSuccess(reference);
+      const verified = await waitForPaymentSuccess(reference);
+      const confirmedReference = verified?.reference ?? reference;
 
       dispatch(setPaymentStatus("success"));
       dispatch(setPaymentDate(new Date()));
-      dispatch(setTransactionReference(reference));
+      dispatch(setTransactionReference(confirmedReference));
       dispatch(setPaymentMethod(phone));
       dispatch(markRequestPaid());
 
@@ -53,7 +54,7 @@ export function usePickupPaystackCheckout() {
       }
 
       navigation.replace("PaymentSuccess", {
-        reference,
+        reference: confirmedReference,
         amount,
         provider,
         phone,

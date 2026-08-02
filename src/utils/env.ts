@@ -6,6 +6,7 @@ type AppExtra = {
   googleAndroidClientId?: string;
   paystackPublicKey?: string;
   supabaseUrl?: string;
+  maptilerKey?: string;
   supabaseAnonKey?: string;
   supabaseAvatarBucket?: string;
 };
@@ -30,4 +31,5 @@ export const env = {
   googleAndroidClientId: readEnv("EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID", "googleAndroidClientId"),
   paystackPublicKey: readEnv("EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY", "paystackPublicKey"),
   supabaseUrl: readEnv("EXPO_PUBLIC_SUPABASE_URL", "supabaseUrl"),
+  maptilerKey: readEnv("EXPO_PUBLIC_MAPTILER_KEY", "maptilerKey"),
 };

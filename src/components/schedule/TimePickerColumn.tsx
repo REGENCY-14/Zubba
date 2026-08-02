@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { TIME_PICKER_ITEM_H } from "../../constants/scheduleConstants";
 
 type Props = {
@@ -7,6 +7,11 @@ type Props = {
   initialIndex: number;
   indexRef: React.MutableRefObject<number>;
 };
+
+const ITEM_H = TIME_PICKER_ITEM_H;
+const VISIBLE_ROWS = 3;
+const VIEWPORT_H = ITEM_H * VISIBLE_ROWS;
+const CENTER_OFFSET = ITEM_H;
 
 export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -16,7 +21,7 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
     indexRef.current = initialIndex;
     const t = setTimeout(() => {
       scrollRef.current?.scrollTo({
-        y: initialIndex * TIME_PICKER_ITEM_H,
+        y: initialIndex * ITEM_H,
         animated: false,
       });
     }, 60);
@@ -24,33 +29,45 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
   }, []);
 
   const getIdx = (y: number) =>
-    Math.max(0, Math.min(items.length - 1, Math.round(y / TIME_PICKER_ITEM_H)));
+    Math.max(0, Math.min(items.length - 1, Math.round(y / ITEM_H)));
 
   const commit = (y: number) => {
     const idx = getIdx(y);
     indexRef.current = idx;
     setActiveIndex(idx);
 
-    // Android's snapToInterval can rest a few pixels off the exact snap
-    // point, which would visually decouple the highlighted row from the
-    // value it represents. Force an exact re-snap so the two always match.
-    const snappedY = idx * TIME_PICKER_ITEM_H;
-    if (snappedY !== y) {
+    const snappedY = idx * ITEM_H;
+    if (Math.abs(snappedY - y) > 0.5) {
       scrollRef.current?.scrollTo({ y: snappedY, animated: true });
     }
   };
 
+  const selectIndex = (idx: number) => {
+    indexRef.current = idx;
+    setActiveIndex(idx);
+    scrollRef.current?.scrollTo({ y: idx * ITEM_H, animated: true });
+  };
+
   return (
-    <View className="flex-1 h-44">
+    <View className="flex-1" style={{ height: VIEWPORT_H }}>
       <View
         pointerEvents="none"
-        className="absolute top-[66px] left-0.5 right-0.5 h-11 bg-[#F1F5F9] rounded-[14px]"
+        className="absolute left-0.5 right-0.5 rounded-[14px]"
+        style={{
+          top: CENTER_OFFSET,
+          height: ITEM_H,
+          backgroundColor: "rgba(255,255,255,0.18)",
+        }}
       />
       <ScrollView
         ref={scrollRef}
-        className="h-44 bg-transparent"
-        contentContainerClassName="pt-[66px] pb-[66px]"
-        snapToInterval={TIME_PICKER_ITEM_H}
+        className="bg-transparent"
+        style={{ height: VIEWPORT_H }}
+        contentContainerStyle={{
+          paddingTop: CENTER_OFFSET,
+          paddingBottom: CENTER_OFFSET,
+        }}
+        snapToInterval={ITEM_H}
         decelerationRate="fast"
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
@@ -61,7 +78,12 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
         onMomentumScrollEnd={(e) => commit(e.nativeEvent.contentOffset.y)}
       >
         {items.map((item, i) => (
-          <View key={i} className="h-11 items-center justify-center">
+          <Pressable
+            key={i}
+            onPress={() => selectIndex(i)}
+            style={{ height: ITEM_H }}
+            className="items-center justify-center"
+          >
             <Text
               className={`text-base  ${
                 i === activeIndex
@@ -71,7 +93,7 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
             >
               {item}
             </Text>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
     </View>

@@ -1,3 +1,5 @@
+import { env } from "../../utils/env";
+
 export const MAP_DARK_STYLE = [
   { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
@@ -6,7 +8,14 @@ export const MAP_DARK_STYLE = [
   { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
 ];
 
-export const OSM_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const MAPTILER_KEY = env.maptilerKey || "";
+const LIGHT_MAPTILER_STYLE = "streets";
+const DARK_MAPTILER_STYLE = "darkmatter";
+
+export function getMapTileUrl(isDark: boolean) {
+  const style = isDark ? DARK_MAPTILER_STYLE : LIGHT_MAPTILER_STYLE;
+  return `https://api.maptiler.com/maps/${style}/256/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`;
+}
 
 export type MapCoord = { latitude: number; longitude: number };
 

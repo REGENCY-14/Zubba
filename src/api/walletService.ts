@@ -36,7 +36,10 @@ export const walletService = {
     return data;
   },
   payForRequest: async (requestId: string) => {
-    const { data } = await api.post<ApiResponse<{ status: string }>>("/payments/wallet/pay", { requestId });
+    const { data } = await api.post<ApiResponse<{ status: string; reference: string }>>(
+      "/payments/wallet/pay",
+      { requestId },
+    );
     return data;
   },
 };
