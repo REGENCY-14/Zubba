@@ -1,4 +1,8 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   scheduleService,
   Schedule as ApiSchedule,
@@ -32,6 +36,20 @@ export const scheduleKeys = {
   list: () => [...scheduleKeys.all, "list"] as const,
 };
 
+function formatScheduleTimeDisplay(value: string | null | undefined) {
+  if (!value) return "";
+
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  const [timePart] = trimmed.split(" ");
+  const [hours, minutes] = timePart.split(":");
+
+  if (!hours || !minutes) return trimmed;
+
+  return `${hours}:${minutes}`;
+}
+
 export function mapApiScheduleToItem(s: ApiSchedule): ScheduleItem {
   const date = parseLocalDateString(s.scheduled_date);
 
@@ -40,6 +58,9 @@ export function mapApiScheduleToItem(s: ApiSchedule): ScheduleItem {
   else if (s.status === "cancelled") status = "cancelled";
   else if (s.processed_at && s.status === "scheduled") status = "processing";
   else if (s.last_error && s.retry_count && s.retry_count > 0) status = "failed";
+
+  const formattedStartTime = formatScheduleTimeDisplay(s.start_time);
+  const formattedEndTime = formatScheduleTimeDisplay(s.end_time);
 
   return {
     id: s.id,
@@ -51,9 +72,9 @@ export function mapApiScheduleToItem(s: ApiSchedule): ScheduleItem {
       year: "numeric",
     }),
     timeRange:
-      s.start_time && s.end_time
-        ? `${s.start_time} - ${s.end_time}`
-        : s.start_time || s.end_time || "",
+      formattedStartTime && formattedEndTime
+        ? `${formattedStartTime} - ${formattedEndTime}`
+        : formattedStartTime || formattedEndTime || "",
     location: s.pickup_address || "No location set",
     rawYear: date.getFullYear(),
     rawMonth: date.getMonth(),
@@ -78,8 +99,11 @@ export function useSchedules() {
   return useQuery({
     queryKey: scheduleKeys.list(),
     queryFn: fetchSchedules,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    placeholderData: keepPreviousData,
   });
 }
 

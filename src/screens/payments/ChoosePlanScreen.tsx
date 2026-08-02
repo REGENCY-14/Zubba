@@ -65,11 +65,25 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
   const pricePer = `/${plan.interval}`;
 
   return (
-    <Animated.View style={{ width: CARD_WIDTH, height: cardHeight, marginTop: cardMarginTop }}>
+    <Animated.View
+      style={{
+        width: CARD_WIDTH,
+        height: cardHeight,
+        marginTop: cardMarginTop,
+        position: 'relative',
+        overflow: 'visible',
+        paddingTop: 4,
+      }}
+    >
       {recommended && (
         <View
           className="absolute bg-[#FFE088] rounded-full px-4 py-[6px] flex-row items-center gap-1"
-          style={{ top: 0, right: 0, zIndex: 10 }}
+          style={{
+            top: -15,
+            right: 0,
+            zIndex: 20,
+            elevation: 10,
+          }}
         >
           <Text className="text-[#1F2A33] text-base">✦</Text>
           <Text className="text-base font-normal text-[#1F2A33]">RECOMMENDED</Text>
@@ -82,6 +96,7 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
           backgroundColor: isActive ? activeColor : inactiveColor,
           borderTopLeftRadius: moderateScale(32),
           borderTopRightRadius: moderateScale(32),
+          overflow: 'hidden',
         }}
       >
       <View className="gap-1">
@@ -100,7 +115,7 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
       </View>
 
       <Pressable
-        className="bg-white rounded-full h-[57px] flex-row items-center justify-center gap-3 px-6"
+        className="bg-white rounded-full h-[57px] flex-row items-center justify-center gap-3 px-6 mb-4"
         onPress={onPress}
       >
         <View
@@ -114,7 +129,7 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
           >
             START MY FREE WEEK TRIAL
           </Text>
-          <Text className="text-[9px] font-medium text-[#9CA3AF] text-center">{price}{pricePer}</Text>
+          <Text className="text-[9px] font-medium text-[#9CA3AF] text-center">after 7-days {price}{pricePer}</Text>
         </View>
       </Pressable>
       </View>
@@ -261,7 +276,8 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
             snapToInterval={CARD_WIDTH + CARD_GAP}
             onScroll={handleScroll}
             scrollEventThrottle={16}
-            contentContainerStyle={{ paddingHorizontal: 24, gap: CARD_GAP }}
+            style={{ overflow: 'visible' }}
+            contentContainerStyle={{ paddingHorizontal: 24, gap: CARD_GAP, paddingTop: 14, paddingBottom: 14, overflow: 'visible' }}
           >
             {plans.map((plan, i) => (
               <PlanCard

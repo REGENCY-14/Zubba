@@ -13,9 +13,7 @@ type Props = {
   onClose: () => void;
   onContinue: (method: PaymentMethodId) => void;
   initialMethod?: PaymentMethodId;
-  /** Only pass true when the user is paying for something (not topping up/withdrawing the wallet itself). */
   allowWallet?: boolean;
-  /** Zubba wallet only ever shows when allowWallet AND the customer is premium. */
   isPremium?: boolean;
 };
 
@@ -35,8 +33,7 @@ export function PaymentMethodDrawer({
   useEffect(() => {
     if (visible) setSelectedMethod(initialMethod);
   }, [visible, initialMethod]);
-  const itemList =
-    allowWallet && isPremium ? [...paymentMethods, walletMethod] : paymentMethods;
+  const itemList = allowWallet && isPremium ? [...paymentMethods, walletMethod] : paymentMethods;
 
   return (
     <Modal

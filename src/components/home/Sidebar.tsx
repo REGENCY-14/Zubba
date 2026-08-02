@@ -21,10 +21,18 @@ import { useTheme } from "../../context/ThemeContext";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useNavigateToChoosePlan } from "../../hooks/useSubscription";
 import { SidebarMenuItem } from "../../types/sidebarItem.types";
-import { bottom_sidebar_items, isPremiumSidebarItems, noPlanSidebarItem, top_sidebar_items } from "../../constants/sidebarItems";
+import {
+  bottom_sidebar_items,
+  isPremiumSidebarItems,
+  noPlanSidebarItem,
+  top_sidebar_items,
+} from "../../constants/sidebarItems";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getFocusedRouteName, getSidebarKeyForRoute } from "../../utils/sidebarRouteMap";
+import {
+  getFocusedRouteName,
+  getSidebarKeyForRoute,
+} from "../../utils/sidebarRouteMap";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DRAWER_WIDTH = Math.round(SCREEN_WIDTH * 0.7);
@@ -43,7 +51,7 @@ type SidebarProps = {
 
 const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   { isVerified = true, menuItems = [], navigation, activeKey },
-  ref
+  ref,
 ) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -205,12 +213,14 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                 justifyContent: "center",
               }}
             >
-              <View style={{
-                width: moderateScale(54),
-                height: moderateScale(54),
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
+              <View
+                style={{
+                  width: moderateScale(54),
+                  height: moderateScale(54),
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {profilePicture ? (
                   <Image
                     source={{ uri: profilePicture }}
@@ -248,15 +258,25 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                   >
                     <MaterialCommunityIcons
                       name="check-decagram"
-                      size={moderateScale(11)}
+                      size={moderateScale(12)}
                       color="#FFFFFF"
+                      style={{
+                        transform: [
+                          { translateY: verticalScale(0.2) },
+                          { translateX: verticalScale(0.3) },
+                        ],
+                      }}
                     />
                   </View>
                 )}
               </View>
             </View>
             <View style={{ flex: 1 }}>
-              <Text numberOfLines={1} style={{ color: colors.text }} className="text-lg text-[20px]">
+              <Text
+                numberOfLines={1}
+                style={{ color: colors.text }}
+                className="text-lg text-[20px]"
+              >
                 {`${user?.firstname} ${user?.lastname}`}
               </Text>
               <Text
@@ -268,7 +288,10 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
             </View>
           </View>
 
-          <View className="w-full border mb-5" style={{ borderColor: colors.border }} />
+          <View
+            className="w-full border mb-5"
+            style={{ borderColor: colors.border }}
+          />
 
           {/* Menu items */}
           <View style={{ gap: moderateScale(12) }}>
@@ -285,7 +308,9 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                     paddingVertical: verticalScale(8),
                     paddingHorizontal: scale(12),
                     borderRadius: 999,
-                    backgroundColor: currentScreen ? colors.surface : "transparent",
+                    backgroundColor: currentScreen
+                      ? colors.surface
+                      : "transparent",
                   }}
                 >
                   <View

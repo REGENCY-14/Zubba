@@ -14,9 +14,9 @@ import { useMySubscription, useNavigateToChoosePlan, usePrefetchSubscriptionPlan
 import { SubscriptionSkeleton } from '../../components/payments/SubscriptionSkeleton';
 
 const GOLD_FEATURES = [
-  { icon: 'flash-outline', label: 'Double Eco-Points on every pickup' },
+  { icon: 'lightning-bolt-outline', label: 'Double Eco-Points on every pickup' },
   { icon: 'calendar-clock-outline', label: 'Advanced & recurring scheduling' },
-  { icon: 'headset', label: 'Priority 24/7 support' },
+  { icon: 'face-agent', label: 'Priority 24/7 support' },
   { icon: 'truck-fast-outline', label: 'Faster driver matching' },
 ] as const;
 
