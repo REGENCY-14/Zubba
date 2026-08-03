@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View, Image, Text } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
 
 import { useTheme } from "../../context/ThemeContext";
@@ -26,6 +26,10 @@ type Props = {
   children?: React.ReactNode;
   locked?: boolean;
   showCenteredUserMarker?: boolean;
+  pickupAvatarUrl?: string | null;
+  pickupName?: string | null;
+  driverAvatarUrl?: string | null;
+  driverName?: string | null;
 };
 
 export function LiveMapView({
@@ -39,6 +43,10 @@ export function LiveMapView({
   children,
   locked = false,
   showCenteredUserMarker = false,
+  pickupAvatarUrl,
+  pickupName,
+  driverAvatarUrl,
+  driverName,
 }: Props) {
   const { isDark } = useTheme();
   const useOsm = useOsmTiles();
@@ -127,11 +135,88 @@ export function LiveMapView({
         )}
 
         {pickup && (
-          <Marker coordinate={pickup} title="Pickup" pinColor="#31973D" />
+          <Marker coordinate={pickup} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
+            {pickupAvatarUrl ? (
+              <Image
+                source={{ uri: pickupAvatarUrl }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  borderWidth: 2,
+                  borderColor: "#fff",
+                }}
+              />
+            ) : (
+              <View style={{ padding: 2 }}>
+                <View style={{ overflow: "hidden" }}>
+                  {/* fallback text avatar */}
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: isDark ? "#374151" : "#E5E7EB",
+                    }}
+                    className="border-2 border-white rounded-full items-center justify-center"
+                  >
+                    <View>
+                      <Text style={{ color: isDark ? "white" : "#111", fontWeight: "700" }}>
+                        {(pickupName ?? "You")
+                          .split(" ")
+                          .map((s) => s[0])
+                          .slice(0, 2)
+                          .join("")
+                          .toUpperCase()
+                        }
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+          </Marker>
         )}
 
         {driverLocation && (
-          <Marker coordinate={driverLocation} title="Driver" pinColor="#FE8235" />
+          <Marker coordinate={driverLocation} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
+            {driverAvatarUrl ? (
+              <Image
+                source={{ uri: driverAvatarUrl }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  borderWidth: 2,
+                  borderColor: "#fff",
+                }}
+              />
+            ) : (
+              <View style={{ padding: 2 }}>
+                <View style={{ overflow: "hidden" }}>
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: isDark ? "#374151" : "#E5E7EB",
+                    }}
+                    className="border-2 border-white rounded-full items-center justify-center"
+                  >
+                    <View>
+                      <Text style={{ color: isDark ? "white" : "#111", fontWeight: "700" }}>
+                        {(driverName ?? "DR")
+                          .split(" ")
+                          .map((s) => s[0])
+                          .slice(0, 2)
+                          .join("")
+                          .toUpperCase()
+                        }
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+          </Marker>
         )}
         {locked && showCenteredUserMarker && (centerOn ?? pickup) && (
           <Marker

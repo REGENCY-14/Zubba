@@ -41,13 +41,7 @@ const SCAN_SIZE = moderateScale(330);
 const SCAN_LEFT = (screenW - SCAN_SIZE) / 2;
 const SCAN_TOP = screenH * 0.14;
 
-const TRICYCLES: { top: number; left: number; rotate: string }[] = [
-  { top: SCAN_TOP - 40, left: screenW * 0.41, rotate: "-42deg" },
-  { top: SCAN_TOP + 15, left: screenW * 0.82, rotate: "42deg" },
-  { top: SCAN_TOP + 65, left: 18, rotate: "53deg" },
-  { top: SCAN_TOP + 115, left: screenW * 0.56, rotate: "41deg" },
-  { top: SCAN_TOP + 148, left: screenW * 0.27, rotate: "44deg" },
-];
+// removed decorative tricycle overlays — markers now show avatars
 
 export function ScanningScreen({
   navigation,
@@ -264,7 +258,6 @@ export function ScanningScreen({
     >
       <LiveMapView
         pickupLocation={pickupCoords}
-        // Lock interactions while no driver is selected; keep map centered on user's pickup
         locked={!(request?.driver?.driver_id)}
         showCenteredUserMarker={true}
         centerOn={!(request?.driver?.driver_id) ? pickupCoords : pickupCoords}
@@ -275,6 +268,10 @@ export function ScanningScreen({
           (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
         }
         fitToLocations={mapFitLocations}
+        pickupAvatarUrl={customer.profile_picture ?? undefined}
+        pickupName={undefined}
+        driverAvatarUrl={driver?.profilePicture ?? undefined}
+        driverName={driver?.name ?? undefined}
       >
         <CustomAppBar title={appBarText} navigation={navigation} />
         {!scanComplete && (
@@ -401,19 +398,7 @@ export function ScanningScreen({
           </View>
         </View>
 
-        {TRICYCLES.map((t, i) => (
-          <View
-            key={i}
-            style={{
-              position: "absolute",
-              top: t.top,
-              left: t.left,
-              transform: [{ rotate: t.rotate }],
-            }}
-          >
-            <Text style={{ fontSize: moderateScale(22) }}>🛺</Text>
-          </View>
-        ))}
+        {/* tricycle decorations removed; markers use avatars */}
         </>
         )}
 

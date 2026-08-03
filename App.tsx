@@ -40,7 +40,6 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const queryClient = new QueryClient();
 
-// Create a separate component for the app content that uses the theme
 function AppContent() {
   const { isDark, colors } = useTheme();
   const navigationRef = useNavigationContainerRef<RootStackParamList>();

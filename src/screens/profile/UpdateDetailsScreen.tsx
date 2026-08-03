@@ -74,7 +74,6 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
       return;
     }
 
-    // First, send OTP
     resendOtp(
       {
         authKey,
@@ -84,7 +83,6 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
       {
         onSuccess: () => {
           toast.success('OTP sent successfully');
-          // Navigate to OTP screen
           navigation.navigate('UpdateDetailsOtp', {
             kind: isEmailMode ? 'email' : 'phone',
             phone: isEmailMode ? undefined : phoneNumber,

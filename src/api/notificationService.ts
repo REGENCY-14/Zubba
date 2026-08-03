@@ -5,7 +5,6 @@ import { Notification, NotificationPreferences, UpdatePreferencesDto } from '../
 import { Platform } from 'react-native';
 
 export const notificationService = {
-  // Preferences
   getPreferences: async (): Promise<NotificationPreferences> => {
     const { data } = await api.get<ApiResponse<NotificationPreferences>>(
       '/notifications/preferences'
@@ -29,7 +28,6 @@ export const notificationService = {
     return data.data;
   },
 
-  // Notifications
   getNotifications: async (limit?: number, offset?: number): Promise<{
     notifications: Notification[];
     unreadCount: number;

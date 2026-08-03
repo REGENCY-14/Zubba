@@ -64,7 +64,6 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
-  // Internal ownership of open/closed state — parent no longer holds this.
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState<string>(activeKey ?? "");
@@ -118,7 +117,6 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
     setVisible(false);
   };
 
-  // Expose imperative API to parent — parent just calls ref.current?.open()
   useImperativeHandle(ref, () => ({ open, close }));
 
   useEffect(() => {
@@ -129,13 +127,10 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
     }
   }, [visible]);
 
-  // Force-close whenever this screen loses focus (back nav, tab switch, etc.)
-  // so re-entering the screen never shows a stale "open" drawer.
   useEffect(() => {
     const unsubscribe = navigation.addListener("blur", () => {
       setVisible(false);
       setMounted(false);
-      // reset animated values instantly, no transition, so it's not visible mid-flight
       translateX.setValue(-DRAWER_WIDTH);
       backdropOpacity.setValue(0);
     });

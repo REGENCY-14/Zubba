@@ -55,7 +55,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         android: {
           buildArchs: ["arm64-v8a"],
-          // Use a newer CMake (bundled ninja 1.12+) to avoid Windows path-length failures.
           cmakeVersion: "4.1.2",
         },
       },
