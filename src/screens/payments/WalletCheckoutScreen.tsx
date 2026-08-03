@@ -244,12 +244,14 @@ export function WalletCheckoutScreen({
                   <Text
                     style={{
                       fontSize: moderateScale(16),
-                      color: colors.text,
+                      color: servicePrice > 0 ? colors.text : colors.textSub,
                       fontWeight: "bold",
                       lineHeight: moderateScale(24),
                     }}
                   >
-                    GHS {servicePrice.toFixed(2)}
+                    {servicePrice > 0
+                      ? `GHS ${servicePrice.toFixed(2)}`
+                      : "Pending (set by bags collected)"}
                   </Text>
                 </View>
               </View>

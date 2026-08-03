@@ -15,7 +15,7 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { LiveMapView } from "../../components/maps/LiveMapView";
 import { useRoutePolyline } from "../../hooks/useRoutePolyline";
-import { interpolateCoord } from "../../components/maps/mapUtils";
+import { interpolateCoord, pointAlongPath, formatDistance, formatEta } from "../../components/maps/mapUtils";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
@@ -132,14 +132,15 @@ export function ScanningScreen({
     try {
       if (!pickupCoords || !driver) return;
       setModalStep("customer_requests");
+      // Only the distance-based pickup price is known right now. The
+      // service price depends on bag count, which the driver only logs
+      // after arriving -- it isn't sent here, and the backend forces it
+      // to 0 at creation regardless.
       const requestTakeout: RequestTakeout = {
         pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
         pickup_address: pickupAddress,
-        bags: 1,
         driver_id: driver.id,
         distance_m: driver.distanceM,
-        pickup_price: driver.cost,
-        service_price: 5,
       };
       const result = await customerService.requestTakeout(requestTakeout);
       const requestResult = result.data.request;
@@ -156,10 +157,10 @@ export function ScanningScreen({
           pickup_location: requestTakeout.pickup_location.toString(),
           pickup_address: requestTakeout.pickup_address,
           payment_method: "",
-          bags: requestTakeout.bags ?? 0,
+          bags: Number(requestResult.bags ?? 0),
           distance_m: requestTakeout.distance_m,
-          pickup_price: requestTakeout.pickup_price,
-          service_price: requestTakeout.service_price,
+          pickup_price: Number(requestResult.pickup_price ?? driver.cost),
+          service_price: Number(requestResult.service_price ?? 0),
           collection_code: requestResult.collection_code,
           scheduleRequest: false,
           status: "pending",
@@ -226,17 +227,26 @@ export function ScanningScreen({
   }, []);
 
   const previewDriverCoord = getDriverCoord(driver);
-  const driverLocation =
-    pickupCoords && driverStart
-      ? interpolateCoord(driverStart, pickupCoords, simProgress)
-      : driverStart ?? previewDriverCoord;
-
   const showPreviewRoute = scanComplete && driver && modalStep === "found_drivers";
   const showEnRouteRoute = modalStep === "on_the_way";
-  const routeCoords = useRoutePolyline(
-    showEnRouteRoute || showPreviewRoute ? driverLocation : null,
-    pickupCoords,
-  );
+
+  // Fetch the route once from a fixed origin (not the constantly-moving
+  // interpolated position) so we get one stable, real road-following
+  // polyline to both draw and walk the driver marker along.
+  const routeOrigin = showEnRouteRoute
+    ? driverStart
+    : showPreviewRoute
+      ? previewDriverCoord
+      : null;
+  const routeInfo = useRoutePolyline(routeOrigin, pickupCoords);
+
+  const driverLocation = showEnRouteRoute
+    ? routeInfo.coordinates.length > 1
+      ? pointAlongPath(routeInfo.coordinates, simProgress)
+      : pickupCoords && driverStart
+        ? interpolateCoord(driverStart, pickupCoords, simProgress)
+        : driverStart
+    : driverStart ?? previewDriverCoord;
 
   const mapFitLocations =
     showPreviewRoute && pickupCoords && previewDriverCoord
@@ -244,8 +254,22 @@ export function ScanningScreen({
       : showEnRouteRoute && pickupCoords && driverLocation
         ? [pickupCoords, driverLocation]
         : undefined;
-  const distanceLabel = driver ? `${(driver.distanceM / 1000 * (1 - simProgress)).toFixed(1)} km` : "—";
-  const etaLabel = driver ? `${Math.max(1, Math.ceil((driver.etaMinutes || 5) * (1 - simProgress)))} mins` : "—";
+
+  const remainingFraction = Math.max(0, 1 - simProgress);
+  const liveDistanceM =
+    routeInfo.distanceMeters != null
+      ? routeInfo.distanceMeters * remainingFraction
+      : driver
+        ? driver.distanceM * remainingFraction
+        : null;
+  const liveEtaSeconds =
+    routeInfo.durationSeconds != null
+      ? routeInfo.durationSeconds * remainingFraction
+      : driver
+        ? driver.etaMinutes * 60 * remainingFraction
+        : null;
+  const distanceLabel = liveDistanceM != null ? formatDistance(liveDistanceM) : "—";
+  const etaLabel = liveEtaSeconds != null ? formatEta(liveEtaSeconds) : "—";
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
@@ -259,13 +283,12 @@ export function ScanningScreen({
       <LiveMapView
         pickupLocation={pickupCoords}
         locked={!(request?.driver?.driver_id)}
-        showCenteredUserMarker={true}
         centerOn={!(request?.driver?.driver_id) ? pickupCoords : pickupCoords}
         driverLocation={
           showPreviewRoute || showEnRouteRoute ? driverLocation ?? previewDriverCoord : null
         }
         routeCoordinates={
-          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+          (showPreviewRoute || showEnRouteRoute) && routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []
         }
         fitToLocations={mapFitLocations}
         pickupAvatarUrl={customer.profile_picture ?? undefined}

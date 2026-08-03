@@ -2,12 +2,12 @@ import { Asset } from "expo-asset";
 import { useEffect, useState } from "react";
 import { Image, View, useWindowDimensions } from "react-native";
 import { RootStackScreenProps } from "../../navigation/types";
-import { resolveInitialRoute } from "../../utils/resolveInitialRoute";
 
 const zubbaLogo = require("../../../assets/zubba-icon.png");
+const splashScreenLayer = require("../../../assets/splash-screen-layer.png");
 
 export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const [ready, setReady] = useState(false);
 
   const logoSize = Math.min(Math.max(width * 0.55, 180), 320);
@@ -16,17 +16,15 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
     let mounted = true;
 
     const loadAssets = async () => {
-      await Asset.loadAsync([zubbaLogo]);
+      await Asset.loadAsync([zubbaLogo, splashScreenLayer]);
+
       if (!mounted) return;
 
       setReady(true);
 
-      const { route } = await resolveInitialRoute();
-
       setTimeout(() => {
-        if (!mounted) return;
-        navigation.replace(route as any);
-      }, 1200);
+        navigation.replace("OnboardLocationAccess");
+      }, 1800);
     };
 
     loadAssets();
@@ -37,15 +35,26 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
   }, [navigation]);
 
   if (!ready) {
-    return <View className="flex-1 bg-white" />;
+    return <View className="flex-1 bg-[#2EA043]" />;
   }
 
   return (
-    <View className="flex-1 items-center justify-center bg-white">
+    <View className="flex-1 items-center justify-center bg-[#2EA043]">
+      <View
+        className="absolute left-0 right-0 top-0"
+        style={{ height: height * 0.4 }}
+      >
+        <Image
+          source={splashScreenLayer}
+          resizeMode="cover"
+          className="h-full w-full opacity-75"
+        />
+      </View>
+
       <Image
         source={zubbaLogo}
         resizeMode="contain"
-        tintColor="#31973D"
+        tintColor="#FFFFFF"
         style={{
           width: logoSize,
           height: logoSize,

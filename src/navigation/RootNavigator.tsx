@@ -147,7 +147,7 @@ export function RootNavigator() {
       <Stack.Screen name="AddCard" component={AddCardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PremiumPayment" component={PremiumPaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletNumber" component={WalletNumberScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="DriversFound" component={DriversFoundScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="DriversFound" component={DriversFoundScreen} options={{ headerShown: false, animation: "none" }} />
       <Stack.Screen name="LiveTracking" component={LiveTrackingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WalletCheckout" component={WalletCheckoutScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SavedCards" component={SavedCardsScreen} options={{ headerShown: false }} />

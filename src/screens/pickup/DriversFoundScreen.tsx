@@ -19,10 +19,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { LiveMapView } from "../../components/maps/LiveMapView";
+import { LiveMapView, type DriverMapMarker } from "../../components/maps/LiveMapView";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { useRoutePolyline } from "../../hooks/useRoutePolyline";
-import { interpolateCoord } from "../../components/maps/mapUtils";
+import { interpolateCoord, pointAlongPath, formatDistance, formatEta } from "../../components/maps/mapUtils";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { customerService } from "../../api/customerService";
@@ -151,6 +151,8 @@ export function DriversFoundScreen({
   const [showModal, setShowModal] = useState(false);
   const [simProgress, setSimProgress] = useState(0);
   const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const collapseAnim = useRef(new Animated.Value(0)).current;
   const assignedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navHeight = 52 + Math.max(insets.bottom, 14) + 20;
@@ -158,12 +160,30 @@ export function DriversFoundScreen({
   const previewDriverCoord = getDriverCoord(activeDriver);
   const isPreviewing = previewIndex != null && !showModal;
 
+  const setCollapsed_ = (next: boolean) => {
+    setCollapsed(next);
+    Animated.spring(collapseAnim, {
+      toValue: next ? 1 : 0,
+      useNativeDriver: true,
+      friction: 9,
+      tension: 80,
+    }).start();
+  };
+  const toggleCollapsed = () => setCollapsed_(!collapsed);
+
   const handleDriverPress = (index: number) => {
     if (previewIndex === index) {
       submitRequest();
       return;
     }
     setPreviewIndex(index);
+  };
+
+  const handleMarkerPress = (id: string) => {
+    const index = drivers.findIndex((d) => d.id === id);
+    if (index < 0) return;
+    if (collapsed) setCollapsed_(false);
+    handleDriverPress(index);
   };
 
   const closeModal = () => {
@@ -177,42 +197,84 @@ export function DriversFoundScreen({
     };
   }, []);
 
-  const driverLocation =
-    pickupCoords && driverStart
-      ? interpolateCoord(driverStart, pickupCoords, simProgress)
-      : driverStart ?? previewDriverCoord;
   const showPreviewRoute = isPreviewing && previewDriverCoord != null;
   const showEnRouteRoute = modalStep === "on_the_way";
-  const routeCoords = useRoutePolyline(
-    showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null,
-    pickupCoords,
-  );
+
+  // Fetch the route once from a fixed origin (the selected driver's actual
+  // reported position, or the fixed dispatch start point) rather than a
+  // constantly-moving interpolated position, so we get one stable, real
+  // road-following polyline to both draw and walk the driver marker along.
+  const routeOrigin = showEnRouteRoute
+    ? driverStart
+    : showPreviewRoute
+      ? previewDriverCoord
+      : null;
+  const routeInfo = useRoutePolyline(routeOrigin, pickupCoords);
+
+  const driverLocation = showEnRouteRoute
+    ? routeInfo.coordinates.length > 1
+      ? pointAlongPath(routeInfo.coordinates, simProgress)
+      : pickupCoords && driverStart
+        ? interpolateCoord(driverStart, pickupCoords, simProgress)
+        : driverStart
+    : driverStart ?? previewDriverCoord;
+
   const mapFitLocations = useMemo(() => {
     if (!pickupCoords) return undefined;
     if (showPreviewRoute && previewDriverCoord) return [pickupCoords, previewDriverCoord];
     if (showEnRouteRoute && driverLocation) return [pickupCoords, driverLocation];
     return undefined;
   }, [pickupCoords, previewDriverCoord, driverLocation, showPreviewRoute, showEnRouteRoute, previewIndex]);
-  const distanceLabel = activeDriver
-    ? `${((activeDriver.distanceM / 1000) * (1 - simProgress)).toFixed(1)} km`
-    : "—";
-  const etaLabel = activeDriver
-    ? `${Math.max(1, Math.ceil((activeDriver.etaMinutes || 5) * (1 - simProgress)))} mins`
-    : "—";
+
+  // Every candidate driver plotted on the map while the rider is still
+  // choosing -- tapping one previews/selects it, same as tapping its card.
+  const driverMapMarkers: DriverMapMarker[] | undefined = useMemo(() => {
+    if (showEnRouteRoute) return undefined;
+    return drivers.reduce<DriverMapMarker[]>((acc, d, i) => {
+      const coord = getDriverCoord(d);
+      if (coord) {
+        acc.push({
+          id: d.id,
+          coordinate: coord,
+          avatarUrl: d.profilePicture,
+          name: d.name,
+          selected: previewIndex === i,
+        });
+      }
+      return acc;
+    }, []);
+  }, [drivers, previewIndex, showEnRouteRoute]);
+
+  const remainingFraction = Math.max(0, 1 - simProgress);
+  const liveDistanceM =
+    routeInfo.distanceMeters != null
+      ? routeInfo.distanceMeters * remainingFraction
+      : activeDriver
+        ? activeDriver.distanceM * remainingFraction
+        : null;
+  const liveEtaSeconds =
+    routeInfo.durationSeconds != null
+      ? routeInfo.durationSeconds * remainingFraction
+      : activeDriver
+        ? activeDriver.etaMinutes * 60 * remainingFraction
+        : null;
+  const distanceLabel = liveDistanceM != null ? formatDistance(liveDistanceM) : "—";
+  const etaLabel = liveEtaSeconds != null ? formatEta(liveEtaSeconds) : "—";
 
   const submitRequest = async () => {
     if (!pickupCoords || !activeDriver) return;
     setModalStep("customer_requests");
     setShowModal(true);
     try {
+      // Only the distance-based pickup price is known right now. The
+      // service price depends on bag count, which the driver only logs
+      // after arriving -- it isn't sent here, and the backend forces it
+      // to 0 at creation regardless.
       const result = await customerService.requestTakeout({
         pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
         pickup_address: pickupAddress,
-        bags: 1,
         driver_id: activeDriver.id,
         distance_m: activeDriver.distanceM,
-        pickup_price: activeDriver.cost,
-        service_price: 5,
       });
       const requestResult = result.data.request;
       dispatch(
@@ -222,10 +284,10 @@ export function DriversFoundScreen({
           pickup_location: [pickupCoords.latitude, pickupCoords.longitude].toString(),
           pickup_address: pickupAddress,
           payment_method: "",
-          bags: 1,
+          bags: Number(requestResult.bags ?? 0),
           distance_m: activeDriver.distanceM,
-          pickup_price: activeDriver.cost,
-          service_price: 5,
+          pickup_price: Number(requestResult.pickup_price ?? activeDriver.cost),
+          service_price: Number(requestResult.service_price ?? 0),
           collection_code: requestResult.collection_code,
           scheduleRequest: false,
           status: "pending",
@@ -278,11 +340,11 @@ export function DriversFoundScreen({
       <LiveMapView
         pickupLocation={pickupCoords}
         centerOn={pickupCoords}
-        driverLocation={
-          showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null
-        }
+        driverLocation={showEnRouteRoute ? driverLocation : null}
+        driverMarkers={driverMapMarkers}
+        onDriverMarkerPress={handleMarkerPress}
         routeCoordinates={
-          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+          (showPreviewRoute || showEnRouteRoute) && routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []
         }
         fitToLocations={mapFitLocations}
         style={{ flex: 1 }}
@@ -308,6 +370,7 @@ export function DriversFoundScreen({
 
         {!showModal && (
           <Animated.View
+            pointerEvents={collapsed ? "none" : "auto"}
             style={{
               position: "absolute",
               left: 0,
@@ -324,20 +387,37 @@ export function DriversFoundScreen({
               shadowRadius: 20,
               shadowOffset: { width: 0, height: -4 },
               elevation: 12,
+              opacity: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+              transform: [
+                {
+                  translateY: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 24] }),
+                },
+              ],
             }}
           >
-            <View style={{backgroundColor: colors.bg}} className="w-10 h-1 rounded-full self-center" />
+            <Pressable onPress={toggleCollapsed} className="items-center">
+              <View style={{backgroundColor: colors.bg}} className="w-10 h-1 rounded-full" />
+            </Pressable>
 
             <View style={{borderColor: colors.border}} className="gap-6 py-6 rounded-2xl border">
               <View className="flex-row justify-between items-center px-6">
                 <Text style={{color: colors.text}} className="text-lg font-bold">
                   Nearby Drivers
                 </Text>
-                <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
-                  <View className="w-2 h-2 rounded-full bg-[#31973D]" />
-                  <Text className="text-[13px] font-bold text-[#31973D]">
-                    Live view
-                  </Text>
+                <View className="flex-row items-center gap-2">
+                  <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
+                    <View className="w-2 h-2 rounded-full bg-[#31973D]" />
+                    <Text className="text-[13px] font-bold text-[#31973D]">
+                      Live view
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={toggleCollapsed}
+                    style={{borderColor: colors.border}}
+                    className="w-8 h-8 rounded-full border items-center justify-center"
+                  >
+                    <MaterialCommunityIcons name="chevron-down" size={18} color={colors.textSub} />
+                  </Pressable>
                 </View>
               </View>
 
@@ -386,6 +466,61 @@ export function DriversFoundScreen({
                 </Text>
               </Pressable>
             </View>
+          </Animated.View>
+        )}
+
+        {!showModal && (
+          <Animated.View
+            pointerEvents={collapsed ? "auto" : "none"}
+            style={{
+              position: "absolute",
+              right: scale(16),
+              bottom: navHeight,
+              width: moderateScale(52),
+              height: moderateScale(52),
+              borderRadius: moderateScale(26),
+              backgroundColor: colors.surface,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: "#000",
+              shadowOpacity: 0.15,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 12,
+              opacity: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }),
+              transform: [
+                {
+                  scale: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }),
+                },
+              ],
+            }}
+          >
+            <Pressable
+              onPress={toggleCollapsed}
+              className="w-full h-full items-center justify-center"
+            >
+              <MaterialCommunityIcons name="chevron-up" size={22} color="#31973D" />
+              {drivers.length > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -2,
+                    minWidth: moderateScale(18),
+                    height: moderateScale(18),
+                    borderRadius: moderateScale(9),
+                    backgroundColor: "#31973D",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 3,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: moderateScale(10), fontWeight: "700" }}>
+                    {drivers.length}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
           </Animated.View>
         )}
 

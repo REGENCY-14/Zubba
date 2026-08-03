@@ -87,7 +87,7 @@ export function CreditAccountScreen({
         <View
           className="flex justify-between"
           style={{
-            minHeight: Dimensions.get("window").height - 120,
+            minHeight: Dimensions.get("window").height - 175,
             backgroundColor: isDark ? colors.surface : colors.bg,
             borderWidth: 1,
             borderColor: colors.border,

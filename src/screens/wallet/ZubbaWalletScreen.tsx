@@ -15,6 +15,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
+import WithdrawMethodDrawer from "../../components/payment/WithdrawMethodDrawer";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { walletService } from "../../api/walletService";
@@ -24,6 +25,7 @@ import {
   mapMethodToProvider,
   type PaymentMethodId,
 } from "../../utils/paymentProviders";
+import { withdrawNetworks, type WithdrawNetworkId } from "../../constants/paymentMethods";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 const activitesImage = require("../../../assets/activities.png");
@@ -672,18 +674,30 @@ export function ZubbaWalletScreen({
 
       {/* Top Up bottom sheet */}
       <PaymentMethodDrawer
-        visible={sheetOpen}
+        visible={sheetOpen && activeSheet === "topup"}
         onClose={() => setSheetOpen(false)}
         onContinue={(method: PaymentMethodId) => {
-          const dest =
-            activeSheet === "withdraw" ? "Withdraw" : "CreditAccount";
           setSheetOpen(false);
-          navigation.navigate(dest, {
+          navigation.navigate("CreditAccount", {
             provider: mapMethodToProvider(method),
             methodLabel: getMethodLabel(method),
-            ...(dest === "CreditAccount"
-              ? { channel: mapMethodToChannel(method) }
-              : {}),
+            channel: mapMethodToChannel(method),
+          });
+        }}
+      />
+
+      {/* Withdraw bottom sheet: asks which mobile money network to send to,
+          not a generic "payment method" -- withdrawals need an explicit
+          destination network for Paystack's transfer API. */}
+      <WithdrawMethodDrawer
+        visible={sheetOpen && activeSheet === "withdraw"}
+        onClose={() => setSheetOpen(false)}
+        onContinue={(network: WithdrawNetworkId) => {
+          setSheetOpen(false);
+          const option = withdrawNetworks.find((n) => n.id === network);
+          navigation.navigate("Withdraw", {
+            provider: network,
+            methodLabel: option?.title ?? "Mobile Money",
           });
         }}
       />

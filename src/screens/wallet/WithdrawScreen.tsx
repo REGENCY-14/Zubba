@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Dimensions, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
@@ -73,7 +74,7 @@ export function WithdrawScreen({
       style={{ flex: 1, backgroundColor: colors.bg }}
       edges={["top", "left", "right", "bottom"]}
     >
-      <CustomAppBar title="Debit Account" navigation={navigation} />
+      <CustomAppBar title="Withdraw Funds" navigation={navigation} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -87,7 +88,7 @@ export function WithdrawScreen({
         <View
           className="flex justify-between"
           style={{
-            minHeight: Dimensions.get("window").height - 120,
+            minHeight: Dimensions.get("window").height - 175,
             backgroundColor: isDark ? colors.surface : colors.bg,
             borderWidth: 1,
             borderColor: colors.border,
@@ -97,10 +98,34 @@ export function WithdrawScreen({
           }}
         >
           <View>
-            <View style={{ marginBottom: moderateScale(12) }}>
-              <Text style={{ fontSize: moderateScale(14), color: colors.textSub }}>
-                Payout method: {methodLabel}
-              </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: scale(8),
+                marginBottom: moderateScale(16),
+                backgroundColor: colors.surface,
+                borderRadius: moderateScale(16),
+                padding: moderateScale(12),
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: moderateScale(11), color: colors.textMuted, textTransform: "uppercase", letterSpacing: 0.4 }}>
+                  From
+                </Text>
+                <Text style={{ fontSize: moderateScale(14), fontWeight: "600", color: colors.text }}>
+                  Zubba Wallet
+                </Text>
+              </View>
+              <MaterialCommunityIcons name="arrow-right" size={moderateScale(18)} color={colors.textSub} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: moderateScale(11), color: colors.textMuted, textTransform: "uppercase", letterSpacing: 0.4 }}>
+                  To
+                </Text>
+                <Text style={{ fontSize: moderateScale(14), fontWeight: "600", color: colors.text }}>
+                  {methodLabel}
+                </Text>
+              </View>
             </View>
 
             <View style={{ gap: moderateScale(8) }}>
@@ -113,7 +138,7 @@ export function WithdrawScreen({
                   lineHeight: moderateScale(22),
                 }}
               >
-                Wallet Phone Number
+                Recipient Mobile Money Number
               </Text>
 
               <TextInput
@@ -142,7 +167,7 @@ export function WithdrawScreen({
                   lineHeight: moderateScale(16),
                 }}
               >
-                Enter the mobile money number to receive funds
+                Funds will be sent to this {methodLabel} number
               </Text>
             </View>
 

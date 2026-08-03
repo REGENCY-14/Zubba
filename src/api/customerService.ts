@@ -25,7 +25,7 @@ export const customerService = {
   },
 
   getRequestById: async (id: string) => {
-    const { data } = await api.get<ApiResponse<{ customer: RequestTakeout }>>(`/customers/requests/${id}`);
+    const { data } = await api.get<ApiResponse<any>>(`/customers/requests/${id}`);
     return data;
   },
 

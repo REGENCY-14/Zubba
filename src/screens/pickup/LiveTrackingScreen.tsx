@@ -35,7 +35,7 @@ export function LiveTrackingScreen({
   } = useDriverTracking(requestId, simulate);
 
   const effectiveUser = userLocation ?? coords;
-  const routeCoords = useRoutePolyline(driverLocation, effectiveUser ?? null);
+  const routeInfo = useRoutePolyline(driverLocation, effectiveUser ?? null);
   const arrivedRef = useRef(false);
 
   const driver = useMemo(
@@ -64,7 +64,7 @@ export function LiveTrackingScreen({
           pickupLocation={effectiveUser}
           centerOn={effectiveUser}
           driverLocation={driverLocation}
-          routeCoordinates={routeCoords.length > 1 ? routeCoords : []}
+          routeCoordinates={routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []}
           fitToLocations={
             effectiveUser && driverLocation ? [effectiveUser, driverLocation] : undefined
           }

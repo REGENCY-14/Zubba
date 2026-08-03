@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Platform, StyleSheet, View, Image, Text } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
 
 import { useTheme } from "../../context/ThemeContext";
@@ -13,19 +13,32 @@ import {
   type MapCoord,
 } from "./mapUtils";
 import { useOsmTiles } from "../../hooks/useRoutePolyline";
+import { AvatarPinMarker, initialsFromName } from "./AvatarPinMarker";
+
+const PIN_ANCHOR = { x: 0.5, y: 0.95 };
+
+export type DriverMapMarker = {
+  id: string;
+  coordinate: MapCoord;
+  avatarUrl?: string | null;
+  name?: string | null;
+  selected?: boolean;
+};
 
 type Props = {
   pickupLocation?: MapCoord | null;
   /** @deprecated use pickupLocation */
   userLocation?: MapCoord | null;
   driverLocation?: MapCoord | null;
+  /** Every candidate driver to plot at once, e.g. while browsing a driver list. */
+  driverMarkers?: DriverMapMarker[];
+  onDriverMarkerPress?: (id: string) => void;
   routeCoordinates?: MapCoord[];
   centerOn?: MapCoord | null;
   fitToLocations?: MapCoord[];
   style?: object;
   children?: React.ReactNode;
   locked?: boolean;
-  showCenteredUserMarker?: boolean;
   pickupAvatarUrl?: string | null;
   pickupName?: string | null;
   driverAvatarUrl?: string | null;
@@ -36,19 +49,20 @@ export function LiveMapView({
   pickupLocation,
   userLocation,
   driverLocation,
+  driverMarkers,
+  onDriverMarkerPress,
   routeCoordinates = [],
   centerOn,
   fitToLocations,
   style,
   children,
   locked = false,
-  showCenteredUserMarker = false,
   pickupAvatarUrl,
   pickupName,
   driverAvatarUrl,
   driverName,
 }: Props) {
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
   const useOsm = useOsmTiles();
   const mapRef = useRef<MapView>(null);
   const pickup = pickupLocation ?? userLocation ?? null;
@@ -115,6 +129,13 @@ export function LiveMapView({
         scrollEnabled={!locked}
         zoomEnabled={!locked}
         pitchEnabled={!locked}
+        // A fresh MapView (e.g. mounting on a newly navigated-to screen)
+        // otherwise flashes a blank/grey surface while it initializes and
+        // tiles load. Painting it with the app's own background instead
+        // makes that cold-start invisible instead of reading as a "blink".
+        loadingEnabled
+        loadingIndicatorColor="#31973D"
+        loadingBackgroundColor={colors.bg}
       >
         {useOsm && (
           <UrlTile
@@ -135,95 +156,41 @@ export function LiveMapView({
         )}
 
         {pickup && (
-          <Marker coordinate={pickup} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
-            {pickupAvatarUrl ? (
-              <Image
-                source={{ uri: pickupAvatarUrl }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  borderWidth: 2,
-                  borderColor: "#fff",
-                }}
-              />
-            ) : (
-              <View style={{ padding: 2 }}>
-                <View style={{ overflow: "hidden" }}>
-                  {/* fallback text avatar */}
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: isDark ? "#374151" : "#E5E7EB",
-                    }}
-                    className="border-2 border-white rounded-full items-center justify-center"
-                  >
-                    <View>
-                      <Text style={{ color: isDark ? "white" : "#111", fontWeight: "700" }}>
-                        {(pickupName ?? "You")
-                          .split(" ")
-                          .map((s) => s[0])
-                          .slice(0, 2)
-                          .join("")
-                          .toUpperCase()
-                        }
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )}
+          <Marker coordinate={pickup} anchor={PIN_ANCHOR} tracksViewChanges={false}>
+            <AvatarPinMarker
+              imageUri={pickupAvatarUrl}
+              initials={initialsFromName(pickupName ?? "You")}
+              ringColor="#31973D"
+            />
           </Marker>
         )}
 
-        {driverLocation && (
-          <Marker coordinate={driverLocation} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
-            {driverAvatarUrl ? (
-              <Image
-                source={{ uri: driverAvatarUrl }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  borderWidth: 2,
-                  borderColor: "#fff",
-                }}
-              />
-            ) : (
-              <View style={{ padding: 2 }}>
-                <View style={{ overflow: "hidden" }}>
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: isDark ? "#374151" : "#E5E7EB",
-                    }}
-                    className="border-2 border-white rounded-full items-center justify-center"
-                  >
-                    <View>
-                      <Text style={{ color: isDark ? "white" : "#111", fontWeight: "700" }}>
-                        {(driverName ?? "DR")
-                          .split(" ")
-                          .map((s) => s[0])
-                          .slice(0, 2)
-                          .join("")
-                          .toUpperCase()
-                        }
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )}
-          </Marker>
-        )}
-        {locked && showCenteredUserMarker && (centerOn ?? pickup) && (
+        {driverMarkers?.map((marker) => (
           <Marker
-            coordinate={centerOn ?? (pickup as MapCoord)}
-            title="You"
-            pinColor="#31973D"
-          />
+            key={marker.id}
+            coordinate={marker.coordinate}
+            anchor={PIN_ANCHOR}
+            tracksViewChanges={false}
+            onPress={() => onDriverMarkerPress?.(marker.id)}
+            zIndex={marker.selected ? 10 : 1}
+          >
+            <AvatarPinMarker
+              imageUri={marker.avatarUrl}
+              initials={initialsFromName(marker.name ?? "DR")}
+              ringColor={marker.selected ? "#31973D" : "#1F2A33"}
+              highlighted={marker.selected}
+            />
+          </Marker>
+        ))}
+
+        {driverLocation && (
+          <Marker coordinate={driverLocation} anchor={PIN_ANCHOR} tracksViewChanges={false}>
+            <AvatarPinMarker
+              imageUri={driverAvatarUrl}
+              initials={initialsFromName(driverName ?? "DR")}
+              ringColor="#31973D"
+            />
+          </Marker>
         )}
       </MapView>
 

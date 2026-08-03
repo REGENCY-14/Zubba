@@ -89,6 +89,49 @@ export function interpolateCoord(from: MapCoord, to: MapCoord, progress: number)
   };
 }
 
+function coordDistance(a: MapCoord, b: MapCoord): number {
+  // Small-scale planar approximation (good enough for interpolating a
+  // marker along an already-fetched route -- no need for full haversine).
+  const dLat = b.latitude - a.latitude;
+  const dLng = b.longitude - a.longitude;
+  return Math.sqrt(dLat * dLat + dLng * dLng);
+}
+
+/**
+ * Places a point along a real route polyline at a given progress fraction
+ * (0 = start, 1 = end), walking the actual road-following coordinates
+ * instead of a straight line between the endpoints.
+ */
+export function pointAlongPath(path: MapCoord[], progress: number): MapCoord {
+  if (path.length === 0) return { latitude: 0, longitude: 0 };
+  if (path.length === 1) return path[0];
+
+  const t = Math.min(1, Math.max(0, progress));
+  if (t <= 0) return path[0];
+  if (t >= 1) return path[path.length - 1];
+
+  const segmentLengths: number[] = [];
+  let totalLength = 0;
+  for (let i = 0; i < path.length - 1; i++) {
+    const len = coordDistance(path[i], path[i + 1]);
+    segmentLengths.push(len);
+    totalLength += len;
+  }
+  if (totalLength === 0) return path[0];
+
+  const targetDistance = totalLength * t;
+  let covered = 0;
+  for (let i = 0; i < segmentLengths.length; i++) {
+    const segLen = segmentLengths[i];
+    if (covered + segLen >= targetDistance) {
+      const segProgress = segLen === 0 ? 0 : (targetDistance - covered) / segLen;
+      return interpolateCoord(path[i], path[i + 1], segProgress);
+    }
+    covered += segLen;
+  }
+  return path[path.length - 1];
+}
+
 export function formatDistance(meters: number) {
   if (meters < 1000) return `${Math.round(meters)} m`;
   return `${(meters / 1000).toFixed(1)} km`;

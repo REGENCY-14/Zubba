@@ -8,6 +8,7 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import {
   getMethodLabel,
@@ -16,6 +17,8 @@ import {
   mapMethodToProvider,
 } from "../../utils/paymentProviders";
 import { callDriver, messageDriver } from "../../utils/contactDriver";
+import { customerService } from "../../api/customerService";
+import { setRequest } from "../../slices/request/requestSlice";
 
 const avatar = require("../../../assets/avatar.jpg");
 
@@ -23,9 +26,38 @@ export function DriverArrivesScreen({
   navigation,
 }: RootStackScreenProps<"DriverArrives">) {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request)
   const customer = useAppSelector((state) => state.customer);
   const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
+
+  // The driver logs the bag count (and the service price it determines)
+  // only once they've arrived, so refresh from the backend here rather
+  // than trusting the stale pickup_price/service_price captured when the
+  // request was first created.
+  React.useEffect(() => {
+    if (!request.id) return;
+    let cancelled = false;
+    customerService
+      .getRequestById(request.id)
+      .then((res) => {
+        if (cancelled || !res.success || !res.data) return;
+        const latest = res.data;
+        dispatch(
+          setRequest({
+            bags: Number(latest.bags ?? request.bags ?? 0),
+            pickup_price: Number(latest.pickup_price ?? request.pickup_price ?? 0),
+            service_price: Number(latest.service_price ?? request.service_price ?? 0),
+          }),
+        );
+      })
+      .catch(() => {
+        // keep whatever pricing we already have locally
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [request.id]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
