@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import MapView, { Marker, Polyline, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
+import MapView, { Polyline, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
 
 import { useTheme } from "../../context/ThemeContext";
 import {
@@ -13,7 +13,7 @@ import {
   type MapCoord,
 } from "./mapUtils";
 import { useOsmTiles } from "../../hooks/useRoutePolyline";
-import { AvatarPinMarker, initialsFromName } from "./AvatarPinMarker";
+import { AvatarMapMarker } from "./AvatarMapMarker";
 
 const PIN_ANCHOR = { x: 0.5, y: 0.95 };
 
@@ -156,41 +156,37 @@ export function LiveMapView({
         )}
 
         {pickup && (
-          <Marker coordinate={pickup} anchor={PIN_ANCHOR} tracksViewChanges={false}>
-            <AvatarPinMarker
-              imageUri={pickupAvatarUrl}
-              initials={initialsFromName(pickupName ?? "You")}
-              ringColor="#31973D"
-            />
-          </Marker>
+          <AvatarMapMarker
+            coordinate={pickup}
+            anchor={PIN_ANCHOR}
+            avatarUrl={pickupAvatarUrl}
+            name={pickupName ?? "You"}
+            ringColor="#31973D"
+          />
         )}
 
         {driverMarkers?.map((marker) => (
-          <Marker
+          <AvatarMapMarker
             key={marker.id}
             coordinate={marker.coordinate}
             anchor={PIN_ANCHOR}
-            tracksViewChanges={false}
             onPress={() => onDriverMarkerPress?.(marker.id)}
             zIndex={marker.selected ? 10 : 1}
-          >
-            <AvatarPinMarker
-              imageUri={marker.avatarUrl}
-              initials={initialsFromName(marker.name ?? "DR")}
-              ringColor={marker.selected ? "#31973D" : "#1F2A33"}
-              highlighted={marker.selected}
-            />
-          </Marker>
+            avatarUrl={marker.avatarUrl}
+            name={marker.name ?? "DR"}
+            ringColor={marker.selected ? "#31973D" : "#1F2A33"}
+            highlighted={marker.selected}
+          />
         ))}
 
         {driverLocation && (
-          <Marker coordinate={driverLocation} anchor={PIN_ANCHOR} tracksViewChanges={false}>
-            <AvatarPinMarker
-              imageUri={driverAvatarUrl}
-              initials={initialsFromName(driverName ?? "DR")}
-              ringColor="#31973D"
-            />
-          </Marker>
+          <AvatarMapMarker
+            coordinate={driverLocation}
+            anchor={PIN_ANCHOR}
+            avatarUrl={driverAvatarUrl}
+            name={driverName ?? "DR"}
+            ringColor="#31973D"
+          />
         )}
       </MapView>
 

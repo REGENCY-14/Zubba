@@ -9,6 +9,8 @@ type Props = {
   ringColor?: string;
   pinColor?: string;
   highlighted?: boolean;
+  onImageLoad?: () => void;
+  onImageError?: () => void;
 };
 
 /**
@@ -25,6 +27,8 @@ export function AvatarPinMarker({
   ringColor = "#31973D",
   pinColor = "#FFFFFF",
   highlighted = false,
+  onImageLoad,
+  onImageError,
 }: Props) {
   const pinSize = highlighted ? size * 1.12 : size;
   const innerSize = pinSize - 4;
@@ -48,6 +52,7 @@ export function AvatarPinMarker({
         style={{
           position: "absolute",
           top: pinSize * 0.13,
+          marginLeft: -0.5,
           width: avatarSize,
           height: avatarSize,
           borderRadius: avatarSize / 2,
@@ -62,6 +67,8 @@ export function AvatarPinMarker({
             source={{ uri: imageUri }}
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
+            onLoad={onImageLoad}
+            onError={onImageError}
           />
         ) : (
           <Text
