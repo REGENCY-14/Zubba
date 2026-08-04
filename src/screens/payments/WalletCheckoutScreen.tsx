@@ -18,7 +18,7 @@ import {
 } from "../../slices/request/requestSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { handleApiError } from "../../utils/handleApiError";
-import { completePickupAfterPayment } from "../../services/pickupCompletion";
+import { refreshCustomerAfterPayment } from "../../services/pickupCompletion";
 import { formatAuthPhone } from "../../utils/paymentProviders";
 
 export function WalletCheckoutScreen({
@@ -73,11 +73,7 @@ export function WalletCheckoutScreen({
       dispatch(setTransactionReference(reference));
       dispatch(setPaymentMethod("wallet"));
       dispatch(markRequestPaid());
-      await completePickupAfterPayment(
-        request.id,
-        request.customer_id || customer.id,
-        dispatch,
-      );
+      await refreshCustomerAfterPayment(request.customer_id || customer.id, dispatch);
       navigation.navigate("PaymentSuccess", {
         phone: formatAuthPhone(user?.phone),
         reference,

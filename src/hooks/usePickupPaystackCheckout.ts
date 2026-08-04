@@ -13,7 +13,7 @@ import {
   setTransactionReference,
   type RequestState,
 } from "../slices/request/requestSlice";
-import { completePickupAfterPayment } from "../services/pickupCompletion";
+import { refreshCustomerAfterPayment } from "../services/pickupCompletion";
 import { handleApiError } from "../utils/handleApiError";
 import { waitForPaymentSuccess } from "../utils/waitForPaymentSuccess";
 import { toast } from "./toast";
@@ -45,12 +45,8 @@ export function usePickupPaystackCheckout() {
       dispatch(setPaymentMethod(phone));
       dispatch(markRequestPaid());
 
-      if (request.id && request.customer_id) {
-        await completePickupAfterPayment(
-          request.id,
-          request.customer_id,
-          dispatch,
-        );
+      if (request.customer_id) {
+        await refreshCustomerAfterPayment(request.customer_id, dispatch);
       }
 
       navigation.replace("PaymentSuccess", {

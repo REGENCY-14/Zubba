@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -15,7 +15,13 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { LiveMapView } from "../../components/maps/LiveMapView";
 import { useRoutePolyline } from "../../hooks/useRoutePolyline";
-import { interpolateCoord, pointAlongPath, formatDistance, formatEta } from "../../components/maps/mapUtils";
+import {
+  interpolateCoord,
+  pointAlongPath,
+  formatDistance,
+  formatEta,
+  parseGeoPoint,
+} from "../../components/maps/mapUtils";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
@@ -34,6 +40,8 @@ import { requestService } from "../../api/requestService";
 import { handleApiError } from "../../utils/handleApiError";
 import { moderateScale } from "../../utils/scale";
 import { buildPickupParams, getDriverCoord } from "../../utils/pickupLocation";
+
+const TRACKING_POLL_MS = 4000;
 
 const avatar = require("../../../assets/avatar.jpg");
 const { width: screenW, height: screenH } = Dimensions.get("window");
@@ -66,9 +74,8 @@ export function ScanningScreen({
   >("");
   const [simProgress, setSimProgress] = useState(0);
   const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
-  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const arrivedHandledRef = useRef(false);
+  const customerCancelledRef = useRef(false);
   useEffect(() => {
     const animation = Animated.loop(
       Animated.timing(spinValue, {
@@ -148,6 +155,9 @@ export function ScanningScreen({
       setDriverPhone(assignedDriverPhone);
       if (!result.success) {
         toast.error("Failed to request takeout, please try again later");
+        dispatch(resetRequest());
+        setModalStep("found_drivers");
+        return;
       }
 
       dispatch(
@@ -166,65 +176,100 @@ export function ScanningScreen({
           status: "pending",
         }),
       );
-      // have web socket confirm if driver accepts
-      setTimeout(() => {
-        dispatch(
-          setRequestDriver({
-            driver_id: driver.id,
-            name: driver.name,
-            avatar: driver.profilePicture ?? "",
-            code: driver.code ?? "N/A",
-            rating: driver.rating,
-            phone: assignedDriverPhone,
-          }),
-        );
-        dispatch(setStatus("accepted"));
-        requestService.updateRequestStatus(requestResult.id, "accepted");
-        setModalStep("driver_accepts");
-        setTimeout(() => {
-          dispatch(setStatus("en_route"));
-          requestService.updateRequestStatus(requestResult.id, "en_route");
-          if (pickupCoords) {
-            const driverCoord = getDriverCoord(driver);
-            setDriverStart(
-              driverCoord ?? {
-                latitude: pickupCoords.latitude + 0.01,
-                longitude: pickupCoords.longitude + 0.01,
-              },
-            );
-          }
-          setModalStep("on_the_way");
-          const started = Date.now();
-          const interval = setInterval(() => {
-            const progress = Math.min(1, (Date.now() - started) / 10000);
-            setSimProgress(progress);
-            if (progress >= 1) clearInterval(interval);
-          }, 500);
-          assignedTimerRef.current = setTimeout(() => {
-            assignedTimerRef.current = null;
-            requestService.updateRequestStatus(request.id || requestResult.id, "arrived");
-            setShowModal(false);
-            navigation.replace("DriverArrives");
-          }, 10000);
-        }, 2000);
-      }, 3000);
+      // The driver's real acceptance/progress is picked up by the tracking
+      // poll below (driven by requestId once it's set on `request.id`) —
+      // not simulated here.
     } catch (err) {
       dispatch(resetRequest());
       console.error(err);
     }
   };
 
+  // Polls the request's real status (set by the driver app) instead of
+  // faking accepted/en_route/arrived with timers.
+  useEffect(() => {
+    if (!request.id) return;
+
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const res = await customerService.getRequestTracking(request.id);
+        if (cancelled || !res.success) return;
+        const { status, driver_location } = res.data as {
+          status: string;
+          driver_location: unknown;
+        };
+
+        if (status === "accepted" && modalStep !== "driver_accepts" && modalStep !== "on_the_way") {
+          if (driver) {
+            dispatch(
+              setRequestDriver({
+                driver_id: driver.id,
+                name: driver.name,
+                avatar: driver.profilePicture ?? "",
+                code: driver.code ?? "N/A",
+                rating: driver.rating,
+                phone: driverPhone,
+              }),
+            );
+          }
+          dispatch(setStatus("accepted"));
+          setModalStep("driver_accepts");
+        } else if (status === "en_route" && modalStep !== "on_the_way") {
+          dispatch(setStatus("en_route"));
+          const liveDriverCoord = parseGeoPoint(driver_location);
+          setDriverStart(
+            liveDriverCoord ??
+              getDriverCoord(driver) ?? {
+                latitude: pickupCoords!.latitude + 0.01,
+                longitude: pickupCoords!.longitude + 0.01,
+              },
+          );
+          setModalStep("on_the_way");
+        } else if (status === "arrived" && !arrivedHandledRef.current) {
+          arrivedHandledRef.current = true;
+          dispatch(setStatus("arrived"));
+          setShowModal(false);
+          navigation.replace("DriverArrives");
+        } else if (status === "cancelled" && !customerCancelledRef.current) {
+          toast.error("The driver declined this request. Please choose another driver.");
+          dispatch(resetRequest());
+          navigation.replace("Home");
+        }
+      } catch {
+        // transient polling error — retry next tick
+      }
+    };
+
+    poll();
+    const interval = setInterval(poll, TRACKING_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [request.id, modalStep]);
+
+  // Walks the driver marker smoothly along the route between real polls once
+  // the driver is actually en route — cosmetic interpolation only, the
+  // underlying "en_route"/"arrived" status still comes from the poll above.
+  useEffect(() => {
+    if (modalStep !== "on_the_way") return;
+    setSimProgress(0);
+    const started = Date.now();
+    const interval = setInterval(() => {
+      const progress = Math.min(1, (Date.now() - started) / TRACKING_POLL_MS);
+      setSimProgress(progress);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [modalStep]);
+
   const cancelRequest = async () => {
+    customerCancelledRef.current = true;
     await requestService.updateRequestStatus(request.id, "cancelled");
     navigation.pop();
     setShowModal(false);
   };
-
-  useEffect(() => {
-    return () => {
-      if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
-    };
-  }, []);
 
   const previewDriverCoord = getDriverCoord(driver);
   const showPreviewRoute = scanComplete && driver && modalStep === "found_drivers";
@@ -441,10 +486,15 @@ export function ScanningScreen({
             etaLabel={etaLabel}
             onProceed={customer_requests}
             onCancel={cancelRequest}
-            onAssignedCancel={() => {
-              if (assignedTimerRef.current)
-                clearTimeout(assignedTimerRef.current);
+            onAssignedCancel={async () => {
+              customerCancelledRef.current = true;
               setShowModal(false);
+              try {
+                await requestService.updateRequestStatus(request.id, "cancelled");
+              } catch (err) {
+                handleApiError(err);
+              }
+              dispatch(resetRequest());
               navigation.replace("Home");
             }}
           />

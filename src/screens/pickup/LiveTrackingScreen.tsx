@@ -49,13 +49,23 @@ export function LiveTrackingScreen({
     [request, tracking],
   );
 
+  // Navigates once the driver has actually marked themselves "arrived" (real
+  // status, polled by useDriverTracking) — `simProgress` above only smooths
+  // the marker's on-screen movement, it no longer drives this transition.
   useEffect(() => {
-    if (!simulate || simProgress < 1 || arrivedRef.current) return;
+    if (tracking?.status !== "arrived" || arrivedRef.current) return;
     arrivedRef.current = true;
-    requestService.updateRequestStatus(requestId, "arrived").finally(() => {
-      navigation.replace("DriverArrives");
-    });
-  }, [simulate, simProgress, requestId, navigation]);
+    navigation.replace("DriverArrives");
+  }, [tracking?.status, navigation]);
+
+  const handleCancel = async () => {
+    try {
+      await requestService.updateRequestStatus(requestId, "cancelled");
+    } catch {
+      // best-effort — still navigate the customer back either way
+    }
+    navigation.replace("Home");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
@@ -84,8 +94,8 @@ export function LiveTrackingScreen({
           distanceLabel={distanceLabel}
           etaLabel={etaLabel}
           onProceed={() => {}}
-          onCancel={() => navigation.replace("Home")}
-          onAssignedCancel={() => navigation.replace("Home")}
+          onCancel={handleCancel}
+          onAssignedCancel={handleCancel}
           animationType="none"
         />
 

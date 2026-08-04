@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -17,12 +17,14 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { resetRequest } from "../../slices/request/requestSlice";
+import { resetRequest, setStatus } from "../../slices/request/requestSlice";
 import { requestService } from "../../api/requestService";
+import { customerService } from "../../api/customerService";
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
-import { completePickupAfterPayment } from "../../services/pickupCompletion";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+
+const COMPLETION_POLL_MS = 4000;
 
 const PROFESSIONALISM_LABELS: Record<number, string> = {
   1: "Bad", 2: "Good", 3: "Very good", 4: "Great", 5: "Amazing",
@@ -91,10 +93,44 @@ export function RateRideScreen({
   const [isLoading, setIsLoading] = useState(false);
   
   const request = useAppSelector((state) => state.request);
-  const customer = useAppSelector((state) => state.customer);
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const drawerMaxHeight = Dimensions.get("window").height * 0.72;
+
+  // Payment success no longer implies the pickup is done — the driver still
+  // has to verify the collection code and log the bag count on their end.
+  // Poll until the request actually reaches "completed" before letting the
+  // customer rate it (the backend rejects rating anything else anyway).
+  const [awaitingCompletion, setAwaitingCompletion] = useState(request.status !== "completed");
+
+  useEffect(() => {
+    if (request.status === "completed") {
+      setAwaitingCompletion(false);
+      return;
+    }
+    if (!request.id) return;
+
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const res = await customerService.getRequestTracking(request.id);
+        if (cancelled || !res.success) return;
+        if (res.data.status === "completed") {
+          dispatch(setStatus("completed"));
+          setAwaitingCompletion(false);
+        }
+      } catch {
+        // transient — retry next tick
+      }
+    };
+
+    poll();
+    const interval = setInterval(poll, COMPLETION_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [request.id, request.status, dispatch]);
 
   const paymentSummary = {
     reference: route.params?.reference || request.transaction_reference || undefined,
@@ -129,14 +165,6 @@ export function RateRideScreen({
     setIsLoading(true);
 
     try {
-      if (request.status === "paid") {
-        await completePickupAfterPayment(
-          request.id,
-          request.customer_id || customer.id,
-          dispatch,
-        );
-      }
-
       const payload = {
         serviceRating: serviceRating,
         professionalism: proRating,
@@ -250,6 +278,32 @@ export function RateRideScreen({
               className="w-36 h-1 rounded-full self-center mb-4"
             />
 
+            {awaitingCompletion ? (
+              <View className="items-center gap-4 py-6">
+                <ActivityIndicator color="#31973D" />
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-base font-medium text-center"
+                >
+                  Waiting for your driver to confirm the pickup…
+                </Text>
+                <Text
+                  style={{ color: colors.textSub }}
+                  className="text-sm text-center"
+                >
+                  You'll be able to rate your experience once they've logged the collection.
+                </Text>
+                <Pressable
+                  onPress={handleSkip}
+                  className="h-12 px-6 rounded-full items-center justify-center border"
+                  style={{ borderColor: colors.border }}
+                >
+                  <Text style={{ color: colors.text }} className="text-sm">
+                    Skip for now
+                  </Text>
+                </Pressable>
+              </View>
+            ) : (
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : undefined}
               keyboardVerticalOffset={insets.top + verticalScale(48)}
@@ -457,6 +511,7 @@ export function RateRideScreen({
             </View>
             </ScrollView>
             </KeyboardAvoidingView>
+            )}
           </View>
         </View>
       </View>
