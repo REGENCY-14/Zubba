@@ -6,6 +6,7 @@ import "react-native-gesture-handler";
 import { useEffect } from "react";
 import { Text, TextInput, StatusBar } from "react-native";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -19,7 +20,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { PaystackCheckoutProvider } from "./src/context/PaystackCheckoutContext";
 
-import { store } from "./src/store";
+import { store, persistor } from "./src/store";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
@@ -46,18 +47,20 @@ function AppContent() {
 
   return (
     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <NavigationContainer ref={navigationRef}>
-          <StatusBar
-            barStyle={isDark ? "light-content" : "dark-content"}
-            backgroundColor={colors.bg}
-            translucent={false}
-          />
-          <RootNavigator />
-          <PushNotificationManager navigationRef={navigationRef} />
-          <ToastManager />
-        </NavigationContainer>
-      </QueryClientProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <QueryClientProvider client={queryClient}>
+          <NavigationContainer ref={navigationRef}>
+            <StatusBar
+              barStyle={isDark ? "light-content" : "dark-content"}
+              backgroundColor={colors.bg}
+              translucent={false}
+            />
+            <RootNavigator />
+            <PushNotificationManager navigationRef={navigationRef} />
+            <ToastManager />
+          </NavigationContainer>
+        </QueryClientProvider>
+      </PersistGate>
     </Provider>
   );
 }

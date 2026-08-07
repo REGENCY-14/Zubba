@@ -15,13 +15,6 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { LiveMapView } from "../../components/maps/LiveMapView";
 import { useRoutePolyline } from "../../hooks/useRoutePolyline";
-import {
-  interpolateCoord,
-  pointAlongPath,
-  formatDistance,
-  formatEta,
-  parseGeoPoint,
-} from "../../components/maps/mapUtils";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
@@ -72,8 +65,6 @@ export function ScanningScreen({
   const [modalStep, setModalStep] = useState<
     "" | "found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way"
   >("");
-  const [simProgress, setSimProgress] = useState(0);
-  const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
   const arrivedHandledRef = useRef(false);
   const customerCancelledRef = useRef(false);
   useEffect(() => {
@@ -196,12 +187,9 @@ export function ScanningScreen({
       try {
         const res = await customerService.getRequestTracking(request.id);
         if (cancelled || !res.success) return;
-        const { status, driver_location } = res.data as {
-          status: string;
-          driver_location: unknown;
-        };
+        const { status } = res.data as { status: string };
 
-        if (status === "accepted" && modalStep !== "driver_accepts" && modalStep !== "on_the_way") {
+        if (status === "accepted" && modalStep !== "driver_accepts") {
           if (driver) {
             dispatch(
               setRequestDriver({
@@ -216,24 +204,17 @@ export function ScanningScreen({
           }
           dispatch(setStatus("accepted"));
           setModalStep("driver_accepts");
-        } else if (status === "en_route" && modalStep !== "on_the_way") {
+        } else if (status === "en_route") {
           dispatch(setStatus("en_route"));
-          const liveDriverCoord = parseGeoPoint(driver_location);
-          setDriverStart(
-            liveDriverCoord ??
-              getDriverCoord(driver) ?? {
-                latitude: pickupCoords!.latitude + 0.01,
-                longitude: pickupCoords!.longitude + 0.01,
-              },
-          );
-          setModalStep("on_the_way");
+          setShowModal(false);
+          navigation.replace("LiveTracking", { requestId: request.id });
         } else if (status === "arrived" && !arrivedHandledRef.current) {
           arrivedHandledRef.current = true;
           dispatch(setStatus("arrived"));
           setShowModal(false);
           navigation.replace("DriverArrives");
         } else if (status === "cancelled" && !customerCancelledRef.current) {
-          toast.error("The driver declined this request. Please choose another driver.");
+          toast.error("No drivers are currently available. Please try again shortly.");
           dispatch(resetRequest());
           navigation.replace("Home");
         }
@@ -250,20 +231,6 @@ export function ScanningScreen({
     };
   }, [request.id, modalStep]);
 
-  // Walks the driver marker smoothly along the route between real polls once
-  // the driver is actually en route — cosmetic interpolation only, the
-  // underlying "en_route"/"arrived" status still comes from the poll above.
-  useEffect(() => {
-    if (modalStep !== "on_the_way") return;
-    setSimProgress(0);
-    const started = Date.now();
-    const interval = setInterval(() => {
-      const progress = Math.min(1, (Date.now() - started) / TRACKING_POLL_MS);
-      setSimProgress(progress);
-    }, 500);
-    return () => clearInterval(interval);
-  }, [modalStep]);
-
   const cancelRequest = async () => {
     customerCancelledRef.current = true;
     await requestService.updateRequestStatus(request.id, "cancelled");
@@ -273,48 +240,16 @@ export function ScanningScreen({
 
   const previewDriverCoord = getDriverCoord(driver);
   const showPreviewRoute = scanComplete && driver && modalStep === "found_drivers";
-  const showEnRouteRoute = modalStep === "on_the_way";
 
-  // Fetch the route once from a fixed origin (not the constantly-moving
-  // interpolated position) so we get one stable, real road-following
-  // polyline to both draw and walk the driver marker along.
-  const routeOrigin = showEnRouteRoute
-    ? driverStart
-    : showPreviewRoute
-      ? previewDriverCoord
-      : null;
-  const routeInfo = useRoutePolyline(routeOrigin, pickupCoords);
-
-  const driverLocation = showEnRouteRoute
-    ? routeInfo.coordinates.length > 1
-      ? pointAlongPath(routeInfo.coordinates, simProgress)
-      : pickupCoords && driverStart
-        ? interpolateCoord(driverStart, pickupCoords, simProgress)
-        : driverStart
-    : driverStart ?? previewDriverCoord;
+  // Fetch the route once from a fixed origin (not a constantly-moving
+  // position) so we get one stable, real road-following polyline to draw.
+  const routeInfo = useRoutePolyline(showPreviewRoute ? previewDriverCoord : null, pickupCoords);
 
   const mapFitLocations =
     showPreviewRoute && pickupCoords && previewDriverCoord
       ? [pickupCoords, previewDriverCoord]
-      : showEnRouteRoute && pickupCoords && driverLocation
-        ? [pickupCoords, driverLocation]
-        : undefined;
+      : undefined;
 
-  const remainingFraction = Math.max(0, 1 - simProgress);
-  const liveDistanceM =
-    routeInfo.distanceMeters != null
-      ? routeInfo.distanceMeters * remainingFraction
-      : driver
-        ? driver.distanceM * remainingFraction
-        : null;
-  const liveEtaSeconds =
-    routeInfo.durationSeconds != null
-      ? routeInfo.durationSeconds * remainingFraction
-      : driver
-        ? driver.etaMinutes * 60 * remainingFraction
-        : null;
-  const distanceLabel = liveDistanceM != null ? formatDistance(liveDistanceM) : "—";
-  const etaLabel = liveEtaSeconds != null ? formatEta(liveEtaSeconds) : "—";
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
@@ -329,11 +264,9 @@ export function ScanningScreen({
         pickupLocation={pickupCoords}
         locked={!(request?.driver?.driver_id)}
         centerOn={!(request?.driver?.driver_id) ? pickupCoords : pickupCoords}
-        driverLocation={
-          showPreviewRoute || showEnRouteRoute ? driverLocation ?? previewDriverCoord : null
-        }
+        driverLocation={showPreviewRoute ? previewDriverCoord : null}
         routeCoordinates={
-          (showPreviewRoute || showEnRouteRoute) && routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []
+          showPreviewRoute && routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []
         }
         fitToLocations={mapFitLocations}
         pickupAvatarUrl={customer.profile_picture ?? undefined}
@@ -482,8 +415,6 @@ export function ScanningScreen({
             code={driver.code ?? "—"}
             phone={driverPhone ?? undefined}
             cost={driver.cost.toFixed(2)}
-            distanceLabel={distanceLabel}
-            etaLabel={etaLabel}
             onProceed={customer_requests}
             onCancel={cancelRequest}
             onAssignedCancel={async () => {

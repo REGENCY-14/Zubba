@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import {
   Pressable,
   ScrollView,
@@ -14,7 +14,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
 import CustomAppBar from "../../components/common/CustomAppBar";
-import { walletService } from "../../api/walletService";
+import {
+  useWalletTransactions,
+  type RawWalletTransaction,
+} from "../../hooks/useWallet";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type TxStatus = "SUCCESS" | "CREDITED" | "PENDING" | "FAILED";
@@ -162,8 +165,6 @@ export function TransactionsScreen({
     right: number;
   } | null>(null);
   const filterButtonRef = useRef<View>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const openFilter = useCallback(() => {
@@ -177,7 +178,7 @@ export function TransactionsScreen({
     });
   }, []);
 
-  const mapTransaction = (item: any): Transaction => {
+  const mapTransaction = (item: RawWalletTransaction): Transaction => {
     const isExpense =
       item.transaction_type === "withdrawal" || item.transaction_type === "fee";
     const amount = Number(item.amount) || 0;
@@ -198,7 +199,7 @@ export function TransactionsScreen({
         ? `- GHS ${amount.toFixed(2)}`
         : `+ GHS ${amount.toFixed(2)}`,
       amountColor: isExpense ? "#FF383C" : "#31973D",
-      status: item.status || "SUCCESS",
+      status: (item.status as TxStatus) || "SUCCESS",
       type: isExpense ? "expense" : "incoming",
       iconBg: isExpense ? "rgba(255, 56, 60, 0.1)" : "rgba(0, 107, 35, 0.1)",
       iconName: isExpense ? "receipt-text-outline" : "cellphone",
@@ -206,34 +207,22 @@ export function TransactionsScreen({
     };
   };
 
-  const loadTransactions = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await walletService.getTransactions({ limit: 50 });
+  const {
+    data: rawTransactions,
+    isLoading,
+    refetch,
+  } = useWalletTransactions({ limit: 50 });
 
-      if (response.success && Array.isArray(response.data.items)) {
-        const mapped = response.data.items.map(mapTransaction);
-        setTransactions(mapped);
-      } else {
-        setTransactions([]);
-      }
-    } catch (error) {
-      console.error("Failed to load transactions:", error);
-      setTransactions([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const transactions = useMemo(
+    () => (rawTransactions ?? []).map(mapTransaction),
+    [rawTransactions],
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await loadTransactions();
+    await refetch();
     setRefreshing(false);
-  }, [loadTransactions]);
-
-  useEffect(() => {
-    loadTransactions();
-  }, [loadTransactions]);
+  }, [refetch]);
 
   const filtered = applyFilter(transactions, activeFilter);
 
@@ -306,7 +295,7 @@ export function TransactionsScreen({
           </View>
 
           {/* Loading state */}
-          {loading && !refreshing && (
+          {isLoading && !refreshing && (
             <View style={{ padding: 32, alignItems: "center" }}>
               <Text
                 style={{
@@ -321,7 +310,7 @@ export function TransactionsScreen({
           )}
 
           {/* Transactions list */}
-          {!loading && (
+          {!isLoading && (
             <View
               style={{
                 backgroundColor: colors.surface,

@@ -23,7 +23,8 @@ import { useTheme } from "../../context/ThemeContext";
 import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { binFullService, normalizeBinFullStatus } from "../../api/binFullService";
+import { binFullService, normalizeBinFullStatus, type BinFullStatus } from "../../api/binFullService";
+import { customerService } from "../../api/customerService";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { useLocationSearch } from "../../hooks/useLocationSearch";
 import {
@@ -55,6 +56,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
   const [binFullLoading, setBinFullLoading] = useState(false);
+  const binFullLoadingRef = useRef(false);
+  const binFullRequestIdRef = useRef<string | null>(null);
   const isPremium = customer.is_premium;
   const { isDark, colors } = useTheme();
   const { coords } = useCurrentLocation();
@@ -103,6 +106,37 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
     setShouldResetHomeOnFocus(true);
   };
 
+  const TERMINAL_REQUEST_STATUSES = ["completed", "cancelled"];
+
+  // A bin-full signal's own `is_active` flips false the instant a driver is
+  // assigned (the signal is "consumed" into a real request) -- but the
+  // switch itself should stay on for the whole bin-full-to-pickup lifecycle,
+  // so once a request is attached we track that request's status instead of
+  // trusting the raw signal flag.
+  const applyBinFullStatus = async (status: BinFullStatus) => {
+    if (status.is_active) {
+      binFullRequestIdRef.current = status.request_id;
+      setIsBinFull(true);
+      return;
+    }
+    if (status.request_id) {
+      try {
+        const res = await customerService.getRequestById(status.request_id);
+        const requestStatus = res?.data?.status as string | undefined;
+        if (res.success && requestStatus && !TERMINAL_REQUEST_STATUSES.includes(requestStatus)) {
+          binFullRequestIdRef.current = status.request_id;
+          setIsBinFull(true);
+          return;
+        }
+      } catch {
+        // can't confirm the linked request's status -- fall through and
+        // trust the raw (inactive) signal rather than getting stuck "on"
+      }
+    }
+    binFullRequestIdRef.current = null;
+    setIsBinFull(false);
+  };
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       if (coords) {
@@ -118,8 +152,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
         binFullService
           .getStatus()
           .then((res) => {
-            if (res.success) {
-              setIsBinFull(normalizeBinFullStatus(res.data).is_active);
+            if (res.success && !binFullLoadingRef.current) {
+              applyBinFullStatus(normalizeBinFullStatus(res.data));
             }
           })
           .catch(() => {});
@@ -138,8 +172,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
     binFullService
       .getStatus()
       .then((res) => {
-        if (res.success) {
-          setIsBinFull(normalizeBinFullStatus(res.data).is_active);
+        if (res.success && !binFullLoadingRef.current) {
+          applyBinFullStatus(normalizeBinFullStatus(res.data));
         }
       })
       .catch(() => {});
@@ -151,6 +185,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
     const previousValue = isBinFull;
     setIsBinFull(value);
     setBinFullLoading(true);
+    binFullLoadingRef.current = true;
     try {
       let pickupLocation: { type: "Point"; coordinates: [number, number] } | undefined;
       let pickupAddress = selectedPickup?.label ?? (searchQuery || "Current location");
@@ -214,10 +249,20 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       }
 
       const status = normalizeBinFullStatus(res.data);
-      setIsBinFull(status.is_active);
+      const assigned = Boolean(res.data.immediateResult?.assigned);
+      // A driver assigned immediately still means the bin-full flow is
+      // active (now as a real request) -- keep the switch on rather than
+      // trusting the signal's own `is_active`, which flips false the moment
+      // it's consumed into a request.
+      if (assigned && status.request_id) {
+        binFullRequestIdRef.current = status.request_id;
+        setIsBinFull(true);
+      } else {
+        await applyBinFullStatus(status);
+      }
 
       if (value) {
-        if (res.data.immediateResult?.assigned) {
+        if (assigned) {
           toast.success("Driver found!\nA driver has been assigned.");
         } else if (status.is_active) {
           toast.info(
@@ -230,6 +275,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
       toast.error(err?.message || "Unable to update bin-full signal.");
     } finally {
       setBinFullLoading(false);
+      binFullLoadingRef.current = false;
     }
   };
 

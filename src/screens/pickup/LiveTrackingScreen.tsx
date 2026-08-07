@@ -24,15 +24,13 @@ export function LiveTrackingScreen({
   const request = useAppSelector((state) => state.request);
   const { colors } = useTheme();
   const { coords } = useCurrentLocation({ watch: true });
-  const simulate = request.status === "en_route" || request.status === "accepted";
   const {
     tracking,
     userLocation,
     driverLocation,
     distanceLabel,
     etaLabel,
-    simProgress,
-  } = useDriverTracking(requestId, simulate);
+  } = useDriverTracking(requestId);
 
   const effectiveUser = userLocation ?? coords;
   const routeInfo = useRoutePolyline(driverLocation, effectiveUser ?? null);
@@ -50,8 +48,7 @@ export function LiveTrackingScreen({
   );
 
   // Navigates once the driver has actually marked themselves "arrived" (real
-  // status, polled by useDriverTracking) — `simProgress` above only smooths
-  // the marker's on-screen movement, it no longer drives this transition.
+  // status, polled by useDriverTracking).
   useEffect(() => {
     if (tracking?.status !== "arrived" || arrivedRef.current) return;
     arrivedRef.current = true;

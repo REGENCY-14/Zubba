@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Image,
@@ -18,7 +18,11 @@ import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import WithdrawMethodDrawer from "../../components/payment/WithdrawMethodDrawer";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { walletService } from "../../api/walletService";
+import {
+  useInvalidateWallet,
+  useWalletBalance,
+  useWalletTransactions,
+} from "../../hooks/useWallet";
 import {
   getMethodLabel,
   mapMethodToChannel,
@@ -183,41 +187,34 @@ export function ZubbaWalletScreen({
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [activeSheet, setActiveSheet] = useState<"topup" | "withdraw">("topup");
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadWallet = async () => {
-    try {
-      const [walletRes, txRes] = await Promise.all([
-        walletService.getWallet(),
-        walletService.getTransactions({ limit: 10 }),
-      ]);
-      if (walletRes.success) {
-        setWalletBalance(walletRes.data.wallet.available_balance);
-      }
-      if (txRes.success && Array.isArray(txRes.data.items) && txRes.data.items.length > 0) {
-        setTransactions(
-          txRes.data.items.map((item: any, index: number) => ({
-            id: item.id ?? String(index),
-            title: item.transaction_type ?? "Transaction",
-            date: new Date(item.created_at).toLocaleDateString(),
-            amount: `GHS ${Number(item.amount).toFixed(2)}`,
-            amountColor: item.transaction_type === "withdrawal" ? "#FF383C" : "#31973D",
-            status: "SUCCESS" as TxStatus,
-            iconBg: "#E8F5E9",
-            iconName: "wallet" as const,
-            iconColor: "#31973D",
-          })),
-        );
-      }
-    } catch {
-      // keep mock fallback
-    }
-  };
+  const { data: walletBalance } = useWalletBalance();
+  const { data: rawTransactions } = useWalletTransactions({ limit: 10 });
+  const invalidateWallet = useInvalidateWallet();
 
+  const transactions = useMemo<Transaction[]>(() => {
+    const items = rawTransactions ?? [];
+    return items.map((item, index) => ({
+      id: item.id ?? String(index),
+      title: item.transaction_type ?? "Transaction",
+      date: item.created_at ? new Date(item.created_at).toLocaleDateString() : "",
+      amount: `GHS ${Number(item.amount).toFixed(2)}`,
+      amountColor: item.transaction_type === "withdrawal" ? "#FF383C" : "#31973D",
+      status: "SUCCESS" as TxStatus,
+      iconBg: "#E8F5E9",
+      iconName: "wallet" as const,
+      iconColor: "#31973D",
+    }));
+  }, [rawTransactions]);
+
+  // Bust the cached balance/transactions after a top-up or withdrawal completes
+  // elsewhere in the flow, instead of the old imperative re-fetch-on-every-visit.
   useEffect(() => {
-    loadWallet();
+    if (route.params?.credited || route.params?.debited) {
+      invalidateWallet();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.credited, route.params?.debited]);
 
   const triggerToast = (message: string) => {
@@ -358,7 +355,11 @@ export function ZubbaWalletScreen({
                       lineHeight: moderateScale(38),
                     }}
                   >
-                    {balanceVisible ? `GHS ${walletBalance.toFixed(2)}` : "GHS XXXXX"}
+                    {balanceVisible
+                      ? walletBalance !== undefined
+                        ? `GHS ${walletBalance.toFixed(2)}`
+                        : "GHS —"
+                      : "GHS XXXXX"}
                   </Text>
                   <Pressable onPress={() => setBalanceVisible((v) => !v)}>
                     <MaterialCommunityIcons

@@ -21,6 +21,7 @@ import { customerService } from "../../api/customerService";
 import { setRequest } from "../../slices/request/requestSlice";
 
 const avatar = require("../../../assets/avatar.jpg");
+const TRACKING_POLL_MS = 4000;
 
 export function DriverArrivesScreen({
   navigation,
@@ -30,34 +31,43 @@ export function DriverArrivesScreen({
   const request = useAppSelector((state) => state.request)
   const customer = useAppSelector((state) => state.customer);
   const [showPaymentDrawer, setShowPaymentDrawer] = React.useState(false);
+  const [bagsConfirmed, setBagsConfirmed] = React.useState(Number(request.bags ?? 0) > 0);
 
   // The driver logs the bag count (and the service price it determines)
-  // only once they've arrived, so refresh from the backend here rather
-  // than trusting the stale pickup_price/service_price captured when the
-  // request was first created.
+  // only once they've arrived, so poll for it rather than trusting the
+  // stale pickup_price/service_price captured when the request was first
+  // created. Payment can't proceed until this comes back -- we need the
+  // bag count to know the real total.
   React.useEffect(() => {
-    if (!request.id) return;
+    if (!request.id || bagsConfirmed) return;
     let cancelled = false;
-    customerService
-      .getRequestById(request.id)
-      .then((res) => {
+
+    const poll = async () => {
+      try {
+        const res = await customerService.getRequestById(request.id);
         if (cancelled || !res.success || !res.data) return;
         const latest = res.data;
+        const bags = Number(latest.bags ?? 0);
         dispatch(
           setRequest({
-            bags: Number(latest.bags ?? request.bags ?? 0),
+            bags,
             pickup_price: Number(latest.pickup_price ?? request.pickup_price ?? 0),
             service_price: Number(latest.service_price ?? request.service_price ?? 0),
           }),
         );
-      })
-      .catch(() => {
-        // keep whatever pricing we already have locally
-      });
+        if (bags > 0) setBagsConfirmed(true);
+      } catch {
+        // keep whatever pricing we already have locally — retry next tick
+      }
+    };
+
+    poll();
+    const interval = setInterval(poll, TRACKING_POLL_MS);
     return () => {
       cancelled = true;
+      clearInterval(interval);
     };
-  }, [request.id]);
+  }, [request.id, bagsConfirmed]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
@@ -150,21 +160,28 @@ export function DriverArrivesScreen({
                 Confirm Collection
               </Text>
               <Text style={{ fontSize: moderateScale(12), color: colors.textSub, marginTop: verticalScale(4) }}>
-                Please verify the materials are loaded
+                {bagsConfirmed
+                  ? "Items logged — ready for payment"
+                  : "Waiting for driver to log items…"}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(49,151,61,0.1)', paddingHorizontal: scale(12), paddingVertical: verticalScale(4), borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
-              <View style={{ width: moderateScale(8), height: moderateScale(8), borderRadius: moderateScale(4), backgroundColor: '#2E7D32', marginRight: scale(8) }} />
-              <Text style={{ fontSize: moderateScale(13), color: '#31973D' }}>Driver Ready</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: bagsConfirmed ? 'rgba(49,151,61,0.1)' : 'rgba(107,114,128,0.1)', paddingHorizontal: scale(12), paddingVertical: verticalScale(4), borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
+              <View style={{ width: moderateScale(8), height: moderateScale(8), borderRadius: moderateScale(4), backgroundColor: bagsConfirmed ? '#2E7D32' : '#9CA3AF', marginRight: scale(8) }} />
+              <Text style={{ fontSize: moderateScale(13), color: bagsConfirmed ? '#31973D' : colors.textSub }}>
+                {bagsConfirmed ? "Items Logged" : "Awaiting Driver"}
+              </Text>
             </View>
           </View>
 
           <View style={{ gap: moderateScale(16) }}>
             <Pressable
-              onPress={() => setShowPaymentDrawer(true)}
-              style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+              onPress={() => bagsConfirmed && setShowPaymentDrawer(true)}
+              disabled={!bagsConfirmed}
+              style={{ height: verticalScale(48), backgroundColor: bagsConfirmed ? '#31973D' : colors.border, borderRadius: 999, alignItems: 'center', justifyContent: 'center', opacity: bagsConfirmed ? 1 : 0.6 }}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: moderateScale(14) }}>Proceed to payment</Text>
+              <Text style={{ color: bagsConfirmed ? '#FFFFFF' : colors.textSub, fontSize: moderateScale(14) }}>
+                {bagsConfirmed ? "Proceed to payment" : "Waiting for driver to log items…"}
+              </Text>
             </Pressable>
 
             <Pressable
