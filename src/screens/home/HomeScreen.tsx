@@ -46,6 +46,13 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
   const [binFullLoading, setBinFullLoading] = useState(false);
+  // Measured height of the floating search/stats panel below — the panel's
+  // content scales via moderateScale/verticalScale, which inflates more on
+  // taller/wider screens (e.g. iPhone 14) than the fixed pixel offsets below
+  // ever accounted for. Positioning the bottom action row off the panel's
+  // *actual* rendered height (instead of a fixed "bottom" guess) keeps them
+  // from colliding on any screen size.
+  const [statsPanelHeight, setStatsPanelHeight] = useState(0);
   const isPremium = customer.is_premium;
   const closeDrivers = ["Aaron", "Bob", "Candice"];
   const { isDark, colors } = useTheme();
@@ -221,7 +228,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   borderWidth: 1,
                   borderColor: colors.border,
                   backgroundColor: colors.iconBg,
-                  borderRadius: moderateScale(8),
+                  borderRadius: 999,
                   alignItems: "center",
                   justifyContent: "center",
                 }}
@@ -239,12 +246,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           </View>
 
           <View
+            onLayout={(e) => setStatsPanelHeight(e.nativeEvent.layout.height)}
             style={{
               backgroundColor: isDark ? colors.card : colors.bg,
               borderColor: colors.border,
               gap: moderateScale(12),
+              borderRadius: moderateScale(34),
             }}
-            className="absolute p-5 border rounded-3xl top-[58px] left-2.5 right-2.5 space-y-6"
+            className="absolute p-5 border top-[58px] left-2.5 right-2.5 space-y-6"
           >
             {isPremium ? (
               <View
@@ -511,8 +520,14 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             )}
           </View>
 
-          {/* Bottom action cards */}
-          <View className="absolute bottom-[102px] left-2 right-2 p-4 flex">
+          {/* Bottom action cards — top is computed from the stats panel's
+              measured height above (see onLayout/statsPanelHeight) rather than
+              a fixed "bottom" offset, so it can't collide with the panel on
+              screens where the panel's scaled content renders taller. */}
+          <View
+            style={{ position: "absolute", top: 58 + statsPanelHeight + verticalScale(20) }}
+            className="left-2 right-2 p-4 flex"
+          >
             <View className="space-y-3">
               {/* Tricycle row */}
               <View
