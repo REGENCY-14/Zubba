@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
-import { ThemeColors } from "../../context/ThemeContext";
+import type { ThemeColors } from "../../context/ThemeContext";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import {
   getMethodLabel,
@@ -49,10 +49,26 @@ function PaymentRow({ selected, onPress, badge, label, last, colors }: RowProps)
   );
 }
 
-function IconBadge({ iconName, colors }: { iconName: string; colors: ThemeColors }) {
+function MobileMoneyBadge() {
   return (
-    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: colors.card, borderRadius: moderateScale(8), borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}>
-      <MaterialCommunityIcons name={iconName as any} size={moderateScale(16)} color="#31973D" />
+    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: "#FFCC00", borderRadius: moderateScale(8), alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: moderateScale(12), color: "#000000" }}>MOMO</Text>
+    </View>
+  );
+}
+
+function CardBadge() {
+  return (
+    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: "#E8F2E8", borderRadius: moderateScale(8), alignItems: "center", justifyContent: "center" }}>
+      <MaterialCommunityIcons name="credit-card-outline" size={moderateScale(16)} color="#31973D" />
+    </View>
+  );
+}
+
+function WalletBadge() {
+  return (
+    <View style={{ width: scale(42), height: verticalScale(26), backgroundColor: "#31973D", borderRadius: moderateScale(8), alignItems: "center", justifyContent: "center" }}>
+      <MaterialCommunityIcons name="wallet" size={moderateScale(14)} color="#FFFFFF" />
     </View>
   );
 }
@@ -60,16 +76,12 @@ function IconBadge({ iconName, colors }: { iconName: string; colors: ThemeColors
 export function PaymentScreen({ navigation }: RootStackScreenProps<"Payment">) {
   const isPremium = useAppSelector((state) => state.customer.is_premium);
   const { colors } = useTheme();
-  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(
-    isPremium ? "wallet" : "mobile_money",
-  );
+  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethodId>(isPremium ? "wallet" : "mobile_money");
 
   const rows: { id: PaymentMethodId; badge: React.ReactNode; label: string }[] = [
-    ...(isPremium
-      ? [{ id: "wallet" as PaymentMethodId, badge: <IconBadge iconName="wallet" colors={colors} />, label: "Zubba Wallet" }]
-      : []),
-    { id: "mobile_money", badge: <IconBadge iconName="cellphone" colors={colors} />, label: "Mobile Money" },
-    { id: "credit_card", badge: <IconBadge iconName="credit-card-outline" colors={colors} />, label: "Credit Card" },
+    ...(isPremium ? [{ id: "wallet" as PaymentMethodId, badge: <WalletBadge />, label: getMethodLabel("wallet") }] : []),
+    { id: "mobile_money", badge: <MobileMoneyBadge />, label: getMethodLabel("mobile_money") },
+    { id: "card", badge: <CardBadge />, label: getMethodLabel("card") },
   ];
 
   return (

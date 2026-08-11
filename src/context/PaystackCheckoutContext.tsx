@@ -99,8 +99,8 @@ export function PaystackCheckoutProvider({
         debug={debug}
       >
         <CheckoutRunner pending={pending} onHandled={() => setPending(null)} />
-        {children}
       </PaystackProvider>
+      {children}
     </PaystackCheckoutContext.Provider>
   );
 }

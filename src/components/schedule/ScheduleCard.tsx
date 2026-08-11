@@ -12,6 +12,7 @@ type Props = {
   onEdit: () => void;
   onDelete: () => void;
   onRetry?: () => void;
+  onCardPress?: () => void;
 };
 
 export function ScheduleCard({
@@ -22,6 +23,7 @@ export function ScheduleCard({
   onEdit,
   onDelete,
   onRetry,
+  onCardPress,
 }: Props) {
   const { colors } = useTheme();
 
@@ -31,7 +33,7 @@ export function ScheduleCard({
         return {
           bg: "#FEF3C7",
           text: "#92400E",
-          icon: "moon-waning-crescent",
+          icon: "clock-time-three",
           label: "Scheduled",
         };
       case "completed":
@@ -66,7 +68,7 @@ export function ScheduleCard({
         return {
           bg: "#F1F5F9",
           text: "#475569",
-          icon: "moon-waning-crescent",
+          icon: "clock-time-three",
           label: "Scheduled",
         };
     }
@@ -76,7 +78,13 @@ export function ScheduleCard({
 
   return (
     <View className="flex-row items-start px-3 h-32">
-      <View className="flex-1 pt-1 pr-4 pb-1 gap-2.5 justify-center h-full">
+      <Pressable
+        className="flex-1 pt-1 pr-4 pb-1 gap-2.5 justify-center h-full"
+        onPress={() => {
+          onMenuClose();
+          onCardPress?.();
+        }}
+      >
         <View className="flex-row items-center gap-2">
           <View
             className="flex-row items-center gap-1.5 rounded-xl px-2 py-1"
@@ -169,13 +177,13 @@ export function ScheduleCard({
             Estimated cost
           </Text>
           <Text
-            style={{ color: colors.textMuted }}
+            style={{ color: colors.text }}
             className="text-xl font-bold"
           >
             GHS {item.estimatedPrice || "15.00"}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       <View className="w-[35px] items-center pt-2">
         <Pressable

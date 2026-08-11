@@ -1,5 +1,5 @@
 export type PaymentMethodOption = {
-  id: "mobile_money" | "credit_card" | "wallet";
+  id: "mobile_money" | "card" | "wallet";
   title: string;
   badgeBg: string;
   iconName?: string;
@@ -9,12 +9,13 @@ export const paymentMethods: PaymentMethodOption[] = [
   {
     id: "mobile_money",
     title: "Mobile Money",
-    iconName: "cellphone",
-    badgeBg: "",
+    badge: "MOMO",
+    badgeBg: "bg-[#FFCC00]",
+    badgeTextColor: "text-black",
   },
   {
-    id: "credit_card",
-    title: "Credit Card",
+    id: "card",
+    title: "Card",
     iconName: "credit-card-outline",
     badgeBg: "",
   },
@@ -22,7 +23,7 @@ export const paymentMethods: PaymentMethodOption[] = [
 
 export const walletMethod: PaymentMethodOption = {
   id: "wallet",
-  title: "Zubba wallet",
-  iconName: "credit-card",
+  title: "Zubba Wallet",
+  iconName: "wallet",
   badgeBg: "",
 };

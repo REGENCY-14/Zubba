@@ -1,13 +1,13 @@
 import type { CustomerRequestItem } from "../types/request.types";
 
-export type PaymentMethodId = "wallet" | "mobile_money" | "credit_card";
+export type PaymentMethodId = "wallet" | "mobile_money" | "card";
 
 export type PaymentChannel = "mobile_money" | "card";
 
 const METHOD_LABELS: Record<PaymentMethodId, string> = {
   wallet: "Zubba Wallet",
   mobile_money: "Mobile Money",
-  credit_card: "Credit Card",
+  card: "Credit Card",
 };
 
 // Paystack's own checkout UI handles picking the specific mobile money
@@ -15,7 +15,7 @@ const METHOD_LABELS: Record<PaymentMethodId, string> = {
 // channel (mobile_money vs card), not a specific provider upfront.
 export function mapMethodToProvider(method: PaymentMethodId): string {
   switch (method) {
-    case "credit_card":
+    case "card":
       return "card";
     case "wallet":
       return "wallet";
@@ -25,7 +25,7 @@ export function mapMethodToProvider(method: PaymentMethodId): string {
 }
 
 export function mapMethodToChannel(method: PaymentMethodId): PaymentChannel {
-  return method === "credit_card" ? "card" : "mobile_money";
+  return method === "card" ? "card" : "mobile_money";
 }
 
 export function getMethodLabel(method: PaymentMethodId): string {
@@ -70,8 +70,7 @@ export function isWalletMethod(method: PaymentMethodId): boolean {
 export function getPaymentDetailsFromRequest(item: CustomerRequestItem) {
   const txn = item.transaction;
   const amount = Number(item.pickup_price ?? 0) + Number(item.service_price ?? 0);
-  const reference =
-    txn?.reference ?? item.transaction_reference ?? item.id;
+  const reference = txn?.reference ?? item.transaction_reference ?? item.id;
   const phone = txn?.phone ?? "";
   const provider = txn?.provider_name ?? item.payment_method ?? undefined;
   const paymentMethod = txn?.payment_method ?? item.payment_method ?? undefined;
