@@ -18,7 +18,7 @@ import {
 } from "../../slices/request/requestSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { handleApiError } from "../../utils/handleApiError";
-import { completePickupAfterPayment } from "../../services/pickupCompletion";
+import { refreshCustomerAfterPayment } from "../../services/pickupCompletion";
 import { formatAuthPhone } from "../../utils/paymentProviders";
 
 export function WalletCheckoutScreen({
@@ -62,18 +62,18 @@ export function WalletCheckoutScreen({
     if (!request.id || loading) return;
     setLoading(true);
     try {
-      await walletService.payForRequest(request.id);
-      const reference = `wallet_${request.id}`;
+      const res = await walletService.payForRequest(request.id);
+      if (!res.success || !res.data.reference) {
+        throw new Error("Wallet payment did not return a transaction reference.");
+      }
+
+      const reference = res.data.reference;
       dispatch(setPaymentStatus("success"));
       dispatch(setPaymentDate(new Date()));
       dispatch(setTransactionReference(reference));
       dispatch(setPaymentMethod("wallet"));
       dispatch(markRequestPaid());
-      await completePickupAfterPayment(
-        request.id,
-        request.customer_id || customer.id,
-        dispatch,
-      );
+      await refreshCustomerAfterPayment(request.customer_id || customer.id, dispatch);
       navigation.navigate("PaymentSuccess", {
         phone: formatAuthPhone(user?.phone),
         reference,
@@ -240,12 +240,14 @@ export function WalletCheckoutScreen({
                   <Text
                     style={{
                       fontSize: moderateScale(16),
-                      color: colors.text,
+                      color: servicePrice > 0 ? colors.text : colors.textSub,
                       fontWeight: "bold",
                       lineHeight: moderateScale(24),
                     }}
                   >
-                    GHS {servicePrice.toFixed(2)}
+                    {servicePrice > 0
+                      ? `GHS ${servicePrice.toFixed(2)}`
+                      : "Pending (set by bags collected)"}
                   </Text>
                 </View>
               </View>

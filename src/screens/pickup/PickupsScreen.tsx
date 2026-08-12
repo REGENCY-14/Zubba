@@ -22,6 +22,7 @@ import { CustomerRequestItem } from "../../types/request.types";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { getPaymentDetailsFromRequest } from "../../utils/paymentProviders";
+import CustomAppBar from "../../components/common/CustomAppBar";
 
 const tricycle = require("../../../assets/pickup_tricycle.png");
 
@@ -387,36 +388,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     >
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         {/* Header */}
-        <View
-          style={{
-            height: verticalScale(48),
-            paddingHorizontal: scale(16),
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            backgroundColor: colors.bg,
-          }}
-        >
-          <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
-            <MaterialCommunityIcons
-              name="chevron-left"
-              size={moderateScale(24)}
-              color={colors.text}
-            />
-          </Pressable>
-          <Text
-            style={{
-              fontFamily: "Poppins",
-              fontWeight: "600",
-              fontSize: moderateScale(16),
-              lineHeight: moderateScale(24),
-              color: colors.text,
-            }}
-          >
-            Pickups
-          </Text>
-          <View style={{ width: scale(24) }} />
-        </View>
+        <CustomAppBar title="Pickups" navigation={navigation}/>
 
         <TabBar active={activeTab} onChange={setActiveTab} colors={colors} />
 

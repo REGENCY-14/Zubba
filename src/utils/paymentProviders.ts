@@ -70,7 +70,7 @@ export function isWalletMethod(method: PaymentMethodId): boolean {
 export function getPaymentDetailsFromRequest(item: CustomerRequestItem) {
   const txn = item.transaction;
   const amount = Number(item.pickup_price ?? 0) + Number(item.service_price ?? 0);
-  const reference = txn?.reference ?? item.transaction_reference ?? item.id;
+  const reference = txn?.reference ?? item.transaction_reference ?? null;
   const phone = txn?.phone ?? "";
   const provider = txn?.provider_name ?? item.payment_method ?? undefined;
   const paymentMethod = txn?.payment_method ?? item.payment_method ?? undefined;
@@ -79,7 +79,7 @@ export function getPaymentDetailsFromRequest(item: CustomerRequestItem) {
   );
 
   return {
-    reference,
+    reference: reference ?? "N/A",
     amount,
     phone,
     provider,

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { TIME_PICKER_ITEM_H } from "../../constants/scheduleConstants";
+import { useTheme } from "../../context/ThemeContext";
 
 type Props = {
   items: string[];
@@ -8,70 +9,130 @@ type Props = {
   indexRef: React.MutableRefObject<number>;
 };
 
+const ITEM_H = TIME_PICKER_ITEM_H;
+const VISIBLE_ROWS = 3;
+const VIEWPORT_H = ITEM_H * VISIBLE_ROWS;
+const CENTER_OFFSET = ITEM_H;
+const DRAG_END_SETTLE_MS = 60;
+
 export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const scrollRef = useRef<ScrollView>(null);
+  const { colors } = useTheme()
+  const isMomentumScrolling = useRef(false);
+  const dragEndTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     indexRef.current = initialIndex;
+    setActiveIndex(initialIndex);
     const t = setTimeout(() => {
       scrollRef.current?.scrollTo({
-        y: initialIndex * TIME_PICKER_ITEM_H,
+        y: initialIndex * ITEM_H,
         animated: false,
       });
     }, 60);
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (dragEndTimeout.current) clearTimeout(dragEndTimeout.current);
+    };
+  }, []);
+
   const getIdx = (y: number) =>
-    Math.max(0, Math.min(items.length - 1, Math.round(y / TIME_PICKER_ITEM_H)));
+    Math.max(0, Math.min(items.length - 1, Math.round(y / ITEM_H)));
 
   const commit = (y: number) => {
     const idx = getIdx(y);
     indexRef.current = idx;
     setActiveIndex(idx);
 
-    // Android's snapToInterval can rest a few pixels off the exact snap
-    // point, which would visually decouple the highlighted row from the
-    // value it represents. Force an exact re-snap so the two always match.
-    const snappedY = idx * TIME_PICKER_ITEM_H;
-    if (snappedY !== y) {
+    const snappedY = idx * ITEM_H;
+    if (Math.abs(snappedY - y) > 0.5) {
       scrollRef.current?.scrollTo({ y: snappedY, animated: true });
     }
   };
 
+  const selectIndex = (idx: number) => {
+    indexRef.current = idx;
+    setActiveIndex(idx);
+    scrollRef.current?.scrollTo({ y: idx * ITEM_H, animated: true });
+  };
+
+  const clearSettleTimer = () => {
+    if (dragEndTimeout.current) {
+      clearTimeout(dragEndTimeout.current);
+      dragEndTimeout.current = null;
+    }
+  };
+
   return (
-    <View className="flex-1 h-44">
+    <View className="flex-1" style={{ height: VIEWPORT_H }}>
       <View
         pointerEvents="none"
-        className="absolute top-[66px] left-0.5 right-0.5 h-11 bg-[#F1F5F9] rounded-[14px]"
+        className="absolute left-0.5 right-0.5 rounded-[14px]"
+        style={{
+          top: CENTER_OFFSET,
+          height: ITEM_H,
+          backgroundColor: "rgba(255,255,255,0.18)",
+        }}
       />
       <ScrollView
         ref={scrollRef}
-        className="h-44 bg-transparent"
-        contentContainerClassName="pt-[66px] pb-[66px]"
-        snapToInterval={TIME_PICKER_ITEM_H}
+        className="bg-transparent"
+        style={{ height: VIEWPORT_H }}
+        contentContainerStyle={{
+          paddingTop: CENTER_OFFSET,
+          paddingBottom: CENTER_OFFSET,
+        }}
+        snapToInterval={ITEM_H}
         decelerationRate="fast"
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={(e) => {
-          indexRef.current = getIdx(e.nativeEvent.contentOffset.y);
+          const idx = getIdx(e.nativeEvent.contentOffset.y);
+          indexRef.current = idx;
+          setActiveIndex(idx);
         }}
-        onScrollEndDrag={(e) => commit(e.nativeEvent.contentOffset.y)}
-        onMomentumScrollEnd={(e) => commit(e.nativeEvent.contentOffset.y)}
+        onScrollBeginDrag={clearSettleTimer}
+        onMomentumScrollBegin={() => {
+          isMomentumScrolling.current = true;
+          clearSettleTimer();
+        }}
+        onScrollEndDrag={(e) => {
+          const y = e.nativeEvent.contentOffset.y;
+          isMomentumScrolling.current = false;
+          dragEndTimeout.current = setTimeout(() => {
+            if (!isMomentumScrolling.current) {
+              commit(y);
+            }
+          }, DRAG_END_SETTLE_MS);
+        }}
+        onMomentumScrollEnd={(e) => {
+          isMomentumScrolling.current = false;
+          clearSettleTimer();
+          commit(e.nativeEvent.contentOffset.y);
+        }}
       >
         {items.map((item, i) => (
-          <View key={i} className="h-11 items-center justify-center">
+          <Pressable
+            key={i}
+            onPress={() => selectIndex(i)}
+            style={{ height: ITEM_H }}
+            className="items-center justify-center"
+          >
             <Text
+              style={{color: i === activeIndex ? colors.text : colors.textSub}}
               className={`text-base  ${
                 i === activeIndex
-                  ? "font-semibold text-[#111826]"
-                  : "font-medium text-[#64748A]"
+                  ? "font-semibold"
+                  : "font-medium"
               }`}
             >
               {item}
             </Text>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
     </View>

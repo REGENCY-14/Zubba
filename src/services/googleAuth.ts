@@ -5,6 +5,7 @@ import { env } from "../utils/env";
 import { toast } from "../hooks/toast";
 import { saveAuthSession } from "../utils/resolveInitialRoute";
 import { customerService } from "../api/customerService";
+import { authService } from "../api/authService";
 import { UserRole } from "../slices/auth/auth.types";
 import { api } from "../api/axios";
 import { setCredentials } from "../slices/auth/authSlice";
@@ -43,7 +44,7 @@ export function useGoogleLogin() {
       }
 
       const res = await api.post("/auth/google", { idToken, role });
-      const { user, accessToken, refreshToken } = res.data.data;
+      const { user, accessToken, refreshToken, sessionId } = res.data.data;
 
       dispatch(setCredentials({ user, accessToken, refreshToken }));
       await saveAuthSession({ userId: user.id, accessToken, refreshToken });
@@ -55,7 +56,23 @@ export function useGoogleLogin() {
 
       syncPushNotifications().catch(() => {});
 
-      return user;
+      let welcomeParams = {};
+      if (user.email) {
+        try {
+          const welcome = await authService.getWelcomeContext({
+            authKey: "email",
+            authValue: user.email,
+            sessionId,
+          });
+          if (welcome.success) {
+            welcomeParams = welcome.data;
+          }
+        } catch {
+          // non-blocking
+        }
+      }
+
+      return { user, welcomeParams };
     } catch (err: any) {
       console.log(err);
       if (err.code === statusCodes.SIGN_IN_CANCELLED) {

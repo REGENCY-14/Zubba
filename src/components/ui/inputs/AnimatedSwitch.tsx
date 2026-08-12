@@ -6,6 +6,7 @@ import { scale, verticalScale, moderateScale } from "../../../utils/scale";
 type AnimatedSwitchProps = {
   value: boolean;
   onChange: (value: boolean) => void;
+  disabled?: boolean;
   trackColor?: {
     on?: string;
     off?: string;
@@ -20,6 +21,7 @@ type AnimatedSwitchProps = {
 export default function AnimatedSwitch({
   value,
   onChange,
+  disabled = false,
   trackColor,
   thumbColor,
   style,
@@ -56,7 +58,10 @@ export default function AnimatedSwitch({
 
   return (
     <Pressable
-      onPress={() => onChange(!value)}
+      onPress={() => {
+        if (!disabled) onChange(!value);
+      }}
+      disabled={disabled}
       style={[
         {
           width: scale(36),
@@ -68,6 +73,7 @@ export default function AnimatedSwitch({
         },
         { backgroundColor },
         style,
+        disabled ? { opacity: 0.5 } : null,
       ]}
     >
       <Animated.View

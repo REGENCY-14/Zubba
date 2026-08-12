@@ -13,7 +13,7 @@ import {
   setTransactionReference,
   type RequestState,
 } from "../slices/request/requestSlice";
-import { completePickupAfterPayment } from "../services/pickupCompletion";
+import { refreshCustomerAfterPayment } from "../services/pickupCompletion";
 import { handleApiError } from "../utils/handleApiError";
 import { waitForPaymentSuccess } from "../utils/waitForPaymentSuccess";
 import { toast } from "./toast";
@@ -36,24 +36,21 @@ export function usePickupPaystackCheckout() {
       paymentMethodLabel: string,
       request: RequestState,
     ) => {
-      await waitForPaymentSuccess(reference);
+      const verified = await waitForPaymentSuccess(reference);
+      const confirmedReference = verified?.reference ?? reference;
 
       dispatch(setPaymentStatus("success"));
       dispatch(setPaymentDate(new Date()));
-      dispatch(setTransactionReference(reference));
+      dispatch(setTransactionReference(confirmedReference));
       dispatch(setPaymentMethod(phone));
       dispatch(markRequestPaid());
 
-      if (request.id && request.customer_id) {
-        await completePickupAfterPayment(
-          request.id,
-          request.customer_id,
-          dispatch,
-        );
+      if (request.customer_id) {
+        await refreshCustomerAfterPayment(request.customer_id, dispatch);
       }
 
       navigation.replace("PaymentSuccess", {
-        reference,
+        reference: confirmedReference,
         amount,
         provider,
         phone,

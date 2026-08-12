@@ -1,24 +1,22 @@
 import { customerService } from "../api/customerService";
-import { requestService } from "../api/requestService";
 import { setCustomer } from "../slices/customer/customerSlice";
-import { markRequestCompleted } from "../slices/request/requestSlice";
 import type { AppDispatch } from "../store/index";
 
-/** Simulates driver completing pickup after payment (customer-app demo flow). */
-export async function completePickupAfterPayment(
-  requestId: string,
+/**
+ * Refreshes customer wallet/points data after a successful payment. Does NOT
+ * mark the request completed — the backend already transitions the request to
+ * "paid" itself (see payment webhook / wallet-pay / cash-confirm handlers on
+ * the backend). Actual completion only happens once the driver logs the bag
+ * count and confirms collection via the driver app.
+ */
+export async function refreshCustomerAfterPayment(
   customerId: string,
   dispatch: AppDispatch,
 ) {
-  if (!requestId) return;
+  if (!customerId) return;
 
-  await requestService.updateRequestStatus(requestId, "completed");
-  dispatch(markRequestCompleted());
-
-  if (customerId) {
-    const res = await customerService.getCustomerById(customerId);
-    if (res.success && res.data?.customer) {
-      dispatch(setCustomer(res.data.customer));
-    }
+  const res = await customerService.getCustomerById(customerId);
+  if (res.success && res.data?.customer) {
+    dispatch(setCustomer(res.data.customer));
   }
 }

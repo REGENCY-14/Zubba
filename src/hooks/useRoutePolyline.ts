@@ -2,12 +2,23 @@ import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import type { MapCoord } from "../components/maps/mapUtils";
 
-export function useRoutePolyline(from: MapCoord | null, to: MapCoord | null) {
-  const [coordinates, setCoordinates] = useState<MapCoord[]>([]);
+export type RoutePolyline = {
+  /** Road-following coordinates for drawing the polyline. */
+  coordinates: MapCoord[];
+  /** Actual route distance in meters from the routing engine, not a straight line. */
+  distanceMeters: number | null;
+  /** Actual route duration in seconds from the routing engine. */
+  durationSeconds: number | null;
+};
+
+const EMPTY_ROUTE: RoutePolyline = { coordinates: [], distanceMeters: null, durationSeconds: null };
+
+export function useRoutePolyline(from: MapCoord | null, to: MapCoord | null): RoutePolyline {
+  const [route, setRoute] = useState<RoutePolyline>(EMPTY_ROUTE);
 
   useEffect(() => {
     if (!from || !to) {
-      setCoordinates([]);
+      setRoute(EMPTY_ROUTE);
       return;
     }
 
@@ -18,17 +29,22 @@ export function useRoutePolyline(from: MapCoord | null, to: MapCoord | null) {
         const url = `https://router.project-osrm.org/route/v1/driving/${from.longitude},${from.latitude};${to.longitude},${to.latitude}?overview=full&geometries=geojson`;
         const res = await fetch(url);
         const json = await res.json();
+        const routeData = json?.routes?.[0];
         const coords: MapCoord[] =
-          json?.routes?.[0]?.geometry?.coordinates?.map(([lng, lat]: [number, number]) => ({
+          routeData?.geometry?.coordinates?.map(([lng, lat]: [number, number]) => ({
             latitude: lat,
             longitude: lng,
           })) ?? [];
 
         if (!cancelled) {
-          setCoordinates(coords.length ? coords : [from, to]);
+          setRoute({
+            coordinates: coords.length ? coords : [from, to],
+            distanceMeters: typeof routeData?.distance === "number" ? routeData.distance : null,
+            durationSeconds: typeof routeData?.duration === "number" ? routeData.duration : null,
+          });
         }
       } catch {
-        if (!cancelled) setCoordinates([from, to]);
+        if (!cancelled) setRoute({ coordinates: [from, to], distanceMeters: null, durationSeconds: null });
       }
     };
 
@@ -38,7 +54,7 @@ export function useRoutePolyline(from: MapCoord | null, to: MapCoord | null) {
     };
   }, [from?.latitude, from?.longitude, to?.latitude, to?.longitude]);
 
-  return coordinates;
+  return route;
 }
 
 export function useOsmTiles() {

@@ -34,13 +34,17 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleLogin();
 
   const handleGoogleContinue = async () => {
-    const user = await signInWithGoogle("customer");
-    if (!user) return;
+    const result = await signInWithGoogle("customer");
+    if (!result) return;
+    const { user, welcomeParams } = result;
 
     if (!user.email || !user.phone) {
       navigation.replace("NewUserOnboarding", { email: user.email });
     } else {
-      navigation.replace("ExistingUserNotification", { email: user.email });
+      navigation.replace("ExistingUserNotification", {
+        email: user.email,
+        ...welcomeParams,
+      });
     }
   };
 

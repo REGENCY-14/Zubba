@@ -24,18 +24,16 @@ export function LiveTrackingScreen({
   const request = useAppSelector((state) => state.request);
   const { colors } = useTheme();
   const { coords } = useCurrentLocation({ watch: true });
-  const simulate = request.status === "en_route" || request.status === "accepted";
   const {
     tracking,
     userLocation,
     driverLocation,
     distanceLabel,
     etaLabel,
-    simProgress,
-  } = useDriverTracking(requestId, simulate);
+  } = useDriverTracking(requestId);
 
   const effectiveUser = userLocation ?? coords;
-  const routeCoords = useRoutePolyline(driverLocation, effectiveUser ?? null);
+  const routeInfo = useRoutePolyline(driverLocation, effectiveUser ?? null);
   const arrivedRef = useRef(false);
 
   const driver = useMemo(
@@ -49,13 +47,22 @@ export function LiveTrackingScreen({
     [request, tracking],
   );
 
+  // Navigates once the driver has actually marked themselves "arrived" (real
+  // status, polled by useDriverTracking).
   useEffect(() => {
-    if (!simulate || simProgress < 1 || arrivedRef.current) return;
+    if (tracking?.status !== "arrived" || arrivedRef.current) return;
     arrivedRef.current = true;
-    requestService.updateRequestStatus(requestId, "arrived").finally(() => {
-      navigation.replace("DriverArrives");
-    });
-  }, [simulate, simProgress, requestId, navigation]);
+    navigation.replace("DriverArrives");
+  }, [tracking?.status, navigation]);
+
+  const handleCancel = async () => {
+    try {
+      await requestService.updateRequestStatus(requestId, "cancelled");
+    } catch {
+      // best-effort — still navigate the customer back either way
+    }
+    navigation.replace("Home");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
@@ -64,7 +71,7 @@ export function LiveTrackingScreen({
           pickupLocation={effectiveUser}
           centerOn={effectiveUser}
           driverLocation={driverLocation}
-          routeCoordinates={routeCoords.length > 1 ? routeCoords : []}
+          routeCoordinates={routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []}
           fitToLocations={
             effectiveUser && driverLocation ? [effectiveUser, driverLocation] : undefined
           }
@@ -84,8 +91,8 @@ export function LiveTrackingScreen({
           distanceLabel={distanceLabel}
           etaLabel={etaLabel}
           onProceed={() => {}}
-          onCancel={() => navigation.replace("Home")}
-          onAssignedCancel={() => navigation.replace("Home")}
+          onCancel={handleCancel}
+          onAssignedCancel={handleCancel}
           animationType="none"
         />
 

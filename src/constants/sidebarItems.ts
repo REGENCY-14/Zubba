@@ -1,12 +1,6 @@
 import { SidebarMenuItem } from "../types/sidebarItem.types";
 
 export const top_sidebar_items: SidebarMenuItem[] = [
-  // {
-  //   key:"home",
-  //   label: "Home",
-  //   icon: "home-outline",
-  //   navigate: "Home"
-  // },
   {
     key: "profile",
     label: "Profile",

@@ -21,7 +21,7 @@ import { markRequestPaid, setPaymentDate, setPaymentStatus, setTransactionRefere
 import { toast } from "../../hooks/toast";
 import { handleApiError } from "../../utils/handleApiError";
 import { verticalScale, moderateScale } from "../../utils/scale";
-import { completePickupAfterPayment } from "../../services/pickupCompletion";
+import { refreshCustomerAfterPayment } from "../../services/pickupCompletion";
 
 export function PaymentVerificationScreen({
   route,
@@ -60,18 +60,10 @@ export function PaymentVerificationScreen({
           dispatch(setTransactionReference(reference));
           dispatch(markRequestPaid());
 
-          let completionSucceeded = true;
-          try {
-            if (request.id && request.customer_id) {
-              await completePickupAfterPayment(request.id, request.customer_id, dispatch);
-            }
-          } catch (error) {
-            completionSucceeded = false;
-            handleApiError(error);
-          }
-
-          if (!completionSucceeded) {
-            return;
+          if (request.customer_id) {
+            refreshCustomerAfterPayment(request.customer_id, dispatch).catch((error) => {
+              handleApiError(error);
+            });
           }
 
           setTimeout(() => {

@@ -19,16 +19,19 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
-import { LiveMapView } from "../../components/maps/LiveMapView";
+import { LiveMapView, type DriverMapMarker } from "../../components/maps/LiveMapView";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { useRoutePolyline } from "../../hooks/useRoutePolyline";
-import { interpolateCoord } from "../../components/maps/mapUtils";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { customerService } from "../../api/customerService";
 import { requestService } from "../../api/requestService";
-import { setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
+import { resetRequest, setRequest, setRequestDriver, setStatus } from "../../slices/request/requestSlice";
 import { getDriverCoord } from "../../utils/pickupLocation";
+import { toast } from "../../hooks/toast";
+import { handleApiError } from "../../utils/handleApiError";
+
+const TRACKING_POLL_MS = 4000;
 
 const fallbackAvatar = require("../../../assets/avatar.jpg");
 
@@ -142,6 +145,7 @@ export function DriversFoundScreen({
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const customer = useAppSelector((state) => state.customer);
+  const request = useAppSelector((state) => state.request);
   const { coords: gpsCoords } = useCurrentLocation();
   const pickupCoords = route.params?.pickupLocation ?? gpsCoords;
   const pickupAddress = route.params?.pickupAddress ?? "Selected location";
@@ -149,14 +153,26 @@ export function DriversFoundScreen({
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [modalStep, setModalStep] = useState<"found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way">("found_drivers");
   const [showModal, setShowModal] = useState(false);
-  const [simProgress, setSimProgress] = useState(0);
-  const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
-  const assignedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const collapseAnim = useRef(new Animated.Value(0)).current;
+  const arrivedHandledRef = useRef(false);
+  const customerCancelledRef = useRef(false);
 
   const navHeight = 52 + Math.max(insets.bottom, 14) + 20;
   const activeDriver = previewIndex != null ? drivers[previewIndex] : null;
   const previewDriverCoord = getDriverCoord(activeDriver);
   const isPreviewing = previewIndex != null && !showModal;
+
+  const setCollapsed_ = (next: boolean) => {
+    setCollapsed(next);
+    Animated.spring(collapseAnim, {
+      toValue: next ? 1 : 0,
+      useNativeDriver: true,
+      friction: 9,
+      tension: 80,
+    }).start();
+  };
+  const toggleCollapsed = () => setCollapsed_(!collapsed);
 
   const handleDriverPress = (index: number) => {
     if (previewIndex === index) {
@@ -166,53 +182,63 @@ export function DriversFoundScreen({
     setPreviewIndex(index);
   };
 
+  const handleMarkerPress = (id: string) => {
+    const index = drivers.findIndex((d) => d.id === id);
+    if (index < 0) return;
+    if (collapsed) setCollapsed_(false);
+    handleDriverPress(index);
+  };
+
   const closeModal = () => {
     setShowModal(false);
     setModalStep("found_drivers");
   };
 
-  useEffect(() => {
-    return () => {
-      if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
-    };
-  }, []);
-
-  const driverLocation =
-    pickupCoords && driverStart
-      ? interpolateCoord(driverStart, pickupCoords, simProgress)
-      : driverStart ?? previewDriverCoord;
   const showPreviewRoute = isPreviewing && previewDriverCoord != null;
-  const showEnRouteRoute = modalStep === "on_the_way";
-  const routeCoords = useRoutePolyline(
-    showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null,
-    pickupCoords,
-  );
+
+  // Fetch the route once from a fixed origin (the selected driver's actual
+  // reported position) rather than a constantly-moving interpolated
+  // position, so we get one stable, real road-following polyline to draw.
+  const routeInfo = useRoutePolyline(showPreviewRoute ? previewDriverCoord : null, pickupCoords);
+
   const mapFitLocations = useMemo(() => {
     if (!pickupCoords) return undefined;
     if (showPreviewRoute && previewDriverCoord) return [pickupCoords, previewDriverCoord];
-    if (showEnRouteRoute && driverLocation) return [pickupCoords, driverLocation];
     return undefined;
-  }, [pickupCoords, previewDriverCoord, driverLocation, showPreviewRoute, showEnRouteRoute, previewIndex]);
-  const distanceLabel = activeDriver
-    ? `${((activeDriver.distanceM / 1000) * (1 - simProgress)).toFixed(1)} km`
-    : "—";
-  const etaLabel = activeDriver
-    ? `${Math.max(1, Math.ceil((activeDriver.etaMinutes || 5) * (1 - simProgress)))} mins`
-    : "—";
+  }, [pickupCoords, previewDriverCoord, showPreviewRoute]);
+
+  // Every candidate driver plotted on the map while the rider is still
+  // choosing -- tapping one previews/selects it, same as tapping its card.
+  const driverMapMarkers: DriverMapMarker[] | undefined = useMemo(() => {
+    return drivers.reduce<DriverMapMarker[]>((acc, d, i) => {
+      const coord = getDriverCoord(d);
+      if (coord) {
+        acc.push({
+          id: d.id,
+          coordinate: coord,
+          avatarUrl: d.profilePicture,
+          name: d.name,
+          selected: previewIndex === i,
+        });
+      }
+      return acc;
+    }, []);
+  }, [drivers, previewIndex]);
 
   const submitRequest = async () => {
     if (!pickupCoords || !activeDriver) return;
     setModalStep("customer_requests");
     setShowModal(true);
     try {
+      // Only the distance-based pickup price is known right now. The
+      // service price depends on bag count, which the driver only logs
+      // after arriving -- it isn't sent here, and the backend forces it
+      // to 0 at creation regardless.
       const result = await customerService.requestTakeout({
         pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
         pickup_address: pickupAddress,
-        bags: 1,
         driver_id: activeDriver.id,
         distance_m: activeDriver.distanceM,
-        pickup_price: activeDriver.cost,
-        service_price: 5,
       });
       const requestResult = result.data.request;
       dispatch(
@@ -222,55 +248,85 @@ export function DriversFoundScreen({
           pickup_location: [pickupCoords.latitude, pickupCoords.longitude].toString(),
           pickup_address: pickupAddress,
           payment_method: "",
-          bags: 1,
+          bags: Number(requestResult.bags ?? 0),
           distance_m: activeDriver.distanceM,
-          pickup_price: activeDriver.cost,
-          service_price: 5,
+          pickup_price: Number(requestResult.pickup_price ?? activeDriver.cost),
+          service_price: Number(requestResult.service_price ?? 0),
           collection_code: requestResult.collection_code,
           scheduleRequest: false,
           status: "pending",
         }),
       );
-      setTimeout(() => {
-        dispatch(
-          setRequestDriver({
-            driver_id: activeDriver.id,
-            name: activeDriver.name,
-            avatar: activeDriver.profilePicture ?? "",
-            code: activeDriver.code ?? "N/A",
-            rating: activeDriver.rating,
-            phone: requestResult.driver?.phone ?? null,
-          }),
-        );
-        dispatch(setStatus("accepted"));
-        requestService.updateRequestStatus(requestResult.id, "accepted");
-        setModalStep("driver_accepts");
-        setTimeout(() => {
-          dispatch(setStatus("en_route"));
-          requestService.updateRequestStatus(requestResult.id, "en_route");
-          const startCoord = getDriverCoord(activeDriver);
-          setDriverStart(
-            startCoord ?? {
-              latitude: pickupCoords.latitude + 0.01,
-              longitude: pickupCoords.longitude + 0.01,
-            },
-          );
-          setModalStep("on_the_way");
-          const started = Date.now();
-          const interval = setInterval(() => {
-            const progress = Math.min(1, (Date.now() - started) / 10000);
-            setSimProgress(progress);
-            if (progress >= 1) clearInterval(interval);
-          }, 500);
-          assignedTimerRef.current = setTimeout(() => {
-            requestService.updateRequestStatus(requestResult.id, "arrived");
-            navigation.replace("DriverArrives");
-          }, 10000);
-        }, 2000);
-      }, 3000);
+      dispatch(
+        setRequestDriver({
+          driver_id: activeDriver.id,
+          name: activeDriver.name,
+          avatar: activeDriver.profilePicture ?? "",
+          code: activeDriver.code ?? "N/A",
+          rating: activeDriver.rating,
+          phone: requestResult.driver?.phone ?? null,
+        }),
+      );
+      // The driver's real acceptance/progress is picked up by the tracking
+      // poll below (driven by requestId once it's set on `request.id`) --
+      // not simulated here.
     } catch {
       closeModal();
     }
+  };
+
+  // Polls the request's real status (set by the driver app) instead of
+  // faking accepted/en_route/arrived with timers.
+  useEffect(() => {
+    if (!request.id || !showModal) return;
+
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const res = await customerService.getRequestTracking(request.id);
+        if (cancelled || !res.success) return;
+        const { status } = res.data as { status: string };
+
+        if (status === "accepted" && modalStep !== "driver_accepts") {
+          dispatch(setStatus("accepted"));
+          setModalStep("driver_accepts");
+        } else if (status === "en_route") {
+          dispatch(setStatus("en_route"));
+          setShowModal(false);
+          navigation.replace("LiveTracking", { requestId: request.id });
+        } else if (status === "arrived" && !arrivedHandledRef.current) {
+          arrivedHandledRef.current = true;
+          dispatch(setStatus("arrived"));
+          setShowModal(false);
+          navigation.replace("DriverArrives");
+        } else if (status === "cancelled" && !customerCancelledRef.current) {
+          toast.error("No drivers are currently available. Please try again shortly.");
+          dispatch(resetRequest());
+          closeModal();
+        }
+      } catch {
+        // transient polling error — retry next tick
+      }
+    };
+
+    poll();
+    const interval = setInterval(poll, TRACKING_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [request.id, showModal, modalStep]);
+
+  const cancelRequest = async () => {
+    customerCancelledRef.current = true;
+    try {
+      await requestService.updateRequestStatus(request.id, "cancelled");
+    } catch (err) {
+      handleApiError(err);
+    }
+    dispatch(resetRequest());
+    closeModal();
   };
 
   return (
@@ -278,11 +334,11 @@ export function DriversFoundScreen({
       <LiveMapView
         pickupLocation={pickupCoords}
         centerOn={pickupCoords}
-        driverLocation={
-          showPreviewRoute || showEnRouteRoute ? previewDriverCoord ?? driverLocation : null
-        }
+        driverLocation={null}
+        driverMarkers={driverMapMarkers}
+        onDriverMarkerPress={handleMarkerPress}
         routeCoordinates={
-          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+          showPreviewRoute && routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []
         }
         fitToLocations={mapFitLocations}
         style={{ flex: 1 }}
@@ -308,6 +364,7 @@ export function DriversFoundScreen({
 
         {!showModal && (
           <Animated.View
+            pointerEvents={collapsed ? "none" : "auto"}
             style={{
               position: "absolute",
               left: 0,
@@ -324,20 +381,37 @@ export function DriversFoundScreen({
               shadowRadius: 20,
               shadowOffset: { width: 0, height: -4 },
               elevation: 12,
+              opacity: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+              transform: [
+                {
+                  translateY: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 24] }),
+                },
+              ],
             }}
           >
-            <View style={{backgroundColor: colors.bg}} className="w-10 h-1 rounded-full self-center" />
+            <Pressable onPress={toggleCollapsed} className="items-center">
+              <View style={{backgroundColor: colors.bg}} className="w-10 h-1 rounded-full" />
+            </Pressable>
 
             <View style={{borderColor: colors.border}} className="gap-6 py-6 rounded-2xl border">
               <View className="flex-row justify-between items-center px-6">
                 <Text style={{color: colors.text}} className="text-lg font-bold">
                   Nearby Drivers
                 </Text>
-                <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
-                  <View className="w-2 h-2 rounded-full bg-[#31973D]" />
-                  <Text className="text-[13px] font-bold text-[#31973D]">
-                    Live view
-                  </Text>
+                <View className="flex-row items-center gap-2">
+                  <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
+                    <View className="w-2 h-2 rounded-full bg-[#31973D]" />
+                    <Text className="text-[13px] font-bold text-[#31973D]">
+                      Live view
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={toggleCollapsed}
+                    style={{borderColor: colors.border}}
+                    className="w-8 h-8 rounded-full border items-center justify-center"
+                  >
+                    <MaterialCommunityIcons name="chevron-down" size={18} color={colors.textSub} />
+                  </Pressable>
                 </View>
               </View>
 
@@ -389,6 +463,61 @@ export function DriversFoundScreen({
           </Animated.View>
         )}
 
+        {!showModal && (
+          <Animated.View
+            pointerEvents={collapsed ? "auto" : "none"}
+            style={{
+              position: "absolute",
+              right: scale(16),
+              bottom: navHeight,
+              width: moderateScale(52),
+              height: moderateScale(52),
+              borderRadius: moderateScale(26),
+              backgroundColor: colors.surface,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: "#000",
+              shadowOpacity: 0.15,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 12,
+              opacity: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }),
+              transform: [
+                {
+                  scale: collapseAnim.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }),
+                },
+              ],
+            }}
+          >
+            <Pressable
+              onPress={toggleCollapsed}
+              className="w-full h-full items-center justify-center"
+            >
+              <MaterialCommunityIcons name="chevron-up" size={22} color="#31973D" />
+              {drivers.length > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -2,
+                    minWidth: moderateScale(18),
+                    height: moderateScale(18),
+                    borderRadius: moderateScale(9),
+                    backgroundColor: "#31973D",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 3,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: moderateScale(10), fontWeight: "700" }}>
+                    {drivers.length}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+          </Animated.View>
+        )}
+
         {showModal && modalStep !== "found_drivers" && activeDriver && (
           <PickupRequestModal
             visible={showModal}
@@ -400,11 +529,9 @@ export function DriversFoundScreen({
             rating={activeDriver.rating}
             code={activeDriver.code ?? "—"}
             cost={activeDriver.cost.toFixed(2)}
-            distanceLabel={distanceLabel}
-            etaLabel={etaLabel}
             onProceed={() => setModalStep("customer_requests")}
-            onCancel={closeModal}
-            onAssignedCancel={closeModal}
+            onCancel={cancelRequest}
+            onAssignedCancel={cancelRequest}
             animationType="none"
           />
         )}

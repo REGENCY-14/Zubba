@@ -47,7 +47,6 @@ function CheckoutRunner({
 }) {
   const { popup } = usePaystack();
 
-  // Only re-run when a new checkout is requested, not on every render.
   useEffect(() => {
     if (!pending) return;
     popup.checkout(pending.params);

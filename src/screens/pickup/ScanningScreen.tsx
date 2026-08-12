@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -15,7 +15,6 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { LiveMapView } from "../../components/maps/LiveMapView";
 import { useRoutePolyline } from "../../hooks/useRoutePolyline";
-import { interpolateCoord } from "../../components/maps/mapUtils";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
 import { NearbyDriver } from "../../types/driver.types";
@@ -35,19 +34,15 @@ import { handleApiError } from "../../utils/handleApiError";
 import { moderateScale } from "../../utils/scale";
 import { buildPickupParams, getDriverCoord } from "../../utils/pickupLocation";
 
+const TRACKING_POLL_MS = 4000;
+
 const avatar = require("../../../assets/avatar.jpg");
 const { width: screenW, height: screenH } = Dimensions.get("window");
 const SCAN_SIZE = moderateScale(330);
 const SCAN_LEFT = (screenW - SCAN_SIZE) / 2;
 const SCAN_TOP = screenH * 0.14;
 
-const TRICYCLES: { top: number; left: number; rotate: string }[] = [
-  { top: SCAN_TOP - 40, left: screenW * 0.41, rotate: "-42deg" },
-  { top: SCAN_TOP + 15, left: screenW * 0.82, rotate: "42deg" },
-  { top: SCAN_TOP + 65, left: 18, rotate: "53deg" },
-  { top: SCAN_TOP + 115, left: screenW * 0.56, rotate: "41deg" },
-  { top: SCAN_TOP + 148, left: screenW * 0.27, rotate: "44deg" },
-];
+// removed decorative tricycle overlays — markers now show avatars
 
 export function ScanningScreen({
   navigation,
@@ -70,11 +65,8 @@ export function ScanningScreen({
   const [modalStep, setModalStep] = useState<
     "" | "found_drivers" | "customer_requests" | "driver_accepts" | "on_the_way"
   >("");
-  const [simProgress, setSimProgress] = useState(0);
-  const [driverStart, setDriverStart] = useState<{ latitude: number; longitude: number } | null>(null);
-  const assignedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const arrivedHandledRef = useRef(false);
+  const customerCancelledRef = useRef(false);
   useEffect(() => {
     const animation = Animated.loop(
       Animated.timing(spinValue, {
@@ -138,14 +130,15 @@ export function ScanningScreen({
     try {
       if (!pickupCoords || !driver) return;
       setModalStep("customer_requests");
+      // Only the distance-based pickup price is known right now. The
+      // service price depends on bag count, which the driver only logs
+      // after arriving -- it isn't sent here, and the backend forces it
+      // to 0 at creation regardless.
       const requestTakeout: RequestTakeout = {
         pickup_location: [pickupCoords.latitude, pickupCoords.longitude],
         pickup_address: pickupAddress,
-        bags: 1,
         driver_id: driver.id,
         distance_m: driver.distanceM,
-        pickup_price: driver.cost,
-        service_price: 5,
       };
       const result = await customerService.requestTakeout(requestTakeout);
       const requestResult = result.data.request;
@@ -153,6 +146,9 @@ export function ScanningScreen({
       setDriverPhone(assignedDriverPhone);
       if (!result.success) {
         toast.error("Failed to request takeout, please try again later");
+        dispatch(resetRequest());
+        setModalStep("found_drivers");
+        return;
       }
 
       dispatch(
@@ -162,96 +158,98 @@ export function ScanningScreen({
           pickup_location: requestTakeout.pickup_location.toString(),
           pickup_address: requestTakeout.pickup_address,
           payment_method: "",
-          bags: requestTakeout.bags ?? 0,
+          bags: Number(requestResult.bags ?? 0),
           distance_m: requestTakeout.distance_m,
-          pickup_price: requestTakeout.pickup_price,
-          service_price: requestTakeout.service_price,
+          pickup_price: Number(requestResult.pickup_price ?? driver.cost),
+          service_price: Number(requestResult.service_price ?? 0),
           collection_code: requestResult.collection_code,
           scheduleRequest: false,
           status: "pending",
         }),
       );
-      // have web socket confirm if driver accepts
-      setTimeout(() => {
-        dispatch(
-          setRequestDriver({
-            driver_id: driver.id,
-            name: driver.name,
-            avatar: driver.profilePicture ?? "",
-            code: driver.code ?? "N/A",
-            rating: driver.rating,
-            phone: assignedDriverPhone,
-          }),
-        );
-        dispatch(setStatus("accepted"));
-        requestService.updateRequestStatus(requestResult.id, "accepted");
-        setModalStep("driver_accepts");
-        setTimeout(() => {
-          dispatch(setStatus("en_route"));
-          requestService.updateRequestStatus(requestResult.id, "en_route");
-          if (pickupCoords) {
-            const driverCoord = getDriverCoord(driver);
-            setDriverStart(
-              driverCoord ?? {
-                latitude: pickupCoords.latitude + 0.01,
-                longitude: pickupCoords.longitude + 0.01,
-              },
-            );
-          }
-          setModalStep("on_the_way");
-          const started = Date.now();
-          const interval = setInterval(() => {
-            const progress = Math.min(1, (Date.now() - started) / 10000);
-            setSimProgress(progress);
-            if (progress >= 1) clearInterval(interval);
-          }, 500);
-          assignedTimerRef.current = setTimeout(() => {
-            assignedTimerRef.current = null;
-            requestService.updateRequestStatus(request.id || requestResult.id, "arrived");
-            setShowModal(false);
-            navigation.replace("DriverArrives");
-          }, 10000);
-        }, 2000);
-      }, 3000);
+      // The driver's real acceptance/progress is picked up by the tracking
+      // poll below (driven by requestId once it's set on `request.id`) —
+      // not simulated here.
     } catch (err) {
       dispatch(resetRequest());
       console.error(err);
     }
   };
 
+  // Polls the request's real status (set by the driver app) instead of
+  // faking accepted/en_route/arrived with timers.
+  useEffect(() => {
+    if (!request.id) return;
+
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const res = await customerService.getRequestTracking(request.id);
+        if (cancelled || !res.success) return;
+        const { status } = res.data as { status: string };
+
+        if (status === "accepted" && modalStep !== "driver_accepts") {
+          if (driver) {
+            dispatch(
+              setRequestDriver({
+                driver_id: driver.id,
+                name: driver.name,
+                avatar: driver.profilePicture ?? "",
+                code: driver.code ?? "N/A",
+                rating: driver.rating,
+                phone: driverPhone,
+              }),
+            );
+          }
+          dispatch(setStatus("accepted"));
+          setModalStep("driver_accepts");
+        } else if (status === "en_route") {
+          dispatch(setStatus("en_route"));
+          setShowModal(false);
+          navigation.replace("LiveTracking", { requestId: request.id });
+        } else if (status === "arrived" && !arrivedHandledRef.current) {
+          arrivedHandledRef.current = true;
+          dispatch(setStatus("arrived"));
+          setShowModal(false);
+          navigation.replace("DriverArrives");
+        } else if (status === "cancelled" && !customerCancelledRef.current) {
+          toast.error("No drivers are currently available. Please try again shortly.");
+          dispatch(resetRequest());
+          navigation.replace("Home");
+        }
+      } catch {
+        // transient polling error — retry next tick
+      }
+    };
+
+    poll();
+    const interval = setInterval(poll, TRACKING_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [request.id, modalStep]);
+
   const cancelRequest = async () => {
+    customerCancelledRef.current = true;
     await requestService.updateRequestStatus(request.id, "cancelled");
     navigation.pop();
     setShowModal(false);
   };
 
-  useEffect(() => {
-    return () => {
-      if (assignedTimerRef.current) clearTimeout(assignedTimerRef.current);
-    };
-  }, []);
-
   const previewDriverCoord = getDriverCoord(driver);
-  const driverLocation =
-    pickupCoords && driverStart
-      ? interpolateCoord(driverStart, pickupCoords, simProgress)
-      : driverStart ?? previewDriverCoord;
-
   const showPreviewRoute = scanComplete && driver && modalStep === "found_drivers";
-  const showEnRouteRoute = modalStep === "on_the_way";
-  const routeCoords = useRoutePolyline(
-    showEnRouteRoute || showPreviewRoute ? driverLocation : null,
-    pickupCoords,
-  );
+
+  // Fetch the route once from a fixed origin (not a constantly-moving
+  // position) so we get one stable, real road-following polyline to draw.
+  const routeInfo = useRoutePolyline(showPreviewRoute ? previewDriverCoord : null, pickupCoords);
 
   const mapFitLocations =
     showPreviewRoute && pickupCoords && previewDriverCoord
       ? [pickupCoords, previewDriverCoord]
-      : showEnRouteRoute && pickupCoords && driverLocation
-        ? [pickupCoords, driverLocation]
-        : undefined;
-  const distanceLabel = driver ? `${(driver.distanceM / 1000 * (1 - simProgress)).toFixed(1)} km` : "—";
-  const etaLabel = driver ? `${Math.max(1, Math.ceil((driver.etaMinutes || 5) * (1 - simProgress)))} mins` : "—";
+      : undefined;
+
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
@@ -264,14 +262,17 @@ export function ScanningScreen({
     >
       <LiveMapView
         pickupLocation={pickupCoords}
-        centerOn={pickupCoords}
-        driverLocation={
-          showPreviewRoute || showEnRouteRoute ? driverLocation ?? previewDriverCoord : null
-        }
+        locked={!(request?.driver?.driver_id)}
+        centerOn={!(request?.driver?.driver_id) ? pickupCoords : pickupCoords}
+        driverLocation={showPreviewRoute ? previewDriverCoord : null}
         routeCoordinates={
-          (showPreviewRoute || showEnRouteRoute) && routeCoords.length > 1 ? routeCoords : []
+          showPreviewRoute && routeInfo.coordinates.length > 1 ? routeInfo.coordinates : []
         }
         fitToLocations={mapFitLocations}
+        pickupAvatarUrl={customer.profile_picture ?? undefined}
+        pickupName={undefined}
+        driverAvatarUrl={driver?.profilePicture ?? undefined}
+        driverName={driver?.name ?? undefined}
       >
         <CustomAppBar title={appBarText} navigation={navigation} />
         {!scanComplete && (
@@ -398,19 +399,7 @@ export function ScanningScreen({
           </View>
         </View>
 
-        {TRICYCLES.map((t, i) => (
-          <View
-            key={i}
-            style={{
-              position: "absolute",
-              top: t.top,
-              left: t.left,
-              transform: [{ rotate: t.rotate }],
-            }}
-          >
-            <Text style={{ fontSize: moderateScale(22) }}>🛺</Text>
-          </View>
-        ))}
+        {/* tricycle decorations removed; markers use avatars */}
         </>
         )}
 
@@ -426,14 +415,17 @@ export function ScanningScreen({
             code={driver.code ?? "—"}
             phone={driverPhone ?? undefined}
             cost={driver.cost.toFixed(2)}
-            distanceLabel={distanceLabel}
-            etaLabel={etaLabel}
             onProceed={customer_requests}
             onCancel={cancelRequest}
-            onAssignedCancel={() => {
-              if (assignedTimerRef.current)
-                clearTimeout(assignedTimerRef.current);
+            onAssignedCancel={async () => {
+              customerCancelledRef.current = true;
               setShowModal(false);
+              try {
+                await requestService.updateRequestStatus(request.id, "cancelled");
+              } catch (err) {
+                handleApiError(err);
+              }
+              dispatch(resetRequest());
               navigation.replace("Home");
             }}
           />

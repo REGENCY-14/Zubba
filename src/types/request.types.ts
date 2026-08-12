@@ -3,10 +3,9 @@ export interface RequestTakeout {
   pickup_address: string;
   driver_id?: string | null | undefined;
   distance_m?: number | undefined;
-  pickup_price?: number | undefined;
-  service_price?: number | undefined;
-
-  bags?: number;
+  // pickup_price is recomputed server-side from distance_m. service_price
+  // and bags are only known once the driver arrives and logs the bag
+  // count, so neither is sent at request time.
 }
 
 export interface GetRequestsQuery {

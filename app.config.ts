@@ -33,10 +33,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        image: "./assets/ic_launcher.png",
+        image: "./assets/zubba-icon-white.png",
         imageWidth: 220,
         resizeMode: "contain",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#2EA043",
       },
     ],
     "expo-status-bar",
@@ -55,7 +55,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         android: {
           buildArchs: ["arm64-v8a"],
-          // Use a newer CMake (bundled ninja 1.12+) to avoid Windows path-length failures.
           cmakeVersion: "4.1.2",
         },
       },
@@ -84,5 +83,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     paystackPublicKey: process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY,
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    maptilerKey: process.env.EXPO_PUBLIC_MAPTILER_KEY,
   },
 });
