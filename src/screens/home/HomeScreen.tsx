@@ -4,6 +4,7 @@ import {
   Easing,
   Image,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -523,10 +524,21 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           {/* Bottom action cards — top is computed from the stats panel's
               measured height above (see onLayout/statsPanelHeight) rather than
               a fixed "bottom" offset, so it can't collide with the panel on
-              screens where the panel's scaled content renders taller. */}
-          <View
-            style={{ position: "absolute", top: 58 + statsPanelHeight + verticalScale(20) }}
-            className="left-2 right-2 p-4 flex"
+              screens where the panel's scaled content renders taller.
+              Wrapped in a ScrollView (bounded above the floating bottom nav)
+              so this section scrolls instead of clipping when its content
+              (e.g. the extra "Upgrade to Gold" row for non-premium users)
+              overflows the space available on shorter screens. */}
+          <ScrollView
+            style={{
+              position: "absolute",
+              top: 58 + statsPanelHeight + verticalScale(20),
+              bottom: verticalScale(90),
+              left: 0,
+              right: 0,
+            }}
+            contentContainerStyle={{ paddingHorizontal: scale(8), paddingVertical: moderateScale(16) }}
+            showsVerticalScrollIndicator={false}
           >
             <View className="space-y-3">
               {/* Tricycle row */}
@@ -661,7 +673,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 </Pressable>
               )}
             </View>
-          </View>
+          </ScrollView>
 
           <AppBottomNav
             activeTab="home"

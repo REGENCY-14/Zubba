@@ -276,8 +276,7 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
             snapToInterval={CARD_WIDTH + CARD_GAP}
             onScroll={handleScroll}
             scrollEventThrottle={16}
-            style={{ overflow: 'visible' }}
-            contentContainerStyle={{ paddingHorizontal: 24, gap: CARD_GAP, paddingTop: 14, paddingBottom: 14, overflow: 'visible' }}
+            contentContainerStyle={{ paddingHorizontal: 24, gap: CARD_GAP, paddingTop: 20, paddingBottom: 14 }}
           >
             {plans.map((plan, i) => (
               <PlanCard
