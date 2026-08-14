@@ -69,16 +69,63 @@ function formatAmount(item: CustomerRequestItem) {
   return `GHS ${total.toFixed(2)}`;
 }
 
+function dateSourceOf(item: CustomerRequestItem) {
+  return item.completed_at ?? item.cancelled_at ?? item.created_at;
+}
+
 function mapRequestToPickup(item: CustomerRequestItem): Pickup {
-  const dateSource = item.completed_at ?? item.cancelled_at ?? item.created_at;
   return {
     id: item.id,
-    date: formatShortDate(dateSource),
+    date: formatShortDate(dateSourceOf(item)),
     status: formatStatusLabel(item.status),
     location: item.pickup_address,
     amount: formatAmount(item),
     raw: item,
   };
+}
+
+function daysAgoLabel(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const startOfDay = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  const diffDays = Math.round((startOfDay(new Date()) - startOfDay(d)) / 86400000);
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  return `${diffDays} Days Ago`;
+}
+
+// Groups pickups into date-relative sections (matches the Figma design's
+// "7 Days Ago" section headers) — the most recent group is left untitled, same
+// as the design, since it reads as "recent" without needing a label.
+function groupIntoSections(pickups: Pickup[]): PickupSection[] {
+  const sorted = [...pickups].sort(
+    (a, b) => new Date(dateSourceOf(b.raw)).getTime() - new Date(dateSourceOf(a.raw)).getTime()
+  );
+
+  const sections: PickupSection[] = [];
+  let currentLabel: string | null = null;
+  let currentData: Pickup[] = [];
+  let isFirstGroup = true;
+
+  const flush = () => {
+    if (!currentData.length) return;
+    sections.push({ title: isFirstGroup ? null : currentLabel, data: currentData });
+    isFirstGroup = false;
+    currentData = [];
+  };
+
+  sorted.forEach((pickup) => {
+    const label = daysAgoLabel(dateSourceOf(pickup.raw));
+    if (label !== currentLabel) {
+      flush();
+      currentLabel = label;
+    }
+    currentData.push(pickup);
+  });
+  flush();
+
+  return sections;
 }
 
 function TabBar({
@@ -156,23 +203,11 @@ function PickupRow({
         borderBottomColor: colors.borderLight,
       }}
     >
-      <View
-        style={{
-          width: moderateScale(40),
-          height: moderateScale(40),
-          borderRadius: moderateScale(20),
-          backgroundColor: colors.iconBg,
-          alignItems: "center",
-          justifyContent: "center",
-          opacity: isCancelled ? 0.5 : 1,
-        }}
-      >
-        <Image
-          source={tricycle}
-          style={{ width: moderateScale(30), height: moderateScale(20) }}
-          resizeMode="contain"
-        />
-      </View>
+      <Image
+        source={tricycle}
+        style={{ width: moderateScale(30), height: moderateScale(18), opacity: isCancelled ? 0.5 : 1 }}
+        resizeMode="contain"
+      />
 
       <View style={{ flex: 1, gap: moderateScale(2) }}>
         <Text
@@ -204,18 +239,17 @@ function PickupRow({
       {!isCancelled && (
         <View
           style={{
-            width: moderateScale(32),
-            height: moderateScale(32),
-            borderRadius: moderateScale(16),
-            borderWidth: 1,
-            borderColor: colors.border,
+            width: moderateScale(24),
+            height: moderateScale(24),
+            borderRadius: moderateScale(12),
+            backgroundColor: colors.border,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
           <MaterialCommunityIcons
             name={isCompleted ? "receipt-text-outline" : "refresh"}
-            size={moderateScale(18)}
+            size={moderateScale(14)}
             color={colors.textSub}
           />
         </View>
@@ -272,12 +306,8 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
       .map(mapRequestToPickup);
 
     return {
-      completedSections: (completed.length
-        ? [{ title: null, data: completed }]
-        : []) as PickupSection[],
-      pendingSections: (pending.length
-        ? [{ title: null, data: pending }]
-        : []) as PickupSection[],
+      completedSections: groupIntoSections(completed),
+      pendingSections: groupIntoSections(pending),
     };
   }, [requests]);
 
@@ -358,7 +388,11 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
 
         <TabBar active={activeTab} onChange={setActiveTab} colors={colors} />
 
-        <View style={{ flex: 1, padding: moderateScale(20) }}>
+        {/* paddingBottom reserves real flow space for the floating AppBottomNav
+            below (it's position:'absolute' and doesn't take flow space itself) —
+            without this, the card's flex:1 fill stretches behind the nav instead
+            of ending above it, per the Figma design. */}
+        <View style={{ flex: 1, padding: moderateScale(20), paddingBottom: verticalScale(100) }}>
           <View style={{ flex: 1 }}>
             <View
               pointerEvents="none"
@@ -381,7 +415,6 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
               style={{ borderRadius: moderateScale(24) }}
               contentContainerStyle={{
                 paddingVertical: verticalScale(11),
-                paddingBottom: verticalScale(140),
               }}
               stickySectionHeadersEnabled={false}
               refreshControl={

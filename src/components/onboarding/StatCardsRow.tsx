@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatCard } from "./StatCard";
+import { moderateScale } from "../../utils/scale";
 
 type StatCardsRowProps = {
   bags: number;
@@ -11,7 +12,7 @@ type StatCardsRowProps = {
 
 export function StatCardsRow({ bags, points }: StatCardsRowProps) {
   return (
-    <View className="flex-row gap-5">
+    <View style={{ flexDirection: 'row', gap: moderateScale(16) }}>
       <StatCard
         icon={require("../../../assets/recycle.png")}
         label="Active"

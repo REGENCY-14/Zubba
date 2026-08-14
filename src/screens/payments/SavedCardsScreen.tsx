@@ -57,13 +57,17 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                 Select your payment method.
               </Text>
 
-              <View style={{ flexDirection: 'row', gap: scale(16), alignItems: 'center' }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ flexDirection: 'row', gap: scale(16), alignItems: 'center' }}
+              >
                 {/* MTN */}
                 <Pressable
                   onPress={() => setSelectedMethod('mtn')}
                   style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'mtn' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#FFCC00', borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#FFCC00', borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(12), color: '#000000' }}>MTN</Text>
                   </View>
                 </Pressable>
@@ -73,7 +77,7 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                   onPress={() => setSelectedMethod('telecel')}
                   style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'telecel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#DC2626', borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#DC2626', borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: moderateScale(12), color: '#FFFFFF', textAlign: 'center', lineHeight: moderateScale(15) }}>{'Telecel\nCash'}</Text>
                   </View>
                 </Pressable>
@@ -83,14 +87,14 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                   onPress={() => setSelectedMethod('airtel')}
                   style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'airtel' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: colors.surface, borderRadius: moderateScale(8), borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text>
-                      <Text style={{ color: '#0062A3', fontSize: moderateScale(16), fontWeight: '700' }}>a</Text>
-                      <Text style={{ color: '#EF4444', fontSize: moderateScale(16), fontWeight: '700' }}>t</Text>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: colors.surface, borderRadius: moderateScale(8), borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <Text numberOfLines={1} style={{ fontSize: moderateScale(12), includeFontPadding: false }}>
+                      <Text style={{ color: '#0062A3', fontWeight: '700' }}>a</Text>
+                      <Text style={{ color: '#EF4444', fontWeight: '700' }}>t</Text>
                     </Text>
                   </View>
                 </Pressable>
-              </View>
+              </ScrollView>
             </View>
 
             {/* ── Saved cards ── */}
