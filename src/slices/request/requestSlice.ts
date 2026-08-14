@@ -21,12 +21,12 @@ export interface RequestState {
   distance_m: number;
   pickup_price: number;
   service_price: number;
-  date_created: Date;
+  date_created: string;
   collection_code: number;
   scheduleRequest: boolean;
   transaction_reference: string | null;
   payment_status: string | null;
-  payment_date: Date | null;
+  payment_date: string | null;
 }
 
 const initialState: RequestState = {
@@ -48,7 +48,7 @@ const initialState: RequestState = {
   distance_m: 0,
   pickup_price: 0,
   service_price: 0,
-  date_created: new Date(),
+  date_created: "",
   collection_code: 0,
   scheduleRequest: false,
   transaction_reference: null,
@@ -120,7 +120,7 @@ const requestSlice = createSlice({
       state.payment_status = action.payload;
     },
 
-    setPaymentDate(state, action: PayloadAction<Date>) {
+    setPaymentDate(state, action: PayloadAction<string>) {
       state.payment_date = action.payload;
     },
 

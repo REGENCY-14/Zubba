@@ -56,7 +56,7 @@ export function PaymentVerificationScreen({
           }
 
           dispatch(setPaymentStatus('success'));
-          dispatch(setPaymentDate(new Date()));
+          dispatch(setPaymentDate(new Date().toISOString()));
           dispatch(setTransactionReference(reference));
           dispatch(markRequestPaid());
 

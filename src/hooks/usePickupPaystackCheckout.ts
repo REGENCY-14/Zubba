@@ -40,7 +40,7 @@ export function usePickupPaystackCheckout() {
       const confirmedReference = verified?.reference ?? reference;
 
       dispatch(setPaymentStatus("success"));
-      dispatch(setPaymentDate(new Date()));
+      dispatch(setPaymentDate(new Date().toISOString()));
       dispatch(setTransactionReference(confirmedReference));
       dispatch(setPaymentMethod(phone));
       dispatch(markRequestPaid());

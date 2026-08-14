@@ -309,16 +309,12 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
     distance_m: item.distance_m,
     pickup_price: Number(item.pickup_price),
     service_price: Number(item.service_price),
-    date_created: new Date(item.created_at),
+    date_created: item.created_at,
     collection_code: item.collection_code,
     scheduleRequest: !!item.schedule_id,
     transaction_reference:
       item.transaction?.reference ?? item.transaction_reference ?? null,
-    payment_date: item.transaction?.paid_at
-      ? new Date(item.transaction.paid_at)
-      : item.payment_date
-        ? new Date(item.payment_date)
-        : null,
+    payment_date: item.transaction?.paid_at ?? item.payment_date ?? null,
   });
 
   const handlePickupPress = (pickup: Pickup) => {

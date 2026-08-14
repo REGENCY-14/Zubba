@@ -69,7 +69,7 @@ export function WalletCheckoutScreen({
 
       const reference = res.data.reference;
       dispatch(setPaymentStatus("success"));
-      dispatch(setPaymentDate(new Date()));
+      dispatch(setPaymentDate(new Date().toISOString()));
       dispatch(setTransactionReference(reference));
       dispatch(setPaymentMethod("wallet"));
       dispatch(markRequestPaid());
