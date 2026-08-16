@@ -99,7 +99,11 @@ export function RootNavigator() {
         }
       }}
     >
-      <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Splash"
+        component={SplashScreen}
+        options={{ headerShown: false, contentStyle: { backgroundColor: '#2EA043' } }}
+      />
       <Stack.Screen name="OnboardLocationAccess" component={OnboardLocationAccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardNotificationsAccess" component={OnboardNotificationsAccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="NotificationsList" component={NotificationsListScreen} options={{ headerShown: false }} />

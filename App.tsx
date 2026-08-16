@@ -4,7 +4,7 @@ enableScreens();
 import "react-native-gesture-handler";
 
 import { useEffect } from "react";
-import { Text, TextInput, StatusBar } from "react-native";
+import { Text, TextInput, StatusBar, View } from "react-native";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native";
@@ -39,6 +39,12 @@ import ToastManager from "./src/components/ui/ToastManager";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+const SPLASH_BG = "#2EA043";
+
+function SplashPlaceholder() {
+  return <View style={{ flex: 1, backgroundColor: SPLASH_BG }} />;
+}
+
 const queryClient = new QueryClient();
 
 function AppContent() {
@@ -47,7 +53,7 @@ function AppContent() {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={<SplashPlaceholder />} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
           <NavigationContainer ref={navigationRef}>
             <StatusBar
@@ -79,14 +85,8 @@ export default function App() {
     hydrateAuth();
   }, []);
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
   if (!fontsLoaded) {
-    return null;
+    return <SplashPlaceholder />;
   }
 
   return (

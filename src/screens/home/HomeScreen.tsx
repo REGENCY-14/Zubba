@@ -367,7 +367,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   borderWidth: 1,
                   borderColor: colors.border,
                   backgroundColor: colors.iconBg,
-                  borderRadius: 999,
+                  borderRadius: moderateScale(8),
                   alignItems: "center",
                   justifyContent: "center",
                 }}
