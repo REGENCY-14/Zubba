@@ -458,7 +458,7 @@ export function SettingsScreen({
           </SectionCard>
 
           <Pressable
-            style={{ backgroundColor: isDark ? "#f5cfd0" : colors.card }}
+            style={{ backgroundColor: isDark ? colors.bg : colors.card }}
             className="h-[42px] rounded-full border border-[#C10007] items-center justify-center flex-row gap-2"
             onPress={handleSignout}
           >

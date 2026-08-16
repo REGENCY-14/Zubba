@@ -52,13 +52,6 @@ export type RootStackParamList = {
     methodLabel: string;
     channel?: "mobile_money" | "card";
   };
-  PaymentVerification: {
-    phone: string;
-    reference: string;
-    amount: number;
-    provider: string;
-    purpose?: "wallet_deposit" | "pickup";
-  };
   PaymentSuccess: {
     reference?: string;
     amount?: number;
@@ -66,7 +59,6 @@ export type RootStackParamList = {
     phone?: string;
     paymentMethodLabel?: string;
   };
-  AuthorizePayment: { phone: string };
   ThankYou: { reference?: string; amount?: number; phone?: string } | undefined;
   RateRide: {
     reference?: string;

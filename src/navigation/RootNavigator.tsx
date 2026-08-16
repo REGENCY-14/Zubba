@@ -16,8 +16,6 @@ import { PickupsScreen } from '../screens/pickup/PickupsScreen';
 import { PromotionsScreen } from '../screens/promotions/PromotionsScreen';
 import { PaymentScreen } from '../screens/payments/PaymentScreen';
 import { PaymentMethodScreen } from '../screens/payments/PaymentMethodScreen';
-import { PaymentVerificationScreen } from '../screens/payments/PaymentVerificationScreen';
-import { AuthorizePaymentScreen } from '../screens/payments/AuthorizePaymentScreen';
 import { PaymentSuccessScreen } from '../screens/payments/PaymentSuccessScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
@@ -124,8 +122,6 @@ export function RootNavigator() {
       <Stack.Screen name="Promotions" component={PromotionsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="PaymentVerification" component={PaymentVerificationScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="AuthorizePayment" component={AuthorizePaymentScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ThankYou" component={ThankYouScreen} options={{ headerShown: false }} />
       <Stack.Screen name="RateRide" component={RateRideScreen} options={{ headerShown: false }} />

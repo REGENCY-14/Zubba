@@ -57,13 +57,6 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const customer = useAppSelector((state) => state.customer);
   const [isBinFull, setIsBinFull] = useState<boolean>(false);
   const [binFullLoading, setBinFullLoading] = useState(false);
-  // Measured height of the floating search/stats panel below — the panel's
-  // content scales via moderateScale/verticalScale, which inflates more on
-  // taller/wider screens (e.g. iPhone 14) than the fixed pixel offsets below
-  // ever accounted for. Positioning the bottom action row off the panel's
-  // *actual* rendered height (instead of a fixed "bottom" guess) keeps them
-  // from colliding on any screen size.
-  const [statsPanelHeight, setStatsPanelHeight] = useState(0);
   const binFullLoadingRef = useRef(false);
   const binFullRequestIdRef = useRef<string | null>(null);
   const isPremium = customer.is_premium;
@@ -384,15 +377,29 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             </View>
           </View>
 
+          {/* Search/stats panel is pinned to the top and the action cards
+              below are pinned to the bottom (via justifyContent:
+              "space-between" on the shared container), leaving the map
+              visible in between instead of the cards hugging the panel. */}
           <View
-            onLayout={(e) => setStatsPanelHeight(e.nativeEvent.layout.height)}
+            style={{
+              position: "absolute",
+              top: 58,
+              left: 0,
+              right: 0,
+              bottom: verticalScale(90),
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+          <View
             style={{
               backgroundColor: isDark ? colors.card : colors.bg,
               borderColor: colors.border,
               gap: moderateScale(12),
               borderRadius: moderateScale(34),
             }}
-            className="absolute p-5 border top-[58px] left-2.5 right-2.5 space-y-6"
+            className="p-5 border mx-2.5 space-y-6"
           >
             {isPremium ? (
               <View
@@ -667,22 +674,11 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             )}
           </View>
 
-          {/* Bottom action cards — top is computed from the stats panel's
-              measured height above (see onLayout/statsPanelHeight) rather than
-              a fixed "bottom" offset, so it can't collide with the panel on
-              screens where the panel's scaled content renders taller.
-              Wrapped in a ScrollView (bounded above the floating bottom nav)
-              so this section scrolls instead of clipping when its content
-              (e.g. the extra "Upgrade to Gold" row for non-premium users)
-              overflows the space available on shorter screens. */}
+          {/* flexShrink lets this pane give up height to the panel above
+              when both together are taller than the available space, so the
+              cards scroll internally instead of pushing past the bottom nav. */}
+          <View style={{ flexShrink: 1 }}>
           <ScrollView
-            style={{
-              position: "absolute",
-              top: 58 + statsPanelHeight + verticalScale(20),
-              bottom: verticalScale(90),
-              left: 0,
-              right: 0,
-            }}
             contentContainerStyle={{ paddingHorizontal: scale(8), paddingVertical: moderateScale(16) }}
             showsVerticalScrollIndicator={false}
           >
@@ -820,6 +816,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
               )}
             </View>
           </ScrollView>
+          </View>
+          </View>
 
           <AppBottomNav
             activeTab="home"
