@@ -27,6 +27,10 @@ export const subscriptionService = {
     );
     return data;
   },
+  cancelSubscription: async () => {
+    const { data } = await api.post<ApiResponse<{ isActive: boolean }>>("/subscriptions/cancel");
+    return data;
+  },
 };
 
 export const paymentPlansService = {

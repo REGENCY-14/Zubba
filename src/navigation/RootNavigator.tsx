@@ -92,9 +92,6 @@ export function RootNavigator() {
           backgroundColor: '#0F172A'
         },
         headerTintColor: '#F8FAFC',
-        contentStyle: {
-          backgroundColor: '#F8FAFC'
-        }
       }}
     >
       <Stack.Screen

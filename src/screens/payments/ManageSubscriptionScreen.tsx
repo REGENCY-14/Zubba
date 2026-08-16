@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -10,7 +10,13 @@ import { cancelPremium, upgradeToPremium } from '../../slices/customer/customerS
 import type { RootStackScreenProps } from '../../navigation/types';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { toast } from '../../hooks/toast';
-import { useMySubscription, useNavigateToChoosePlan, usePrefetchSubscriptionPlans } from '../../hooks/useSubscription';
+import { subscriptionService } from '../../api/subscriptionService';
+import {
+  useInvalidateSubscription,
+  useMySubscription,
+  useNavigateToChoosePlan,
+  usePrefetchSubscriptionPlans,
+} from '../../hooks/useSubscription';
 import { SubscriptionSkeleton } from '../../components/payments/SubscriptionSkeleton';
 
 const GOLD_FEATURES = [
@@ -25,10 +31,12 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
   const dispatch = useAppDispatch();
   const customer = useAppSelector((state) => state.customer);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const { data: subscription, isPending } = useMySubscription(customer.is_premium);
   const prefetchPlans = usePrefetchSubscriptionPlans();
   const navigateToChoosePlan = useNavigateToChoosePlan();
+  const invalidateSubscription = useInvalidateSubscription();
   const showSkeleton = isPending && subscription == null;
   const isActive = subscription?.isActive ?? customer.is_premium;
   const planLabel = subscription?.planLabel ?? 'Gold Plan';
@@ -45,11 +53,21 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
     }
   }, [subscription?.isActive, customer.is_premium, dispatch]);
 
-  const handleConfirmCancel = () => {
-    setCancelModalOpen(false);
-    dispatch(cancelPremium());
-    toast.info('Manage cancellation via Paystack or contact support.');
-    navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+  const handleConfirmCancel = async () => {
+    if (isCancelling) return;
+    setIsCancelling(true);
+    try {
+      await subscriptionService.cancelSubscription();
+      dispatch(cancelPremium());
+      await invalidateSubscription();
+      setCancelModalOpen(false);
+      toast.success('Your Gold subscription has been cancelled.');
+      navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Unable to cancel subscription. Please try again.');
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   return (
@@ -224,15 +242,21 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
 
             <Pressable
               onPress={handleConfirmCancel}
-              style={{ height: verticalScale(52), borderRadius: 999, alignItems: 'center', justifyContent: 'center', backgroundColor: '#EF4444' }}
+              disabled={isCancelling}
+              style={{ height: verticalScale(52), borderRadius: 999, alignItems: 'center', justifyContent: 'center', backgroundColor: isCancelling ? 'rgba(239,68,68,0.6)' : '#EF4444' }}
             >
-              <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>
-                Yes, Cancel Subscription
-              </Text>
+              {isCancelling ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>
+                  Yes, Cancel Subscription
+                </Text>
+              )}
             </Pressable>
 
             <Pressable
               onPress={() => setCancelModalOpen(false)}
+              disabled={isCancelling}
               style={{ height: verticalScale(52), borderRadius: 999, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border }}
             >
               <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: colors.text }}>
