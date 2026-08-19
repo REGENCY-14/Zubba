@@ -18,6 +18,7 @@ import {
   usePrefetchSubscriptionPlans,
 } from '../../hooks/useSubscription';
 import { SubscriptionSkeleton } from '../../components/payments/SubscriptionSkeleton';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 const GOLD_FEATURES = [
   { icon: 'lightning-bolt-outline', label: 'Double Eco-Points on every pickup' },
@@ -27,7 +28,7 @@ const GOLD_FEATURES = [
 ] as const;
 
 export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'ManageSubscription'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
   const customer = useAppSelector((state) => state.customer);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
@@ -98,14 +99,15 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
               </Text>
               <Pressable
                 onPress={navigateToChoosePlan}
-                className="h-12 bg-[#31973D] rounded-full items-center justify-center px-8"
+                className="h-12 rounded-full items-center justify-center px-8"
+                style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D' }}
               >
                 <Text className="text-white text-sm">View plans</Text>
               </Pressable>
             </View>
           ) : (
             <>
-              <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(16), overflow: 'hidden' }}>
+              <View style={{ backgroundColor: isDark ? APP_DARK.premiumButtonBg : '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(16), overflow: 'hidden' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
                     <MaterialCommunityIcons name="crown" size={moderateScale(20)} color="#FFE088" />
@@ -182,8 +184,8 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
                         borderBottomColor: colors.borderLight,
                       }}
                     >
-                      <View style={{ width: moderateScale(32), height: moderateScale(32), borderRadius: moderateScale(16), backgroundColor: 'rgba(49,151,61,0.12)', alignItems: 'center', justifyContent: 'center' }}>
-                        <MaterialCommunityIcons name={feature.icon} size={moderateScale(16)} color="#31973D" />
+                      <View style={{ width: moderateScale(32), height: moderateScale(32), borderRadius: moderateScale(16), backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(49,151,61,0.12)', alignItems: 'center', justifyContent: 'center' }}>
+                        <MaterialCommunityIcons name={feature.icon} size={moderateScale(16)} color={isDark ? APP_DARK.statusSuccessText : '#31973D'} />
                       </View>
                       <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, flex: 1 }}>{feature.label}</Text>
                     </View>
@@ -198,7 +200,7 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
                   justifyContent: 'center',
                   height: verticalScale(52),
                   borderRadius: 999,
-                  backgroundColor: '#31973D',
+                  backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D',
                 }}
               >
                 <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>
@@ -214,10 +216,10 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
                   height: verticalScale(52),
                   borderRadius: 999,
                   borderWidth: 1,
-                  borderColor: '#EF4444',
+                  borderColor: isDark ? APP_DARK.statusErrorBorder : '#EF4444',
                 }}
               >
-                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#EF4444' }}>
+                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: isDark ? APP_DARK.statusErrorBorder : '#EF4444' }}>
                   Cancel Subscription
                 </Text>
               </Pressable>
@@ -230,8 +232,8 @@ export function ManageSubscriptionScreen({ navigation }: RootStackScreenProps<'M
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center', padding: scale(24) }}>
           <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} onPress={() => setCancelModalOpen(false)} />
           <View style={{ width: '100%', maxWidth: scale(360), backgroundColor: colors.card, borderRadius: moderateScale(24), padding: moderateScale(24), gap: verticalScale(16) }}>
-            <View style={{ width: moderateScale(44), height: moderateScale(44), borderRadius: moderateScale(22), backgroundColor: 'rgba(239,68,68,0.12)', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialCommunityIcons name="alert-outline" size={moderateScale(22)} color="#EF4444" />
+            <View style={{ width: moderateScale(44), height: moderateScale(44), borderRadius: moderateScale(22), backgroundColor: isDark ? APP_DARK.statusErrorBg : 'rgba(239,68,68,0.12)', alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialCommunityIcons name="alert-outline" size={moderateScale(22)} color={isDark ? APP_DARK.statusErrorText : '#EF4444'} />
             </View>
             <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(18), fontWeight: '700', color: colors.text }}>
               Cancel Gold subscription?

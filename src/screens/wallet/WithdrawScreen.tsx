@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { walletService } from "../../api/walletService";
@@ -197,7 +198,7 @@ export function WithdrawScreen({
                 onChangeText={handleAmountChange}
                 keyboardType="numeric"
                 placeholder="GHS 0.00"
-                placeholderTextColor="#ACB5BB"
+                placeholderTextColor={isDark ? APP_DARK.textMuted : "#ACB5BB"}
                 style={{
                   height: verticalScale(48),
                   borderWidth: 1,
@@ -226,8 +227,12 @@ export function WithdrawScreen({
                         paddingVertical: verticalScale(9),
                         borderRadius: 9999,
                         backgroundColor: isSelected
-                          ? "#31973D"
-                          : "rgba(0, 107, 35, 0.1)",
+                          ? isDark
+                            ? APP_DARK.buttonPrimaryBg
+                            : "#31973D"
+                          : isDark
+                            ? APP_DARK.statusSuccessBg
+                            : "rgba(0, 107, 35, 0.1)",
                         borderWidth: isSelected ? 0 : 1,
                         borderColor: colors.border,
                       }}
@@ -253,7 +258,7 @@ export function WithdrawScreen({
             <Pressable
               style={{
                 height: verticalScale(48),
-                backgroundColor: "#31973D",
+                backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D",
                 borderRadius: 9999,
                 alignItems: "center",
                 justifyContent: "center",

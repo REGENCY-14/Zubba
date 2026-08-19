@@ -8,6 +8,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import type { LocationSearchResult } from "../../types/location.types";
 
 type Props = {
@@ -25,7 +26,7 @@ export function LocationSearchDropdown({
   error,
   onSelect,
 }: Props) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   if (!visible) return null;
 
@@ -52,7 +53,7 @@ export function LocationSearchDropdown({
     >
       {loading ? (
         <View style={{ padding: 16, alignItems: "center" }}>
-          <ActivityIndicator color="#31973D" />
+          <ActivityIndicator color={isDark ? APP_DARK.accentGreen : "#31973D"} />
         </View>
       ) : error ? (
         <Text style={{ padding: 16, color: colors.textSub, fontSize: 13 }}>{error}</Text>
@@ -76,7 +77,7 @@ export function LocationSearchDropdown({
                 borderBottomColor: colors.borderLight,
               }}
             >
-              <MaterialCommunityIcons name="map-marker-outline" size={18} color="#31973D" />
+              <MaterialCommunityIcons name="map-marker-outline" size={18} color={isDark ? APP_DARK.accentGreen : "#31973D"} />
               <Text style={{ flex: 1, color: colors.text, fontSize: 13, lineHeight: 18 }}>
                 {item.label}
               </Text>

@@ -7,6 +7,7 @@ import * as Sharing from "expo-sharing";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { formatProviderLabel } from "../../utils/paymentProviders";
@@ -19,7 +20,7 @@ export function PaymentSuccessScreen({
   navigation,
   route,
 }: RootStackScreenProps<"PaymentSuccess">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const request = useAppSelector((state) => state.request);
   const user = useAppSelector((state) => state.auth.user);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -102,7 +103,7 @@ export function PaymentSuccessScreen({
                         offsetY: 0,
                         blurRadius: 0,
                         spreadDistance: 14,
-                        color: "#DCFCE7",
+                        color: isDark ? APP_DARK.statusSuccessBg : "#DCFCE7",
                       },
                     ],
                   }}
@@ -145,9 +146,9 @@ export function PaymentSuccessScreen({
                   style={{ opacity: isDownloading ? 0.7 : 1 }}
                 >
                   {isDownloading ? (
-                    <ActivityIndicator color="#3B82F6" />
+                    <ActivityIndicator color={isDark ? APP_DARK.statusInfoText : '#3B82F6'} />
                   ) : (
-                    <Text className="text-[#3B82F6] text-base font-bold">
+                    <Text style={{ color: isDark ? APP_DARK.statusInfoText : '#3B82F6' }} className="text-base font-bold">
                       Download Transaction
                     </Text>
                   )}
@@ -159,7 +160,8 @@ export function PaymentSuccessScreen({
           <View className="px-6 mt-8 gap-2">
             <Pressable
               onPress={handleDone}
-              className="h-12 bg-[#31973D] rounded-full items-center justify-center"
+              style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D' }}
+              className="h-12 rounded-full items-center justify-center"
             >
               <Text className="text-white text-sm">Done</Text>
             </Pressable>

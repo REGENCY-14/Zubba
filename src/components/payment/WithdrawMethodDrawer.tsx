@@ -3,6 +3,7 @@ import { Modal, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PaymentOption } from "./PaymentOption";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { withdrawNetworks, type WithdrawNetworkId } from "../../constants/paymentMethods";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,7 +16,7 @@ type Props = {
 
 export function WithdrawMethodDrawer({ visible, onClose, onContinue }: Props) {
   const [selected, setSelected] = useState<WithdrawNetworkId>(withdrawNetworks[0].id);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -83,14 +84,20 @@ export function WithdrawMethodDrawer({ visible, onClose, onContinue }: Props) {
           <View className="flex-row items-center gap-3">
             <Pressable
               onPress={onClose}
-              className="w-9 h-9 rounded-xl bg-[#FDE8E8] items-center justify-center"
+              style={{ backgroundColor: isDark ? APP_DARK.statusErrorBg : "#FDE8E8" }}
+              className="w-9 h-9 rounded-xl items-center justify-center"
             >
-              <MaterialCommunityIcons name="close" size={moderateScale(20)} color="#DC2626" />
+              <MaterialCommunityIcons
+                name="close"
+                size={moderateScale(20)}
+                color={isDark ? APP_DARK.statusErrorText : "#DC2626"}
+              />
             </Pressable>
 
             <Pressable
               onPress={() => onContinue(selected)}
-              className="flex-1 h-12 bg-[#31973D] rounded-full items-center justify-center mb-2"
+              style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D" }}
+              className="flex-1 h-12 rounded-full items-center justify-center mb-2"
             >
               <Text className="text-white text-sm">Continue</Text>
             </Pressable>

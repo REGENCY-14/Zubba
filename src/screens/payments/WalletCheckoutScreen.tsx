@@ -20,11 +20,12 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { handleApiError } from "../../utils/handleApiError";
 import { refreshCustomerAfterPayment } from "../../services/pickupCompletion";
 import { formatAuthPhone } from "../../utils/paymentProviders";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 export function WalletCheckoutScreen({
   navigation,
 }: RootStackScreenProps<"WalletCheckout">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request);
   const customer = useAppSelector((state) => state.customer);
@@ -107,8 +108,14 @@ export function WalletCheckoutScreen({
 
           <View className="items-center gap-[10px] relative">
             <View className="flex-row items-center gap-[6px] rounded-full px-2 py-1">
-              <View className="rounded-full px-3 py-[6px] bg-[#E2E8F0]">
-                <Text className="text-[13px] text-[#31973D] leading-5">
+              <View
+                className="rounded-full px-3 py-[6px]"
+                style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : '#E2E8F0' }}
+              >
+                <Text
+                  className="text-[13px] leading-5"
+                  style={{ color: isDark ? APP_DARK.statusSuccessText : '#31973D' }}
+                >
                   Total to pay
                 </Text>
               </View>
@@ -136,7 +143,10 @@ export function WalletCheckoutScreen({
               GHS {total.toFixed(2)}
             </Text>
 
-            <View className="flex-row absolute -bottom-[32px] items-center gap-1 bg-[#31973D] rounded-full px-3 py-1">
+            <View
+              className="flex-row absolute -bottom-[32px] items-center gap-1 rounded-full px-3 py-1"
+              style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D' }}
+            >
               <MaterialCommunityIcons
                 name="trending-up"
                 size={moderateScale(12)}
@@ -152,10 +162,11 @@ export function WalletCheckoutScreen({
         <View style={{ marginTop: verticalScale(-10), flex: 1 }}>
           <View className="flex-row items-center px-6 pt-10 pb-6">
             <Pressable
-              className="w-9 h-9 bg-[#FFE2E2] rounded-xl items-center justify-center"
+              className="w-9 h-9 rounded-xl items-center justify-center"
+              style={{ backgroundColor: isDark ? APP_DARK.statusErrorBg : '#FFE2E2' }}
               onPress={() => navigation.navigate("Home")}
             >
-              <MaterialCommunityIcons name="close" size={moderateScale(16)} color="#EF4444" />
+              <MaterialCommunityIcons name="close" size={moderateScale(16)} color={isDark ? APP_DARK.statusErrorText : '#EF4444'} />
             </Pressable>
           </View>
 
@@ -295,8 +306,8 @@ export function WalletCheckoutScreen({
                       style={{
                         color:
                           walletBalance !== null && walletBalance >= total
-                            ? "#31973D"
-                            : "#EF4444",
+                            ? (isDark ? APP_DARK.statusSuccessText : "#31973D")
+                            : (isDark ? APP_DARK.statusErrorText : "#EF4444"),
                       }}
                       className="text-base font-bold leading-6">
                       {walletBalance !== null && walletBalance >= total
@@ -308,8 +319,8 @@ export function WalletCheckoutScreen({
                       style={{
                         backgroundColor:
                           walletBalance !== null && walletBalance >= total
-                            ? "#31973D"
-                            : "#EF4444",
+                            ? (isDark ? APP_DARK.statusSuccessText : "#31973D")
+                            : (isDark ? APP_DARK.statusErrorText : "#EF4444"),
                       }}
                     />
                   </View>
@@ -380,7 +391,10 @@ export function WalletCheckoutScreen({
                     >
                       Total Reward
                     </Text>
-                    <Text className="text-base text-[#31973D] leading-6">
+                    <Text
+                      className="text-base leading-6"
+                      style={{ color: isDark ? APP_DARK.statusSuccessText : '#31973D' }}
+                    >
                       90 Eco-Points
                     </Text>
                   </View>
@@ -388,8 +402,8 @@ export function WalletCheckoutScreen({
               </View>
 
               <Pressable
-                className="h-12 bg-[#31973D] rounded-full items-center justify-center"
-                style={{ opacity: loading ? 0.6 : 1 }}
+                className="h-12 rounded-full items-center justify-center"
+                style={{ opacity: loading ? 0.6 : 1, backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D' }}
                 disabled={loading}
                 onPress={handlePay}
               >

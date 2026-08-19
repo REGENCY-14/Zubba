@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import {
   useWalletTransactions,
@@ -29,11 +30,14 @@ type Transaction = {
   date: string;
   amount: string;
   amountColor: string;
+  darkAmountColor?: string;
   status: TxStatus;
   type: "incoming" | "expense";
   iconBg: string;
   iconName: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
   iconColor: string;
+  darkIconBg?: string;
+  darkIconColor?: string;
 };
 
 const STATUS_COLOR: Record<TxStatus, string> = {
@@ -41,6 +45,13 @@ const STATUS_COLOR: Record<TxStatus, string> = {
   CREDITED: "#31973D",
   PENDING: "#555E59",
   FAILED: "#FF383C",
+};
+
+const STATUS_COLOR_DARK: Record<TxStatus, string> = {
+  SUCCESS: APP_DARK.statusSuccessText,
+  CREDITED: APP_DARK.statusSuccessText,
+  PENDING: APP_DARK.statusNeutralText,
+  FAILED: APP_DARK.statusErrorText,
 };
 
 const FILTERS: FilterKey[] = [
@@ -69,7 +80,7 @@ function applyFilter(txs: Transaction[], filter: FilterKey): Transaction[] {
 }
 
 function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <View
@@ -88,7 +99,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
           width: moderateScale(40),
           height: moderateScale(40),
           borderRadius: 9999,
-          backgroundColor: tx.iconBg,
+          backgroundColor: isDark ? tx.darkIconBg ?? tx.iconBg : tx.iconBg,
           alignItems: "center",
           justifyContent: "center",
         }}
@@ -96,7 +107,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
         <MaterialCommunityIcons
           name={tx.iconName}
           size={moderateScale(20)}
-          color={tx.iconColor}
+          color={isDark ? tx.darkIconColor ?? tx.iconColor : tx.iconColor}
         />
       </View>
 
@@ -130,7 +141,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
             fontSize: moderateScale(14),
             fontWeight: "600",
             letterSpacing: 0.28,
-            color: tx.amountColor,
+            color: isDark ? tx.darkAmountColor ?? tx.amountColor : tx.amountColor,
             lineHeight: moderateScale(17),
           }}
         >
@@ -142,7 +153,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
             fontWeight: "600",
             letterSpacing: -0.5,
             textTransform: "uppercase",
-            color: STATUS_COLOR[tx.status],
+            color: isDark ? STATUS_COLOR_DARK[tx.status] : STATUS_COLOR[tx.status],
             lineHeight: moderateScale(15),
           }}
         >
@@ -156,7 +167,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
 export function TransactionsScreen({
   navigation,
 }: RootStackScreenProps<"Transactions">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const [activeFilter, setActiveFilter] = useState<FilterKey>("All");
   const [showFilter, setShowFilter] = useState(false);
@@ -199,11 +210,14 @@ export function TransactionsScreen({
         ? `- GHS ${amount.toFixed(2)}`
         : `+ GHS ${amount.toFixed(2)}`,
       amountColor: isExpense ? "#FF383C" : "#31973D",
+      darkAmountColor: isExpense ? APP_DARK.statusErrorText : APP_DARK.accentGreen,
       status: (item.status as TxStatus) || "SUCCESS",
       type: isExpense ? "expense" : "incoming",
       iconBg: isExpense ? "rgba(255, 56, 60, 0.1)" : "rgba(0, 107, 35, 0.1)",
       iconName: isExpense ? "receipt-text-outline" : "cellphone",
       iconColor: isExpense ? "#FF383C" : "#31973D",
+      darkIconBg: isExpense ? APP_DARK.statusErrorBg : APP_DARK.statusSuccessBg,
+      darkIconColor: isExpense ? APP_DARK.statusErrorText : APP_DARK.accentGreen,
     };
   };
 
@@ -241,7 +255,7 @@ export function TransactionsScreen({
             refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={colors.text}
-            colors={["#31973D"]}
+            colors={[isDark ? APP_DARK.accentGreen : "#31973D"]}
           />
         }
       >

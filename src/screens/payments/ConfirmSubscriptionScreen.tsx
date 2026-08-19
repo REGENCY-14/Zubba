@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { APP_DARK } from '../../constants/appDarkTheme';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useSubscriptionPaystackCheckout } from '../../hooks/useSubscriptionPaystackCheckout';
 import { useSubscriptionPlans } from '../../hooks/useSubscription';
@@ -12,7 +13,7 @@ import { ConfirmSubscriptionSkeleton } from '../../components/payments/ConfirmSu
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreenProps<'ConfirmSubscription'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const user = useAppSelector((state) => state.auth.user);
   const { startCheckout, isLoading } = useSubscriptionPaystackCheckout();
   const { data: plansData, isPending } = useSubscriptionPlans();
@@ -64,7 +65,7 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                 <Text style={{ fontSize: moderateScale(16), fontWeight: '500' }}> / {selected.interval}</Text>
               </Text>
               {selected.amount_saved ? (
-                <Text style={{ color: '#31973D' }}>Save GHS {selected.amount_saved}</Text>
+                <Text style={{ color: isDark ? APP_DARK.accentGreen : '#31973D' }}>Save GHS {selected.amount_saved}</Text>
               ) : null}
             </View>
 
@@ -78,7 +79,7 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
                       onPress={() => setSelectedIndex(index)}
                       style={{
                         borderWidth: 1,
-                        borderColor: index === selectedIndex ? '#31973D' : colors.border,
+                        borderColor: index === selectedIndex ? (isDark ? APP_DARK.statusSuccessBorder : '#31973D') : colors.border,
                         borderRadius: 999,
                         paddingHorizontal: scale(12),
                         paddingVertical: verticalScale(8),
@@ -97,7 +98,7 @@ export function ConfirmSubscriptionScreen({ navigation, route }: RootStackScreen
               style={{
                 height: verticalScale(48),
                 borderRadius: 999,
-                backgroundColor: isLoading ? 'rgba(49,151,61,0.6)' : '#31973D',
+                backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : (isLoading ? 'rgba(49,151,61,0.6)' : '#31973D'),
                 alignItems: 'center',
                 justifyContent: 'center',
               }}

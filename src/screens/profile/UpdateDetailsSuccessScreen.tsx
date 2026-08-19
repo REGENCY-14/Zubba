@@ -6,9 +6,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 export function UpdateDetailsSuccessScreen({ navigation }: RootStackScreenProps<'UpdateDetailsSuccess'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'left', 'right', 'bottom']}>
@@ -16,9 +17,9 @@ export function UpdateDetailsSuccessScreen({ navigation }: RootStackScreenProps<
         <View style={{ width: '100%', maxWidth: scale(320), alignItems: 'center', gap: moderateScale(12) }}>
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <View
-              style={{ width: moderateScale(64), height: moderateScale(64), borderRadius: moderateScale(32), backgroundColor: '#DCFCE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#006C49', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.12, shadowRadius: 40, elevation: 8 }}
+              style={{ width: moderateScale(64), height: moderateScale(64), borderRadius: moderateScale(32), backgroundColor: isDark ? APP_DARK.statusSuccessBg : '#DCFCE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#006C49', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.12, shadowRadius: 40, elevation: 8 }}
             >
-              <MaterialCommunityIcons name="check" size={moderateScale(40)} color="#497D00" />
+              <MaterialCommunityIcons name="check" size={moderateScale(40)} color={isDark ? APP_DARK.statusSuccessText : "#497D00"} />
             </View>
           </View>
 
@@ -33,7 +34,7 @@ export function UpdateDetailsSuccessScreen({ navigation }: RootStackScreenProps<
           </Text>
 
           <Pressable
-            style={{ width: '100%', height: verticalScale(48), backgroundColor: '#31973D', borderRadius: moderateScale(12), justifyContent: 'center', alignItems: 'center', marginTop: verticalScale(16) }}
+            style={{ width: '100%', height: verticalScale(48), backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: moderateScale(12), justifyContent: 'center', alignItems: 'center', marginTop: verticalScale(16) }}
             onPress={() => navigation.navigate('Settings')}
           >
             <Text style={{ color: '#FFFFFF', fontSize: moderateScale(14), lineHeight: moderateScale(20), fontFamily: 'Poppins' }}>Back to Settings</Text>

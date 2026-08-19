@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View } from "react-native";
 import MapView, { Polyline, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
 
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import {
   DEFAULT_MAP_REGION,
   MAP_DARK_STYLE,
@@ -134,7 +135,7 @@ export function LiveMapView({
         // tiles load. Painting it with the app's own background instead
         // makes that cold-start invisible instead of reading as a "blink".
         loadingEnabled
-        loadingIndicatorColor="#31973D"
+        loadingIndicatorColor={isDark ? APP_DARK.accentGreen : "#31973D"}
         loadingBackgroundColor={colors.bg}
       >
         {useOsm && (
@@ -150,7 +151,7 @@ export function LiveMapView({
         {routeCoordinates.length > 1 && (
           <Polyline
             coordinates={routeCoordinates}
-            strokeColor="#31973D"
+            strokeColor={isDark ? APP_DARK.accentGreen : "#31973D"}
             strokeWidth={4}
           />
         )}
@@ -161,7 +162,7 @@ export function LiveMapView({
             anchor={PIN_ANCHOR}
             avatarUrl={pickupAvatarUrl}
             name={pickupName ?? "You"}
-            ringColor="#31973D"
+            ringColor={isDark ? APP_DARK.accentGreen : "#31973D"}
           />
         )}
 
@@ -174,7 +175,7 @@ export function LiveMapView({
             zIndex={marker.selected ? 10 : 1}
             avatarUrl={marker.avatarUrl}
             name={marker.name ?? "DR"}
-            ringColor={marker.selected ? "#31973D" : "#1F2A33"}
+            ringColor={marker.selected ? (isDark ? APP_DARK.accentGreen : "#31973D") : "#1F2A33"}
             highlighted={marker.selected}
           />
         ))}
@@ -185,12 +186,14 @@ export function LiveMapView({
             anchor={PIN_ANCHOR}
             avatarUrl={driverAvatarUrl}
             name={driverName ?? "DR"}
-            ringColor="#31973D"
+            ringColor={isDark ? APP_DARK.accentGreen : "#31973D"}
           />
         )}
       </MapView>
 
-      {isDark && useOsm && <View pointerEvents="none" style={styles.darkOverlay} />}
+      {isDark && useOsm && (
+        <View style={[styles.darkOverlay, { pointerEvents: "none" }]} />
+      )}
       {children}
     </View>
   );

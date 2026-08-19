@@ -19,8 +19,17 @@ import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { type SubscriptionPlan } from '../../api/subscriptionService';
 import { ChoosePlanSkeleton } from '../../components/payments/ChoosePlanSkeleton';
 import { useSubscriptionPlans } from '../../hooks/useSubscription';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 const ACCENT_COLORS = ['#FE8235', '#31973D', '#2F91FB'];
+// Dark-mode equivalents (Figma nodes 5494-31086 + 5494-29708). The
+// recommended plan (index 1, green) is a permanent translucent-green
+// "signature" regardless of active/inactive state. The other two plans
+// render as a vivid SOLID color when active (swiped into focus) — same
+// treatment a light-mode card gets — and a muted translucent tint when
+// inactive/peeking.
+const ACCENT_COLORS_DARK_ACTIVE = ['#FE8235', 'rgba(96,217,109,0.5)', '#489FFB'];
+const ACCENT_COLORS_DARK_INACTIVE = ['rgba(254,146,78,0.3)', 'rgba(96,217,109,0.25)', 'rgba(72,159,251,0.3)'];
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -59,10 +68,21 @@ type PlanCardProps = {
 };
 
 function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarginTop, onPress }: PlanCardProps) {
-  const activeColor = ACCENT_COLORS[planIndex % ACCENT_COLORS.length];
-  const inactiveColor = `${activeColor}4D`;
+  const { isDark } = useTheme();
+  const idx = planIndex % ACCENT_COLORS.length;
+  const isGreenAccent = idx === 1;
+  const activeColor = isDark ? ACCENT_COLORS_DARK_ACTIVE[idx] : ACCENT_COLORS[idx];
+  const inactiveColor = isDark ? ACCENT_COLORS_DARK_INACTIVE[idx] : `${ACCENT_COLORS[idx]}4D`;
   const price = `GHS ${Number(plan.amount).toFixed(2)}`;
   const pricePer = `/${plan.interval}`;
+  // Dark mode text: the recommended (green) card's active bg is a muted
+  // translucent tint, so its heading stays light. The other two plans'
+  // active bg is a vivid solid color, so their heading needs to go dark
+  // for contrast — everything else (subtitle/price/billing/mini-label)
+  // follows the same rule across all three per Figma.
+  const cardTextColor = isDark && isActive ? APP_DARK.text : '#FFFFFF';
+  const cardHeadingColor = isDark && isActive ? (isGreenAccent ? APP_DARK.text : '#0D0D0D') : '#FFFFFF';
+  const cardLabelColor = isDark && isActive ? '#0D0D0D' : '#FFFFFF';
 
   return (
     <Animated.View
@@ -77,16 +97,19 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
     >
       {recommended && (
         <View
-          className="absolute bg-[#FFE088] rounded-full px-4 py-[6px] flex-row items-center gap-1"
+          className="absolute rounded-full px-4 py-[6px] flex-row items-center gap-1"
           style={{
             top: -15,
             right: 0,
             zIndex: 20,
             elevation: 10,
+            backgroundColor: isDark ? APP_DARK.premiumButtonBg : '#FFE088',
+            borderWidth: isDark ? 1 : 0,
+            borderColor: '#0D0D0D',
           }}
         >
-          <Text className="text-[#1F2A33] text-base">✦</Text>
-          <Text className="text-base font-normal text-[#1F2A33]">RECOMMENDED</Text>
+          <Text className="text-base" style={{ color: isDark ? APP_DARK.text : '#1F2A33' }}>✦</Text>
+          <Text className="text-base font-normal" style={{ color: isDark ? APP_DARK.premiumButtonText : '#1F2A33' }}>RECOMMENDED</Text>
         </View>
       )}
 
@@ -100,36 +123,58 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
         }}
       >
       <View className="gap-1">
-        <Text className="text-2xl font-extrabold italic uppercase text-white" style={{ letterSpacing: -1.2 }}>{plan.name}</Text>
-        <Text className="text-sm leading-5 text-white">{plan.description?.features?.[0] ?? 'Premium access'}</Text>
+        <Text className="text-2xl font-extrabold italic uppercase" style={{ letterSpacing: -1.2, color: cardHeadingColor }}>{plan.name}</Text>
+        <Text className="text-sm leading-5" style={{ color: cardTextColor }}>{plan.description?.features?.[0] ?? 'Premium access'}</Text>
       </View>
 
       <View className="gap-1">
         {plan.amount_saved ? (
-          <Text className="text-xs font-semibold text-white leading-4">Save GHS {plan.amount_saved}</Text>
+          <Text className="text-xs font-semibold leading-4" style={{ color: cardLabelColor }}>Save GHS {plan.amount_saved}</Text>
         ) : null}
         <View className="flex-row items-baseline gap-1">
-          <Text className="text-[30px] font-extrabold text-white leading-9">{price}</Text>
-          <Text className="text-xl font-bold text-white leading-7">{pricePer}</Text>
+          <Text className="text-[30px] font-extrabold leading-9" style={{ color: cardTextColor }}>{price}</Text>
+          <Text className="text-xl font-bold leading-7" style={{ color: cardTextColor }}>{pricePer}</Text>
         </View>
       </View>
 
       <Pressable
-        className="bg-white rounded-full h-[57px] flex-row items-center justify-center gap-3 px-6 mb-4"
+        className="rounded-full h-[57px] flex-row items-center justify-center gap-3 px-6 mb-4"
+        style={{ backgroundColor: isDark ? '#0D0D0D' : '#FFFFFF' }}
         onPress={onPress}
       >
         <View
-          className="w-3 h-3 rounded-full bg-[#38A149]"
-          style={{ shadowColor: '#38A149', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 }, elevation: 4 }}
+          className="w-3 h-3 rounded-full"
+          style={{
+            backgroundColor: isDark ? (isActive && isGreenAccent ? APP_DARK.buttonPrimaryBg : '#3FB452') : '#38A149',
+            shadowColor: '#38A149',
+            shadowOpacity: 1,
+            shadowRadius: 6,
+            shadowOffset: { width: 0, height: 0 },
+            elevation: 4,
+          }}
         />
         <View className="items-center">
           <Text
             className="text-[11px] font-extrabold uppercase text-center"
-            style={{ letterSpacing: -0.275, color: isActive ? '#000000' : 'rgba(52, 168, 83, 0.5)' }}
+            style={{
+              letterSpacing: -0.275,
+              color: isDark
+                ? isActive
+                  ? '#FFFFFF'
+                  : 'rgba(58,187,93,0.5)'
+                : isActive
+                ? '#000000'
+                : 'rgba(52, 168, 83, 0.5)',
+            }}
           >
             START MY FREE WEEK TRIAL
           </Text>
-          <Text className="text-[9px] font-medium text-[#9CA3AF] text-center">after 7-days {price}{pricePer}</Text>
+          <Text
+            className="text-[9px] font-medium text-center"
+            style={{ color: isDark && isActive ? APP_DARK.text : '#9CA3AF' }}
+          >
+            after 7-days {price}{pricePer}
+          </Text>
         </View>
       </Pressable>
       </View>
@@ -138,7 +183,7 @@ function PlanCard({ plan, planIndex, isActive, recommended, cardHeight, cardMarg
 }
 
 export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePlan'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const plansRef = React.useRef<ScrollView>(null);
   const { data: plansData, isPending } = useSubscriptionPlans();
   const plans = plansData ?? [];
@@ -201,7 +246,8 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
       extrapolate: 'clamp',
     });
 
-  const accentColor = ACCENT_COLORS[activePlanIndex % ACCENT_COLORS.length];
+  const activeIdx = activePlanIndex % ACCENT_COLORS.length;
+  const accentColor = isDark ? ACCENT_COLORS_DARK_ACTIVE[activeIdx] : ACCENT_COLORS[activeIdx];
   const featureRows = buildPlanFeatureRows(plans, activePlanIndex);
   const activePlanLabel = plans[activePlanIndex]?.name ?? 'GOLD';
 
@@ -223,14 +269,23 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
 
         {/* Comparison table */}
         <View
-          style={{ borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), marginHorizontal: scale(16), marginTop: verticalScale(16), backgroundColor: colors.card, gap: verticalScale(24) }}
+          style={{
+            borderWidth: 1,
+            borderColor: isDark ? APP_DARK.border : colors.border,
+            borderRadius: moderateScale(24),
+            padding: moderateScale(16),
+            marginHorizontal: scale(16),
+            marginTop: verticalScale(16),
+            backgroundColor: isDark ? APP_DARK.card : colors.card,
+            gap: verticalScale(24),
+          }}
           onLayout={e => setTableHeight(e.nativeEvent.layout.height)}
         >
           <Text style={{ fontSize: moderateScale(30), fontWeight: '800', lineHeight: moderateScale(38), letterSpacing: -0.75, textTransform: 'uppercase', color: colors.text, textAlign: 'center' }}>
             {'START YOUR '}
-            <Text style={{ color: '#16CE2C' }}>FREE</Text>
+            <Text style={{ color: isDark ? APP_DARK.buttonPrimaryBg : '#16CE2C' }}>FREE</Text>
             {'\n'}
-            <Text style={{ color: '#16CE2C' }}>WEEK</Text>
+            <Text style={{ color: isDark ? APP_DARK.buttonPrimaryBg : '#16CE2C' }}>WEEK</Text>
             {' TRIAL!'}
           </Text>
 
@@ -250,13 +305,25 @@ export function ChoosePlanScreen({ navigation }: RootStackScreenProps<'ChoosePla
             {featureRows.map((f, i) => (
               <View
                 key={f.label}
-                style={{ flexDirection: 'row', alignItems: 'center', height: verticalScale(45), borderBottomWidth: i < featureRows.length - 1 ? 1 : 0, borderBottomColor: colors.borderLight }}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  height: verticalScale(45),
+                  borderBottomWidth: i < featureRows.length - 1 ? 1 : 0,
+                  borderBottomColor: isDark ? APP_DARK.border : colors.borderLight,
+                }}
               >
                 <View className="flex-1">
                   <Text style={{ fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.text }}>{f.label}</Text>
                 </View>
                 <View className="w-[72px] items-center">
-                  {f.free && <MaterialCommunityIcons name="check" size={moderateScale(20)} color={colors.iconColor} />}
+                  {f.free && (
+                    <MaterialCommunityIcons
+                      name="check"
+                      size={moderateScale(20)}
+                      color={isDark ? 'rgba(255,255,255,0.7)' : colors.iconColor}
+                    />
+                  )}
                 </View>
                 <View className="w-[72px] items-center">
                   {f.gold && <MaterialCommunityIcons name="check" size={moderateScale(20)} color={accentColor} />}

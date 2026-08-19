@@ -2,6 +2,8 @@ import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { BlurView } from "expo-blur";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackScreenProps } from "../../navigation/types";
+import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 const bgImage = require("../../../assets/thank_you.jpg");
 
@@ -10,6 +12,7 @@ export function ThankYouScreen({
   route,
 }: RootStackScreenProps<"ThankYou">) {
   const { amount, phone } = route.params ?? {};
+  const { isDark } = useTheme();
   return (
     <View style={styles.root}>
       <Image
@@ -48,7 +51,8 @@ export function ThankYouScreen({
 
             <Pressable
               onPress={() => navigation.navigate("Home")}
-              className="w-full bg-[#31973D] rounded-full py-[14px] items-center"
+              style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D" }}
+              className="w-full rounded-full py-[14px] items-center"
             >
               <Text className="text-white text-sm font-medium tracking-wide">
                 Proceed to Home

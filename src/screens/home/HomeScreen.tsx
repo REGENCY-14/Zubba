@@ -3,7 +3,6 @@ import {
   Image,
   ImageBackground,
   Pressable,
-  ScrollView,
   Text,
   TextInput,
   View,
@@ -21,6 +20,7 @@ import { StatCardsRow } from "../../components/onboarding/StatCardsRow";
 import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import Sidebar, { SidebarHandle } from "../../components/home/Sidebar";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
@@ -345,7 +345,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                     {binFullLoading && (
                       <ActivityIndicator
                         size="small"
-                        color="#31973D"
+                        color={isDark ? APP_DARK.accentGreen : "#31973D"}
                         style={{ position: "absolute", right: -28, top: 8 }}
                       />
                     )}
@@ -394,8 +394,8 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           >
           <View
             style={{
-              backgroundColor: isDark ? colors.card : colors.bg,
-              borderColor: colors.border,
+              backgroundColor: isDark ? APP_DARK.surface : colors.bg,
+              borderColor: isDark ? APP_DARK.border : colors.border,
               gap: moderateScale(12),
               borderRadius: moderateScale(34),
             }}
@@ -603,10 +603,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 <View
                   style={{
                     height: verticalScale(54),
-                    backgroundColor: isDark ? colors.card : colors.bg,
+                    backgroundColor: isDark ? APP_DARK.card : colors.bg,
                     borderRadius: 999,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: isDark ? APP_DARK.border : colors.border,
                     paddingHorizontal: scale(12),
                     flexDirection: "row",
                     alignItems: "center",
@@ -674,13 +674,17 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             )}
           </View>
 
-          {/* flexShrink lets this pane give up height to the panel above
-              when both together are taller than the available space, so the
-              cards scroll internally instead of pushing past the bottom nav. */}
-          <View style={{ flexShrink: 1 }}>
-          <ScrollView
-            contentContainerStyle={{ paddingHorizontal: scale(8), paddingVertical: moderateScale(16) }}
-            showsVerticalScrollIndicator={false}
+          {/* Bottom action cards — sit in the second "space-between" slot of
+              the wrapper above, so they're pinned below the stats panel
+              without needing to measure its height. Laid out as a plain
+              (non-scrolling) View — the rows below are sized and spaced to
+              fit the available height on their own, scaling via
+              moderateScale/verticalScale like the rest of the screen. */}
+          <View
+            style={{
+              justifyContent: "center",
+              paddingHorizontal: scale(8),
+            }}
           >
             <View className="space-y-3">
               {/* Tricycle row */}
@@ -688,16 +692,19 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 style={{
                   flexDirection: "row",
                   gap: scale(8),
-                  marginBottom: verticalScale(16),
+                  marginBottom: verticalScale(12),
                   alignItems: "center",
-                  backgroundColor: colors.card,
+                  backgroundColor: isDark ? APP_DARK.card : colors.card,
                   borderWidth: 1,
-                  borderColor: colors.border,
+                  borderColor: isDark ? APP_DARK.border : colors.border,
                   borderRadius: 999,
                   padding: moderateScale(12),
                 }}
               >
-                <View className="w-10 h-10 bg-[#419E6A1A] rounded-full items-center justify-center">
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{ backgroundColor: isDark ? "rgba(188,233,208,0.1)" : "#419E6A1A" }}
+                >
                   <Image
                     source={tricycle}
                     style={{
@@ -742,16 +749,19 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                 style={{
                   flexDirection: "row",
                   gap: scale(8),
-                  marginBottom: verticalScale(16),
+                  marginBottom: verticalScale(6),
                   alignItems: "center",
-                  backgroundColor: colors.card,
+                  backgroundColor: isDark ? APP_DARK.card : colors.card,
                   borderWidth: 1,
-                  borderColor: "#FFE088",
+                  borderColor: isDark ? APP_DARK.premiumBorder : "#FFE088",
                   borderRadius: 999,
                   padding: moderateScale(12),
                 }}
               >
-                <View className="w-10 h-10 bg-[##EFF5FF] rounded-full items-center justify-center">
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{ backgroundColor: isDark ? APP_DARK.premiumIconBg : "#EFF5FF" }}
+                >
                   <Image
                     source={isPremium ? futurePlan : premium}
                     style={{
@@ -807,15 +817,21 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
                   <MaterialCommunityIcons
                     name="lock"
                     size={moderateScale(16)}
-                    color="#574500"
+                    color={isDark ? APP_DARK.premiumLockIcon : "#574500"}
                   />
-                  <Text className="text-[#574500] italic">
+                  <Text
+                    className="italic"
+                    style={{
+                      color: isDark ? APP_DARK.premiumLabelText : "#574500",
+                      fontSize: moderateScale(13),
+                      lineHeight: moderateScale(19),
+                    }}
+                  >
                     Upgrade to Gold for scheduled pickups
                   </Text>
                 </Pressable>
               )}
             </View>
-          </ScrollView>
           </View>
           </View>
 

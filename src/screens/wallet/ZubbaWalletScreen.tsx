@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import WithdrawMethodDrawer from "../../components/payment/WithdrawMethodDrawer";
 import { toast } from "../../hooks/toast";
@@ -55,7 +56,18 @@ const STATUS_COLOR: Record<TxStatus, string> = {
   FAILED: "#FF383C",
 };
 
-const MOCK_TRANSACTIONS: Transaction[] = [
+const STATUS_COLOR_DARK: Record<TxStatus, string> = {
+  SUCCESS: APP_DARK.statusSuccessText,
+  CREDITED: APP_DARK.statusSuccessText,
+  PENDING: APP_DARK.statusNeutralText,
+  FAILED: APP_DARK.statusErrorText,
+};
+
+const MOCK_TRANSACTIONS: (Transaction & {
+  darkIconBg: string;
+  darkIconColor: string;
+  darkAmountColor: string;
+})[] = [
   {
     id: "1",
     title: "Weekly Pickup Fee",
@@ -66,6 +78,9 @@ const MOCK_TRANSACTIONS: Transaction[] = [
     iconBg: "rgba(0, 107, 35, 0.1)",
     iconName: "receipt-text-outline",
     iconColor: "#31973D",
+    darkIconBg: APP_DARK.statusSuccessBg,
+    darkIconColor: APP_DARK.accentGreen,
+    darkAmountColor: APP_DARK.statusErrorText,
   },
   {
     id: "2",
@@ -77,6 +92,9 @@ const MOCK_TRANSACTIONS: Transaction[] = [
     iconBg: "#FFE088",
     iconName: "leaf",
     iconColor: "#735C00",
+    darkIconBg: APP_DARK.premiumIconBg,
+    darkIconColor: APP_DARK.premiumLabelText,
+    darkAmountColor: APP_DARK.accentGreen,
   },
   {
     id: "3",
@@ -88,11 +106,24 @@ const MOCK_TRANSACTIONS: Transaction[] = [
     iconBg: "rgba(20, 135, 50, 0.1)",
     iconName: "cellphone",
     iconColor: "#31973D",
+    darkIconBg: APP_DARK.statusSuccessBg,
+    darkIconColor: APP_DARK.accentGreen,
+    darkAmountColor: APP_DARK.accentGreen,
   },
 ];
 
-function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
-  const { colors } = useTheme();
+function TransactionRow({
+  tx,
+  isLast,
+}: {
+  tx: Transaction & {
+    darkIconBg?: string;
+    darkIconColor?: string;
+    darkAmountColor?: string;
+  };
+  isLast: boolean;
+}) {
+  const { colors, isDark } = useTheme();
 
   return (
     <View
@@ -112,7 +143,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
           width: moderateScale(40),
           height: moderateScale(40),
           borderRadius: 9999,
-          backgroundColor: tx.iconBg,
+          backgroundColor: isDark ? tx.darkIconBg ?? tx.iconBg : tx.iconBg,
           alignItems: "center",
           justifyContent: "center",
         }}
@@ -120,7 +151,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
         <MaterialCommunityIcons
           name={tx.iconName}
           size={moderateScale(20)}
-          color={tx.iconColor}
+          color={isDark ? tx.darkIconColor ?? tx.iconColor : tx.iconColor}
         />
       </View>
       <View style={{ flex: 1, gap: moderateScale(4) }}>
@@ -139,7 +170,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
           style={{
             fontSize: moderateScale(13),
             fontWeight: "400",
-            color: "#ACB5BB",
+            color: isDark ? APP_DARK.textMuted : "#ACB5BB",
             lineHeight: moderateScale(21),
           }}
         >
@@ -154,7 +185,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
             fontSize: moderateScale(14),
             fontWeight: "600",
             letterSpacing: 0.28,
-            color: tx.amountColor,
+            color: isDark ? tx.darkAmountColor ?? tx.amountColor : tx.amountColor,
             lineHeight: moderateScale(17),
           }}
         >
@@ -166,7 +197,7 @@ function TransactionRow({ tx, isLast }: { tx: Transaction; isLast: boolean }) {
             fontWeight: "600",
             letterSpacing: -0.5,
             textTransform: "uppercase",
-            color: STATUS_COLOR[tx.status],
+            color: isDark ? STATUS_COLOR_DARK[tx.status] : STATUS_COLOR[tx.status],
             lineHeight: moderateScale(15),
           }}
         >
@@ -182,7 +213,7 @@ export function ZubbaWalletScreen({
   route,
 }: RootStackScreenProps<"ZubbaWallet">) {
   const customer = useAppSelector((state) => state.customer);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [activeSheet, setActiveSheet] = useState<"topup" | "withdraw">("topup");
@@ -193,19 +224,25 @@ export function ZubbaWalletScreen({
   const { data: rawTransactions } = useWalletTransactions({ limit: 10 });
   const invalidateWallet = useInvalidateWallet();
 
-  const transactions = useMemo<Transaction[]>(() => {
+  const transactions = useMemo(() => {
     const items = rawTransactions ?? [];
-    return items.map((item, index) => ({
-      id: item.id ?? String(index),
-      title: item.transaction_type ?? "Transaction",
-      date: item.created_at ? new Date(item.created_at).toLocaleDateString() : "",
-      amount: `GHS ${Number(item.amount).toFixed(2)}`,
-      amountColor: item.transaction_type === "withdrawal" ? "#FF383C" : "#31973D",
-      status: "SUCCESS" as TxStatus,
-      iconBg: "#E8F5E9",
-      iconName: "wallet" as const,
-      iconColor: "#31973D",
-    }));
+    return items.map((item, index) => {
+      const isWithdrawal = item.transaction_type === "withdrawal";
+      return {
+        id: item.id ?? String(index),
+        title: item.transaction_type ?? "Transaction",
+        date: item.created_at ? new Date(item.created_at).toLocaleDateString() : "",
+        amount: `GHS ${Number(item.amount).toFixed(2)}`,
+        amountColor: isWithdrawal ? "#FF383C" : "#31973D",
+        darkAmountColor: isWithdrawal ? APP_DARK.statusErrorText : APP_DARK.accentGreen,
+        status: "SUCCESS" as TxStatus,
+        iconBg: "#E8F5E9",
+        iconName: "wallet" as const,
+        iconColor: "#31973D",
+        darkIconBg: APP_DARK.statusSuccessBg,
+        darkIconColor: APP_DARK.accentGreen,
+      };
+    });
   }, [rawTransactions]);
 
   // Bust the cached balance/transactions after a top-up or withdrawal completes
@@ -378,25 +415,25 @@ export function ZubbaWalletScreen({
                     flexDirection: "row",
                     alignItems: "center",
                     gap: scale(4),
-                    backgroundColor: "#FFE088",
+                    backgroundColor: isDark ? APP_DARK.premiumIconBg : "#FFE088",
                     borderRadius: moderateScale(39),
                     paddingHorizontal: scale(12),
                     paddingVertical: verticalScale(3),
                     borderWidth: 1,
-                    borderColor: "#D4AF37",
+                    borderColor: isDark ? APP_DARK.premiumBorder : "#D4AF37",
                   }}
                 >
                   <MaterialCommunityIcons
                     name="star"
                     size={moderateScale(11)}
-                    color="#574500"
+                    color={isDark ? APP_DARK.premiumButtonText : "#574500"}
                   />
                   <Text
                     style={{
                       fontSize: moderateScale(10),
                       fontWeight: "400",
                       letterSpacing: 0.48,
-                      color: "#574500",
+                      color: isDark ? APP_DARK.premiumButtonText : "#574500",
                       lineHeight: moderateScale(14),
                     }}
                   >
@@ -416,7 +453,11 @@ export function ZubbaWalletScreen({
                 gap: scale(8),
               }}
             >
-              <MaterialCommunityIcons name="leaf" size={moderateScale(17)} color="#31973D" />
+              <MaterialCommunityIcons
+                name="leaf"
+                size={moderateScale(17)}
+                color={isDark ? APP_DARK.accentGreen : "#31973D"}
+              />
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
@@ -440,7 +481,7 @@ export function ZubbaWalletScreen({
                     style={{
                       fontSize: moderateScale(20),
                       fontWeight: "400",
-                      color: "#31973D",
+                      color: isDark ? APP_DARK.accentGreen : "#31973D",
                       lineHeight: moderateScale(28),
                     }}
                   >
@@ -450,7 +491,7 @@ export function ZubbaWalletScreen({
                     style={{
                       fontSize: moderateScale(12),
                       fontWeight: "400",
-                      color: "#31973D",
+                      color: isDark ? APP_DARK.accentGreen : "#31973D",
                       opacity: 0.8,
                     }}
                   >
@@ -462,7 +503,7 @@ export function ZubbaWalletScreen({
               <MaterialCommunityIcons
                 name="chevron-right"
                 size={moderateScale(20)}
-                color="#ACB5BB"
+                color={isDark ? APP_DARK.textMuted : "#ACB5BB"}
                 opacity={0.6}
               />
             </View>
@@ -475,9 +516,13 @@ export function ZubbaWalletScreen({
                 flex: 1,
                 height: verticalScale(91),
                 backgroundColor:
-                  activeSheet === "withdraw" ? "#FFFFFF" : "#31973D",
+                  activeSheet === "withdraw"
+                    ? colors.card
+                    : isDark
+                      ? APP_DARK.buttonPrimaryBg
+                      : "#31973D",
                 borderWidth: activeSheet === "withdraw" ? 1 : 0,
-                borderColor: "#E2E8F0",
+                borderColor: colors.border,
                 borderRadius: moderateScale(24),
                 alignItems: "center",
                 justifyContent: "center",
@@ -491,13 +536,24 @@ export function ZubbaWalletScreen({
               <MaterialCommunityIcons
                 name="plus-circle-outline"
                 size={moderateScale(20)}
-                color={activeSheet === "withdraw" ? "#31973D" : "#FFFFFF"}
+                color={
+                  activeSheet === "withdraw"
+                    ? isDark
+                      ? APP_DARK.accentGreen
+                      : "#31973D"
+                    : "#FFFFFF"
+                }
               />
               <Text
                 style={{
                   fontSize: moderateScale(14),
                   fontWeight: "500",
-                  color: activeSheet === "withdraw" ? "#31973D" : "#FFFFFF",
+                  color:
+                    activeSheet === "withdraw"
+                      ? isDark
+                        ? APP_DARK.accentGreen
+                        : "#31973D"
+                      : "#FFFFFF",
                   letterSpacing: 0.28,
                 }}
               >
@@ -510,9 +566,13 @@ export function ZubbaWalletScreen({
                 flex: 1,
                 height: verticalScale(91),
                 backgroundColor:
-                  activeSheet === "withdraw" ? "#31973D" : "#FFFFFF",
+                  activeSheet === "withdraw"
+                    ? isDark
+                      ? APP_DARK.buttonPrimaryBg
+                      : "#31973D"
+                    : colors.card,
                 borderWidth: activeSheet === "withdraw" ? 0 : 1,
-                borderColor: "#E2E8F0",
+                borderColor: colors.border,
                 borderRadius: moderateScale(24),
                 alignItems: "center",
                 justifyContent: "center",
@@ -526,13 +586,24 @@ export function ZubbaWalletScreen({
               <MaterialCommunityIcons
                 name="send-outline"
                 size={moderateScale(18)}
-                color={activeSheet === "withdraw" ? "#FFFFFF" : "#31973D"}
+                color={
+                  activeSheet === "withdraw"
+                    ? "#FFFFFF"
+                    : isDark
+                      ? APP_DARK.accentGreen
+                      : "#31973D"
+                }
               />
               <Text
                 style={{
                   fontSize: moderateScale(14),
                   fontWeight: "500",
-                  color: activeSheet === "withdraw" ? "#FFFFFF" : "#31973D",
+                  color:
+                    activeSheet === "withdraw"
+                      ? "#FFFFFF"
+                      : isDark
+                        ? APP_DARK.accentGreen
+                        : "#31973D",
                   letterSpacing: 0.28,
                 }}
               >
@@ -566,7 +637,7 @@ export function ZubbaWalletScreen({
                 <MaterialCommunityIcons
                   name="tune-variant"
                   size={moderateScale(18)}
-                  color="#ACB5BB"
+                  color={isDark ? APP_DARK.textMuted : "#ACB5BB"}
                 />
               </Pressable>
             </View>

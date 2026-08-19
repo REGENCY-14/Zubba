@@ -19,6 +19,7 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { Paragraph, Section } from "../../components/common/CustomAccordion";
 import { AppBottomNav } from "../../components";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 const supportImage = require("../../../assets/help.png");
 
@@ -65,7 +66,7 @@ function BulletList({
 export function HelpCenterScreen({
   navigation,
 }: RootStackScreenProps<"HelpCenter">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [search, setSearch] = useState("");
 
   return (
@@ -222,10 +223,10 @@ export function HelpCenterScreen({
             style={{
               borderRadius: moderateScale(16),
               borderWidth: 1,
-              borderColor: "#31973D",
+              borderColor: isDark ? APP_DARK.statusSuccessBorder : "#31973D",
               padding: moderateScale(16),
               gap: moderateScale(8),
-              backgroundColor: "rgba(0, 107, 35, 0.1)",
+              backgroundColor: isDark ? APP_DARK.statusSuccessBg : "rgba(0, 107, 35, 0.1)",
             }}
           >
             <Text
@@ -251,7 +252,7 @@ export function HelpCenterScreen({
                 height: verticalScale(48),
                 paddingHorizontal: scale(16),
                 borderRadius: moderateScale(12),
-                backgroundColor: "#31973D",
+                backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D",
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",

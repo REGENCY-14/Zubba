@@ -6,13 +6,14 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Card } from "../../components/Card";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 export function DetailsScreen({
   route,
   navigation,
 }: RootStackScreenProps<"Details">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const item = route.params;
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -72,7 +73,7 @@ export function DetailsScreen({
             </Pressable>
 
             <Pressable
-              style={{ width: scale(96), height: verticalScale(48), borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', backgroundColor: isPhoneValid ? '#34A853' : 'rgba(52, 168, 83, 0.5)' }}
+              style={{ width: scale(96), height: verticalScale(48), borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : (isPhoneValid ? '#34A853' : 'rgba(52, 168, 83, 0.5)') }}
             >
               <Text style={{ color: '#FFFFFF', fontSize: moderateScale(14) }}>Next</Text>
             </Pressable>

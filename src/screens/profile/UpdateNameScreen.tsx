@@ -12,6 +12,7 @@ import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { userService } from '../../api/userService';
 import { updateUser } from '../../slices/auth/authSlice';
 import { toast } from '../../hooks/toast';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateName'>) {
   const user = useAppSelector((state) => state.auth.user);
@@ -78,12 +79,12 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
               width: moderateScale(54),
               height: moderateScale(54),
               borderRadius: 9999,
-              backgroundColor: 'rgba(65, 158, 106, 0.1)',
+              backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(65, 158, 106, 0.1)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <MaterialCommunityIcons name="account-edit" size={moderateScale(24)} color="#006B23" />
+            <MaterialCommunityIcons name="account-edit" size={moderateScale(24)} color={isDark ? APP_DARK.statusSuccessText : "#006B23"} />
           </View>
 
           <Text
@@ -206,9 +207,11 @@ export function UpdateNameScreen({ navigation }: RootStackScreenProps<'UpdateNam
           style={{
             width: '100%',
             height: verticalScale(48),
-            backgroundColor: canSave && hasChanges && !isLoading
-              ? '#31973D'
-              : 'rgba(49,151,61,0.5)',
+            backgroundColor: isDark
+              ? APP_DARK.buttonPrimaryBg
+              : canSave && hasChanges && !isLoading
+                ? '#31973D'
+                : 'rgba(49,151,61,0.5)',
             borderRadius: 9999,
             alignItems: 'center',
             justifyContent: 'center',

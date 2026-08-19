@@ -246,7 +246,7 @@ const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                       borderRadius: moderateScale(9),
                       backgroundColor: "#006B23",
                       borderWidth: 2,
-                      borderColor: "#FFFFFF",
+                      borderColor: colors.surface,
                       alignItems: "center",
                       justifyContent: "center",
                     }}

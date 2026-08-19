@@ -19,6 +19,7 @@ export function StatCardsRow({ bags, points }: StatCardsRowProps) {
         value={`${bags} bag${bags == 1 ? '': 's'}`}
         description="Recycled this month"
         labelColor="#31973D"
+        darkLabelColor="#2C6833"
       />
 
       <StatCard
@@ -27,6 +28,7 @@ export function StatCardsRow({ bags, points }: StatCardsRowProps) {
         value={points}
         description="Eco Credits earned"
         labelColor="#735C00"
+        darkLabelColor="#79601A"
       />
     </View>
   );

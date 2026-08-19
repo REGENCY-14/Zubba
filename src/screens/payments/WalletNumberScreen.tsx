@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { APP_DARK } from '../../constants/appDarkTheme';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { upgradeToPremium } from '../../slices/customer/customerSlice';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
@@ -21,7 +22,7 @@ import { scale, verticalScale, moderateScale } from '../../utils/scale';
 export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletNumber'>) {
   const [phone, setPhone] = React.useState('');
   const [showSuccess, setShowSuccess] = React.useState(false);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
 
   return (
@@ -61,7 +62,7 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
                     style={{
                       height: verticalScale(48),
                       borderWidth: 1,
-                      borderColor: '#CBD5E0',
+                      borderColor: colors.border,
                       borderRadius: 999,
                       paddingHorizontal: scale(12),
                       fontSize: moderateScale(16),
@@ -71,7 +72,7 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
                     value={phone}
                     onChangeText={setPhone}
                     placeholder="055 123 4567"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.textMuted}
                     keyboardType="phone-pad"
                     autoFocus
                     returnKeyType="done"
@@ -83,7 +84,7 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
               </View>
 
               <Pressable
-                style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: verticalScale(48), backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => setShowSuccess(true)}
               >
                 <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#FFFFFF' }}>
@@ -97,22 +98,22 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
 
       {showSuccess && (
         <View style={StyleSheet.absoluteFill}>
-          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.30)' }]} />
+          <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(15,22,33,0.5)' : 'rgba(255,255,255,0.30)' }]} />
 
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: scale(24), gap: moderateScale(32) }}>
             <View style={{ alignItems: 'center', gap: moderateScale(12) }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(36), lineHeight: moderateScale(44), letterSpacing: -1.08, textAlign: 'center', color: '#0F1621' }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(36), lineHeight: moderateScale(44), letterSpacing: -1.08, textAlign: 'center', color: colors.text }}>
                 Successful
               </Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(16), lineHeight: moderateScale(20), letterSpacing: -0.32, textAlign: 'center', color: '#1F2A33' }}>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(16), lineHeight: moderateScale(20), letterSpacing: -0.32, textAlign: 'center', color: colors.textSub }}>
                 Enjoy double Eco-Points, priority support, and a cleaner tomorrow.
               </Text>
             </View>
 
             <View style={{ width: '100%', gap: moderateScale(12) }}>
               <Pressable
-                style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: verticalScale(48), backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: 9999, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
@@ -125,14 +126,14 @@ export function WalletNumberScreen({ navigation }: RootStackScreenProps<'WalletN
               </Pressable>
 
               <Pressable
-                style={{ height: verticalScale(48), backgroundColor: '#FFFFFF', borderRadius: 9999, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: verticalScale(48), backgroundColor: colors.card, borderRadius: 9999, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   dispatch(upgradeToPremium());
                   setShowSuccess(false);
                   navigation.navigate('PremiumHome');
                 }}
               >
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), color: '#1F2A33' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), color: colors.text }}>
                   Set Package expiry alert
                 </Text>
               </Pressable>

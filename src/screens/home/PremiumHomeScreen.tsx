@@ -19,9 +19,11 @@ import { TextAvatar } from "../../components/onboarding/TextAvatar";
 import { PremiumSidebar } from "../../components/home/PremiumSidebar";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 const mapImage = require("../../../assets/RawMap.png");
+const mapDarkImage = require("../../../assets/RawMapDark1.png");
 const futurePlan = require("../../../assets/futurePlan.png");
 const tricycle = require("../../../assets/picktricycle.png");
 
@@ -46,11 +48,11 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
     }
   };
   const customer = useAppSelector((state) => state.customer);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={["top", "left", "right", "bottom"]}>
-      <ImageBackground source={mapImage} style={{ flex: 1, width: "100%", height: "100%" }} resizeMode="cover">
+      <ImageBackground source={isDark ? mapDarkImage : mapImage} style={{ flex: 1, width: "100%", height: "100%" }} resizeMode="cover">
 
         {/* Full-height flex column: top — map — bottom */}
         <View style={{ flex: 1, justifyContent: "space-between" }}>
@@ -226,7 +228,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                 style={{
                   width: moderateScale(40),
                   height: moderateScale(40),
-                  backgroundColor: "rgba(65,158,106,0.10)",
+                  backgroundColor: isDark ? "rgba(188,233,208,0.1)" : "rgba(65,158,106,0.10)",
                   borderRadius: moderateScale(20),
                   alignItems: "center",
                   justifyContent: "center",
@@ -254,7 +256,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                 gap: scale(12),
                 backgroundColor: colors.card,
                 borderWidth: 1,
-                borderColor: "#FFE088",
+                borderColor: isDark ? APP_DARK.premiumBorder : "#FFE088",
                 borderRadius: 999,
                 paddingVertical: verticalScale(8),
                 paddingHorizontal: scale(12),
@@ -264,7 +266,7 @@ export function PremiumHomeScreen({ navigation }: RootStackScreenProps<"PremiumH
                 style={{
                   width: moderateScale(40),
                   height: moderateScale(40),
-                  backgroundColor: "#EFF5FF",
+                  backgroundColor: isDark ? APP_DARK.premiumIconBg : "#EFF5FF",
                   borderRadius: moderateScale(20),
                   alignItems: "center",
                   justifyContent: "center",

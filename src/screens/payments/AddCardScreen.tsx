@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { APP_DARK } from '../../constants/appDarkTheme';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 function LockIcon() {
@@ -26,11 +27,16 @@ function LockIcon() {
 
 type ToggleProps = { value: boolean; onValueChange: (v: boolean) => void };
 function Toggle({ value, onValueChange }: ToggleProps) {
+  const { isDark } = useTheme();
   return (
     <Pressable
       onPress={() => onValueChange(!value)}
-      className={`w-9 h-5 rounded-full ${value ? 'bg-[#31973D]' : 'bg-[#D1D5DB]'}`}
-      style={value ? { borderWidth: 1, borderColor: 'rgba(52, 168, 83, 0.5)' } : undefined}
+      className="w-9 h-5 rounded-full"
+      style={{
+        backgroundColor: value ? (isDark ? APP_DARK.accentGreen : '#31973D') : (isDark ? APP_DARK.border : '#D1D5DB'),
+        borderWidth: value ? 1 : 0,
+        borderColor: value ? 'rgba(52, 168, 83, 0.5)' : undefined,
+      }}
     >
       <View className={`absolute w-4 h-4 rounded-full bg-white top-[2px] ${value ? 'left-[18px]' : 'left-[2px]'}`} />
     </Pressable>
@@ -39,7 +45,7 @@ function Toggle({ value, onValueChange }: ToggleProps) {
 
 
 export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCard'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const planIndex = route.params?.planIndex ?? 1;
   const [cardName, setCardName] = React.useState('');
   const [cardNumber, setCardNumber] = React.useState('');
@@ -176,7 +182,8 @@ export function AddCardScreen({ navigation, route }: RootStackScreenProps<'AddCa
                 <Text style={{ fontSize: moderateScale(20), fontWeight: '700', color: colors.text, lineHeight: moderateScale(24) }}>See plan summary</Text>
               </View>
               <Pressable
-                className="flex-row items-center justify-center gap-2 h-12 flex-1 max-w-[210px] bg-[#31973D] rounded-full px-4"
+                style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D' }}
+                className="flex-row items-center justify-center gap-2 h-12 flex-1 max-w-[210px] rounded-full px-4"
                 onPress={handleProceed}
               >
                 <LockIcon />

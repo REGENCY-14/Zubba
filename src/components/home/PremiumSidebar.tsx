@@ -23,6 +23,7 @@ type Props = {
 };
 
 function Avatar({ name, imageUrl }: { name: string; imageUrl?: string | null }) {
+  const { colors } = useTheme();
   if (imageUrl) {
     return (
       <View style={{ width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
@@ -44,7 +45,7 @@ function Avatar({ name, imageUrl }: { name: string; imageUrl?: string | null }) 
             borderRadius: 9999,
             backgroundColor: '#006B23',
             borderWidth: 2,
-            borderColor: '#FFFFFF',
+            borderColor: colors.card,
             alignItems: 'center',
             justifyContent: 'center',
             right: 0,
@@ -130,8 +131,8 @@ export function PremiumSidebar({ isOpen, onClose, menuItems, activeKey }: Props)
   return (
     <>
       <Animated.View
-        pointerEvents={isOpen ? 'auto' : 'none'}
         style={{
+          pointerEvents: isOpen ? 'auto' : 'none',
           position: 'absolute', top: 0, left: 0,
           width: SCREEN_WIDTH, height: '100%',
           backgroundColor: 'rgba(0,0,0,0.4)',

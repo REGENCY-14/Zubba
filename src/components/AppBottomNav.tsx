@@ -5,6 +5,7 @@ import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-na
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { APP_DARK } from '../constants/appDarkTheme';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { scale, verticalScale, moderateScale } from '../utils/scale';
 
@@ -31,6 +32,7 @@ function NavItem({
   label: string;
 }) {
   const scale = useSharedValue(1);
+  const { isDark } = useTheme();
 
   React.useEffect(() => {
     scale.value = withSpring(active ? 1.08 : 1);
@@ -45,8 +47,9 @@ function NavItem({
       <Pressable
         onPress={onPress}
         className={`flex-row items-center justify-center rounded-full px-5 py-2 gap-2 ${
-          active ? 'bg-[#31973D]' : 'bg-transparent'
+          active ? (isDark ? '' : 'bg-[#31973D]') : 'bg-transparent'
         }`}
+        style={active && isDark ? { backgroundColor: APP_DARK.navActivePillBg } : null}
       >
         <View className="w-6 h-6 items-center justify-center">
           {icon}
@@ -68,7 +71,7 @@ export function AppBottomNav({
   bottomOffset = 20,
   navigation
 }: Props) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const isActive = (tab: Tab) => activeTab === tab;
   const isPremium = useAppSelector((state) => state.customer.is_premium)
 
@@ -91,9 +94,9 @@ export function AppBottomNav({
           alignItems: 'center',
           justifyContent: 'space-between',
           borderRadius: 9999,
-          backgroundColor: colors.card,
+          backgroundColor: isDark ? APP_DARK.navBg : colors.card,
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor: isDark ? APP_DARK.navBorder : colors.border,
         }}
       >
 

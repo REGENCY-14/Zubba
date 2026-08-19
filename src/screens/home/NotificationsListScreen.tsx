@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { APP_DARK } from '../../constants/appDarkTheme';
 import CustomAppBar from '../../components/common/CustomAppBar';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { useNotifications, useDeleteNotification } from '../../hooks/useNotifications';
@@ -24,11 +25,11 @@ type Section = {
 
 const bellIcon = require("../../../assets/notification_bell.png")
 
-function NotificationRow({ item, iconSize, colors }: { item: NotificationItem; iconSize: number; colors: ReturnType<typeof useTheme>['colors'] }) {
+function NotificationRow({ item, iconSize, colors, isDark }: { item: NotificationItem; iconSize: number; colors: ReturnType<typeof useTheme>['colors']; isDark: boolean }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: scale(16), paddingVertical: verticalScale(12), gap: scale(16) }}>
       <View style={{ width: iconSize, height: iconSize, backgroundColor: colors.iconBg, borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <MaterialCommunityIcons name="bell-outline" size={moderateScale(16)} color="#31973D" />
+        <MaterialCommunityIcons name="bell-outline" size={moderateScale(16)} color={isDark ? APP_DARK.accentGreen : "#31973D"} />
       </View>
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: scale(8) }}>
         <Text style={{ flex: 1, fontWeight: '400', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.text }}>
@@ -93,7 +94,7 @@ function groupNotifications(items: NotificationItem[]): Section[] {
 }
 
 export function NotificationsListScreen({ navigation }: RootStackScreenProps<'NotificationsList'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { data, isLoading, refetch } = useNotifications(50, 0);
   const deleteNotification = useDeleteNotification();
   const [refreshing, setRefreshing] = useState(false);
@@ -138,7 +139,7 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={colors.text}
-              colors={['#31973D']}
+              colors={[isDark ? APP_DARK.accentGreen : '#31973D']}
             />
           }
         >
@@ -169,7 +170,7 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
                   <View>
                     {section.items.map((item, iIdx) => (
                       <Pressable key={item.id} onLongPress={() => deleteNotification.mutate(item.id as any)}>
-                        <NotificationRow item={item} iconSize={moderateScale(32)} colors={colors} />
+                        <NotificationRow item={item} iconSize={moderateScale(32)} colors={colors} isDark={isDark} />
                       </Pressable>
                     ))}
                   </View>
@@ -199,8 +200,8 @@ export function NotificationsListScreen({ navigation }: RootStackScreenProps<'No
                 <Pressable
                   onPress={() => {navigation.navigate("NotificationSettings")}}
                   style={{ backgroundColor: colors.card, borderRadius: moderateScale(28), padding: moderateScale(24), flexDirection: 'row', alignItems: 'flex-start', gap: scale(16) }}>
-                  <View style={{ width: moderateScale(32), height: moderateScale(32), backgroundColor: '#DDD6FE', borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <MaterialCommunityIcons name="lightbulb-outline" size={moderateScale(16)} color="#7C3AED" />
+                  <View style={{ width: moderateScale(32), height: moderateScale(32), backgroundColor: isDark ? APP_DARK.statusInfoBg : '#DDD6FE', borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MaterialCommunityIcons name="lightbulb-outline" size={moderateScale(16)} color={isDark ? APP_DARK.statusInfoText : "#7C3AED"} />
                   </View>
                   <View style={{ flex: 1, gap: moderateScale(4) }}>
                     <Text style={{ fontWeight: '600', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: colors.text }}>Quick Tip</Text>

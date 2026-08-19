@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -86,7 +87,7 @@ export function RateRideScreen({
   const [professionalism, setProfessionalism] = useState(4);
   const [ecoFriendly, setEcoFriendly] = useState(4);
   const [note, setNote] = useState("");
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [proRating, setProRating] = useState<number>(4);
   const [ecoRating, setEcoRating] = useState<number>(4);
   const [comment, setComment] = useState<string>("");
@@ -227,6 +228,7 @@ export function RateRideScreen({
         <View className="flex-1 items-center gap-6 pt-[66px]">
           <View
             style={{
+              backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#16A34A",
               boxShadow: [
                 {
                   offsetX: 0,
@@ -237,7 +239,7 @@ export function RateRideScreen({
                 },
               ],
             }}
-            className="w-[72px] h-[72px] rounded-full bg-green-600 items-center justify-center"
+            className="w-[72px] h-[72px] rounded-full items-center justify-center"
           >
             <MaterialCommunityIcons name="check" size={moderateScale(40)} color="#fff" />
           </View>
@@ -250,7 +252,7 @@ export function RateRideScreen({
           </Text>
         </View>
 
-        <View className="absolute inset-0 bg-black/40" pointerEvents="none" />
+        <View className="absolute inset-0 bg-black/40" style={{ pointerEvents: "none" }} />
 
         <View
           style={{
@@ -280,7 +282,7 @@ export function RateRideScreen({
 
             {awaitingCompletion ? (
               <View className="items-center gap-4 py-6">
-                <ActivityIndicator color="#31973D" />
+                <ActivityIndicator color={isDark ? APP_DARK.accentGreen : "#31973D"} />
                 <Text
                   style={{ color: colors.text }}
                   className="text-base font-medium text-center"
@@ -352,7 +354,7 @@ export function RateRideScreen({
                       >
                         <MaterialCommunityIcons
                           name={active ? "star" : "star-outline"}
-                          color={active ? "#31973D" : "#BECAB9"}
+                          color={active ? (isDark ? APP_DARK.accentGreen : "#31973D") : "#BECAB9"}
                           size={moderateScale(32)}
                         />
                       </Pressable>
@@ -383,7 +385,7 @@ export function RateRideScreen({
                             style={{
                               borderColor: colors.border,
                               backgroundColor: active
-                                ? "#31973D"
+                                ? (isDark ? APP_DARK.buttonPrimaryBg : "#31973D")
                                 : "transparent",
                             }}
                             className="w-12 h-12 rounded-full border items-center justify-center"
@@ -428,7 +430,7 @@ export function RateRideScreen({
                             style={{
                               borderColor: colors.border,
                               backgroundColor: active
-                                ? "#31973D"
+                                ? (isDark ? APP_DARK.buttonPrimaryBg : "#31973D")
                                 : "transparent",
                             }}
                             className="w-12 h-12 rounded-full border items-center justify-center"
@@ -483,13 +485,14 @@ export function RateRideScreen({
             <View className="gap-2 px-2 flex-row items-center">
               <Pressable
                 onPress={handleSkip}
-                className="w-[34px] h-[34px] bg-red-100 rounded-xl items-center justify-center"
+                style={{ backgroundColor: isDark ? APP_DARK.statusErrorBg : "#FEE2E2" }}
+                className="w-[34px] h-[34px] rounded-xl items-center justify-center"
                 disabled={isLoading}
               >
                 <MaterialCommunityIcons
                   name="close"
                   size={moderateScale(16)}
-                  color="#EF4444"
+                  color={isDark ? APP_DARK.statusErrorText : "#EF4444"}
                 />
               </Pressable>
 
@@ -498,9 +501,11 @@ export function RateRideScreen({
                 disabled={isLoading}
                 style={{
                   opacity: isLoading ? 0.8 : 1,
-                  backgroundColor: isLoading ? "#31973D" : "#31973D",
+                  backgroundColor: isLoading
+                    ? (isDark ? APP_DARK.buttonPrimaryBg : "#31973D")
+                    : (isDark ? APP_DARK.buttonPrimaryBg : "#31973D"),
                 }}
-                className="h-12 bg-[#31973D] flex-1 rounded-full items-center justify-center"
+                className="h-12 flex-1 rounded-full items-center justify-center"
               >
                 {isLoading ? (
                   <ActivityIndicator color="white" size="small" />

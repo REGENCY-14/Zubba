@@ -6,6 +6,7 @@ import { AppBottomNav } from "../../components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import PaymentMethodDrawer from "../../components/payment/PaymentDrawer";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -26,7 +27,7 @@ const TRACKING_POLL_MS = 4000;
 export function DriverArrivesScreen({
   navigation,
 }: RootStackScreenProps<"DriverArrives">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
   const request = useAppSelector((state) => state.request)
   const customer = useAppSelector((state) => state.customer);
@@ -95,8 +96,8 @@ export function DriverArrivesScreen({
                 {request.driver.name}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <MaterialCommunityIcons name="star" size={moderateScale(14)} color="#0D631B" />
-                <Text style={{ fontSize: moderateScale(14), color: '#0D631B', marginLeft: scale(4) }}>
+                <MaterialCommunityIcons name="star" size={moderateScale(14)} color={isDark ? APP_DARK.statusSuccessText : '#0D631B'} />
+                <Text style={{ fontSize: moderateScale(14), color: isDark ? APP_DARK.statusSuccessText : '#0D631B', marginLeft: scale(4) }}>
                   {request.driver.rating <= 0 ? "First Request" : request.driver.rating} • {request.driver.code}
                 </Text>
               </View>
@@ -129,7 +130,7 @@ export function DriverArrivesScreen({
             </View>
           </View>
 
-          <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(24), padding: moderateScale(24), alignItems: 'center', gap: moderateScale(16) }}>
+          <View style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: moderateScale(24), padding: moderateScale(24), alignItems: 'center', gap: moderateScale(16) }}>
             <Text style={{ fontSize: moderateScale(10), color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 4 }}>
               COLLECTION CODE
             </Text>
@@ -165,9 +166,9 @@ export function DriverArrivesScreen({
                   : "Waiting for driver to log items…"}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: bagsConfirmed ? 'rgba(49,151,61,0.1)' : 'rgba(107,114,128,0.1)', paddingHorizontal: scale(12), paddingVertical: verticalScale(4), borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
-              <View style={{ width: moderateScale(8), height: moderateScale(8), borderRadius: moderateScale(4), backgroundColor: bagsConfirmed ? '#2E7D32' : '#9CA3AF', marginRight: scale(8) }} />
-              <Text style={{ fontSize: moderateScale(13), color: bagsConfirmed ? '#31973D' : colors.textSub }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: bagsConfirmed ? (isDark ? APP_DARK.statusSuccessBg : 'rgba(49,151,61,0.1)') : (isDark ? APP_DARK.statusNeutralBg : 'rgba(107,114,128,0.1)'), paddingHorizontal: scale(12), paddingVertical: verticalScale(4), borderRadius: 999, borderWidth: 1, borderColor: colors.border }}>
+              <View style={{ width: moderateScale(8), height: moderateScale(8), borderRadius: moderateScale(4), backgroundColor: bagsConfirmed ? (isDark ? APP_DARK.statusSuccessText : '#2E7D32') : (isDark ? APP_DARK.statusNeutralText : '#9CA3AF'), marginRight: scale(8) }} />
+              <Text style={{ fontSize: moderateScale(13), color: bagsConfirmed ? (isDark ? APP_DARK.statusSuccessText : '#31973D') : colors.textSub }}>
                 {bagsConfirmed ? "Items Logged" : "Awaiting Driver"}
               </Text>
             </View>
@@ -177,7 +178,7 @@ export function DriverArrivesScreen({
             <Pressable
               onPress={() => bagsConfirmed && setShowPaymentDrawer(true)}
               disabled={!bagsConfirmed}
-              style={{ height: verticalScale(48), backgroundColor: bagsConfirmed ? '#31973D' : colors.border, borderRadius: 999, alignItems: 'center', justifyContent: 'center', opacity: bagsConfirmed ? 1 : 0.6 }}
+              style={{ height: verticalScale(48), backgroundColor: bagsConfirmed ? (isDark ? APP_DARK.buttonPrimaryBg : '#31973D') : colors.border, borderRadius: 999, alignItems: 'center', justifyContent: 'center', opacity: bagsConfirmed ? 1 : 0.6 }}
             >
               <Text style={{ color: bagsConfirmed ? '#FFFFFF' : colors.textSub, fontSize: moderateScale(14) }}>
                 {bagsConfirmed ? "Proceed to payment" : "Waiting for driver to log items…"}

@@ -11,9 +11,10 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { updateUser } from '../../slices/auth/authSlice';
 import { userService } from '../../api/userService';
 import { toast } from '../../hooks/toast';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenProps<'UpdateDetailsOtp'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
   
   const contact = route.params?.phone ?? '024 11 22 310';
@@ -235,7 +236,11 @@ export function UpdateDetailsOtpScreen({ route, navigation }: RootStackScreenPro
               alignItems: 'center',
               justifyContent: 'center',
               marginTop: verticalScale(10),
-              backgroundColor: isCodeComplete && !isVerifying ? '#34A853' : 'rgba(52,168,83,0.5)',
+              backgroundColor: isDark
+                ? APP_DARK.buttonPrimaryBg
+                : isCodeComplete && !isVerifying
+                  ? '#34A853'
+                  : 'rgba(52,168,83,0.5)',
               opacity: isVerifying ? 0.7 : 1,
             }}
             disabled={!isCodeComplete || isVerifying}

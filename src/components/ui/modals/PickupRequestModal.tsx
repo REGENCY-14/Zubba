@@ -10,6 +10,7 @@ import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../../context/ThemeContext";
 import { moderateScale } from "../../../utils/scale";
 import { callDriver, messageDriver } from "../../../utils/contactDriver";
+import { APP_DARK } from "../../../constants/appDarkTheme";
 
 type Props = {
   visible: boolean;
@@ -70,8 +71,8 @@ export default function PickupRequestModal({
                 >
                   Driver Selected
                 </Text>
-                <View className="rounded-lg bg-[#E2E8F0]">
-                  <Text className="text-[#31973D] font-bold text-sm py-1.5 px-3">
+                <View style={{ backgroundColor: colors.borderLight }} className="rounded-lg">
+                  <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="font-bold text-sm py-1.5 px-3">
                     • Live View
                   </Text>
                 </View>
@@ -120,7 +121,10 @@ export default function PickupRequestModal({
                     )}
                   </View>
                   {isPremium && (
-                    <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
+                    <View
+                      className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 items-center justify-center"
+                      style={{ borderColor: colors.card }}
+                    >
                       <MaterialCommunityIcons
                         name="check-decagram"
                         size={moderateScale(13)}
@@ -140,7 +144,7 @@ export default function PickupRequestModal({
                     {name}
                   </Text>
 
-                  <Text className="text-[#31973D] text-base">
+                  <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="text-base">
                     GHS {cost} /{" "}
                     <Text style={{ color: colors.textSub }}>distance</Text>
                   </Text>
@@ -149,9 +153,9 @@ export default function PickupRequestModal({
                     <MaterialCommunityIcons
                       name="star"
                       size={moderateScale(14)}
-                      color="#0D631B"
+                      color={isDark ? APP_DARK.statusSuccessText : "#0D631B"}
                     />
-                    <Text className="text-sm text-[#0D631B] ml-1">
+                    <Text style={{ color: isDark ? APP_DARK.statusSuccessText : "#0D631B" }} className="text-sm ml-1">
                       {rating <= 0 ? "First Request" : rating} • {code}
                     </Text>
                   </View>
@@ -161,18 +165,20 @@ export default function PickupRequestModal({
               <View className="flex-row items-center gap-3 w-full">
                 <Pressable
                   onPress={onCancel}
-                  className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"
+                  style={{ backgroundColor: isDark ? APP_DARK.statusErrorBg : "#FDE8E8" }}
+                  className="w-8 h-8 rounded-xl items-center justify-center"
                 >
                   <MaterialCommunityIcons
                     name="close"
                     size={moderateScale(20)}
-                    color="#DC2626"
+                    color={isDark ? APP_DARK.statusErrorText : "#DC2626"}
                   />
                 </Pressable>
 
                 <Pressable
                   onPress={onProceed}
-                  className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center"
+                  style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D" }}
+                  className="flex-1 h-10 rounded-full items-center justify-center"
                 >
                   <Text className="text-white text-sm">Continue</Text>
                 </Pressable>
@@ -187,8 +193,8 @@ export default function PickupRequestModal({
                 >
                   Sending request
                 </Text>
-                <View className="rounded-lg bg-[#E2E8F0]">
-                  <Text className="text-[#31973D] font-bold text-sm py-1.5 px-3">
+                <View style={{ backgroundColor: colors.borderLight }} className="rounded-lg">
+                  <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="font-bold text-sm py-1.5 px-3">
                     • Live View
                   </Text>
                 </View>
@@ -230,7 +236,10 @@ export default function PickupRequestModal({
                     )}
                   </View>
                   {isPremium && (
-                    <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
+                    <View
+                      className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 items-center justify-center"
+                      style={{ borderColor: colors.card }}
+                    >
                       <MaterialCommunityIcons
                         name="check-decagram"
                         size={moderateScale(13)}
@@ -250,7 +259,7 @@ export default function PickupRequestModal({
                     {name}
                   </Text>
 
-                  <Text className="text-[#31973D] text-base">
+                  <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="text-base">
                     GHS {cost} /{" "}
                     <Text style={{ color: colors.textSub }}>distance</Text>
                   </Text>
@@ -259,15 +268,15 @@ export default function PickupRequestModal({
                     <MaterialCommunityIcons
                       name="star"
                       size={moderateScale(14)}
-                      color="#0D631B"
+                      color={isDark ? APP_DARK.statusSuccessText : "#0D631B"}
                     />
-                    <Text className="text-sm text-[#0D631B] ml-1">
+                    <Text style={{ color: isDark ? APP_DARK.statusSuccessText : "#0D631B" }} className="text-sm ml-1">
                       {rating <= 0 ? "First Request" : rating} • {code}
                     </Text>
                   </View>
 
                   <View className="flex-row items-center mt-4 gap-2">
-                    <ActivityIndicator size="small" color="#31973D" />
+                    <ActivityIndicator size="small" color={isDark ? APP_DARK.accentGreen : "#31973D"} />
                     <Text
                       style={{ color: colors.textMuted }}
                       className="text-sm"
@@ -281,9 +290,13 @@ export default function PickupRequestModal({
               <View className="flex-row items-center gap-3 w-full">
                 <Pressable
                   onPress={onCancel}
-                  className="flex-1 h-10 border border-red-300 bg-[#FDF2F8] rounded-full items-center justify-center"
+                  style={{
+                    borderColor: isDark ? APP_DARK.statusErrorBorder : "#FCA5A5",
+                    backgroundColor: isDark ? APP_DARK.statusErrorBg : "#FDF2F8",
+                  }}
+                  className="flex-1 h-10 border rounded-full items-center justify-center"
                 >
-                  <Text style={{color: "#EC4899"}} className="text-sm">Cancel</Text>
+                  <Text style={{color: isDark ? APP_DARK.statusErrorText : "#EC4899"}} className="text-sm">Cancel</Text>
                 </Pressable>
               </View>
             </View>
@@ -304,7 +317,7 @@ export default function PickupRequestModal({
                   <Text style={{ color: colors.textSub }} className="text-xs">
                     {distanceLabel ?? "—"}
                   </Text>
-                  <Text style={{ color: "#31973D" }} className="text-xs font-semibold">
+                  <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="text-xs font-semibold">
                     {etaLabel ?? "—"}
                   </Text>
                 </View>
@@ -323,8 +336,8 @@ export default function PickupRequestModal({
                   >
                     Driver Selected
                   </Text>
-                  <View className="rounded-lg bg-[#E2E8F0]">
-                    <Text className="text-[#31973D] font-bold text-sm py-1.5 px-3">
+                  <View style={{ backgroundColor: colors.border }} className="rounded-lg">
+                    <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="font-bold text-sm py-1.5 px-3">
                       • Live View
                     </Text>
                   </View>
@@ -397,9 +410,9 @@ export default function PickupRequestModal({
                       <MaterialCommunityIcons
                         name="star"
                         size={moderateScale(14)}
-                        color="#0D631B"
+                        color={isDark ? APP_DARK.statusSuccessText : "#0D631B"}
                       />
-                      <Text className="text-sm text-[#0D631B] ml-1">
+                      <Text style={{ color: isDark ? APP_DARK.statusSuccessText : "#0D631B" }} className="text-sm ml-1">
                         {rating <= 0 ? "First Request" : rating} • {code}
                       </Text>
                     </View>
@@ -448,17 +461,19 @@ export default function PickupRequestModal({
                 <View className="flex-row items-center gap-3 w-full">
                   <Pressable
                     onPress={onCancel}
-                    className="w-8 h-8 rounded-xl bg-[#FDE8E8] items-center justify-center"
+                    style={{ backgroundColor: isDark ? APP_DARK.statusErrorBg : "#FDE8E8" }}
+                    className="w-8 h-8 rounded-xl items-center justify-center"
                   >
                     <MaterialCommunityIcons
                       name="close"
                       size={moderateScale(20)}
-                      color="#DC2626"
+                      color={isDark ? APP_DARK.statusErrorText : "#DC2626"}
                     />
                   </Pressable>
 
                   <Pressable
-                    className="flex-1 h-10 bg-[#31973D] rounded-full items-center justify-center opacity-85"
+                    style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D" }}
+                    className="flex-1 h-10 rounded-full items-center justify-center opacity-85"
                     disabled={true}
                   >
                     <Text className="text-white text-sm">Proceed</Text>

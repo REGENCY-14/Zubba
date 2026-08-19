@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { AppBottomNav } from "../../components";
 import { useTheme, ThemeColors } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -132,10 +133,12 @@ function TabBar({
   active,
   onChange,
   colors,
+  isDark,
 }: {
   active: TabKey;
   onChange: (tab: TabKey) => void;
   colors: ThemeColors;
+  isDark: boolean;
 }) {
   return (
     <View
@@ -157,7 +160,7 @@ function TabBar({
             style={{
               paddingVertical: verticalScale(12),
               borderBottomWidth: 2,
-              borderBottomColor: isActive ? "#31973D" : "transparent",
+              borderBottomColor: isActive ? (isDark ? APP_DARK.accentGreen : "#31973D") : "transparent",
             }}
           >
             <Text
@@ -263,7 +266,7 @@ function PickupRow({
 }
 
 export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
   const [requests, setRequests] = useState<CustomerRequestItem[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -386,7 +389,7 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
         {/* Header */}
         <CustomAppBar title="Pickups" navigation={navigation}/>
 
-        <TabBar active={activeTab} onChange={setActiveTab} colors={colors} />
+        <TabBar active={activeTab} onChange={setActiveTab} colors={colors} isDark={isDark} />
 
         {/* paddingBottom reserves real flow space for the floating AppBottomNav
             below (it's position:'absolute' and doesn't take flow space itself) —
@@ -395,8 +398,8 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
         <View style={{ flex: 1, padding: moderateScale(20), paddingBottom: verticalScale(100) }}>
           <View style={{ flex: 1 }}>
             <View
-              pointerEvents="none"
               style={{
+                pointerEvents: "none",
                 position: "absolute",
                 top: 0,
                 left: 0,
@@ -421,8 +424,8 @@ export function PickupsScreen({ navigation }: RootStackScreenProps<"Pickups">) {
                 <RefreshControl
                   refreshing={refreshing}
                   onRefresh={handleRefresh}
-                  tintColor="#31973D"
-                  colors={["#31973D"]}
+                  tintColor={isDark ? APP_DARK.accentGreen : "#31973D"}
+                  colors={[isDark ? APP_DARK.accentGreen : "#31973D"]}
                   progressBackgroundColor={colors.surface}
                   progressViewOffset={Platform.OS === "android" ? 20 : 0}
                 />

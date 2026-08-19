@@ -15,6 +15,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import CustomAppBar from "../../components/common/CustomAppBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { toast } from "../../hooks/toast";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
@@ -27,7 +28,7 @@ export function PaymentMethodScreen({
 }: RootStackScreenProps<"PaymentMethod">) {
   const user = useAppSelector((state) => state.auth.user);
   const request = useAppSelector((state) => state.request);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { startCheckout, isLoading } = usePickupPaystackCheckout();
 
   const {
@@ -74,8 +75,8 @@ export function PaymentMethodScreen({
         >
           <View className="gap-6">
             <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(24), alignItems: "center", gap: moderateScale(16) }}>
-              <View className="w-14 h-14 rounded-full bg-[#41A06A]/10 items-center justify-center">
-                <MaterialCommunityIcons name="wallet" size={moderateScale(27)} color="#31973D" />
+              <View style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(65,160,106,0.1)' }} className="w-14 h-14 rounded-full items-center justify-center">
+                <MaterialCommunityIcons name="wallet" size={moderateScale(27)} color={isDark ? APP_DARK.statusSuccessText : '#31973D'} />
               </View>
 
               <Text style={{ fontSize: moderateScale(16), textAlign: "center", color: colors.textSub }}>
@@ -88,8 +89,8 @@ export function PaymentMethodScreen({
 
               <View style={{ width: "100%", borderTopWidth: 1, borderTopColor: colors.border }} />
 
-              <View className="bg-[#E8F2E8] px-3 py-1 rounded-full border border-[#E2E8F0]">
-                <Text className="text-[#31973D] text-[13px] font-bold">
+              <View style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : '#E8F2E8', borderColor: isDark ? APP_DARK.statusSuccessBorder : '#E2E8F0' }} className="px-3 py-1 rounded-full border">
+                <Text style={{ color: isDark ? APP_DARK.statusSuccessText : '#31973D' }} className="text-[13px] font-bold">
                   {methodLabel}
                 </Text>
               </View>
@@ -125,8 +126,8 @@ export function PaymentMethodScreen({
               </View>
             ) : (
               <View style={{ flexDirection: "row", gap: scale(16), padding: moderateScale(16), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), backgroundColor: colors.card }}>
-                <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
-                  <MaterialCommunityIcons name="credit-card-outline" size={moderateScale(18)} color="#31973D" />
+                <View style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(0,107,35,0.1)' }} className="w-8 h-8 rounded-full items-center justify-center">
+                  <MaterialCommunityIcons name="credit-card-outline" size={moderateScale(18)} color={isDark ? APP_DARK.statusSuccessText : '#31973D'} />
                 </View>
                 <View className="flex-1 gap-1">
                   <Text style={{ fontSize: moderateScale(16), color: colors.text }}>
@@ -140,8 +141,8 @@ export function PaymentMethodScreen({
             )}
 
             <View style={{ flexDirection: "row", gap: scale(16), padding: moderateScale(16), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), backgroundColor: colors.card }}>
-              <View className="w-8 h-8 rounded-full bg-[#006B23]/10 items-center justify-center">
-                <MaterialCommunityIcons name="information-outline" size={moderateScale(18)} color="#31973D" />
+              <View style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(0,107,35,0.1)' }} className="w-8 h-8 rounded-full items-center justify-center">
+                <MaterialCommunityIcons name="information-outline" size={moderateScale(18)} color={isDark ? APP_DARK.statusSuccessText : '#31973D'} />
               </View>
 
               <View className="flex-1 gap-1">
@@ -158,8 +159,8 @@ export function PaymentMethodScreen({
             <Pressable
               onPress={handleProceedToPay}
               disabled={isLoading}
-              className="h-12 bg-[#31973D] rounded-full items-center justify-center"
-              style={{ opacity: isLoading ? 0.7 : 1 }}
+              className="h-12 rounded-full items-center justify-center"
+              style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', opacity: isLoading ? 0.7 : 1 }}
             >
               {isLoading ? (
                 <ActivityIndicator color="white" />

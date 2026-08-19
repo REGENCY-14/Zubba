@@ -8,6 +8,7 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigateToChoosePlan } from '../../hooks/useSubscription';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 type Promo = {
   id: string;
@@ -24,7 +25,7 @@ type Promo = {
 
 const VALID_CODES = ['ZUBBA10', 'ECOFRIEND'];
 
-function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
+function PromoCard({ promo, colors, isDark }: { promo: Promo; colors: ThemeColors; isDark: boolean }) {
   return (
     <View
       style={{
@@ -56,8 +57,24 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
               {promo.title}
             </Text>
             {promo.badge && (
-              <View style={{ backgroundColor: 'rgba(49,151,61,0.12)', borderRadius: 999, paddingHorizontal: scale(8), paddingVertical: verticalScale(2) }}>
-                <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(10), fontWeight: '600', color: '#31973D' }}>{promo.badge}</Text>
+              <View
+                style={{
+                  backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(49,151,61,0.12)',
+                  borderRadius: 999,
+                  paddingHorizontal: scale(8),
+                  paddingVertical: verticalScale(2),
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: moderateScale(10),
+                    fontWeight: '600',
+                    color: isDark ? APP_DARK.statusSuccessText : '#31973D',
+                  }}
+                >
+                  {promo.badge}
+                </Text>
               </View>
             )}
           </View>
@@ -75,7 +92,7 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
             borderRadius: 999,
             paddingHorizontal: scale(16),
             paddingVertical: verticalScale(8),
-            backgroundColor: '#31973D',
+            backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D',
           }}
         >
           <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(12), fontWeight: '600', color: '#FFFFFF' }}>{promo.cta}</Text>
@@ -86,7 +103,7 @@ function PromoCard({ promo, colors }: { promo: Promo; colors: ThemeColors }) {
 }
 
 export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotions'>) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const customer = useAppSelector((state) => state.customer);
   const navigateToChoosePlan = useNavigateToChoosePlan();
   const [promoCode, setPromoCode] = useState('');
@@ -117,8 +134,8 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
     {
       id: 'weekend-2x',
       icon: 'flash',
-      iconColor: '#31973D',
-      iconBg: 'rgba(49,151,61,0.12)',
+      iconColor: isDark ? APP_DARK.statusSuccessText : '#31973D',
+      iconBg: isDark ? APP_DARK.statusSuccessBg : 'rgba(49,151,61,0.12)',
       title: '2X Eco-Points This Weekend',
       description: 'Every pickup scheduled Saturday–Sunday earns double Eco-Points, automatically.',
       badge: 'Ends Sun',
@@ -126,8 +143,8 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
     {
       id: 'refer',
       icon: 'account-multiple-plus-outline',
-      iconColor: '#2F91FB',
-      iconBg: 'rgba(47,145,251,0.12)',
+      iconColor: isDark ? APP_DARK.statusInfoText : '#2F91FB',
+      iconBg: isDark ? APP_DARK.statusInfoBg : 'rgba(47,145,251,0.12)',
       title: 'Refer & Earn GHS 20',
       description: 'Invite a friend to Zubba — you both get GHS 20 wallet credit after their first completed pickup.',
       cta: 'Share Invite',
@@ -136,8 +153,8 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
     {
       id: 'milestone',
       icon: 'truck-check-outline',
-      iconColor: '#FE8235',
-      iconBg: 'rgba(254,130,53,0.12)',
+      iconColor: isDark ? '#FF9D5C' : '#FE8235',
+      iconBg: isDark ? 'rgba(254,130,53,0.18)' : 'rgba(254,130,53,0.12)',
       title: '5 Pickups, 1 Free',
       description: 'Complete 5 paid pickups in a month and your 6th pickup is on us.',
       badge: 'This month',
@@ -145,8 +162,8 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
     {
       id: 'gold',
       icon: 'crown-outline',
-      iconColor: '#735C00',
-      iconBg: 'rgba(255,224,136,0.35)',
+      iconColor: isDark ? APP_DARK.premiumLabelText : '#735C00',
+      iconBg: isDark ? APP_DARK.premiumIconBg : 'rgba(255,224,136,0.35)',
       title: 'Go Gold — Unlock Double Rewards',
       description: 'Upgrade to Gold for double Eco-Points, priority support, and scheduled pickups.',
       badge: 'Popular',
@@ -178,7 +195,7 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
           contentContainerStyle={{ paddingHorizontal: scale(16), paddingTop: verticalScale(12), paddingBottom: verticalScale(40), gap: verticalScale(20) }}
         >
           {/* Eco-Points hero */}
-          <View style={{ backgroundColor: '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(8), overflow: 'hidden' }}>
+          <View style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: moderateScale(20), padding: moderateScale(20), gap: verticalScale(8), overflow: 'hidden' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
               <MaterialCommunityIcons name="leaf" size={moderateScale(18)} color="#90FA96" />
               <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(13), fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>
@@ -230,7 +247,11 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
                   borderRadius: moderateScale(12),
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: promoCode.trim() ? '#31973D' : 'rgba(49,151,61,0.4)',
+                  backgroundColor: isDark
+                    ? APP_DARK.buttonPrimaryBg
+                    : promoCode.trim()
+                      ? '#31973D'
+                      : 'rgba(49,151,61,0.4)',
                 }}
               >
                 <Text style={{ fontFamily: 'Poppins', fontSize: moderateScale(14), fontWeight: '600', color: '#FFFFFF' }}>Apply</Text>
@@ -255,7 +276,7 @@ export function PromotionsScreen({ navigation }: RootStackScreenProps<'Promotion
               Offers for you
             </Text>
             {promos.map((promo) => (
-              <PromoCard key={promo.id} promo={promo} colors={colors} />
+              <PromoCard key={promo.id} promo={promo} colors={colors} isDark={isDark} />
             ))}
           </View>
         </ScrollView>

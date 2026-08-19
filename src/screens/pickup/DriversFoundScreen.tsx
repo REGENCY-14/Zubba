@@ -18,6 +18,7 @@ import PickupRequestModal from "../../components/ui/modals/PickupRequestModal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NearbyDriver } from "../../types/driver.types";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { LiveMapView, type DriverMapMarker } from "../../components/maps/LiveMapView";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
@@ -52,10 +53,10 @@ function DriverCard({
     <Pressable
       onPress={onPress}
       className="w-[248px] rounded-3xl p-4 gap-4"
-      style={{ backgroundColor: isDark ? colors.card : colors.bg, borderWidth: 1, borderColor: selected ? "#31973D" : colors.border }}
+      style={{ backgroundColor: isDark ? colors.card : colors.bg, borderWidth: 1, borderColor: selected ? (isDark ? APP_DARK.accentGreen : "#31973D") : colors.border }}
     >
       <View className="flex-row gap-4 items-center">
-        <View className="w-16 h-16 rounded-xl bg-[#F4F4F5] items-center justify-center flex-shrink-0">
+        <View style={{ backgroundColor: isDark ? APP_DARK.card : "#F4F4F5" }} className="w-16 h-16 rounded-xl items-center justify-center flex-shrink-0">
           <View className="w-[54px] h-[54px] rounded-full border-2 border-[#90FA96] overflow-hidden items-center justify-center bg-[#C7E0C9]">
             <Image
               source={
@@ -67,7 +68,10 @@ function DriverCard({
               resizeMode="cover"
             />
           </View>
-          <View className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 border-white items-center justify-center">
+          <View
+            className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#006B23] border-2 items-center justify-center"
+            style={{ borderColor: isDark ? APP_DARK.card : "#F4F4F5" }}
+          >
             <MaterialCommunityIcons
               name="check-decagram"
               size={13}
@@ -87,8 +91,8 @@ function DriverCard({
               {driver.name}
             </Text>
             {driver.isPremium && (
-              <View className="bg-[#FFE088] rounded-2xl px-1.5 py-0.5 border border-[#D4AF37]">
-                <Text className="text-[10px] text-[#574500] tracking-[0.48px]">
+              <View style={{ backgroundColor: isDark ? APP_DARK.premiumButtonBg : "#FFE088" }} className="rounded-2xl px-1.5 py-0.5 border border-[#D4AF37]">
+                <Text style={{ color: isDark ? APP_DARK.premiumLabelText : "#574500" }} className="text-[10px] tracking-[0.48px]">
                   Premium
                 </Text>
               </View>
@@ -96,7 +100,7 @@ function DriverCard({
           </View>
 
           <View className="flex-row items-center gap-1">
-            <MaterialCommunityIcons name="star" size={11} color="#735C00" />
+            <MaterialCommunityIcons name="star" size={11} color={isDark ? APP_DARK.premiumLabelText : "#735C00"} />
             <Text
               style={{color: colors.text}}
               className="text-xs font-bold">
@@ -105,7 +109,7 @@ function DriverCard({
             <Text
               style={{color: colors.text}}
               className="text-xs font-extrabold text-[#BECAB9]"> · </Text>
-            <Text className="text-sm font-bold text-[#0D631B] uppercase">
+            <Text style={{ color: isDark ? APP_DARK.statusSuccessText : "#0D631B" }} className="text-sm font-bold uppercase">
               {driver.code ?? "—"}
             </Text>
           </View>
@@ -127,8 +131,8 @@ function DriverCard({
             {distanceLabel}
           </Text>
         </View>
-        <View  className="bg-[rgba(0,107,35,0.05)] rounded-lg px-2 py-0.5">
-          <Text className="text-xs font-bold text-[#006B23] tracking-[0.48px]">
+        <View style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : "rgba(0,107,35,0.05)" }} className="rounded-lg px-2 py-0.5">
+          <Text style={{ color: isDark ? APP_DARK.accentGreen : "#006B23" }} className="text-xs font-bold tracking-[0.48px]">
             {etaLabel}
           </Text>
         </View>
@@ -351,10 +355,10 @@ export function DriversFoundScreen({
             <MaterialCommunityIcons
               name="chevron-left"
               size={24}
-              color="#1F2A33"
+              color={isDark ? colors.text : "#1F2A33"}
             />
           </Pressable>
-          <Text style={{color: colors.textSub}} className="text-base font-bold text-[#1F2A33]">
+          <Text style={{color: colors.textSub}} className="text-base font-bold">
             Drivers found
           </Text>
           <View className="w-7" />
@@ -364,8 +368,8 @@ export function DriversFoundScreen({
 
         {!showModal && (
           <Animated.View
-            pointerEvents={collapsed ? "none" : "auto"}
             style={{
+              pointerEvents: collapsed ? "none" : "auto",
               position: "absolute",
               left: 0,
               right: 0,
@@ -399,9 +403,9 @@ export function DriversFoundScreen({
                   Nearby Drivers
                 </Text>
                 <View className="flex-row items-center gap-2">
-                  <View style={{borderColor: colors.border}} className="flex-row items-center gap-2 bg-[#006B23]/10 border rounded-2xl px-3 py-1.5">
-                    <View className="w-2 h-2 rounded-full bg-[#31973D]" />
-                    <Text className="text-[13px] font-bold text-[#31973D]">
+                  <View style={{borderColor: colors.border, backgroundColor: isDark ? APP_DARK.statusSuccessBg : "rgba(0,107,35,0.1)"}} className="flex-row items-center gap-2 border rounded-2xl px-3 py-1.5">
+                    <View style={{ backgroundColor: isDark ? APP_DARK.accentGreen : "#31973D" }} className="w-2 h-2 rounded-full" />
+                    <Text style={{ color: isDark ? APP_DARK.accentGreen : "#31973D" }} className="text-[13px] font-bold">
                       Live view
                     </Text>
                   </View>
@@ -453,9 +457,9 @@ export function DriversFoundScreen({
                 <MaterialCommunityIcons
                   name="close-circle"
                   size={16}
-                  color="#EF4444"
+                  color={isDark ? APP_DARK.statusErrorText : "#EF4444"}
                 />
-                <Text className="text-sm font-bold text-[#EF4444]">
+                <Text style={{ color: isDark ? APP_DARK.statusErrorText : "#EF4444" }} className="text-sm font-bold">
                   Cancel pickup
                 </Text>
               </Pressable>
@@ -465,8 +469,8 @@ export function DriversFoundScreen({
 
         {!showModal && (
           <Animated.View
-            pointerEvents={collapsed ? "auto" : "none"}
             style={{
+              pointerEvents: collapsed ? "auto" : "none",
               position: "absolute",
               right: scale(16),
               bottom: navHeight,
@@ -493,7 +497,7 @@ export function DriversFoundScreen({
               onPress={toggleCollapsed}
               className="w-full h-full items-center justify-center"
             >
-              <MaterialCommunityIcons name="chevron-up" size={22} color="#31973D" />
+              <MaterialCommunityIcons name="chevron-up" size={22} color={isDark ? APP_DARK.accentGreen : "#31973D"} />
               {drivers.length > 0 && (
                 <View
                   style={{
@@ -503,7 +507,7 @@ export function DriversFoundScreen({
                     minWidth: moderateScale(18),
                     height: moderateScale(18),
                     borderRadius: moderateScale(9),
-                    backgroundColor: "#31973D",
+                    backgroundColor: isDark ? APP_DARK.accentGreen : "#31973D",
                     alignItems: "center",
                     justifyContent: "center",
                     paddingHorizontal: 3,

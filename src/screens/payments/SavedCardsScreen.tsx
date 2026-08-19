@@ -9,6 +9,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { upgradeToPremium } from '../../slices/customer/customerSlice';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 type MethodId = 'mtn' | 'telecel' | 'airtel';
 
@@ -67,7 +68,7 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                   onPress={() => setSelectedMethod('mtn')}
                   style={{ width: scale(102), height: verticalScale(95), borderRadius: moderateScale(11), borderWidth: 2, borderColor: selectedMethod === 'mtn' ? '#31973D' : 'transparent', alignItems: 'center', justifyContent: 'center', padding: moderateScale(4) }}
                 >
-                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#FFCC00', borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <View style={{ width: scale(84), height: verticalScale(78), backgroundColor: '#FFCC00', borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderWidth: isDark ? 1 : 0, borderColor: APP_DARK.border }}>
                     <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(12), color: '#000000' }}>MTN</Text>
                   </View>
                 </Pressable>
@@ -194,8 +195,8 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                       style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingHorizontal: scale(8), height: verticalScale(32) }}
                       onPress={() => setMenuVisible(false)}
                     >
-                      <MaterialCommunityIcons name="close-circle-outline" size={moderateScale(16)} color="#EF4444" />
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#FF181C' }}>Delete</Text>
+                      <MaterialCommunityIcons name="close-circle-outline" size={moderateScale(16)} color={isDark ? APP_DARK.statusErrorText : '#EF4444'} />
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: isDark ? APP_DARK.statusErrorText : '#FF181C' }}>Delete</Text>
                     </Pressable>
                   </View>
                 )}
@@ -206,10 +207,10 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
                 style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), marginTop: verticalScale(4) }}
                 onPress={() => navigation.navigate('AddCard')}
               >
-                <View style={{ width: moderateScale(10.5), height: moderateScale(10.5), borderRadius: moderateScale(5.25), backgroundColor: '#31973D', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: moderateScale(10.5), height: moderateScale(10.5), borderRadius: moderateScale(5.25), backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', alignItems: 'center', justifyContent: 'center' }}>
                   <MaterialCommunityIcons name="plus" size={moderateScale(8)} color="#FFFFFF" />
                 </View>
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: '#31973D' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), lineHeight: moderateScale(20), color: isDark ? APP_DARK.accentGreen : '#31973D' }}>
                   Or add a new one
                 </Text>
               </Pressable>
@@ -218,7 +219,7 @@ export function SavedCardsScreen({ navigation }: RootStackScreenProps<'SavedCard
 
             {/* Continue */}
             <Pressable
-              style={{ height: verticalScale(48), backgroundColor: '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+              style={{ height: verticalScale(48), backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => {
                 dispatch(upgradeToPremium());
                 navigation.navigate('PremiumHome');

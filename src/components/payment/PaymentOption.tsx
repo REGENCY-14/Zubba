@@ -2,6 +2,7 @@ import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { moderateScale } from "../../utils/scale";
 
 export type PaymentOptionProps = {
@@ -27,7 +28,7 @@ export function PaymentOption({
   showBorder = true,
   onPress,
 }: PaymentOptionProps) {
-    const {colors} = useTheme()
+    const {colors, isDark} = useTheme()
   return (
     <Pressable
       onPress={onPress}
@@ -37,7 +38,11 @@ export function PaymentOption({
       <View className="flex-row items-center flex-1 gap-4">
         <View className={`w-12 h-7 rounded-xl items-center justify-center overflow-hidden ${badgeBg}`}>
           {iconName ? (
-            <MaterialCommunityIcons name={iconName as any} size={moderateScale(22)} color="#31973D" />
+            <MaterialCommunityIcons
+              name={iconName as any}
+              size={moderateScale(22)}
+              color={isDark ? APP_DARK.accentGreen : "#31973D"}
+            />
           ) : image ? (
             <Image source={image} style={{ width: moderateScale(28), height: moderateScale(28) }} resizeMode="contain" />
           ) : (
@@ -51,10 +56,17 @@ export function PaymentOption({
       </View>
 
       <View
-        style={{backgroundColor: selected ? "#31973D" : colors.surface}}
-        className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-          selected ? "bg-[#31973D] border-[#31973D]" : "bg-white border-[#8E7164]"
-        }`}
+        style={{
+          backgroundColor: selected ? (isDark ? APP_DARK.accentGreen : "#31973D") : colors.surface,
+          borderColor: selected
+            ? isDark
+              ? APP_DARK.accentGreen
+              : "#31973D"
+            : isDark
+              ? colors.border
+              : "#8E7164",
+        }}
+        className="w-6 h-6 rounded-full border-2 items-center justify-center"
       >
         {selected && <View style={{backgroundColor: colors.surface}} className="w-2 h-2 rounded-full" />}
       </View>

@@ -22,6 +22,7 @@ import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { updateUser } from "../../slices/auth/authSlice";
 import { updateProfilePicture } from "../../slices/customer/customerSlice";
 import { uploadAvatar } from "../../services/profileImageService";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 function InfoCard({
   label,
@@ -93,7 +94,7 @@ export function ProfileScreen({
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const customer = useAppSelector((state) => state.customer);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const [uploading, setUploading] = useState(false);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
@@ -220,7 +221,7 @@ export function ProfileScreen({
                       borderRadius: moderateScale(9),
                       backgroundColor: "#006B23",
                       borderWidth: 2,
-                      borderColor: "#FFFFFF",
+                      borderColor: colors.surface,
                       alignItems: "center",
                       justifyContent: "center",
                     }}
@@ -298,7 +299,7 @@ export function ProfileScreen({
                 flexDirection: "row",
                 alignItems: "center",
                 alignSelf: "flex-start",
-                backgroundColor: "rgba(0, 107, 35, 0.1)",
+                backgroundColor: isDark ? APP_DARK.statusSuccessBg : "rgba(0, 107, 35, 0.1)",
                 borderRadius: moderateScale(11),
                 paddingRight: scale(8),
                 marginTop: verticalScale(4),
@@ -308,14 +309,14 @@ export function ProfileScreen({
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={moderateScale(14)}
-                  color="#31973D"
+                  color={isDark ? APP_DARK.statusSuccessText : "#31973D"}
                 />
               </View>
               <Text
                 style={{
                   fontSize: moderateScale(10),
                   fontWeight: "400",
-                  color: "#31973D",
+                  color: isDark ? APP_DARK.statusSuccessText : "#31973D",
                   letterSpacing: 0.48,
                   lineHeight: moderateScale(14),
                 }}

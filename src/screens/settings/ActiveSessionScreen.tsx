@@ -10,6 +10,7 @@ import CustomAppBar from "../../components/common/CustomAppBar";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { deviceService, DeviceSession } from "../../api/deviceService";
 import { toast } from "../../hooks/toast";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 type DeviceCardProps = {
   iconName: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -20,6 +21,7 @@ type DeviceCardProps = {
   actionTone?: "current" | "revoke";
   isCurrent?: boolean;
   colors: ReturnType<typeof useTheme>["colors"];
+  isDark?: boolean;
 };
 
 function DeviceCard({
@@ -31,13 +33,14 @@ function DeviceCard({
   actionTone = "revoke",
   isCurrent = false,
   colors,
+  isDark,
   onRevoke,
   revoking,
 }: DeviceCardProps & { onRevoke?: () => void; revoking?: boolean }) {
   return (
     <View
       style={{
-        backgroundColor: isCurrent ? "#31973D" : "transparent",
+        backgroundColor: isCurrent ? (isDark ? APP_DARK.buttonPrimaryBg : "#31973D") : "transparent",
         borderRadius: moderateScale(24),
         paddingLeft: isCurrent ? scale(4) : 0,
       }}
@@ -155,8 +158,10 @@ function DeviceCard({
 
 function InfoCard({
   colors,
+  isDark,
 }: {
   colors: ReturnType<typeof useTheme>["colors"];
+  isDark: boolean;
 }) {
   return (
     <View
@@ -178,13 +183,13 @@ function InfoCard({
           borderRadius: 999,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0, 107, 35, 0.1)",
+          backgroundColor: isDark ? APP_DARK.statusSuccessBg : "rgba(0, 107, 35, 0.1)",
         }}
       >
         <MaterialCommunityIcons
           name="information-outline"
           size={moderateScale(20)}
-          color="#31973D"
+          color={isDark ? APP_DARK.statusSuccessText : "#31973D"}
         />
       </View>
       <Text
@@ -313,7 +318,7 @@ export function ActiveSessionScreen({
             </Text>
             <View
               style={{
-                backgroundColor: "#31973D",
+                backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D",
                 borderRadius: 999,
                 paddingHorizontal: scale(12),
                 paddingVertical: verticalScale(4),
@@ -352,6 +357,7 @@ export function ActiveSessionScreen({
                   actionTone={index === 0 ? "current" : "revoke"}
                   isCurrent={index === 0}
                   colors={colors}
+                  isDark={isDark}
                   onRevoke={index === 0 ? undefined : () => handleRevoke(session.id)}
                   revoking={revokingId === session.id}
                 />
@@ -363,7 +369,7 @@ export function ActiveSessionScreen({
             <Pressable
               style={{
                 height: verticalScale(48),
-                backgroundColor: "#31973D",
+                backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D",
               }}
               className="rounded-full h-12 items-center justify-center"
               onPress={() => navigation.navigate("Settings")}
@@ -374,7 +380,7 @@ export function ActiveSessionScreen({
             </Pressable>
           </View>
 
-          <InfoCard colors={colors} />
+          <InfoCard colors={colors} isDark={isDark} />
         </ScrollView>
 
         <AppBottomNav

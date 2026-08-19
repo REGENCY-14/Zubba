@@ -11,6 +11,7 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 import { useResendOtp } from '../../slices/auth/auth.hooks';
 import { toast } from '../../hooks/toast';
+import { APP_DARK } from '../../constants/appDarkTheme';
 
 export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<'UpdateDetails'>) {
   const { isDark, colors } = useTheme();
@@ -112,9 +113,9 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
           <View className="items-center px-[18px] py-6 gap-4">
             <View
               className="w-[54px] h-[54px] rounded-full items-center justify-center"
-              style={{ backgroundColor: 'rgba(65, 158, 106, 0.1)' }}
+              style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(65, 158, 106, 0.1)' }}
             >
-              <MaterialCommunityIcons name="cellphone-arrow-down" size={moderateScale(24)} color="#0D631B" />
+              <MaterialCommunityIcons name="cellphone-arrow-down" size={moderateScale(24)} color={isDark ? APP_DARK.statusSuccessText : "#0D631B"} />
             </View>
             <Text className="text-sm leading-5 text-[#64748A] text-center" style={{ color: colors.text }}>
               Keep your account safe and accessible by ensuring your contact information is current.
@@ -158,14 +159,17 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
                   keyboardType={contactKeyboardType}
                   autoCapitalize={isEmailMode ? 'none' : 'words'}
                   placeholder={contactPlaceholder}
-                  placeholderTextColor="#64748A"
+                  placeholderTextColor={colors.textSub}
                   editable={!isResending}
                 />
               </View>
 
               <Pressable
-                className="w-full h-12 bg-[#31973D] rounded-full items-center justify-center"
-                style={{ opacity: isValid ? 1 : 0.5 }}
+                className="w-full h-12 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D",
+                  opacity: isValid ? 1 : 0.5,
+                }}
                 disabled={!isValid || isResending}
                 onPress={handleSendOtp}
               >
@@ -199,9 +203,9 @@ export function UpdateDetailsScreen({ route, navigation }: RootStackScreenProps<
               <View className="flex-row items-start gap-4 p-4 rounded-2xl border" style={{ borderColor: colors.border }}>
                 <View
                   className="w-8 h-8 rounded-full items-center justify-center"
-                  style={{ backgroundColor: 'rgba(0, 107, 35, 0.1)' }}
+                  style={{ backgroundColor: isDark ? APP_DARK.statusSuccessBg : 'rgba(0, 107, 35, 0.1)' }}
                 >
-                  <MaterialCommunityIcons name="information" size={moderateScale(18)} color="#31973D" />
+                  <MaterialCommunityIcons name="information" size={moderateScale(18)} color={isDark ? APP_DARK.statusSuccessText : "#31973D"} />
                 </View>
                 <Text className="flex-1 text-sm leading-[21px] text-[#64748A]" style={{ color: colors.textSub }}>
                   {contactNotice}

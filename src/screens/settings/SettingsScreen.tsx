@@ -15,6 +15,7 @@ import { logout } from "../../slices/auth/authSlice";
 import { clearCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { APP_DARK } from "../../constants/appDarkTheme";
 
 type SettingsRowProps = {
   icon: React.ReactNode;
@@ -162,17 +163,29 @@ export function SettingsScreen({
                 source={zubbaText}
                 tintColor="#31973D"
               />
-              <Text className="text-xs leading-4 text-[#64748A] text-center">
+              <Text
+                style={{ color: colors.textSub }}
+                className="text-xs leading-4 text-center"
+              >
                 Waste Pickup and Recycling Control
               </Text>
-              <View className="bg-[#E3F2F7] rounded-full px-2.5 py-1">
-                <Text className="text-[10px] leading-[11px] text-black font-['Inter']">
+              <View
+                style={{ backgroundColor: isDark ? APP_DARK.card : "#E3F2F7" }}
+                className="rounded-full px-2.5 py-1"
+              >
+                <Text
+                  style={{ color: isDark ? colors.text : "#000000" }}
+                  className="text-[10px] leading-[11px] font-['Inter']"
+                >
                   Version 1.0.0
                 </Text>
               </View>
             </View>
 
-            <View className="bg-[#31973D] rounded-2xl p-4 pb-6 overflow-hidden">
+            <View
+              className="rounded-2xl p-4 pb-6 overflow-hidden"
+              style={{ backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D" }}
+            >
               <View className="absolute -top-2 -right-11 rotate-45 opacity-20">
                 <Image
                   resizeMode="cover"
@@ -183,27 +196,48 @@ export function SettingsScreen({
               </View>
 
               <View className="relative z-10 gap-6">
-                <Text className="text-white text-base leading-6 font-semibold">
+                <Text
+                  style={{ color: "#FFFFFF" }}
+                  className="text-base leading-6 font-semibold"
+                >
                   Premium Benefits
                 </Text>
                 <View className="flex-row gap-[5px]">
-                  <View className="flex-1 min-h-[72px] rounded-lg border border-[rgba(144,250,150,0.2)] bg-[rgba(20,135,50,0.4)] p-3 gap-2">
+                  <View
+                    className="flex-1 min-h-[72px] rounded-lg border p-3 gap-2"
+                    style={{
+                      borderColor: "rgba(144,250,150,0.2)",
+                      backgroundColor: "rgba(20,135,50,0.4)",
+                    }}
+                  >
                     <MaterialCommunityIcons
                       name="lightning-bolt-outline"
                       size={moderateScale(20)}
                       color="#90FA96"
                     />
-                    <Text className="text-white text-[13px] leading-5 font-['Inter']">
+                    <Text
+                      style={{ color: "#FFFFFF" }}
+                      className="text-[13px] leading-5 font-['Inter']"
+                    >
                       Double Eco-Points
                     </Text>
                   </View>
-                  <View className="flex-1 min-h-[72px] rounded-lg border border-[rgba(144,250,150,0.2)] bg-[rgba(20,135,50,0.4)] p-3 gap-2">
+                  <View
+                    className="flex-1 min-h-[72px] rounded-lg border p-3 gap-2"
+                    style={{
+                      borderColor: "rgba(144,250,150,0.2)",
+                      backgroundColor: "rgba(20,135,50,0.4)",
+                    }}
+                  >
                     <MaterialCommunityIcons
                       name="face-agent"
                       size={moderateScale(20)}
                       color="#90FA96"
                     />
-                    <Text className="text-white text-[13px] leading-5 font-['Inter']">
+                    <Text
+                      style={{ color: "#FFFFFF" }}
+                      className="text-[13px] leading-5 font-['Inter']"
+                    >
                       Priority Support
                     </Text>
                   </View>
@@ -318,7 +352,7 @@ export function SettingsScreen({
                   >
                     Appearance
                   </Text>
-                  <Text className="text-xs leading-4 text-[#64748A]">
+                  <Text style={{ color: colors.textSub }} className="text-xs leading-4">
                     {isDark ? "Dark mode" : "Light mode"}
                   </Text>
                 </View>
@@ -353,7 +387,7 @@ export function SettingsScreen({
                   >
                     Eco-Impact Reports
                   </Text>
-                  <Text className="text-xs leading-4 text-[#64748A]">
+                  <Text style={{ color: colors.textSub }} className="text-xs leading-4">
                     Weekly detailed insights
                   </Text>
                 </View>
@@ -381,7 +415,20 @@ export function SettingsScreen({
           </View>
 
           {isPremium && (
-            <View className="bg-[#FFE088]/30 rounded-2xl border border-[#D4AF37] p-4">
+            <View
+              className="rounded-2xl border p-4"
+              style={
+                isDark
+                  ? {
+                      backgroundColor: APP_DARK.premiumIconBg,
+                      borderColor: APP_DARK.premiumBorder,
+                    }
+                  : {
+                      backgroundColor: "rgba(255,224,136,0.3)",
+                      borderColor: "#D4AF37",
+                    }
+              }
+            >
               <View className="flex-row items-center justify-between gap-4">
                 <View className="flex-1 flex-row items-center gap-4">
                   <View
@@ -401,16 +448,27 @@ export function SettingsScreen({
                     >
                       Support line
                     </Text>
-                    <Text className="text-xs leading-4 text-[#64748A]">
+                    <Text style={{ color: colors.textSub }} className="text-xs leading-4">
                       Average response: &lt;2 mins
                     </Text>
                   </View>
                 </View>
                 <Pressable
-                  className="flex-row items-center gap-2 border border-[#D4AF37] rounded-full bg-[#FFE088] px-4 py-2.5"
+                  className="flex-row items-center gap-2 border rounded-full px-4 py-2.5"
+                  style={
+                    isDark
+                      ? {
+                          backgroundColor: APP_DARK.premiumButtonBg,
+                          borderColor: APP_DARK.premiumBorder,
+                        }
+                      : { backgroundColor: "#FFE088", borderColor: "#D4AF37" }
+                  }
                   onPress={() => Linking.openURL("tel:+233245000709")}
                 >
-                  <Text className="text-sm leading-5 text-[#1F2A33]">
+                  <Text
+                    style={{ color: isDark ? APP_DARK.premiumButtonText : "#1F2A33" }}
+                    className="text-sm leading-5"
+                  >
                     Call Now
                   </Text>
                 </Pressable>
@@ -458,12 +516,22 @@ export function SettingsScreen({
           </SectionCard>
 
           <Pressable
-            style={{ backgroundColor: isDark ? colors.bg : colors.card }}
-            className="h-[42px] rounded-full border border-[#C10007] items-center justify-center flex-row gap-2"
+            style={{
+              backgroundColor: isDark ? APP_DARK.statusErrorBg : colors.card,
+              borderColor: isDark ? APP_DARK.statusErrorBorder : "#C10007",
+            }}
+            className="h-[42px] rounded-full border items-center justify-center flex-row gap-2"
             onPress={handleSignout}
           >
-            <MaterialCommunityIcons name="logout" size={moderateScale(16)} color="#C10007" />
-            <Text className="text-sm leading-5 text-[#C10007] font-['Manrope']">
+            <MaterialCommunityIcons
+              name="logout"
+              size={moderateScale(16)}
+              color={isDark ? APP_DARK.statusErrorText : "#C10007"}
+            />
+            <Text
+              style={{ color: isDark ? APP_DARK.statusErrorText : "#C10007" }}
+              className="text-sm leading-5 font-['Manrope']"
+            >
               Sign out
             </Text>
           </Pressable>
