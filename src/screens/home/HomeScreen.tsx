@@ -42,6 +42,11 @@ const tricycle = require("../../../assets/picktricycle.png");
 const mapImage = require("../../../assets/RawMap.png");
 const mapDarkImage = require("../../../assets/RawMapDark1.png");
 
+// Matches the `bottomOffset` AppBottomNav defaults to when this screen
+// doesn't pass one — the gap it floats above the screen's bottom edge,
+// which isn't part of its own measured layout height.
+const NAV_BOTTOM_OFFSET = 20;
+
 export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedPickup, setSelectedPickup] = useState<PickupLocation | null>(
@@ -52,6 +57,16 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
     longitude: number;
   } | null>(null);
   const [shouldResetHomeOnFocus, setShouldResetHomeOnFocus] = useState(false);
+  // Measured height of the floating bottom nav below — used to size the
+  // gap the content area reserves for it. AppBottomNav mixes scaled values
+  // (paddingVertical/paddingHorizontal) with unscaled ones (its NavItem
+  // Tailwind padding, `bottomOffset`), so a single guessed constant here
+  // drifts from its *actual* rendered height once fonts, safe-area insets,
+  // or screen density differ — which is what let the search panel/action
+  // cards collide with it (or leave an inconsistent gap) on other phones.
+  // The fallback is only what's shown before the first layout pass measures
+  // the real value.
+  const [navHeight, setNavHeight] = useState(verticalScale(90));
   const sidebarRef = useRef<SidebarHandle>(null);
   const [activePill, setActivePill] = useState<number>(0);
   const customer = useAppSelector((state) => state.customer);
@@ -380,14 +395,20 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
           {/* Search/stats panel is pinned to the top and the action cards
               below are pinned to the bottom (via justifyContent:
               "space-between" on the shared container), leaving the map
-              visible in between instead of the cards hugging the panel. */}
+              visible in between instead of the cards hugging the panel.
+              top/bottom are both derived from real, scaled measurements
+              (the header's own height + a small gap, and the bottom nav's
+              measured height + its floating offset) instead of guessed
+              constants, so the reserved space matches what's actually
+              rendered on this device rather than the one this was tuned
+              against. */}
           <View
             style={{
               position: "absolute",
-              top: 58,
+              top: verticalScale(48) + verticalScale(10),
               left: 0,
               right: 0,
-              bottom: verticalScale(90),
+              bottom: navHeight + NAV_BOTTOM_OFFSET + verticalScale(12),
               flexDirection: "column",
               justifyContent: "space-between",
             }}
@@ -839,6 +860,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<"Home">) {
             activeTab="home"
             paddingBottom={0}
             navigation={navigation}
+            onLayout={(e) => setNavHeight(e.nativeEvent.layout.height)}
           />
         </ImageBackground>
       <Sidebar ref={sidebarRef} navigation={navigation} activeKey="home" />

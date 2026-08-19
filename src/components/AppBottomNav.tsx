@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { LayoutChangeEvent, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -17,7 +17,12 @@ type Props = {
   paddingBottom?: number;
   bottomOffset?: number;
   showCalendar?: boolean;
-  navigation: any
+  navigation: any;
+  // Reports the nav's own rendered height (pill + paddingBottom, not
+  // including `bottomOffset`'s gap from the screen edge) so callers that
+  // need to reserve exact space above it — instead of guessing a constant
+  // that only happens to fit the screen it was tuned on — can measure it.
+  onLayout?: (event: LayoutChangeEvent) => void;
 };
 
 function NavItem({
@@ -69,7 +74,8 @@ export function AppBottomNav({
   activeTab,
   paddingBottom = 8,
   bottomOffset = 20,
-  navigation
+  navigation,
+  onLayout,
 }: Props) {
   const { colors, isDark } = useTheme();
   const isActive = (tab: Tab) => activeTab === tab;
@@ -83,6 +89,7 @@ export function AppBottomNav({
         paddingBottom: paddingBottom,
         marginHorizontal: 16
       }}
+      onLayout={onLayout}
     >
       <View
         style={{
