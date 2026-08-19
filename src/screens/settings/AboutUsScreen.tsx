@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -10,6 +10,8 @@ import { Paragraph, Section } from "../../components/common/CustomAccordion";
 import { AppBottomNav } from "../../components";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
+import { APP_DARK } from "../../constants/appDarkTheme";
+import { openRateUsFlow, shareApp } from "../../utils/appStore";
 
 const zubbaText = require("../../../assets/zubbaText.png");
 
@@ -141,7 +143,7 @@ function ResourceRow({
 }
 
 export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const isPremium = useAppSelector((state) => state.customer?.is_premium);
 
   return (
@@ -182,22 +184,38 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                 tintColor="#31973D"
               />
               {isPremium && (
-                <View className="flex flex-row items-center justify-center gap-1 border border-[#D4AF37] rounded-full bg-[#FFE088] py-1 px-3">
+                <View
+                  className="flex flex-row items-center justify-center gap-1 border rounded-full py-1 px-3"
+                  style={
+                    isDark
+                      ? {
+                          backgroundColor: APP_DARK.premiumIconBg,
+                          borderColor: APP_DARK.premiumBorder,
+                        }
+                      : { backgroundColor: "#FFE088", borderColor: "#D4AF37" }
+                  }
+                >
                   <MaterialCommunityIcons
                     name="star"
                     size={moderateScale(11)}
-                    color="#574500"
+                    color={isDark ? APP_DARK.premiumLabelText : "#574500"}
                   />
-                  <Text className="text-xs text-[#574500]">
+                  <Text style={{ color: isDark ? APP_DARK.premiumLabelText : "#574500" }} className="text-xs">
                     Premium Gold Member
                   </Text>
                 </View>
               )}
-              <Text className="text-xs leading-4 text-[#64748A] text-center">
+              <Text style={{ color: colors.textSub }} className="text-xs leading-4 text-center">
                 Waste Pickup and Recycling Control
               </Text>
-              <View className="bg-[#E3F2F7] rounded-full px-2.5 py-1">
-                <Text className="text-[10px] leading-[11px] text-black font-['Inter']">
+              <View
+                style={{ backgroundColor: isDark ? APP_DARK.card : "#E3F2F7" }}
+                className="rounded-full px-2.5 py-1"
+              >
+                <Text
+                  style={{ color: isDark ? colors.text : "#000000" }}
+                  className="text-[10px] leading-[11px] font-['Inter']"
+                >
                   Version 1.0.0
                 </Text>
               </View>
@@ -221,12 +239,12 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                   <MaterialCommunityIcons
                     name="recycle"
                     size={moderateScale(28)}
-                    color="#148732"
+                    color={isDark ? APP_DARK.statusSuccessText : "#148732"}
                   />
                 }
                 title="Zero Waste Goal"
                 description="Driving circular economies through smart sorting."
-                backgroundColor="rgba(0, 107, 35, 0.05)"
+                backgroundColor={isDark ? APP_DARK.statusSuccessBg : "rgba(0, 107, 35, 0.05)"}
                 accentColor="#6F7A6C"
                 colors={colors}
               />
@@ -235,12 +253,12 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                   <MaterialCommunityIcons
                     name="shield-check"
                     size={moderateScale(28)}
-                    color="#735C00"
+                    color={isDark ? APP_DARK.statusWarningText : "#735C00"}
                   />
                 }
                 title="Trusted Service"
                 description="Premium reliability for every pickup request."
-                backgroundColor="rgba(115, 92, 0, 0.05)"
+                backgroundColor={isDark ? APP_DARK.statusWarningBg : "rgba(115, 92, 0, 0.05)"}
                 accentColor="#6F7A6C"
                 colors={colors}
               />
@@ -280,7 +298,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                     color={colors.textSub}
                   />
                 }
-                onPress={() => {}}
+                onPress={() => Linking.openURL("https://zubbawaste.com/")}
                 colors={colors}
               />
               <ResourceRow
@@ -292,12 +310,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                     color={colors.textSub}
                   />
                 }
-                onPress={() =>
-                  navigation.navigate("Details", {
-                    itemId: "rate-us",
-                    title: "Rate Us",
-                  })
-                }
+                onPress={openRateUsFlow}
                 colors={colors}
               />
               <ResourceRow
@@ -309,12 +322,7 @@ export function AboutUsScreen({ navigation }: RootStackScreenProps<"AboutUs">) {
                     color={colors.textSub}
                   />
                 }
-                onPress={() =>
-                  navigation.navigate("Details", {
-                    itemId: "share-app",
-                    title: "Share App",
-                  })
-                }
+                onPress={shareApp}
                 colors={colors}
               />
             </View>
