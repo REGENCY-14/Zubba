@@ -30,6 +30,22 @@ export type RootStackParamList = {
   Profile: { updatedAt?: number; newPhone?: string; newEmail?: string; newFullName?: string } | undefined;
   UpdateName: undefined;
   Schedule: undefined;
+  ConfirmSchedule: {
+    driverId: string;
+    driverName: string;
+    driverRating: string | number;
+    pickupAddress: string;
+    pickupCoordinates: [number, number];
+    phone: string | null;
+    note: string | null;
+    frequency: "one_time" | "daily" | "weekly" | "monthly";
+    year: number;
+    month: number;
+    day: number;
+    startTime: string | null;
+    endTime: string | null;
+    estimatedPrice: number;
+  };
   Pickups: undefined;
   Promotions: undefined;
   PremiumHome: undefined;

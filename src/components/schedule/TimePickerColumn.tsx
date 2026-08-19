@@ -70,9 +70,9 @@ export function TimePickerColumn({ items, initialIndex, indexRef }: Props) {
   return (
     <View className="flex-1" style={{ height: VIEWPORT_H }}>
       <View
-        pointerEvents="none"
         className="absolute left-0.5 right-0.5 rounded-[14px]"
         style={{
+          pointerEvents: "none",
           top: CENTER_OFFSET,
           height: ITEM_H,
           backgroundColor: "rgba(255,255,255,0.18)",

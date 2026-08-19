@@ -14,6 +14,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { AppBottomNav } from "../../components";
 import AnimatedSwitch from "../../components/ui/inputs/AnimatedSwitch";
 import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { scheduleService } from "../../api/scheduleService";
 import { handleApiError } from "../../utils/handleApiError";
@@ -37,7 +38,7 @@ import { MONTH_NAMES } from "../../constants/scheduleConstants";
 export function ScheduleScreen({
   navigation,
 }: RootStackScreenProps<"Schedule">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const customer = useAppSelector((state) => state.customer);
   const isPremium = customer.is_premium;
   const { coords } = useCurrentLocation();
@@ -358,7 +359,7 @@ export function ScheduleScreen({
               <MaterialCommunityIcons
                 name="calendar"
                 size={moderateScale(16)}
-                color={"#31973D"}
+                color={isDark ? APP_DARK.accentGreen : "#31973D"}
               />
             </Pressable>
             <Pressable onPress={handleRefresh}>
@@ -383,8 +384,8 @@ export function ScheduleScreen({
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={handleRefresh}
-              colors={["#31973D"]}
-              tintColor="#31973D"
+              colors={[isDark ? APP_DARK.accentGreen : "#31973D"]}
+              tintColor={isDark ? APP_DARK.accentGreen : "#31973D"}
             />
           }
           keyboardShouldPersistTaps="handled"
@@ -472,8 +473,9 @@ export function ScheduleScreen({
         </ScrollView>
 
         <Pressable
-          className="absolute right-5 bottom-[102px] w-12 h-12 rounded-full bg-[#31973D] items-center justify-center"
+          className="absolute right-5 bottom-[102px] w-12 h-12 rounded-full items-center justify-center"
           style={{
+            backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : "#31973D",
             shadowColor: "#000",
             shadowOffset: { width: -1, height: 2 },
             shadowOpacity: 0.15,

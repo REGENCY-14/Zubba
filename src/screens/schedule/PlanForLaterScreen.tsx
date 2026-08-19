@@ -7,6 +7,7 @@ import { AppBottomNav } from '../../components';
 import AnimatedSwitch from '../../components/ui/inputs/AnimatedSwitch';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import { APP_DARK } from '../../constants/appDarkTheme';
 import { scale, verticalScale, moderateScale } from '../../utils/scale';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -15,6 +16,12 @@ const SPECIAL_DATES: Record<number, { bg: string; text: string }> = {
   15: { bg: '#8DE9FF', text: '#1F2A33' },
   24: { bg: '#ADFF70', text: '#1F2A33' },
   30: { bg: '#FF70C1', text: '#FFFFFF' },
+};
+
+const SPECIAL_DATES_DARK: Record<number, { bg: string; text: string }> = {
+  15: { bg: 'rgba(141,233,255,0.16)', text: '#8DE9FF' },
+  24: { bg: 'rgba(173,255,112,0.16)', text: '#ADFF70' },
+  30: { bg: 'rgba(255,112,193,0.16)', text: '#FF70C1' },
 };
 
 const DRIVERS = [
@@ -36,7 +43,7 @@ function buildCalendarCells(year: number, month: number): (number | null)[] {
 
 export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanForLater'>) {
   const [activeTab, setActiveTab] = React.useState<'plan' | 'schedules'>('plan');
-  const { colors } = useTheme()
+  const { colors, isDark } = useTheme()
   const [frequency, setFrequency] = React.useState('Weekly');
   const [showDropdown, setShowDropdown] = React.useState(false);
   const [binFull, setBinFull] = React.useState(false);
@@ -60,42 +67,42 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
   const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ backgroundColor: colors.bg }} className="flex-1" edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-      <View className="flex-1 bg-white">
+      <View style={{ backgroundColor: colors.bg }} className="flex-1">
 
         {/* Header */}
-        <View className="h-12 flex-row items-center justify-between px-4 bg-white">
-          <MaterialCommunityIcons name="menu" size={moderateScale(20)} color="#0F1621" />
+        <View style={{ backgroundColor: colors.bg }} className="h-12 flex-row items-center justify-between px-4">
+          <MaterialCommunityIcons name="menu" size={moderateScale(20)} color={colors.text} />
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(8) }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(4) }}>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(9), color: '#3F4A3D' }}>Bin Full?</Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(9), color: colors.textSub }}>Bin Full?</Text>
               <AnimatedSwitch value={binFull} onChange={setBinFull} />
             </View>
             <Pressable
               onPress={() => navigation.navigate('NotificationsList')}
-              style={{ width: moderateScale(40), height: moderateScale(40), borderRadius: moderateScale(12), backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#F3F4F6', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: moderateScale(40), height: moderateScale(40), borderRadius: moderateScale(12), backgroundColor: colors.iconBg, borderWidth: 1, borderColor: colors.borderLight, alignItems: 'center', justifyContent: 'center' }}
             >
-              <MaterialCommunityIcons name="bell-outline" size={moderateScale(20)} color="#374151" />
+              <MaterialCommunityIcons name="bell-outline" size={moderateScale(20)} color={colors.iconColor} />
               <View style={{ position: 'absolute', top: verticalScale(9), right: scale(9), width: moderateScale(8), height: moderateScale(8), borderRadius: moderateScale(4), backgroundColor: '#EF4444' }} />
             </Pressable>
           </View>
         </View>
 
         {/* Tab bar */}
-        <View style={{ paddingHorizontal: scale(12), paddingVertical: verticalScale(8), borderBottomWidth: 1, borderBottomColor: '#E2E8F0', alignItems: 'center' }}>
-          <View style={{ flexDirection: 'row', backgroundColor: '#E2E8F0', borderRadius: moderateScale(12), padding: moderateScale(2), width: scale(335) }}>
+        <View style={{ paddingHorizontal: scale(12), paddingVertical: verticalScale(8), borderBottomWidth: 1, borderBottomColor: colors.borderLight, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', backgroundColor: colors.borderLight, borderRadius: moderateScale(12), padding: moderateScale(2), width: scale(335) }}>
             {(['plan', 'schedules'] as const).map(tab => (
               <Pressable
                 key={tab}
                 onPress={() => setActiveTab(tab)}
                 style={{
                   flex: 1, paddingVertical: verticalScale(4), paddingHorizontal: scale(12), borderRadius: moderateScale(10), alignItems: 'center',
-                  backgroundColor: activeTab === tab ? '#31973D' : 'transparent',
+                  backgroundColor: activeTab === tab ? (isDark ? APP_DARK.buttonPrimaryBg : '#31973D') : 'transparent',
                   elevation: activeTab === tab ? 2 : 0,
                 }}
               >
@@ -110,30 +117,30 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: moderateScale(12), gap: moderateScale(16), paddingBottom: verticalScale(120) }}>
 
           {/* Outer card */}
-          <View style={{ backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: moderateScale(24) }}>
+          <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24) }}>
             <View style={{ padding: moderateScale(16), gap: moderateScale(16) }}>
 
               {/* Section header — elevated so dropdown floats above calendar card */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', zIndex: 10, elevation: 10 }}>
-                <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: moderateScale(24), lineHeight: moderateScale(28), color: '#1F2A33' }}>
+                <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: moderateScale(24), lineHeight: moderateScale(28), color: colors.text }}>
                   Scheduling Activity
                 </Text>
                 <View style={{ position: 'relative' }}>
                   <Pressable
                     onPress={() => setShowDropdown(v => !v)}
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(8), backgroundColor: '#31973D', borderRadius: 9999, paddingVertical: verticalScale(6), paddingHorizontal: scale(12) }}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(8), backgroundColor: isDark ? APP_DARK.buttonPrimaryBg : '#31973D', borderRadius: 9999, paddingVertical: verticalScale(6), paddingHorizontal: scale(12) }}
                   >
                     <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(12), color: '#FFFFFF' }}>{frequency}</Text>
                     <MaterialCommunityIcons name="chevron-down" size={moderateScale(12)} color="#FFFFFF" />
                   </Pressable>
 
                   {showDropdown && (
-                    <View style={{ position: 'absolute', top: verticalScale(32), right: scale(0), zIndex: 20, elevation: 20, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: moderateScale(24), padding: moderateScale(8), gap: moderateScale(4), shadowColor: '#454745', shadowOpacity: 0.15, shadowRadius: 20, minWidth: scale(88) }}>
+                    <View style={{ position: 'absolute', top: verticalScale(32), right: scale(0), zIndex: 20, elevation: 20, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(8), gap: moderateScale(4), shadowColor: '#454745', shadowOpacity: 0.15, shadowRadius: 20, minWidth: scale(88) }}>
                       {['Daily', 'Weekly', 'Monthly'].map(opt => (
                         <Pressable
                           key={opt}
                           onPress={() => { setFrequency(opt); setShowDropdown(false); }}
-                          style={{ paddingHorizontal: scale(8), paddingVertical: verticalScale(6), borderRadius: moderateScale(16), backgroundColor: frequency === opt ? 'rgba(52,168,83,0.5)' : 'transparent' }}
+                          style={{ paddingHorizontal: scale(8), paddingVertical: verticalScale(6), borderRadius: moderateScale(16), backgroundColor: frequency === opt ? (isDark ? APP_DARK.buttonPrimaryBg : 'rgba(52,168,83,0.5)') : 'transparent' }}
                         >
                           <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(14), color: colors.text }}>{opt}</Text>
                         </Pressable>
@@ -143,19 +150,19 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                 </View>
               </View>
 
-              {/* White calendar card */}
-              <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: moderateScale(24), padding: moderateScale(16), gap: moderateScale(16), zIndex: 1 }}>
+              {/* Calendar card */}
+              <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(24), padding: moderateScale(16), gap: moderateScale(16), zIndex: 1 }}>
 
                 {/* Month navigation */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Pressable onPress={() => stepMonth(-1)} hitSlop={8} style={{ width: moderateScale(28), height: moderateScale(28), borderRadius: moderateScale(14), backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
-                    <MaterialCommunityIcons name="chevron-left" size={moderateScale(18)} color="#1F2A33" />
+                  <Pressable onPress={() => stepMonth(-1)} hitSlop={8} style={{ width: moderateScale(28), height: moderateScale(28), borderRadius: moderateScale(14), backgroundColor: colors.borderLight, alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialCommunityIcons name="chevron-left" size={moderateScale(18)} color={colors.text} />
                   </Pressable>
-                  <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(13), color: '#1F2A33' }}>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(13), color: colors.text }}>
                     {MONTH_NAMES[calMonth]} {calYear}
                   </Text>
-                  <Pressable onPress={() => stepMonth(1)} hitSlop={8} style={{ width: moderateScale(28), height: moderateScale(28), borderRadius: moderateScale(14), backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
-                    <MaterialCommunityIcons name="chevron-right" size={moderateScale(18)} color="#1F2A33" />
+                  <Pressable onPress={() => stepMonth(1)} hitSlop={8} style={{ width: moderateScale(28), height: moderateScale(28), borderRadius: moderateScale(14), backgroundColor: colors.borderLight, alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialCommunityIcons name="chevron-right" size={moderateScale(18)} color={colors.text} />
                   </Pressable>
                 </View>
 
@@ -163,7 +170,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                 <View style={{ flexDirection: 'row' }}>
                   {DAY_LABELS.map(d => (
                     <View key={d} style={{ flex: 1, alignItems: 'center' }}>
-                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(10), color: '#64748A' }}>{d}</Text>
+                      <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(10), color: colors.textSub }}>{d}</Text>
                     </View>
                   ))}
                 </View>
@@ -173,12 +180,14 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                   {Array.from({ length: calendarCells.length / 7 }, (_, row) => (
                     <View key={row} style={{ flexDirection: 'row' }}>
                       {calendarCells.slice(row * 7, row * 7 + 7).map((day, col) => {
-                        const special = (day && calYear === 2026 && calMonth === 5) ? SPECIAL_DATES[day] : undefined;
+                        const special = (day && calYear === 2026 && calMonth === 5)
+                          ? (isDark ? SPECIAL_DATES_DARK[day] : SPECIAL_DATES[day])
+                          : undefined;
                         return (
                           <View key={col} style={{ flex: 1, alignItems: 'center', paddingVertical: verticalScale(8) }}>
                             {day !== null && (
                               <View style={{ width: moderateScale(28), height: moderateScale(28), borderRadius: 9999, alignItems: 'center', justifyContent: 'center', backgroundColor: special ? special.bg : 'transparent' }}>
-                                <Text style={{ fontFamily: 'Poppins', fontWeight: special ? '600' : '400', fontSize: moderateScale(12), color: special ? special.text : '#1F2A33' }}>
+                                <Text style={{ fontFamily: 'Poppins', fontWeight: special ? '600' : '400', fontSize: moderateScale(12), color: special ? special.text : colors.text }}>
                                   {day}
                                 </Text>
                               </View>
@@ -204,10 +213,10 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                         onChangeText={setStartTime}
                         placeholder="00:00"
                         placeholderTextColor={colors.textMuted}
-                        style={{ height: verticalScale(48), paddingHorizontal: scale(12), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(16), fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, backgroundColor: colors.card }}
+                        style={{ height: verticalScale(48), paddingHorizontal: scale(12), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(16), fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, backgroundColor: colors.surface }}
                       />
                     </View>
-                    <View style={{ width: moderateScale(24), height: moderateScale(24), borderRadius: moderateScale(12), backgroundColor: '#31973D', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <View style={{ width: moderateScale(24), height: moderateScale(24), borderRadius: moderateScale(12), backgroundColor: isDark ? APP_DARK.accentGreen : '#31973D', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <MaterialCommunityIcons name="arrow-right" size={moderateScale(16)} color="#FFFFFF" />
                     </View>
                     <View style={{ flex: 1, minWidth: 0 }}>
@@ -216,7 +225,7 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
                         onChangeText={setEndTime}
                         placeholder="00:00"
                         placeholderTextColor={colors.textMuted}
-                        style={{ height: verticalScale(48), paddingHorizontal: scale(12), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(16), fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, backgroundColor: colors.card }}
+                        style={{ height: verticalScale(48), paddingHorizontal: scale(12), borderWidth: 1, borderColor: colors.border, borderRadius: moderateScale(16), fontFamily: 'Poppins', fontSize: moderateScale(14), color: colors.text, backgroundColor: colors.surface }}
                       />
                     </View>
                   </View>
@@ -238,12 +247,12 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
           <View style={{ gap: moderateScale(12) }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(16), color: colors.text }}>Recommended  drivers</Text>
-              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: '#31973D' }}>See all</Text>
+              <Text style={{ fontFamily: 'Poppins', fontWeight: '600', fontSize: moderateScale(14), color: isDark ? APP_DARK.accentGreen : '#31973D' }}>See all</Text>
             </View>
 
             {/* Search */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(8), paddingHorizontal: scale(12), height: verticalScale(48), backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 9999 }}>
-              <MaterialCommunityIcons name="magnify" size={moderateScale(20)} color="#64748A" />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(8), paddingHorizontal: scale(12), height: verticalScale(48), backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 9999 }}>
+              <MaterialCommunityIcons name="magnify" size={moderateScale(20)} color={colors.textSub} />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -257,26 +266,26 @@ export function PlanForLaterScreen({ navigation }: RootStackScreenProps<'PlanFor
             {DRIVERS.map(driver => (
               <Pressable
                 key={driver.id}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(12), backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 9999, paddingHorizontal: scale(12), paddingVertical: verticalScale(8) }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(12), backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: scale(12), paddingVertical: verticalScale(8) }}
               >
                 <View style={{ position: 'relative' }}>
-                  <View style={{ width: moderateScale(48), height: moderateScale(48), borderRadius: moderateScale(24), backgroundColor: '#C7E0C9', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: moderateScale(14), color: '#1F2A33' }}>KM</Text>
+                  <View style={{ width: moderateScale(48), height: moderateScale(48), borderRadius: moderateScale(24), backgroundColor: isDark ? 'rgba(96,217,109,0.16)' : '#C7E0C9', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontFamily: 'Poppins', fontWeight: '700', fontSize: moderateScale(14), color: isDark ? APP_DARK.accentGreen : '#1F2A33' }}>KM</Text>
                   </View>
-                  <View style={{ position: 'absolute', bottom: verticalScale(-2), right: scale(-2), width: moderateScale(18), height: moderateScale(18), borderRadius: moderateScale(9), backgroundColor: '#006B23', borderWidth: 2, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ position: 'absolute', bottom: verticalScale(-2), right: scale(-2), width: moderateScale(18), height: moderateScale(18), borderRadius: moderateScale(9), backgroundColor: isDark ? APP_DARK.accentGreen : '#006B23', borderWidth: 2, borderColor: colors.card, alignItems: 'center', justifyContent: 'center' }}>
                     <MaterialCommunityIcons name="check" size={moderateScale(9)} color="#FFFFFF" />
                   </View>
                 </View>
 
                 <View style={{ flex: 1, gap: moderateScale(2) }}>
-                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), color: '#1F2A33' }}>{driver.name}</Text>
+                  <Text style={{ fontFamily: 'Poppins', fontWeight: '500', fontSize: moderateScale(14), color: colors.text }}>{driver.name}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(3) }}>
                     <MaterialCommunityIcons name="star-outline" size={moderateScale(12)} color={colors.textSub} />
                     <Text style={{ fontFamily: 'Poppins', fontWeight: '400', fontSize: moderateScale(12), color: colors.textSub }}>{driver.rating}</Text>
                   </View>
                 </View>
 
-                <MaterialCommunityIcons name="chevron-right" size={moderateScale(20)} color="#64748A" />
+                <MaterialCommunityIcons name="chevron-right" size={moderateScale(20)} color={colors.textSub} />
               </Pressable>
             ))}
           </View>

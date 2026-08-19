@@ -2,6 +2,8 @@ import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AppBottomNav } from "..";
+import { useTheme } from "../../context/ThemeContext";
+import { APP_DARK } from "../../constants/appDarkTheme";
 import {
   getCalendarDays,
   MONTH_NAMES,
@@ -37,6 +39,7 @@ export function ScheduleFilterModal({
   navigation,
 }: Props) {
   const filterCalendarDays = getCalendarDays(filterYear, filterMonth);
+  const { colors, isDark } = useTheme();
 
   return (
     <Modal
@@ -51,25 +54,25 @@ export function ScheduleFilterModal({
           onPress={onClose}
         />
 
-        <View className="bg-white rounded-t-[32px] pt-4 px-5 pb-8 gap-6">
-          <View className="w-[152px] h-[3px] bg-[#334154] rounded-[20px] self-center" />
+        <View style={{ backgroundColor: colors.card }} className="rounded-t-[32px] pt-4 px-5 pb-8 gap-6">
+          <View style={{ backgroundColor: colors.border }} className="w-[152px] h-[3px] rounded-[20px] self-center" />
 
           <View className="flex-row justify-between items-center px-2">
             <Pressable onPress={onPrevMonth} className="p-2">
               <MaterialCommunityIcons
                 name="chevron-left"
                 size={20}
-                color="#1A1C1E"
+                color={colors.text}
               />
             </Pressable>
-            <Text className="text-xl font-semibold text-[#1A1C1E] ">
+            <Text style={{ color: colors.text }} className="text-xl font-semibold">
               {MONTH_NAMES[filterMonth]} {filterYear}
             </Text>
             <Pressable onPress={onNextMonth} className="p-2">
               <MaterialCommunityIcons
                 name="chevron-right"
                 size={20}
-                color="#1A1C1E"
+                color={colors.text}
               />
             </Pressable>
           </View>
@@ -78,7 +81,7 @@ export function ScheduleFilterModal({
             <View className="flex-row">
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((lbl, i) => (
                 <View key={i} className="flex-1 items-center py-[7px]">
-                  <Text className="text-xs font-medium text-[#3F4A3D]  tracking-[0.48px]">
+                  <Text style={{ color: colors.textSub }} className="text-xs font-medium tracking-[0.48px]">
                     {lbl}
                   </Text>
                 </View>
@@ -109,20 +112,31 @@ export function ScheduleFilterModal({
                         }}
                       >
                         <View
-                          className={`w-9 h-9 rounded-[18px] items-center justify-center ${
-                            isSelected ? "bg-[#31973D]" : "bg-transparent"
-                          }`}
+                          style={{
+                            backgroundColor: isSelected
+                              ? isDark
+                                ? APP_DARK.buttonPrimaryBg
+                                : "#31973D"
+                              : "transparent",
+                          }}
+                          className="w-9 h-9 rounded-[18px] items-center justify-center"
                         >
                           <Text
-                            className={`text-base  ${
-                              isSelected ? "text-white" : "text-[#1A1C1E]"
-                            }`}
+                            style={{ color: isSelected ? "#FFFFFF" : colors.text }}
+                            className="text-base"
                           >
                             {cell.day}
                           </Text>
                         </View>
                         {isToday && (
-                          <View className="absolute bottom-[5px] w-1 h-1 rounded-sm bg-[#BA1A1A]" />
+                          <View
+                            style={{
+                              backgroundColor: isDark
+                                ? APP_DARK.statusErrorText
+                                : "#BA1A1A",
+                            }}
+                            className="absolute bottom-[5px] w-1 h-1 rounded-sm"
+                          />
                         )}
                       </Pressable>
                     );
