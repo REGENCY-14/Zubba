@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { TextInput, View } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
+import { AUTH_DARK } from "../../constants/authDarkTheme";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 
 type OTPInputProps = {
@@ -8,11 +9,13 @@ type OTPInputProps = {
   onChange: (digits: string[]) => void;
   length?: number;
   onComplete?: (otp: string) => void;
+  /** Dark-mode-only: switches empty box borders to the auth error color. */
+  hasError?: boolean;
 };
 
-export function OTPInput({ value, onChange, length = 4, onComplete }: OTPInputProps) {
+export function OTPInput({ value, onChange, length = 4, onComplete, hasError }: OTPInputProps) {
   const refs = useRef<(TextInput | null)[]>([]);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <View style={{ flexDirection: "row", gap: scale(12) }}>
@@ -26,8 +29,16 @@ export function OTPInput({ value, onChange, length = 4, onComplete }: OTPInputPr
           style={{
             width: moderateScale(44), height: moderateScale(44), paddingBottom: verticalScale(8), borderRadius: moderateScale(6),
             borderWidth: 1, fontSize: moderateScale(20), textAlign: "center", fontWeight: "500",
-            backgroundColor: value[i] ? colors.card : colors.surface,
-            borderColor: value[i] ? "#34A853" : colors.border,
+            backgroundColor: isDark ? AUTH_DARK.card : value[i] ? colors.card : colors.surface,
+            borderColor: isDark
+              ? value[i]
+                ? AUTH_DARK.accentGreen
+                : hasError
+                ? AUTH_DARK.borderError
+                : AUTH_DARK.border
+              : value[i]
+              ? "#34A853"
+              : colors.border,
             color: colors.text,
           }}
           onChangeText={(text) => {

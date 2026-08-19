@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useRegister } from "../../slices/auth/auth.hooks";
 import { useTheme } from "../../context/ThemeContext";
+import { AUTH_DARK } from "../../constants/authDarkTheme";
 import { useGoogleLogin } from "../../services/googleAuth";
 import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
@@ -25,8 +26,9 @@ const googleIcon = require("../../../assets/google-icon.png");
 
 export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [hasServerError, setHasServerError] = useState(false);
   const registerMutation = useRegister();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const digitsOnly = phoneNumber.replace(/\D/g, "");
   const canContinue = digitsOnly.length >= 6;
@@ -61,12 +63,13 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
         userExists: isExisting,
       });
     } catch (err) {
+      setHasServerError(true);
       handleApiError(err)
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? AUTH_DARK.bg : colors.bg }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -104,9 +107,13 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                     height: verticalScale(48),
                     paddingHorizontal: scale(16),
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: isDark
+                      ? hasServerError
+                        ? AUTH_DARK.borderError
+                        : AUTH_DARK.border
+                      : colors.border,
                     borderRadius: 9999,
-                    backgroundColor: colors.card,
+                    backgroundColor: isDark ? AUTH_DARK.card : colors.card,
                     fontSize: moderateScale(15),
                     color: colors.text,
                   }}
@@ -115,7 +122,10 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   placeholderTextColor={colors.textMuted}
                   keyboardType="phone-pad"
                   value={phoneNumber}
-                  onChangeText={setPhoneNumber}
+                  onChangeText={(text) => {
+                    setPhoneNumber(text);
+                    if (hasServerError) setHasServerError(false);
+                  }}
                 />
               </View>
 
@@ -139,8 +149,8 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   alignItems: "center",
                   justifyContent: "center",
                   marginBottom: verticalScale(16),
-                  backgroundColor: "#34A853",
-                  opacity: canContinue && !registerMutation.isPending ? 1 : 0.6,
+                  backgroundColor: isDark ? AUTH_DARK.buttonPrimaryBg : "#34A853",
+                  opacity: isDark ? 1 : canContinue && !registerMutation.isPending ? 1 : 0.6,
                 }}
                 onPress={handleRegister}
                 disabled={!canContinue || registerMutation.isPending}
@@ -158,19 +168,19 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 }}
               >
                 <View
-                  style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                  style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
                 />
                 <Text
                   style={{
                     marginHorizontal: scale(16),
                     fontSize: moderateScale(12),
-                    color: colors.textSub,
+                    color: isDark ? AUTH_DARK.textMuted : colors.textSub,
                   }}
                 >
                   or
                 </Text>
                 <View
-                  style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                  style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
                 />
               </View>
 
@@ -183,16 +193,16 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   gap: scale(8),
                   justifyContent: "center",
                   borderWidth: 1,
-                  borderColor: colors.border,
+                  borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border,
                   borderRadius: 9999,
                   height: verticalScale(48),
-                  backgroundColor: colors.card,
+                  backgroundColor: isDark ? AUTH_DARK.buttonSecondaryBg : colors.card,
                   marginBottom: verticalScale(12),
                   opacity: isGoogleLoading ? 0.6 : 1,
                 }}
               >
                 {isGoogleLoading ? (
-                  <ActivityIndicator size="small" color={colors.text} />
+                  <ActivityIndicator size="small" color={isDark ? AUTH_DARK.buttonSecondaryText : colors.text} />
                 ) : (
                   <>
                     <Image
@@ -203,7 +213,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                     <Text
                       style={{
                         fontSize: moderateScale(14),
-                        color: colors.text,
+                        color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text,
                         fontWeight: "500",
                       }}
                     >
@@ -220,10 +230,10 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                   gap: scale(8),
                   justifyContent: "center",
                   borderWidth: 1,
-                  borderColor: colors.border,
+                  borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border,
                   borderRadius: 9999,
                   height: verticalScale(48),
-                  backgroundColor: colors.card,
+                  backgroundColor: isDark ? AUTH_DARK.buttonSecondaryBg : colors.card,
                   marginBottom: verticalScale(20),
                 }}
                 onPress={() => navigation.navigate("EmailSignUp")}
@@ -231,12 +241,12 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 <MaterialCommunityIcons
                   name="email-outline"
                   size={moderateScale(16)}
-                  color={colors.text}
+                  color={isDark ? AUTH_DARK.buttonSecondaryText : colors.text}
                 />
                 <Text
                   style={{
                     fontSize: moderateScale(14),
-                    color: colors.text,
+                    color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text,
                     fontWeight: "500",
                   }}
                 >
@@ -252,19 +262,19 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 }}
               >
                 <View
-                  style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                  style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
                 />
                 <Text
                   style={{
                     marginHorizontal: scale(16),
                     fontSize: moderateScale(12),
-                    color: colors.textSub,
+                    color: isDark ? AUTH_DARK.textMuted : colors.textSub,
                   }}
                 >
                   or
                 </Text>
                 <View
-                  style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                  style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
                 />
               </View>
 
@@ -279,7 +289,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                 <MaterialCommunityIcons
                   name="magnify"
                   size={moderateScale(14)}
-                  color={colors.iconColor}
+                  color={isDark ? AUTH_DARK.buttonSecondaryText : colors.iconColor}
                 />
                 <Pressable
                   onPress={() =>
@@ -293,7 +303,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
                     style={{
                       textAlign: "center",
                       fontSize: moderateScale(12),
-                      color: colors.text,
+                      color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text,
                     }}
                   >
                     Find my account
@@ -302,7 +312,7 @@ export function SignUpScreen({ navigation }: RootStackScreenProps<"SignUp">) {
               </View>
 
               <Text
-                style={{ fontSize: moderateScale(11), color: colors.textSub, marginTop: verticalScale(16) }}
+                style={{ fontSize: moderateScale(11), color: isDark ? AUTH_DARK.textDisclaimer : colors.textSub, marginTop: verticalScale(16) }}
               >
                 By continuing, you agree to calls including autodialler,
                 WhatsApp or texts from Zubba and its affiliates.

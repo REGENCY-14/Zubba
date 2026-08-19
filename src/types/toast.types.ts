@@ -18,6 +18,9 @@ export interface ToastVisualConfig {
   border: string;
   text: string;
   icon: string;
+  /** When set, the icon renders as a filled circular badge (iconBg + iconColor) instead of a plain glyph. */
+  iconBg?: string;
+  iconColor?: string;
 }
 
 export const TOAST_CONFIG: Record<ToastType, ToastVisualConfig> = {
@@ -44,6 +47,20 @@ export const TOAST_CONFIG: Record<ToastType, ToastVisualConfig> = {
     border: "#388DF8",
     text: "#0284C7",
     icon: "information",
+  },
+};
+
+// Dark-mode override for the auth flow's "wrong number" / "wrong OTP" toast
+// (Figma node 5494-24384). Only `error` has a dark-specific look for now —
+// other toast types keep their existing look in dark mode.
+export const TOAST_CONFIG_DARK: Partial<Record<ToastType, ToastVisualConfig>> = {
+  error: {
+    bg: "#D8D8D8",
+    border: "#6E3C3B",
+    text: "#E50B78",
+    icon: "close",
+    iconBg: "#F472B5",
+    iconColor: "#FFFFFF",
   },
 };
 

@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useTheme } from "../../context/ThemeContext";
+import { AUTH_DARK } from "../../constants/authDarkTheme";
 import { scale, moderateScale } from "../../utils/scale";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { updateUser } from "../../slices/auth/authSlice";
@@ -23,14 +24,14 @@ export function TermsAcceptanceScreen({
   route,
   navigation,
 }: RootStackScreenProps<"TermsAcceptance">) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useAppDispatch();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.bg }}
+      style={{ flex: 1, backgroundColor: isDark ? AUTH_DARK.bg : colors.bg }}
       edges={["top", "left", "right", "bottom"]}
     >
       <KeyboardAvoidingView
@@ -78,7 +79,7 @@ export function TermsAcceptanceScreen({
         </ScrollView>
 
         <View className="w-full mt-4 gap-[17px]">
-          <View style={{ borderTopWidth: 1, borderTopColor: colors.border }} />
+          <View style={{ borderTopWidth: 1, borderTopColor: isDark ? AUTH_DARK.border : colors.border }} />
 
           <View className="flex-row items-center justify-between">
             <Text style={{ fontSize: moderateScale(10), color: colors.text, lineHeight: moderateScale(16) }}>
@@ -96,10 +97,10 @@ export function TermsAcceptanceScreen({
                   justifyContent: "center",
                 },
                 agreedToTerms
-                  ? { backgroundColor: "#34A853", borderColor: "#34A853" }
+                  ? { backgroundColor: isDark ? AUTH_DARK.accentGreen : "#34A853", borderColor: isDark ? AUTH_DARK.accentGreen : "#34A853" }
                   : {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.text,
+                      backgroundColor: isDark ? AUTH_DARK.card : colors.surface,
+                      borderColor: isDark ? AUTH_DARK.border : colors.text,
                     },
               ]}
             >
@@ -159,7 +160,9 @@ export function TermsAcceptanceScreen({
                 alignItems: "center",
                 justifyContent: "center",
               },
-              agreedToTerms && !submitting
+              isDark
+                ? { backgroundColor: AUTH_DARK.buttonPrimaryBg }
+                : agreedToTerms && !submitting
                 ? { backgroundColor: "#34A853" }
                 : { backgroundColor: "rgba(52, 168, 83, 0.5)" },
             ]}

@@ -6,6 +6,7 @@ import type { RootStackScreenProps } from "../../navigation/types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { RootState } from "../../store";
 import { useTheme } from "../../context/ThemeContext";
+import { AUTH_DARK } from "../../constants/authDarkTheme";
 import { verticalScale, moderateScale } from "../../utils/scale";
 import { WelcomeMessage } from "../../components/auth/WelcomeMessage";
 
@@ -15,10 +16,10 @@ export function ExistingUserNotificationScreen({
 }: RootStackScreenProps<"ExistingUserNotification">) {
   const { user } = useAppSelector((state: RootState) => state.auth);
   const contact = route.params?.phone ?? route.params?.email ?? "";
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? AUTH_DARK.bg : colors.bg }}>
       <View
         style={{
           flex: 1,
@@ -41,7 +42,7 @@ export function ExistingUserNotificationScreen({
               width: moderateScale(110),
               marginBottom: verticalScale(16),
               borderRadius: moderateScale(55),
-              backgroundColor: colors.surface,
+              backgroundColor: isDark ? AUTH_DARK.avatarBg : colors.surface,
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
@@ -91,7 +92,7 @@ export function ExistingUserNotificationScreen({
             style={{
               width: "100%",
               height: verticalScale(48),
-              backgroundColor: "#31973D",
+              backgroundColor: isDark ? AUTH_DARK.buttonPrimaryBg : "#31973D",
               borderRadius: 9999,
               alignItems: "center",
               justifyContent: "center",
@@ -112,10 +113,10 @@ export function ExistingUserNotificationScreen({
             style={{
               width: "100%",
               height: verticalScale(48),
-              backgroundColor: colors.card,
+              backgroundColor: isDark ? AUTH_DARK.buttonSecondaryBg : colors.card,
               borderRadius: 9999,
               borderWidth: 1,
-              borderColor: colors.border,
+              borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border,
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -123,7 +124,7 @@ export function ExistingUserNotificationScreen({
           >
             <Text
               style={{
-                color: colors.text,
+                color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text,
                 fontSize: moderateScale(14),
                 fontWeight: "500",
               }}

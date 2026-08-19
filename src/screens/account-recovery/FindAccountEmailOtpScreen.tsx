@@ -103,7 +103,7 @@ export function FindAccountEmailOtpScreen({
             <Text style={{ fontSize: moderateScale(16), color: colors.text }}>{email}</Text>
           </View>
 
-          <View style={{ marginTop: 20 }} pointerEvents={verifyOtpMutation.isPending ? "none" : "auto"}>
+          <View style={{ marginTop: 20, pointerEvents: verifyOtpMutation.isPending ? "none" : "auto" }}>
             <OTPInput
               value={codeDigits}
               onChange={setCodeDigits}

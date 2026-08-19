@@ -11,8 +11,10 @@ import { setCredentials } from "../../slices/auth/authSlice";
 import { setCustomer } from "../../slices/customer/customerSlice";
 import { authService } from "../../api/authService";
 import { OTPInput } from "../../components/common/OTPInput";
+import { ResendOtpModal } from "../../components/auth/ResendOtpModal";
 import { customerService } from "../../api/customerService";
 import { useTheme } from "../../context/ThemeContext";
+import { AUTH_DARK } from "../../constants/authDarkTheme";
 import { handleApiError } from "../../utils/handleApiError";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
 import { saveAuthSession } from "../../utils/resolveInitialRoute";
@@ -24,7 +26,7 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
   const verifyOtpMutation = useVerifyOtp();
   const resendOtpMutation = useResendOtp();
   const dispatch = useAppDispatch();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const contact = email || phone;
   const deliveryLabel = email ? "email" : "SMS";
@@ -32,6 +34,8 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
   const [codeDigits, setCodeDigits] = useState(["", "", "", ""]);
   const [resendTimer, setResendTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [showResendModal, setShowResendModal] = useState(false);
   const isVerifyingRef = useRef(false);
 
   useEffect(() => {
@@ -93,6 +97,7 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
         });
       }
     } catch (err) {
+      setHasError(true);
       handleApiError(err);
       setCodeDigits(["", "", "", ""]);
     } finally {
@@ -112,13 +117,14 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
       setCodeDigits(["", "", "", ""]);
       setResendTimer(60);
       setCanResend(false);
+      setShowResendModal(false);
     } catch (err) {
       handleApiError(err);
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? AUTH_DARK.bg : colors.bg }}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1, padding: moderateScale(20) }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {email ? (
@@ -137,8 +143,17 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
             </View>
           )}
 
-          <View style={{ marginTop: verticalScale(20) }} pointerEvents={verifyOtpMutation.isPending ? "none" : "auto"}>
-            <OTPInput value={codeDigits} onChange={setCodeDigits} length={4} onComplete={handleVerify} />
+          <View style={{ marginTop: verticalScale(20), pointerEvents: verifyOtpMutation.isPending ? "none" : "auto" }}>
+            <OTPInput
+              value={codeDigits}
+              onChange={(digits) => {
+                setCodeDigits(digits);
+                if (hasError) setHasError(false);
+              }}
+              length={4}
+              onComplete={handleVerify}
+              hasError={hasError}
+            />
           </View>
 
           {email && (
@@ -149,7 +164,18 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
 
           <Pressable
             disabled={!isValid || verifyOtpMutation.isPending}
-            style={{ height: verticalScale(48), borderRadius: 9999, alignItems: "center", justifyContent: "center", marginTop: verticalScale(20), backgroundColor: isValid && !verifyOtpMutation.isPending ? "#34A853" : "rgba(52,168,83,0.5)" }}
+            style={{
+              height: verticalScale(48),
+              borderRadius: 9999,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: verticalScale(20),
+              backgroundColor: isDark
+                ? AUTH_DARK.buttonPrimaryBg
+                : isValid && !verifyOtpMutation.isPending
+                ? "#34A853"
+                : "rgba(52,168,83,0.5)",
+            }}
             onPress={() => handleVerify(codeDigits.join(""))}
           >
             <Text style={{ color: "#FFFFFF", fontSize: moderateScale(14) }}>Verify</Text>
@@ -162,20 +188,38 @@ export function VerifyOtpScreen({ route, navigation }: RootStackScreenProps<"Ver
           <View style={{ gap: moderateScale(8), marginTop: verticalScale(12) }}>
             <Pressable
               disabled={!canResend || resendOtpMutation.isPending}
-              onPress={handleResend}
-              style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: scale(28), paddingVertical: verticalScale(8), alignSelf: "flex-start", opacity: canResend && !resendOtpMutation.isPending ? 1 : 0.4 }}
+              onPress={() => (isDark ? setShowResendModal(true) : handleResend())}
+              style={{
+                borderWidth: 1,
+                borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border,
+                borderRadius: 9999,
+                paddingHorizontal: scale(28),
+                paddingVertical: verticalScale(8),
+                alignSelf: "flex-start",
+                opacity: canResend && !resendOtpMutation.isPending ? 1 : 0.4,
+              }}
             >
-              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: colors.text }}>Resend</Text>
+              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text }}>Resend</Text>
             </Pressable>
 
-            <Pressable style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 9999, paddingHorizontal: scale(28), paddingVertical: verticalScale(8), alignSelf: "flex-start" }}>
-              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: colors.text }}>
+            <Pressable style={{ borderWidth: 1, borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border, borderRadius: 9999, paddingHorizontal: scale(28), paddingVertical: verticalScale(8), alignSelf: "flex-start" }}>
+              <Text style={{ fontSize: moderateScale(12), fontWeight: "500", color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text }}>
                 {email ? "Send code to another email" : "Send code via WhatsApp"}
               </Text>
             </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {isDark && (
+        <ResendOtpModal
+          visible={showResendModal}
+          contact={contact}
+          isResending={resendOtpMutation.isPending}
+          onResend={handleResend}
+          onCancel={() => setShowResendModal(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }

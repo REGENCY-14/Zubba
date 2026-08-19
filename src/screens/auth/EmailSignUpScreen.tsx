@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { RootStackScreenProps } from "../../navigation/types";
 import { useRegister } from "../../slices/auth/auth.hooks";
 import { useTheme } from "../../context/ThemeContext";
+import { AUTH_DARK } from "../../constants/authDarkTheme";
 import { useGoogleLogin } from "../../services/googleAuth";
 import { authService } from "../../api/authService";
 import { handleApiError } from "../../utils/handleApiError";
@@ -28,8 +29,9 @@ export function EmailSignUpScreen({
   navigation,
 }: RootStackScreenProps<"EmailSignUp">) {
   const [email, setEmail] = useState("");
+  const [hasServerError, setHasServerError] = useState(false);
   const registerMutation = useRegister();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleLogin();
 
@@ -62,12 +64,13 @@ export function EmailSignUpScreen({
         userExists: false,
       });
     } catch (err) {
+      setHasServerError(true);
       handleApiError(err)
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? AUTH_DARK.bg : colors.bg }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -91,9 +94,13 @@ export function EmailSignUpScreen({
                 paddingHorizontal: scale(16),
                 height: verticalScale(48),
                 justifyContent: "center",
-                backgroundColor: colors.card,
+                backgroundColor: isDark ? AUTH_DARK.card : colors.card,
                 marginBottom: verticalScale(16),
-                borderColor: isEmailValid
+                borderColor: isDark
+                  ? hasServerError
+                    ? AUTH_DARK.borderError
+                    : AUTH_DARK.border
+                  : isEmailValid
                   ? "rgba(52,168,83,0.2)"
                   : colors.border,
               }}
@@ -106,7 +113,10 @@ export function EmailSignUpScreen({
                 autoCapitalize="none"
                 autoCorrect={false}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (hasServerError) setHasServerError(false);
+                }}
               />
             </View>
 
@@ -117,8 +127,8 @@ export function EmailSignUpScreen({
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: verticalScale(16),
-                backgroundColor: "#34A853",
-                opacity: isEmailValid && !registerMutation.isPending ? 1 : 0.5,
+                backgroundColor: isDark ? AUTH_DARK.buttonPrimaryBg : "#34A853",
+                opacity: isDark ? 1 : isEmailValid && !registerMutation.isPending ? 1 : 0.5,
               }}
               disabled={!isEmailValid || registerMutation.isPending}
               onPress={handleContinue}
@@ -136,19 +146,19 @@ export function EmailSignUpScreen({
               }}
             >
               <View
-                style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
               />
               <Text
                 style={{
                   marginHorizontal: scale(16),
                   fontSize: moderateScale(12),
-                  color: colors.textSub,
+                  color: isDark ? AUTH_DARK.textMuted : colors.textSub,
                 }}
               >
                 or
               </Text>
               <View
-                style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
               />
             </View>
 
@@ -161,16 +171,16 @@ export function EmailSignUpScreen({
                 gap: scale(8),
                 justifyContent: "center",
                 borderWidth: 1,
-                borderColor: colors.border,
+                borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border,
                 borderRadius: 9999,
                 height: verticalScale(48),
-                backgroundColor: colors.card,
+                backgroundColor: isDark ? AUTH_DARK.buttonSecondaryBg : colors.card,
                 marginBottom: verticalScale(12),
                 opacity: isGoogleLoading ? 0.6 : 1,
               }}
             >
               {isGoogleLoading ? (
-                <ActivityIndicator size="small" color={colors.text} />
+                <ActivityIndicator size="small" color={isDark ? AUTH_DARK.buttonSecondaryText : colors.text} />
               ) : (
                 <>
                   <Image
@@ -179,7 +189,7 @@ export function EmailSignUpScreen({
                     resizeMode="contain"
                   />
                   <Text
-                    style={{ fontSize: moderateScale(14), color: colors.text, fontWeight: "500" }}
+                    style={{ fontSize: moderateScale(14), color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text, fontWeight: "500" }}
                   >
                     Continue with Google
                   </Text>
@@ -193,10 +203,10 @@ export function EmailSignUpScreen({
                 alignItems: "center",
                 justifyContent: "center",
                 borderWidth: 1,
-                borderColor: colors.border,
+                borderColor: isDark ? AUTH_DARK.buttonSecondaryBorder : colors.border,
                 borderRadius: 9999,
                 height: verticalScale(48),
-                backgroundColor: colors.card,
+                backgroundColor: isDark ? AUTH_DARK.buttonSecondaryBg : colors.card,
                 marginBottom: verticalScale(20),
               }}
               onPress={() => navigation.navigate("SignUp")}
@@ -204,12 +214,12 @@ export function EmailSignUpScreen({
               <MaterialCommunityIcons
                 name="phone"
                 size={moderateScale(16)}
-                color={colors.text}
+                color={isDark ? AUTH_DARK.buttonSecondaryText : colors.text}
               />
               <Text
                 style={{
                   marginLeft: scale(8),
-                  color: colors.text,
+                  color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text,
                   fontSize: moderateScale(14),
                   fontWeight: "500",
                 }}
@@ -226,19 +236,19 @@ export function EmailSignUpScreen({
               }}
             >
               <View
-                style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
               />
               <Text
                 style={{
                   marginHorizontal: scale(16),
                   fontSize: moderateScale(12),
-                  color: colors.textSub,
+                  color: isDark ? AUTH_DARK.textMuted : colors.textSub,
                 }}
               >
                 or
               </Text>
               <View
-                style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+                style={{ flex: 1, height: 1, backgroundColor: isDark ? AUTH_DARK.border : colors.border }}
               />
             </View>
 
@@ -253,7 +263,7 @@ export function EmailSignUpScreen({
               <MaterialCommunityIcons
                 name="magnify"
                 size={moderateScale(14)}
-                color={colors.iconColor}
+                color={isDark ? AUTH_DARK.buttonSecondaryText : colors.iconColor}
               />
               <Pressable
                 onPress={() => navigation.navigate("FindAccountEmail")}
@@ -262,7 +272,7 @@ export function EmailSignUpScreen({
                   style={{
                     textAlign: "center",
                     fontSize: moderateScale(12),
-                    color: colors.text,
+                    color: isDark ? AUTH_DARK.buttonSecondaryText : colors.text,
                   }}
                 >
                   Find my account
@@ -271,7 +281,7 @@ export function EmailSignUpScreen({
             </View>
 
             <Text
-              style={{ fontSize: moderateScale(11), color: colors.textSub, marginTop: verticalScale(16) }}
+              style={{ fontSize: moderateScale(11), color: isDark ? AUTH_DARK.textDisclaimer : colors.textSub, marginTop: verticalScale(16) }}
             >
               By continuing, you agree to calls including autodialler, WhatsApp
               or texts from Zubba and its affiliates.

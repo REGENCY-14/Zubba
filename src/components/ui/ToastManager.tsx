@@ -5,6 +5,7 @@ import {
   DEFAULT_TOAST_DURATION,
   MAX_VISIBLE_TOASTS,
   TOAST_CONFIG,
+  TOAST_CONFIG_DARK,
   ToastItem,
   ToastOptions,
 } from "../../types/toast.types";
@@ -58,7 +59,6 @@ export function _internalHideAll() {
 export default function ToastManager() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idCounter = useRef(0);
-  const { colors } = useTheme();
 
   const hide = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -103,7 +103,7 @@ export default function ToastManager() {
       statusBarTranslucent
       onRequestClose={() => {}}
     >
-      <View style={styles.container} pointerEvents="box-none">
+      <View style={[styles.container, { pointerEvents: "box-none" }]}>
         {toasts.map((item, index) => (
           <ToastItemView
             key={item.id}
@@ -128,7 +128,8 @@ function ToastItemView({
 }) {
   const translateY = useRef(new Animated.Value(-40)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const config = TOAST_CONFIG[toast.type];
+  const { isDark } = useTheme();
+  const config = (isDark && TOAST_CONFIG_DARK[toast.type]) || TOAST_CONFIG[toast.type];
 
   useEffect(() => {
     Animated.parallel([
@@ -184,11 +185,30 @@ function ToastItemView({
       ]}
     >
       <View style={styles.toastContent}>
-        <MaterialCommunityIcons
-          name={config.icon as any}
-          size={moderateScale(22)}
-          color={config.border}
-        />
+        {config.iconBg ? (
+          <View
+            style={{
+              width: moderateScale(24),
+              height: moderateScale(24),
+              borderRadius: 9999,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: config.iconBg,
+            }}
+          >
+            <MaterialCommunityIcons
+              name={config.icon as any}
+              size={moderateScale(14)}
+              color={config.iconColor ?? "#FFFFFF"}
+            />
+          </View>
+        ) : (
+          <MaterialCommunityIcons
+            name={config.icon as any}
+            size={moderateScale(22)}
+            color={config.border}
+          />
+        )}
         <Text
           style={[styles.toastText, { color: config.text }]}
           numberOfLines={2}
