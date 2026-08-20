@@ -517,8 +517,8 @@ export function SettingsScreen({
 
           <Pressable
             style={{
-              backgroundColor: isDark ? APP_DARK.statusErrorBg : colors.card,
-              borderColor: isDark ? APP_DARK.statusErrorBorder : "#C10007",
+              backgroundColor: isDark ? APP_DARK.signOutBg : colors.card,
+              borderColor: isDark ? APP_DARK.signOutBorder : "#C10007",
             }}
             className="h-[42px] rounded-full border items-center justify-center flex-row gap-2"
             onPress={handleSignout}
@@ -526,10 +526,10 @@ export function SettingsScreen({
             <MaterialCommunityIcons
               name="logout"
               size={moderateScale(16)}
-              color={isDark ? APP_DARK.statusErrorText : "#C10007"}
+              color={isDark ? APP_DARK.signOutText : "#C10007"}
             />
             <Text
-              style={{ color: isDark ? APP_DARK.statusErrorText : "#C10007" }}
+              style={{ color: isDark ? APP_DARK.signOutText : "#C10007" }}
               className="text-sm leading-5 font-['Manrope']"
             >
               Sign out

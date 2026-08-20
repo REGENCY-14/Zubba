@@ -81,4 +81,12 @@ export const APP_DARK = {
 
   statusNeutralBg: "#18212E",
   statusNeutralText: "#94A3B8",
+
+  // Sign-out button (Settings) — Figma node 5494-41901. Distinct from the
+  // generic statusError* tokens above: solid near-black fill (not a
+  // translucent red tint) with a muted/desaturated red border and text,
+  // rather than the brighter statusError red used for error states.
+  signOutBg: "#0D0D0D",
+  signOutBorder: "#DA565A",
+  signOutText: "#DB0007",
 } as const;
