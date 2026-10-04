@@ -1,11 +1,10 @@
 import { Asset } from "expo-asset";
-import * as NativeSplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState } from "react";
 import { Image, StatusBar, View, useWindowDimensions } from "react-native";
 import { RootStackScreenProps } from "../../navigation/types";
 import { resolveInitialRoute } from "../../utils/resolveInitialRoute";
 
-const zubbaLogo = require("../../../assets/zubba-icon.png");
+const zubbaLogo = require("../../../assets/zubba-icon-white.png");
 const splashScreenLayer = require("../../../assets/splash-screen-layer.png");
 
 const MIN_SPLASH_MS = 1800;
@@ -15,15 +14,8 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
   const { width, height } = useWindowDimensions();
   const [ready, setReady] = useState(false);
   const resolvedRef = useRef(false);
-  const nativeHiddenRef = useRef(false);
 
   const logoSize = Math.min(Math.max(width * 0.55, 180), 320);
-
-  const hideNativeSplash = () => {
-    if (nativeHiddenRef.current) return;
-    nativeHiddenRef.current = true;
-    NativeSplashScreen.hideAsync().catch(() => {});
-  };
 
   useEffect(() => {
     if (resolvedRef.current) return;
@@ -69,42 +61,49 @@ export function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
     };
   }, [navigation]);
 
+  if (!ready) {
+    return (
+      <View style={{ flex: 1, backgroundColor: SPLASH_BG }}>
+        <StatusBar barStyle="light-content" backgroundColor={SPLASH_BG} />
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
+        backgroundColor: SPLASH_BG,
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: SPLASH_BG,
       }}
-      onLayout={hideNativeSplash}
     >
       <StatusBar barStyle="light-content" backgroundColor={SPLASH_BG} />
-      {ready ? (
-        <>
-          <View
-            className="absolute left-0 right-0 top-0"
-            style={{ height: height * 0.4 }}
-          >
-            <Image
-              source={splashScreenLayer}
-              resizeMode="cover"
-              className="h-full w-full opacity-75"
-            />
-          </View>
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: height * 0.4,
+        }}
+      >
+        <Image
+          source={splashScreenLayer}
+          resizeMode="cover"
+          style={{ width: "100%", height: "100%", opacity: 0.75 }}
+        />
+      </View>
 
-          <Image
-            source={zubbaLogo}
-            resizeMode="contain"
-            tintColor="#FFFFFF"
-            style={{
-              width: logoSize,
-              height: logoSize,
-              transform: [{ scaleY: 0.92 }],
-            }}
-          />
-        </>
-      ) : null}
+      <Image
+        source={zubbaLogo}
+        resizeMode="contain"
+        style={{
+          width: logoSize,
+          height: logoSize,
+          transform: [{ scaleY: 0.92 }],
+        }}
+      />
     </View>
   );
 }
