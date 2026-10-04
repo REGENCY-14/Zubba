@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { deleteLocalPushToken } from "../services/pushToken";
+
 const AUTH_KEY = "auth_state";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -57,7 +59,9 @@ export const authStorage = {
     return age <= SESSION_MAX_AGE_MS;
   },
 
+  // Every sign-out path clears auth storage, so this is where the device stops receiving pushes.
   clear: async () => {
     await AsyncStorage.removeItem(AUTH_KEY);
+    await deleteLocalPushToken();
   },
 };

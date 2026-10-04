@@ -25,7 +25,10 @@ import { RootNavigator } from "./src/navigation/RootNavigator";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { hydrateAuth } from "./src/slices/auth/hydrateAuth";
 import { env } from "./src/utils/env";
-import { configureNotifications } from "./src/services/pushNotifications";
+import {
+  configureNotifications,
+  registerBackgroundMessageHandler,
+} from "./src/services/pushNotifications";
 import { PushNotificationManager } from "./src/components/notifications/PushNotificationManager";
 import type { RootStackParamList } from "./src/navigation/types";
 
@@ -38,6 +41,7 @@ import "./global.css";
 import ToastManager from "./src/components/ui/ToastManager";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+registerBackgroundMessageHandler();
 
 const SPLASH_BG = "#2EA043";
 
@@ -85,8 +89,14 @@ export default function App() {
     hydrateAuth();
   }, []);
 
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <SplashPlaceholder />;
+    return null;
   }
 
   return (

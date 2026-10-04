@@ -12,6 +12,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slices/auth/authSlice";
+import { logoutDevice } from "../../services/pushNotifications";
 import { clearCustomer } from "../../slices/customer/customerSlice";
 import { authStorage } from "../../utils/authStorage";
 import { scale, verticalScale, moderateScale } from "../../utils/scale";
@@ -117,6 +118,8 @@ export function SettingsScreen({
   const tricycleImage = require("../../../assets/tricycle-image.png");
 
   const handleSignout = async () => {
+    // Tell the backend while the session is still valid, before local auth is cleared.
+    await logoutDevice();
     dispatch(logout());
     dispatch(clearCustomer());
     await authStorage.clear();

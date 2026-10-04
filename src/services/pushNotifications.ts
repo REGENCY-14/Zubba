@@ -1,16 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
+import {
+  getInitialNotification,
+  getMessaging,
+  onMessage,
+  onNotificationOpenedApp,
+  onTokenRefresh,
+  setBackgroundMessageHandler,
+  type RemoteMessage,
+} from "@react-native-firebase/messaging";
 import { Linking, Platform } from "react-native";
 import type { NavigationContainerRefWithCurrent } from "@react-navigation/native";
 
+import { authService } from "../api/authService";
 import { deviceService } from "../api/deviceService";
 import type { RootStackParamList } from "../navigation/types";
 import { store } from "../store";
 import { notificationService } from "../api/notificationService";
+import { authStorage } from "../utils/authStorage";
+import { getFcmToken, getRegisteredPushToken, saveRegisteredPushToken } from "./pushToken";
 
-const PENDING_PUSH_TOKEN_KEY = "@zubba/pendingExpoPushToken";
-const REGISTERED_PUSH_TOKEN_KEY = "@zubba/registeredExpoPushToken";
+const PENDING_PUSH_TOKEN_KEY = "@zubba/pendingFcmToken";
 
 type NotificationNavigationRef =
   NavigationContainerRefWithCurrent<RootStackParamList>;
@@ -37,17 +48,6 @@ const ensureAndroidChannel = async () => {
   });
 };
 
-const getProjectId = () => {
-  const projectId =
-    Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-
-  if (!projectId) {
-    throw new Error("Missing EAS projectId — check app.config extra.eas.projectId");
-  }
-
-  return projectId;
-};
-
 export const getNotificationPermissionStatus = async () => {
   const { status } = await Notifications.getPermissionsAsync();
   return status;
@@ -69,14 +69,6 @@ const clearPendingPushToken = async () => {
   await AsyncStorage.removeItem(PENDING_PUSH_TOKEN_KEY);
 };
 
-const getRegisteredPushToken = async () => {
-  return AsyncStorage.getItem(REGISTERED_PUSH_TOKEN_KEY);
-};
-
-const saveRegisteredPushToken = async (token: string) => {
-  await AsyncStorage.setItem(REGISTERED_PUSH_TOKEN_KEY, token);
-};
-
 export const requestNotificationPermissions = async () => {
   await ensureAndroidChannel();
 
@@ -87,10 +79,10 @@ export const requestNotificationPermissions = async () => {
   return status;
 };
 
-export const getExpoPushToken = async () => {
-  const projectId = getProjectId();
-  const tokenResponse = await Notifications.getExpoPushTokenAsync({ projectId });
-  return tokenResponse.data;
+// FCM requires a handler registered at module load, before the React tree mounts.
+// Notification payloads are displayed by the OS while backgrounded, so nothing to do here.
+export const registerBackgroundMessageHandler = () => {
+  setBackgroundMessageHandler(getMessaging(), async () => {});
 };
 
 const registerTokenWithBackend = async (token: string) => {
@@ -101,7 +93,7 @@ const registerTokenWithBackend = async (token: string) => {
   }
 
   await deviceService.registerPushToken({
-    expoPushToken: token,
+    pushToken: token,
     platform: Platform.OS,
     deviceName: notificationService.getDeviceName(),
     appVersion: Constants.expoConfig?.version,
@@ -118,7 +110,7 @@ export const syncPushNotifications = async () => {
   const permission = await getNotificationPermissionStatus();
   if (permission !== "granted") return null;
 
-  const token = await getExpoPushToken();
+  const token = await getFcmToken();
   const registeredToken = await getRegisteredPushToken();
 
   if (token === registeredToken && store.getState().auth.accessToken) {
@@ -134,7 +126,7 @@ export const requestNotificationPermissionOnly = async () => {
   if (status !== "granted") return false;
 
   try {
-    const token = await getExpoPushToken();
+    const token = await getFcmToken();
     await savePendingPushToken(token);
     return true;
   } catch (error) {
@@ -147,7 +139,7 @@ export const registerForPushNotifications = async () => {
   const status = await requestNotificationPermissions();
   if (status !== "granted") return null;
 
-  const token = await getExpoPushToken();
+  const token = await getFcmToken();
   await registerTokenWithBackend(token);
   return token;
 };
@@ -181,26 +173,74 @@ const handleNotificationResponse = (
   navigateFromNotificationData(navigationRef, data);
 };
 
+const handleRemoteMessageOpened = (
+  message: RemoteMessage | null,
+  navigationRef: NotificationNavigationRef,
+) => {
+  if (message) navigateFromNotificationData(navigationRef, message.data);
+};
+
 export const setupNotificationListeners = (
   navigationRef: NotificationNavigationRef,
   options?: { onNotificationReceived?: () => void },
 ) => {
-  const receivedSubscription = Notifications.addNotificationReceivedListener(() => {
+  const messaging = getMessaging();
+
+  const unsubscribeForeground = onMessage(messaging, async (message) => {
     options?.onNotificationReceived?.();
+    // Android does not show FCM notifications while the app is in the foreground,
+    // so present it locally. iOS presents it via the expo-notifications handler.
+    if (Platform.OS === "android" && message.notification) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: message.notification.title,
+          body: message.notification.body,
+          data: message.data ?? {},
+        },
+        trigger: null,
+      });
+    }
   });
 
+  // Taps on notifications shown while backgrounded / quit (delivered by FCM).
+  const unsubscribeOpened = onNotificationOpenedApp(messaging, (message) =>
+    handleRemoteMessageOpened(message, navigationRef),
+  );
+  getInitialNotification(messaging).then((message) =>
+    handleRemoteMessageOpened(message, navigationRef),
+  );
+
+  // Taps on notifications presented locally by expo-notifications.
   const responseSubscription = Notifications.addNotificationResponseReceivedListener(
     (response) => handleNotificationResponse(response, navigationRef),
   );
 
-  Notifications.getLastNotificationResponseAsync().then((response) => {
-    if (response) {
-      handleNotificationResponse(response, navigationRef);
-    }
+  const unsubscribeTokenRefresh = onTokenRefresh(messaging, (token) => {
+    registerTokenWithBackend(token).catch((error) => {
+      console.log("Failed to register refreshed FCM token:", error);
+    });
   });
 
   return () => {
-    receivedSubscription.remove();
+    unsubscribeForeground();
+    unsubscribeOpened();
     responseSubscription.remove();
+    unsubscribeTokenRefresh();
   };
+};
+
+/**
+ * Logs this device out on the backend: drops its push token and revokes the
+ * session. Best effort — auth storage clearing also deletes the FCM token locally.
+ */
+export const logoutDevice = async () => {
+  const [pushToken, stored] = await Promise.all([getRegisteredPushToken(), authStorage.get()]);
+  try {
+    await authService.logout({
+      pushToken: pushToken ?? undefined,
+      refreshToken: stored?.refreshToken,
+    });
+  } catch (error) {
+    console.log("Backend logout failed:", error);
+  }
 };

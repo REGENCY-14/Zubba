@@ -15,13 +15,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.zubbadevs.zubba",
+    googleServicesFile: process.env.GOOGLE_SERVICE_INFO_PLIST ?? "./GoogleService-Info.plist",
     infoPlist: {
       UIBackgroundModes: ["remote-notification"],
     },
   },
   android: {
     package: "com.zubba.app",
-    googleServicesFile: "./google-services.json",
+    // On EAS Build this is the path of the uploaded file env var; the file itself is gitignored.
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
     adaptiveIcon: {
       foregroundImage: "./assets/ic_launcher.png",
       backgroundColor: "#FFFFFF",
@@ -33,7 +35,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        image: "./assets/zubba-icon-white.png",
+        image: "./assets/ic_launcher.png",
         imageWidth: 220,
         resizeMode: "contain",
         backgroundColor: "#2EA043",
@@ -50,12 +52,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         iosGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
       },
     ],
+    "@react-native-firebase/app",
+    "@react-native-firebase/messaging",
+    "./plugins/withFirebaseNotificationMeta",
     [
       "expo-build-properties",
       {
         android: {
           buildArchs: ["arm64-v8a"],
           cmakeVersion: "4.1.2",
+        },
+        ios: {
+          // Required by React Native Firebase on iOS.
+          useFrameworks: "dynamic",
         },
       },
     ],

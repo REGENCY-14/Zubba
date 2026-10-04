@@ -65,4 +65,9 @@ export const authService = {
     >("/auth/welcome-context", { params });
     return data;
   },
+
+  logout: async (payload: { pushToken?: string; refreshToken?: string }) => {
+    const { data } = await api.post<ApiResponse<unknown>>("/auth/logout", payload);
+    return data;
+  },
 };

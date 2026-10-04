@@ -12,3 +12,4 @@ web-build
 credentials.json
 google-services.json
 **/google-services.json
+GoogleService-Info.plist

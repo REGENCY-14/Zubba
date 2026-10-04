@@ -12,7 +12,7 @@ export type DeviceSession = {
 
 export const deviceService = {
   registerPushToken: async (payload: {
-    expoPushToken: string;
+    pushToken: string;
     platform?: string;
     deviceName?: string;
     appVersion?: string;
